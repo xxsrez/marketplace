@@ -1,6 +1,6 @@
 {
   "name": "task-manager",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Find and work with your Task Manager tasks, projects, and releases.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -10,6 +10,7 @@
   "repository": "https://github.com/xxsrez/task-manager-codex-connector",
   "keywords": ["tasks", "projects", "releases", "productivity"],
   "skills": "./skills/",
+  "apps": "./.app.json",
   "interface": {
     "displayName": "Task Manager",
     "shortDescription": "Find and manage tasks, projects, and releases.",
