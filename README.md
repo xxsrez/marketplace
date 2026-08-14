@@ -2,8 +2,15 @@
 
 This marketplace intentionally contains exactly one plugin: Task Manager.
 
-Add the repository as a Codex marketplace, install **Task Manager**, then use
-the native OAuth **Connect** action. No personal API token is required.
+Install it in Codex Desktop:
+
+```bash
+codex plugin marketplace add xxsrez/task-manager-codex-connector
+codex plugin add task-manager@task-manager
+```
+
+Start a new Codex task, open **Task Manager**, and use the native OAuth
+**Connect** action. No personal API token is required.
 
 The plugin connects to:
 
