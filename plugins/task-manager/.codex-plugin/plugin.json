@@ -1,0 +1,19 @@
+{
+  "name": "task-manager",
+  "version": "0.1.0",
+  "description": "Find and work with your Task Manager tasks, projects, and releases.",
+  "author": {
+    "name": "Andrey Myasnikov"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Task Manager",
+    "shortDescription": "Work with tasks, projects, and releases.",
+    "longDescription": "Connect Codex to Task Manager with OAuth, find work across accessible projects and releases, inspect complete task context, and create or update tasks when requested.",
+    "developerName": "Andrey Myasnikov",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Show me my current Task Manager work and help me choose what to do next."
+  },
+  "mcpServers": "./.mcp.json"
+}

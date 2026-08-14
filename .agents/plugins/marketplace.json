@@ -1,0 +1,20 @@
+{
+  "name": "task-manager",
+  "interface": {
+    "displayName": "Task Manager"
+  },
+  "plugins": [
+    {
+      "name": "task-manager",
+      "source": {
+        "source": "local",
+        "path": "./plugins/task-manager"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
