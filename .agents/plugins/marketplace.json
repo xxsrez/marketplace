@@ -1,7 +1,7 @@
 {
-  "name": "task-manager",
+  "name": "srez-marketplace",
   "interface": {
-    "displayName": "Task Manager"
+    "displayName": "Srez Marketplace"
   },
   "plugins": [
     {

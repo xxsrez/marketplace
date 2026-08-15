@@ -7,7 +7,7 @@
     "url": "https://github.com/xxsrez"
   },
   "homepage": "https://task-manager.xxsrez-work.chatgpt.site",
-  "repository": "https://github.com/xxsrez/task-manager-codex-connector",
+  "repository": "https://github.com/xxsrez/marketplace",
   "keywords": ["tasks", "projects", "releases", "productivity"],
   "skills": "./skills/",
   "apps": "./.app.json",
