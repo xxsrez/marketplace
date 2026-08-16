@@ -1,4 +1,7 @@
 interface:
   display_name: "Task Manager"
-  short_description: "Deliver one task with a durable report"
-  default_prompt: "Use $task-manager to do TM-123 end to end without a Goal, publish a clear native report, and update its status truthfully."
+  short_description: "Find and manage Task Manager data safely"
+  default_prompt: "Use $task-manager to inspect Task Manager and apply only the exact task mutation I request."
+
+policy:
+  allow_implicit_invocation: true

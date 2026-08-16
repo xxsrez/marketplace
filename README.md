@@ -23,6 +23,12 @@ The plugin connects to:
 
 `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
 
+The bundled `task-manager` skill is a technical adapter: it defines OAuth/MCP
+discovery, canonical references, pagination, safe writes, optimistic
+concurrency, and native comment mechanics. A calling workflow owns software
+delivery lifecycle, Goals, verification, releases, report content, and terminal
+status policy; mentioning `$task-manager` alone does not grant those effects.
+
 Repository layout:
 
 - `.agents/plugins/marketplace.json` — the ordered marketplace catalog;
@@ -35,3 +41,17 @@ Repository layout:
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
 `task-manager@srez-marketplace`.
+
+Validate a Task Manager plugin change before publishing:
+
+```bash
+python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/task-manager/skills/task-manager
+jq empty plugins/task-manager/.codex-plugin/plugin.json \
+  plugins/task-manager/.app.json plugins/task-manager/.mcp.json \
+  .agents/plugins/marketplace.json
+! rg -n 'Single-task delivery|Work completion reports|without a Goal|deliver one' \
+  plugins/task-manager/skills/task-manager \
+  plugins/task-manager/.codex-plugin/plugin.json
+git diff --check
+```

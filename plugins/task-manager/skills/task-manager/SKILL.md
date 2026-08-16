@@ -1,6 +1,6 @@
 ---
 name: task-manager
-description: Use Task Manager through its connected MCP tools to find, filter, inspect, create, update, and comment on tasks; navigate projects and releases; or deliver exactly one existing task end to end without a Goal. Trigger for requests about the user's Task Manager work, current tasks, project or release scope, choosing or changing a task, and natural-language requests such as "do TM-123", "fix this task", or "finish the named task" that require implementation, verification, a durable completion or blocker report, and truthful status updates.
+description: Use Task Manager through its connected MCP tools as a technical adapter to find, filter, inspect, create, update, and comment on tasks and to navigate projects and releases. Trigger for Task Manager data access, canonical reference resolution, current versions, OAuth capabilities, pagination, safe writes, and native comment operations. Do not independently define or run delivery, Goal, verification, release, report-content, or terminal-status policy; a calling workflow such as ShipTask owns those decisions.
 ---
 
 # Task Manager
@@ -62,87 +62,36 @@ Task Manager discussion.
 ## Task comments
 
 - Resolve the canonical Task before any comment write. Use native comment tools
-  only for that Task; never use `description` or another field as a report
+  only for that Task; never use `description` or another field as a comment
   fallback.
-- Use `add_task_comment` for a root report and reuse the same stable
-  `idempotencyKey` only when retrying the same logical report. Use reply, edit,
+- Use `add_task_comment` for a root comment and reuse the same stable
+  `idempotencyKey` only when retrying the same logical comment. Use reply, edit,
   delete, reaction, and resolution tools only when the user explicitly requests
   those discussion changes.
-- Before a report write, use `list_task_comments` when available to avoid an
-  equivalent report for the same Task, state, and exact result. Read back the
-  created report. If a write outcome is unknown, look it up before retrying.
+- Before retrying a comment write, use `list_task_comments` when available to
+  avoid an equivalent comment for the same Task and logical operation. Read back
+  the created comment. If a write outcome is unknown, look it up before retrying.
 
-## Single-task delivery
+## Business workflow boundary
 
-Treat a direct natural-language request to do one existing Task as authority to
-run this workflow even when the user does not name this skill or `$ship-tasks`.
-This workflow handles exactly one Task and never creates or uses a Goal.
-Planning-only, backlog-capture, and read-only requests do not start it.
-
-1. Resolve an identifier, link, or unambiguous title to exactly one canonical
-   Task. If zero or multiple Tasks match, ask the user to identify one before
-   any mutation. Do not create a replacement Task or silently select a
-   candidate.
-2. Call `get_task` and establish the current version, acceptance criteria,
-   project and release context, status, and canonical workflow statuses. Scope
-   work to this Task and only prerequisites or recovery strictly necessary for
-   its acceptance criteria. Do not take neighboring Project, Release, or
-   Backlog Tasks.
-3. If the Task is already terminal, do not reopen or repeat it unless the user
-   explicitly asks to reopen, repair, or redo it. Otherwise, before material
-   work, move it to the canonical active status, normally `In Progress`, using
-   the current version. A direct execution request authorizes this transition
-   even when the selected Task starts in Backlog or To Do. Do not invent a
-   missing status.
-4. Perform the work under the selected repository's instructions. Run the
-   required validation and any external effects already authorized for that
-   target. Never infer production authorization from a development, test, QA,
-   UAT, staging, preview, or sandbox instruction.
-5. On success, publish and read back the required `COMPLETED` report described
-   below. Then reread the Task, move it to the canonical completed terminal
-   status using the current version, and reread it again. Never make the
-   terminal transition before the report is durably present.
-6. On material failure, rework, or a blocker, publish and read back the
-   corresponding report, keep the Task in a truthful non-terminal status, and
-   stop instead of selecting another Task. If the report cannot be reconciled,
-   do not claim completion or move the Task to a terminal status.
-
-Do not call Goal lifecycle tools and do not invoke or emulate `$ship-tasks` in
-this workflow. That workflow remains reserved for explicitly selected
-multi-Task shipping scopes.
-
-## Work completion reports
-
-When the user asks to execute, fix, investigate, deliver, or otherwise do
-substantive work for an existing canonical Task, a native report comment is part
-of that Task's outcome. Read-only discovery and planning-only requests do not
-create reports.
-
-On success, after required checks and external effects pass and before any
-requested terminal status transition, publish one `COMPLETED` report that:
-
-- leads with the user-visible outcome;
-- explains the main runtime/data flow and important implementation decisions in
-  plain language;
-- includes exact verification and external-effect evidence;
-- states limitations, remaining risk, and a practical review path;
-- uses one or two compact text/Markdown diagrams for non-trivial or
-  cross-component work, or a concise before/after for a trivial change.
-
-When work stops in material rework, failure, or a blocker, publish `REWORK
-REQUIRED`, `FAILED`, or `BLOCKED` with the impact, last safe checkpoint,
-evidence, cause and confidence, recovery already performed, remaining risk, and
-the exact next step or decision needed. Do not comment on transient red/green
-iterations resolved inside the same run.
-
-If the required native comment cannot be published or reconciled, do not claim
-the Task is complete and do not move it to a terminal status as part of the
-same request. Keep its status truthful, report the comment-delivery blocker,
-and continue unrelated safe work when possible.
+- Provide Task Manager access and safe tool mechanics; do not choose whether a
+  request is read-only, planning, single-Task delivery, or multi-Task delivery.
+- Do not infer Goal policy, lifecycle transitions, report requirements,
+  verification gates, deployment authority, or terminal status from phrases
+  such as "do TM-123", "fix this task", or "finish the release".
+- When a calling workflow such as ShipTask is active, follow its exact scope,
+  lifecycle, evidence, report, and external-effect decisions. This adapter does
+  not weaken or strengthen that authority.
+- Without a calling business workflow, apply only the exact Task Manager read or
+  mutation explicitly requested by the user. An explicit `$task-manager` mention
+  does not itself authorize end-to-end software delivery, Goal creation, status
+  progression, deployment, or completion reporting.
 
 ## Results
 
-Report the task identifier and title, relevant project/release, status, the
-change made, and the native report disposition (`published`, `not-required`, or
-blocked with the exact reason). When listing many tasks, summarize the selection
-logic and say whether more pages remain instead of dumping unneeded task bodies.
+Report the canonical Task, Project, and Release identity relevant to the
+request; the exact filters and pagination disposition; the actual read or write
+result; the new Task version after a reconciled mutation; and any unsupported,
+unauthorized, unknown, or unreconciled outcome. When listing many tasks,
+summarize the selection logic and say whether more pages remain instead of
+dumping unneeded task bodies.
