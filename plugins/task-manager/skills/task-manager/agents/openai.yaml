@@ -1,4 +1,4 @@
 interface:
   display_name: "Task Manager"
-  short_description: "Manage tasks and publish durable work reports"
-  default_prompt: "Use Task Manager to find my current work, make only the changes I request, and leave a clear native completion or blocker report when you perform work for a task."
+  short_description: "Deliver one task with a durable report"
+  default_prompt: "Use $task-manager to do TM-123 end to end without a Goal, publish a clear native report, and update its status truthfully."

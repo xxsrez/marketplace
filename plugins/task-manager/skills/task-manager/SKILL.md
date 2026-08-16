@@ -1,6 +1,6 @@
 ---
 name: task-manager
-description: Use Task Manager through its connected MCP tools to find, filter, inspect, create, update, and comment on tasks and to navigate projects and releases. Trigger for requests about the user's Task Manager work, current tasks, project or release scope, choosing or changing a task, or executing work tied to an existing task that needs a durable completion, failure, rework, or blocker report.
+description: Use Task Manager through its connected MCP tools to find, filter, inspect, create, update, and comment on tasks; navigate projects and releases; or deliver exactly one existing task end to end without a Goal. Trigger for requests about the user's Task Manager work, current tasks, project or release scope, choosing or changing a task, and natural-language requests such as "do TM-123", "fix this task", or "finish the named task" that require implementation, verification, a durable completion or blocker report, and truthful status updates.
 ---
 
 # Task Manager
@@ -71,6 +71,45 @@ Task Manager discussion.
 - Before a report write, use `list_task_comments` when available to avoid an
   equivalent report for the same Task, state, and exact result. Read back the
   created report. If a write outcome is unknown, look it up before retrying.
+
+## Single-task delivery
+
+Treat a direct natural-language request to do one existing Task as authority to
+run this workflow even when the user does not name this skill or `$ship-tasks`.
+This workflow handles exactly one Task and never creates or uses a Goal.
+Planning-only, backlog-capture, and read-only requests do not start it.
+
+1. Resolve an identifier, link, or unambiguous title to exactly one canonical
+   Task. If zero or multiple Tasks match, ask the user to identify one before
+   any mutation. Do not create a replacement Task or silently select a
+   candidate.
+2. Call `get_task` and establish the current version, acceptance criteria,
+   project and release context, status, and canonical workflow statuses. Scope
+   work to this Task and only prerequisites or recovery strictly necessary for
+   its acceptance criteria. Do not take neighboring Project, Release, or
+   Backlog Tasks.
+3. If the Task is already terminal, do not reopen or repeat it unless the user
+   explicitly asks to reopen, repair, or redo it. Otherwise, before material
+   work, move it to the canonical active status, normally `In Progress`, using
+   the current version. A direct execution request authorizes this transition
+   even when the selected Task starts in Backlog or To Do. Do not invent a
+   missing status.
+4. Perform the work under the selected repository's instructions. Run the
+   required validation and any external effects already authorized for that
+   target. Never infer production authorization from a development, test, QA,
+   UAT, staging, preview, or sandbox instruction.
+5. On success, publish and read back the required `COMPLETED` report described
+   below. Then reread the Task, move it to the canonical completed terminal
+   status using the current version, and reread it again. Never make the
+   terminal transition before the report is durably present.
+6. On material failure, rework, or a blocker, publish and read back the
+   corresponding report, keep the Task in a truthful non-terminal status, and
+   stop instead of selecting another Task. If the report cannot be reconciled,
+   do not claim completion or move the Task to a terminal status.
+
+Do not call Goal lifecycle tools and do not invoke or emulate `$ship-tasks` in
+this workflow. That workflow remains reserved for explicitly selected
+multi-Task shipping scopes.
 
 ## Work completion reports
 
