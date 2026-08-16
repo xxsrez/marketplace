@@ -1,6 +1,6 @@
 ---
 name: task-manager
-description: Use Task Manager through its connected MCP tools to find, filter, inspect, create, or update tasks and to navigate projects and releases. Trigger for requests about the user's Task Manager work, current tasks, project or release scope, choosing a task, or changing task status and metadata.
+description: Use Task Manager through its connected MCP tools to find, filter, inspect, create, update, and comment on tasks and to navigate projects and releases. Trigger for requests about the user's Task Manager work, current tasks, project or release scope, choosing or changing a task, or executing work tied to an existing task that needs a durable completion, failure, rework, or blocker report.
 ---
 
 # Task Manager
@@ -37,7 +37,9 @@ write access through OAuth.
    are necessary. Stop when `hasMore` is false or the request is satisfied.
 
 Use `get_task_external_context` only when imported comments or attachments are
-material and task provenance says that context exists.
+material and task provenance says that context exists. Imported comments are
+read-only provenance; use `list_task_comments` and `get_task_thread` for native
+Task Manager discussion.
 
 ## Writes
 
@@ -57,8 +59,51 @@ material and task provenance says that context exists.
 - Task Manager tools intentionally do not expose administration, sharing,
   ownership transfer, workflow configuration, or backup operations.
 
+## Task comments
+
+- Resolve the canonical Task before any comment write. Use native comment tools
+  only for that Task; never use `description` or another field as a report
+  fallback.
+- Use `add_task_comment` for a root report and reuse the same stable
+  `idempotencyKey` only when retrying the same logical report. Use reply, edit,
+  delete, reaction, and resolution tools only when the user explicitly requests
+  those discussion changes.
+- Before a report write, use `list_task_comments` when available to avoid an
+  equivalent report for the same Task, state, and exact result. Read back the
+  created report. If a write outcome is unknown, look it up before retrying.
+
+## Work completion reports
+
+When the user asks to execute, fix, investigate, deliver, or otherwise do
+substantive work for an existing canonical Task, a native report comment is part
+of that Task's outcome. Read-only discovery and planning-only requests do not
+create reports.
+
+On success, after required checks and external effects pass and before any
+requested terminal status transition, publish one `COMPLETED` report that:
+
+- leads with the user-visible outcome;
+- explains the main runtime/data flow and important implementation decisions in
+  plain language;
+- includes exact verification and external-effect evidence;
+- states limitations, remaining risk, and a practical review path;
+- uses one or two compact text/Markdown diagrams for non-trivial or
+  cross-component work, or a concise before/after for a trivial change.
+
+When work stops in material rework, failure, or a blocker, publish `REWORK
+REQUIRED`, `FAILED`, or `BLOCKED` with the impact, last safe checkpoint,
+evidence, cause and confidence, recovery already performed, remaining risk, and
+the exact next step or decision needed. Do not comment on transient red/green
+iterations resolved inside the same run.
+
+If the required native comment cannot be published or reconciled, do not claim
+the Task is complete and do not move it to a terminal status as part of the
+same request. Keep its status truthful, report the comment-delivery blocker,
+and continue unrelated safe work when possible.
+
 ## Results
 
-Report the task identifier and title, relevant project/release, status, and the
-change made. When listing many tasks, summarize the selection logic and say
-whether more pages remain instead of dumping unneeded task bodies.
+Report the task identifier and title, relevant project/release, status, the
+change made, and the native report disposition (`published`, `not-required`, or
+blocked with the exact reason). When listing many tasks, summarize the selection
+logic and say whether more pages remain instead of dumping unneeded task bodies.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Task Manager"
-  short_description: "Find and manage tasks, projects, and releases"
-  default_prompt: "Use Task Manager to find my current work, help me select a task, and make only the changes I request."
+  short_description: "Manage tasks and publish durable work reports"
+  default_prompt: "Use Task Manager to find my current work, make only the changes I request, and leave a clear native completion or blocker report when you perform work for a task."
