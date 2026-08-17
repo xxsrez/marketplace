@@ -23,11 +23,17 @@ The plugin connects to:
 
 `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
 
-The bundled `task-manager` skill is a technical adapter: it defines OAuth/MCP
-discovery, canonical references, pagination, safe writes, optimistic
-concurrency, and native comment mechanics. A calling workflow owns software
-delivery lifecycle, Goals, verification, releases, report content, and terminal
-status policy; mentioning `$task-manager` alone does not grant those effects.
+The plugin bundles two skills behind one OAuth connector:
+
+- `task-manager` is the technical adapter for OAuth/MCP discovery, canonical
+  references, pagination, safe writes, optimistic concurrency, and native
+  comment mechanics;
+- `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
+  report content, and terminal status policy.
+
+Mentioning `$task-manager` alone still authorizes only the requested adapter
+operation. Use `$ship-tasks` or an unambiguous natural-language delivery request
+to execute work.
 
 Repository layout:
 
@@ -37,6 +43,7 @@ Repository layout:
 - `plugins/task-manager/.mcp.json` — remote MCP and OAuth resource;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance.
+- `plugins/task-manager/skills/ship-tasks/` — Task Manager delivery workflow.
 
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
@@ -47,11 +54,14 @@ Validate a Task Manager plugin change before publishing:
 ```bash
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/task-manager/skills/task-manager
+python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/task-manager/skills/ship-tasks
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.app.json plugins/task-manager/.mcp.json \
   .agents/plugins/marketplace.json
 ! rg -n 'Single-task delivery|Work completion reports|without a Goal|deliver one' \
-  plugins/task-manager/skills/task-manager \
-  plugins/task-manager/.codex-plugin/plugin.json
+  plugins/task-manager/skills/task-manager
+diff -qr /Users/andrey/Projects/Home/ShipTask/ship-tasks \
+  plugins/task-manager/skills/ship-tasks
 git diff --check
 ```

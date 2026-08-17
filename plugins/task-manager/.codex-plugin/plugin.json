@@ -1,35 +1,47 @@
 {
   "name": "task-manager",
-  "version": "0.5.0",
-  "description": "Connect Task Manager to find, inspect, create, update, and comment on work safely.",
+  "version": "0.6.0+codex.20260817203842",
+  "description": "Connect Task Manager and deliver selected work safely through ShipTask.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
   },
   "homepage": "https://task-manager.xxsrez-work.chatgpt.site",
   "repository": "https://github.com/xxsrez/marketplace",
-  "keywords": ["tasks", "projects", "releases", "productivity"],
+  "keywords": [
+    "tasks",
+    "projects",
+    "releases",
+    "delivery",
+    "productivity"
+  ],
   "skills": "./skills/",
   "apps": "./.app.json",
   "interface": {
     "displayName": "Task Manager",
-    "shortDescription": "Find and manage Task Manager data safely.",
-    "longDescription": "Connect Codex to Task Manager with OAuth, find work across accessible projects and releases, resolve canonical references, inspect complete task context and current versions, create or update tasks safely, and work with native task comments. Delivery lifecycle, Goals, verification, releases, report content, and terminal status remain the responsibility of the calling workflow.",
+    "shortDescription": "Manage and deliver Task Manager work safely.",
+    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical project, release, and task references, inspect current versions, create or update work safely, and use native comments. The bundled Task Manager skill owns connector mechanics; the bundled ShipTask skill owns delivery intent, lifecycle, Goals, verification, releases, reports, and terminal outcomes.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
-    "capabilities": ["Interactive", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
     "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
       "Show my current tasks and help me choose what to do next",
       "List tasks for a project or release",
       "Update the title of TM-123 using its current version and read back the result",
-      "Add this exact comment to TM-123 and confirm that it was published"
+      "Create one Task and immediately start delivering it with ShipTask",
+      "Deliver TM-123 to a verified terminal outcome with ShipTask"
     ],
     "brandColor": "#6D5CE7",
     "composerIcon": "./assets/composer-icon.svg",
     "logo": "./assets/task-manager-logo.png",
     "logoDark": "./assets/task-manager-logo.png",
-    "screenshots": ["./assets/task-manager-overview.png"]
+    "screenshots": [
+      "./assets/task-manager-overview.png"
+    ]
   },
   "mcpServers": "./.mcp.json"
 }
