@@ -1,0 +1,42 @@
+{
+  "name": "mind-diary",
+  "version": "0.1.0+codex.20260817220943",
+  "description": "Connect Mind Diary and work with your private, revisioned knowledge spaces.",
+  "author": {
+    "name": "Andrey Myasnikov",
+    "url": "https://github.com/xxsrez"
+  },
+  "homepage": "https://mind-diary.xxsrez-work.chatgpt.site",
+  "repository": "https://github.com/xxsrez/marketplace",
+  "keywords": [
+    "knowledge",
+    "notes",
+    "memory",
+    "okf",
+    "productivity"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Mind Diary",
+    "shortDescription": "Browse and update your revisioned Minds.",
+    "longDescription": "Connect Codex to Mind Diary with OAuth. Browse, search, fetch, validate, export, and safely commit Markdown Memories in the Minds you can access. Every write preserves immutable history and uses optimistic concurrency.",
+    "developerName": "Andrey Myasnikov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://mind-diary.xxsrez-work.chatgpt.site",
+    "defaultPrompt": [
+      "Show the Minds I can access",
+      "Search one Mind for a Memory",
+      "Add a Memory to my Personal Mind"
+    ],
+    "brandColor": "#6C4BB6",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/mind-diary-logo.svg",
+    "logoDark": "./assets/mind-diary-logo.svg"
+  },
+  "mcpServers": "./.mcp.json",
+  "apps": "./.app.json"
+}

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mind-diary": {
+      "type": "http",
+      "url": "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp",
+      "oauth_resource": "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp"
+    }
+  }
+}
