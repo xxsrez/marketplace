@@ -4,7 +4,8 @@ from pathlib import Path
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager"
+TASK_MANAGER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager"
+SHIP_TASKS_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "ship-tasks"
 PRODUCTION_MCP_URL = "https://task-manager.xxsrez-work.chatgpt.site/api/mcp"
 
 
@@ -22,14 +23,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertEqual(task_manager["policy"]["authentication"], "ON_USE")
 
     def test_manifest_distributes_direct_mcp_without_registered_app(self) -> None:
-        manifest = read_json(PLUGIN_ROOT / ".codex-plugin" / "plugin.json")
+        manifest = read_json(
+            TASK_MANAGER_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        )
 
         self.assertNotIn("apps", manifest)
         self.assertEqual(manifest["mcpServers"], "./.mcp.json")
-        self.assertFalse((PLUGIN_ROOT / ".app.json").exists())
+        self.assertFalse((TASK_MANAGER_PLUGIN_ROOT / ".app.json").exists())
 
     def test_direct_mcp_targets_production_oauth_resource(self) -> None:
-        mcp_config = read_json(PLUGIN_ROOT / ".mcp.json")
+        mcp_config = read_json(TASK_MANAGER_PLUGIN_ROOT / ".mcp.json")
         task_manager = mcp_config["mcpServers"]["task-manager"]
 
         self.assertEqual(
@@ -41,12 +44,52 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             },
         )
 
-    def test_both_task_manager_skills_are_bundled(self) -> None:
-        for skill_name in ("task-manager", "ship-tasks"):
-            self.assertTrue(
-                (PLUGIN_ROOT / "skills" / skill_name / "SKILL.md").is_file(),
-                f"missing bundled skill: {skill_name}",
-            )
+    def test_task_manager_plugin_is_adapter_only(self) -> None:
+        self.assertTrue(
+            (
+                TASK_MANAGER_PLUGIN_ROOT
+                / "skills"
+                / "task-manager"
+                / "SKILL.md"
+            ).is_file()
+        )
+        self.assertFalse(
+            (TASK_MANAGER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
+        )
+
+    def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
+        marketplace = read_json(
+            REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json"
+        )
+        names = [plugin["name"] for plugin in marketplace["plugins"]]
+        self.assertEqual(names.count("task-manager"), 1)
+        self.assertEqual(names.count("ship-tasks"), 1)
+
+        manifest = read_json(
+            SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        )
+        self.assertEqual(manifest["name"], "ship-tasks")
+        self.assertEqual(manifest["skills"], "./skills/")
+        self.assertNotIn("mcpServers", manifest)
+        self.assertNotIn("apps", manifest)
+        self.assertFalse((SHIP_TASKS_PLUGIN_ROOT / ".mcp.json").exists())
+        self.assertTrue(
+            (
+                SHIP_TASKS_PLUGIN_ROOT
+                / "skills"
+                / "ship-tasks"
+                / "SKILL.md"
+            ).is_file()
+        )
+
+        metadata = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "ship-tasks"
+            / "agents"
+            / "openai.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn('value: "task-manager"', metadata)
 
 
 if __name__ == "__main__":

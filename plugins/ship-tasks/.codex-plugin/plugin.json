@@ -1,0 +1,37 @@
+{
+  "name": "ship-tasks",
+  "version": "0.1.0+codex.20260818201548",
+  "description": "Deliver selected Task Manager work safely through ShipTask.",
+  "author": {
+    "name": "Andrey Myasnikov",
+    "url": "https://github.com/xxsrez"
+  },
+  "homepage": "https://github.com/xxsrez/ShipTask",
+  "repository": "https://github.com/xxsrez/marketplace",
+  "keywords": [
+    "tasks",
+    "delivery",
+    "verification",
+    "releases",
+    "productivity"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Ship Tasks",
+    "shortDescription": "Deliver Task Manager work safely.",
+    "longDescription": "Install ShipTask separately from the Task Manager connector, then deliver selected Tasks, Projects, or Releases through explicit or natural-language delivery intent with lifecycle, Goals, verification, reports, release boundaries, and terminal outcomes.",
+    "developerName": "Andrey Myasnikov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
+    "defaultPrompt": [
+      "Deliver TM-123 to a verified terminal outcome",
+      "Deliver the selected Task Manager release",
+      "Create one Task and immediately start delivering it"
+    ],
+    "brandColor": "#6D5CE7"
+  }
+}

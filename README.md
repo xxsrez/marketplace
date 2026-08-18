@@ -1,7 +1,7 @@
 # Srez Marketplace
 
 This is Andrey's extensible Codex plugin marketplace. It contains independent
-Task Manager and Mind Diary plugins under `plugins/`.
+Task Manager, Ship Tasks, and Mind Diary plugins under `plugins/`.
 
 Add the marketplace once:
 
@@ -9,13 +9,14 @@ Add the marketplace once:
 codex plugin marketplace add xxsrez/marketplace
 ```
 
-Then install either plugin:
+Then install the plugins you need:
 
-1. Open **Plugins → Task Manager** or **Plugins → Mind Diary** and click
-   **Install**.
+1. Open **Plugins → Task Manager**, **Plugins → Ship Tasks**, or
+   **Plugins → Mind Diary** and click **Install**.
 2. For Task Manager, start using the plugin and authenticate when Codex first
    connects to its MCP server. Mind Diary requests authentication during
-   installation.
+   installation. Ship Tasks has no connector of its own and requires Task
+   Manager to be installed separately.
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
@@ -29,13 +30,18 @@ The plugins connect to:
 - Task Manager: `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
 - Mind Diary: `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
 
-Task Manager bundles two skills behind one OAuth-protected MCP connection:
+Task Manager is an adapter-only plugin with one OAuth-protected MCP connection:
 
-- `task-manager` is the technical adapter for OAuth/MCP discovery, canonical
+- `task-manager` provides OAuth/MCP discovery, canonical
   references, pagination, safe writes, optimistic concurrency, and native
-  comment mechanics;
+  comment mechanics.
+
+Ship Tasks is a separate plugin:
+
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
-  report content, and terminal status policy.
+  report content, and terminal status policy;
+- it depends on the separately installed Task Manager plugin for MCP tools and
+  authentication, but does not bundle or duplicate that connector.
 
 Mentioning `$task-manager` alone still authorizes only the requested adapter
 operation. Use `$ship-tasks` or an unambiguous natural-language delivery request
@@ -53,7 +59,8 @@ Repository layout:
 - `plugins/task-manager/.mcp.json` — direct production MCP and OAuth resource;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
-- `plugins/task-manager/skills/ship-tasks/` — Task Manager delivery workflow;
+- `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
+- `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
 - `plugins/mind-diary/.app.json` — registered Mind Diary app connector;
 - `plugins/mind-diary/.mcp.json` — Mind Diary MCP and OAuth resource;
@@ -62,7 +69,8 @@ Repository layout:
 
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
-`task-manager@srez-marketplace`.
+`task-manager@srez-marketplace`; Ship Tasks is independently installable as
+`ship-tasks@srez-marketplace`.
 
 Validate plugin changes before publishing:
 
@@ -71,21 +79,24 @@ python3 -m unittest discover -s tests -p 'test_*.py' -v
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/task-manager/skills/task-manager
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
-  plugins/task-manager/skills/ship-tasks
+  plugins/ship-tasks/skills/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/mind-diary/skills/mind-diary
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/task-manager
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
+  plugins/ship-tasks
+python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/mind-diary
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.mcp.json \
+  plugins/ship-tasks/.codex-plugin/plugin.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
   plugins/mind-diary/.app.json plugins/mind-diary/.mcp.json \
   .agents/plugins/marketplace.json
 ! rg -n 'Single-task delivery|Work completion reports|without a Goal|deliver one' \
   plugins/task-manager/skills/task-manager
 diff -qr /Users/andrey/Projects/Home/ShipTask/ship-tasks \
-  plugins/task-manager/skills/ship-tasks
+  plugins/ship-tasks/skills/ship-tasks
 git diff --check
 ```

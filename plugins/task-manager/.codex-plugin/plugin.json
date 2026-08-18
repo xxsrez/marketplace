@@ -1,7 +1,7 @@
 {
   "name": "task-manager",
-  "version": "0.6.5+codex.20260818145404",
-  "description": "Connect Task Manager and deliver selected work safely through ShipTask.",
+  "version": "0.7.0+codex.20260818201548",
+  "description": "Connect Task Manager to find, inspect, create, update, and comment on work safely.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -12,14 +12,13 @@
     "tasks",
     "projects",
     "releases",
-    "delivery",
     "productivity"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Task Manager",
-    "shortDescription": "Manage and deliver Task Manager work safely.",
-    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical project, release, and task references, inspect current versions, create or update work safely, and use native comments. The bundled Task Manager skill owns connector mechanics; the bundled ShipTask skill owns delivery intent, lifecycle, Goals, verification, releases, reports, and terminal outcomes.",
+    "shortDescription": "Find and manage Task Manager data safely.",
+    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical project, release, and task references, inspect complete task context and current versions, create or update work safely, and use native comments. Delivery workflows such as ShipTask are installed separately.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -29,8 +28,8 @@
     "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
       "List tasks for a project or release and help me choose what to do next",
-      "Create one Task and immediately start delivering it with ShipTask",
-      "Deliver TM-123 to a verified terminal outcome with ShipTask"
+      "Update the title of TM-123 using its current version",
+      "Add a comment to TM-123 and confirm it was published"
     ],
     "brandColor": "#6D5CE7",
     "composerIcon": "./assets/composer-icon.svg",
