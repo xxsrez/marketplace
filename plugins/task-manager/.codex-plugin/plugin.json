@@ -1,6 +1,6 @@
 {
   "name": "task-manager",
-  "version": "0.6.4+codex.20260818130927",
+  "version": "0.6.5+codex.20260818131156",
   "description": "Connect Task Manager and deliver selected work safely through ShipTask.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -29,9 +29,7 @@
     ],
     "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
-      "Show my current tasks and help me choose what to do next",
-      "List tasks for a project or release",
-      "Update the title of TM-123 using its current version and read back the result",
+      "List tasks for a project or release and help me choose what to do next",
       "Create one Task and immediately start delivering it with ShipTask",
       "Deliver TM-123 to a verified terminal outcome with ShipTask"
     ],
