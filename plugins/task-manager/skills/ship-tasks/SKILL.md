@@ -203,6 +203,20 @@ verification, integration и review capacity; один writer владеет о�
 integration owner выполняет fan-in в dependency order. Не максимизировать
 agent count ради числа.
 
+Различать active write target и review batch target. Без фактически запущенных
+isolated concurrent workers active write target равен `1`, даже для большого
+batch. Вести run-scoped active lane set: подтверждённый `To Do → In Progress`
+занимает lane; общий commit/UAT/full gate/comment не делает `In Progress`
+waiting room для уже targeted-verified integrated candidate.
+
+Перед каждым новым `To Do → In Progress` выполнить status-reconciliation
+barrier. Task текущего run, на которой implementation/rework закончились,
+сначала перевести в `In Review` и перечитать; незавершённый partial blocker —
+truthful defer; terminal result — terminal read-back. Unknown/unreconciled
+status write оставляет lane занятой. Не начинать новую Task, если занятые lanes
+достигли active write target; targeted-verified candidate нельзя defer-ить как
+partial только ради освобождения capacity.
+
 Для каждой Task:
 
 1. Зафиксировать canonical ref, current detail/version/status, acceptance,
@@ -214,7 +228,8 @@ agent count ради числа.
 4. Покрыть material duplicate scenarios. Отдельную проблему вынести как
    finding/scope decision без silent work expansion.
 5. Интегрировать exact candidate, перевести его в `In Review` и сформировать
-   evidence identity.
+   evidence identity. Завершить status write/read-back до освобождения lane и
+   старта replacement Task; ожидание общего batch gate/effect этого не отменяет.
 6. По batch trigger выполнить independent review и review-batch gate на exact
    integrated members/result. Не запускать дорогой full gate для каждого
    member без risk reason.
