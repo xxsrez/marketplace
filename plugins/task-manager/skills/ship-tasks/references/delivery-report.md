@@ -1,10 +1,9 @@
 # Delivery report как Task comment
 
-Прочитать этот reference после разрешения exact delivery scope и до batch Goal
-или первой delivery mutation. Capability gate применяется сразу; task-specific
-форматы — только после формирования evidence. Report объясняет результат
-пользователю и не заменяет checks, automatic acceptance decision, source
-identity или external-effect verification.
+Использовать этот reference только после выбора exact Task и формирования
+task-specific evidence. Report объясняет результат пользователю; он не заменяет
+checks, automatic acceptance decision, source identity или external-effect
+verification.
 
 ## Содержание
 
@@ -24,7 +23,6 @@ identity или external-effect verification.
 
 - connector явно предоставляет native comment-create operation для canonical
   Task ref;
-- connector предоставляет native list/read для idempotency и read-back;
 - current authority позволяет вызвать этот write;
 - operation создаёт Task Manager comment, а не imported/external annotation.
 
@@ -34,24 +32,16 @@ authority или сообщает, что feature ещё не работает. 
 
 При `not-available`:
 
-1. До Goal и delivery mutations выдать `TASK CONTEXT ALARM` с reason
-   `terminal-report-channel-unavailable`.
-2. Не вызывать Task/code/Git/deploy writes и не продолжать runnable queue.
-3. Не менять `description`, acceptance, status text или другой Task field.
-4. Показать known scope, missing operations/authority, last safe read-only
-   checkpoint и один exact refresh/reconnect/resume step.
+1. Не вызывать `update_task` ради report.
+2. Не менять `description`, acceptance, status text или другой Task field.
+3. Сохранить report и blocker в review/interaction output.
+4. Оставить Task truthful non-terminal, классифицировать её как
+   `completion-remains`/`deferred` и продолжить независимый workflow.
 
-Это scope-wide blocker: mandatory report channel общий для всех изменяемых
-Tasks. Production approval, passing checks или доступный UI не заменяют native
-connector create/list/read. Узкое исключение допускает только exact `single`
-Task, которая сама восстанавливает этот channel; после её минимального
-non-terminal bootstrap checkpoint всё равно нужен fresh capability preflight.
-
-Если `not-available`/`write-outcome-unknown` возник уже после delivery mutation,
-остановить новый dispatch, reconciliate active lanes и сформировать scope-wide
-`GOAL BLOCKER REPORT`; не продолжать «независимые» Tasks с общей сломанной
-terminal dependency. Gap блокирует `Done` affected Tasks и Goal completion до
-восстановления create/list/read и успешного report read-back.
+Этот gap не является global `TASK CONTEXT ALARM`, но блокирует `Done` affected
+Task и Goal completion, пока Task остаётся в scope. Как только current connector
+предоставляет native comment write/read, продолжить с report step без отдельного
+ShipTask version gate.
 
 ## Write и reconciliation
 
@@ -59,9 +49,8 @@ terminal dependency. Gap блокирует `Done` affected Tasks и Goal comple
   Task.
 - Публиковать `REWORK REQUIRED`/`BLOCKED` report после material failure,
   changes-requested или blocker, который важно объяснить пользователю.
-- Для каждого task-local defer при доступном общем channel обязательно
-  публиковать `BLOCKED` report. Shared channel loss обрабатывается scope-wide
-  barrier, а не серией недоставленных per-Task reports.
+- Для каждого task-local defer обязательно публиковать `BLOCKED` report; если
+  comments недоступны, сам comment delivery становится частью blocker.
 - Не публиковать `ACCEPTANCE READY`: terminal-ready evidence автоматически
   приводит к `COMPLETED`; не писать comment на каждую внутреннюю red/green
   iteration.
@@ -72,8 +61,8 @@ terminal dependency. Gap блокирует `Done` affected Tasks и Goal comple
   read-back, если connector предоставляет отдельное чтение.
 - При unknown write outcome не повторять create вслепую. Сначала искать report
   через comment list/read; если это невозможно, показать
-  `write-outcome-unknown`, оставить Task non-terminal и остановить новый
-  dispatch до scope-wide reconciliation.
+  `write-outcome-unknown`, оставить Task non-terminal и продолжить только
+  независимую работу без duplicate risk.
 - Comment write и status update считать отдельными side effects, пока current
   connector явно не гарантирует atomicity.
 

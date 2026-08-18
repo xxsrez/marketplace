@@ -86,16 +86,6 @@ exact payloads. Сохранить минимальные invariants даже е
 6. Проверить native Task comment create/list/read и authority. Imported
    comments не являются write capability.
 
-До batch Goal и любых delivery mutations прочитать
-[delivery-report reference](references/delivery-report.md) полностью и применить
-scope-wide capability gate. Если обязательный native comment channel
-отсутствует/unsupported/unauthorized, выдать `TASK CONTEXT ALARM` с reason
-`terminal-report-channel-unavailable`; не создавать Goal, не начинать Task,
-code/Git/deploy и не продолжать queue. Production approval этого не исправляет.
-Узкое исключение — exact `single`, который сам восстанавливает comment
-create/list/read: выполнить только его минимальный bootstrap checkpoint и
-остановиться до fresh capability preflight.
-
 Перед каждым Task update перечитать detail и передать current `version`. При
 `version_conflict` перечитать и повторить только всё ещё применимый intent. Не
 перетирать unrelated edits. После write выполнить read-back. Не повторять
@@ -131,9 +121,8 @@ Duplicate                       terminal review context only
 
 В `single`, `memory-maintenance` и `non-delivery` не вызывать Goal tools.
 
-В `batch` после exact refs, complete read-only inventory и successful
-terminal-report capability gate, но до code, Git, Task Manager, ownership или
-external writes:
+В `batch` после exact refs и complete read-only inventory, но до code, Git,
+Task Manager, ownership или external writes:
 
 1. Вызвать `get_goal`; при отсутствии обязательных Goal tools выдать
    `TASK CONTEXT ALARM`.
@@ -164,14 +153,11 @@ global-conflict
 -> no-work
 ```
 
-Global connector/terminal-report-channel/scope/applicable-Goal/ownership/
-shared-state conflict даёт `TASK CONTEXT ALARM`. Task-local ambiguity даёт
-`deferred`; продолжать другие runnable Tasks. Общая недоступность comments не
-является task-local ambiguity. Если channel потерян после mutation, прекратить
-новый dispatch, reconciliate active lanes и сформировать scope-wide blocker
-ledger. В `single` при material blocker/failure опубликовать и перечитать
-truthful report, сохранить non-terminal status и завершить flow, не выбирая
-другую Task.
+Global connector/scope/applicable-Goal/ownership/shared-state conflict даёт
+`TASK CONTEXT ALARM`. Task-local ambiguity даёт `deferred`; продолжать другие
+runnable Tasks. В `single` при material blocker/failure опубликовать и
+перечитать truthful report, сохранить non-terminal status и завершить flow, не
+выбирая другую Task.
 
 ## Никогда не требовать ручную приёмку
 
@@ -197,10 +183,9 @@ truthful report, сохранить non-terminal status и завершить fl
   checkpoint и продолжать независимую work.
 - Перед blocking input повторить complete inventory. При
   `runnable_count > 0` blocking input запрещён.
-- Для каждого task-local defer при доступном общем channel обязательно
-  опубликовать/read-back `BLOCKED` handoff. Shared loss comment capability после
-  старта останавливает новый dispatch и требует scope-wide blocker ledger;
-  никогда не писать report в `description`.
+- Для каждого defer обязательно опубликовать/read-back `BLOCKED` handoff. Без
+  comment capability оставить Task non-terminal и включить comment delivery в
+  blocker; никогда не писать report в `description`.
 - ShipTask delivery intent является standing authority для ordinary exact
   verified non-production target: local/dev/test/QA/UAT/staging/preview/sandbox.
   Выполнить required build/deploy/bounded migration/smoke/repair/rollback без
@@ -255,8 +240,8 @@ partial только ради освобождения capacity.
 
 ## Опубликовать Task report
 
-Использовать уже прочитанный на preflight
-[delivery-report reference](references/delivery-report.md).
+Перед первым report decision прочитать
+[delivery-report reference](references/delivery-report.md) полностью.
 
 - Native comment является обязательным terminal effect для completed,
   materially failed/rework или blocked Task.
@@ -265,8 +250,7 @@ partial только ради освобождения capacity.
   remaining risk и exact resume decision.
 - Использовать stable report identity, искать equivalent comment, выполнять
   read-back. `not-available` или `write-outcome-unknown` блокирует terminal
-  transition affected Task; после mutation это останавливает новый Task
-  dispatch до scope-wide reconciliation.
+  transition affected Task.
 - Никогда не писать report в description, acceptance, status text или другой
   Task field. Не публиковать `ACCEPTANCE READY`.
 
@@ -281,6 +265,12 @@ partial только ради освобождения capacity.
   при dirty/shared drift. Изолировать affected lane или alarm shared conflict.
 
 ## Завершить по mode
+
+Перед blocking input, утверждением «продолжить невозможно» либо terminal Goal
+decision прочитать [run-report reference](references/run-report.md) полностью.
+Провести causal analysis, проверить доступные safe in-scope recovery actions и
+выполнить их самостоятельно. Если имеющаяся operation/authority устраняет
+причину, `blocked` запрещён: перечитать state и продолжить workflow.
 
 Для `single` перечитать Task и доказать: exact result, acceptance, targeted и
 singleton batch gates, required effects, automatic acceptance, published
@@ -298,14 +288,13 @@ report и truthful terminal status. Goal identity — `not-applicable`.
 
 Если остаётся runnable work — продолжить. Если остаются только deferred Tasks —
 показать одну consolidated queue и не завершать Goal. `blocked` применять только
-после строгого tool threshold и user-visible `GOAL BLOCKER REPORT`: exact
-reason, affected Task identifiers/statuses, complete inventory и
-`runnable_count`, last safe checkpoint/result identities, missing effect,
-recovery checks, comment disposition и один exact resume step. Один status
-write без ledger запрещён. При полном evidence вызвать
-`update_goal(status="complete")` последним.
+после строгого tool threshold, проведённого causal analysis и user-visible
+`SHIPTASK RUN REPORT`. Один reason code, raw error или status write без
+понятного объяснения, recovery checks и exact resume step запрещён. При полном
+evidence вызвать `update_goal(status="complete")` последним.
 
-Финальный ответ показывает mode, scope, Task projection, result identity,
-targeted/batch checks, effects, reports, automatic acceptance, gaps и deferred
-decisions; для batch — Goal identity/status. Не выдавать unknown/skipped effect
-за verified completion.
+Каждый terminal exit (`complete`, `blocked`, partial/deferred, `no-work`)
+заканчивается `SHIPTASK RUN REPORT`: сначала простыми словами итог, causal
+explanation и выполненный self-recovery, затем scope/statuses, result/effects,
+comments, Goal, remaining work и technical evidence. Не выдавать
+unknown/skipped effect за verified completion.

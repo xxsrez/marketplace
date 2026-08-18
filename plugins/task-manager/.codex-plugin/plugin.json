@@ -1,6 +1,6 @@
 {
   "name": "task-manager",
-  "version": "0.6.2+codex.20260818122316",
+  "version": "0.6.3+codex.20260818125214",
   "description": "Connect Task Manager and deliver selected work safely through ShipTask.",
   "author": {
     "name": "Andrey Myasnikov",

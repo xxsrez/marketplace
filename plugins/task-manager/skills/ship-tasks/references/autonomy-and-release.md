@@ -12,11 +12,11 @@ acceptance задана ADR-0005 и канонической specification.
 - Stale acceptance context
 - Deferred Task
 - Comment handoff
-- Shared terminal channel loss
+- Blocker analysis and self-recovery
 - Non-production release
 - Production boundary
 - Deferred-only handoff
-- Goal blocker report
+- Terminal run report
 - Resume
 
 ## Run invariant
@@ -43,12 +43,9 @@ runnable_count = actionable To Do + actionable In Progress
 Review packet и published comment являются evidence/handoff, а не разрешением
 приостановить оставшиеся implementation/resume lanes или ждать user acceptance.
 
-Global `TASK CONTEXT ALARM` сохранять только для конфликта connector,
-mandatory terminal-report channel, exact scope, Goal, ownership,
-integration/shared state или authority, из-за которого небезопасна любая
-оставшаяся mutation. Отсутствие native comment create/list/read является общей
-зависимостью scope, а не task-local blocker: на preflight оно останавливает run
-до Goal и delivery mutations.
+Global `TASK CONTEXT ALARM` сохранять только для конфликта connector, exact
+scope, Goal, ownership, integration/shared state или authority, из-за которого
+небезопасна любая оставшаяся mutation.
 
 ## Decision ladder
 
@@ -85,9 +82,8 @@ integration/shared state или authority, из-за которого небез
 
 Использовать global alarm, только если конфликт нельзя изолировать: exact scope
 или Goal не разрешены, connector/ownership не позволяют безопасный write,
-mandatory terminal-report channel отсутствует, shared integration state
-повреждён/неоднозначен либо все remaining mutations зависят от одной общей
-отсутствующей authority.
+shared integration state повреждён/неоднозначен либо все remaining mutations
+зависят от одной общей отсутствующей authority.
 
 ## Automatic acceptance
 
@@ -99,11 +95,9 @@ integration identity, required effects и отсутствие unresolved in-sco
 При таком результате не вызывать user input и не оставлять Task в `In Review`
 ради human acceptance: опубликовать и перечитать обязательный `COMPLETED`, затем
 перевести Task в `Done`, перечитать status/version и продолжить scope. Если
-comment create/list/read потерян или unreconciled после mutation, Task остаётся
-non-terminal, новый dispatch останавливается и применяется scope-wide recovery
-из раздела `Shared terminal channel loss`. После `Done` user reopen или новая
-Task запускают обычный последующий rework cycle; прошлый report остаётся
-historical checkpoint.
+comment write/read недоступен, Task остаётся non-terminal с отдельным
+terminal-effect blocker. После `Done` user reopen или новая Task запускают
+обычный последующий rework cycle; прошлый report остаётся historical checkpoint.
 
 Automatic acceptance не заменяет production approval, destructive/secret/
 privacy authority или обязательный approval внешнего approver.
@@ -168,35 +162,30 @@ deferred Task: записать его в final findings, не расширят�
 delivery-report comment до освобождения lane. Включить все поля decision queue,
 user impact/remaining risk и report key для exact Task/result.
 
-Если при доступном общем channel один write outcome unknown, не использовать
-`description`/другой field как fallback и не повторять write вслепую. Оставить
-affected Task non-terminal и перейти к scope-wide reconciliation по следующему
-разделу.
+Если comments недоступны или write outcome unknown, не использовать
+`description`/другой field как fallback. Добавить comment delivery в blocker,
+сохранить тот же handoff в consolidated interaction output, оставить affected
+Task non-terminal и продолжить независимую runnable work.
 
-## Shared terminal channel loss
+## Blocker analysis and self-recovery
 
-До Goal и первой delivery mutation native comment create/list/read должны быть
-доступны и authorized. При preflight failure выдать `TASK CONTEXT ALARM` с
-reason `terminal-report-channel-unavailable`; не начинать Tasks, code/Git,
-deploy или runnable queue. Production approval не заменяет эту capability.
+Перед blocking input, финальным «продолжить невозможно» или Goal `blocked`
+прочитать [run-report reference](run-report.md). Сначала установить root cause,
+а не повторить симптом:
 
-Если channel потерян либо стал unreconciled после mutation:
+1. Восстановить expected flow, causal timeline и первое расхождение.
+2. Проверить current Task/Goal/source/effect state и operations, которыми агент
+   фактически располагает.
+3. Отделить подтверждённое evidence от inference и указать confidence.
+4. Найти safe in-scope recovery actions и выполнить их, если authority уже
+   существует.
+5. Перечитать affected state и повторить disposition.
 
-1. Прекратить новый Task dispatch и external effects, не нужные для safe
-   recovery.
-2. Reconciliate active lanes в truthful statuses/read-backs.
-3. Повторить complete inventory, сохранить exact result/effect identities и
-   перечислить affected Tasks с comment disposition.
-4. Сформировать scope-wide `GOAL BLOCKER REPORT`; не продолжать остальные Tasks
-   как независимые, потому что terminal dependency общая.
-5. Оставить Goal active до строгого blocker threshold. Повторный poll того же
-   state сам по себе не является новым blocker occurrence.
-
-Узкое bootstrap-исключение разрешено только для exact `single` Task, чьи
-acceptance criteria прямо восстанавливают native comment create/list/read.
-Выполнить только её минимальный result, оставить non-terminal checkpoint и
-остановиться до fresh capability preflight. Project/Release batch этим
-исключением не продолжать.
+Если доступная operation устраняет причину, `blocked` запрещён. Не считать
+внешним blocker обычный comment/status write, reconciliation read, retry после
+установленной transient cause или другой предусмотренный project recovery step.
+Остановиться можно только когда self-recovery исчерпан и требуется реальное
+user decision, новая authority или внешний state change.
 
 ## Non-production release
 
@@ -255,31 +244,31 @@ runnable queue.
 6. Оставить plan и Goal незавершёнными. Не вызывать Goal completion.
 7. Применять Goal `blocked` только после строгого model-tool threshold, а не
    после первого defer или одного turn без progress, и только после полного
-   `GOAL BLOCKER REPORT`.
+   causal analysis и human-readable run report.
 
-## Goal blocker report
+## Terminal run report
 
-Непосредственно перед `update_goal(status="blocked")` показать один
-user-visible ledger:
+Каждый terminal exit заканчивается `SHIPTASK RUN REPORT` по
+[run-report reference](run-report.md). Task comments не заменяют этот report.
+Для `blocked` показать его пользователю до status write; после write финальный
+ответ обязан отразить фактический Goal status.
 
 ```text
-GOAL BLOCKER REPORT
-Reason: <one stable shared reason code>
-Scope: <exact Project/Release/Task refs>
-Affected Tasks: <count, identifiers and truthful statuses>
-Inventory: <terminal/working/excluded counts; runnable_count>
-Last safe checkpoint: <source/deploy/artifact identities and proven effects>
-Missing effect/evidence: <what prevents terminal reconciliation>
-Recovery checks: <what was tried and what each result proved>
-Why this session cannot continue: <exact tool/authority/external boundary>
-Task comments: <published/read-back or not-available with affected identifiers>
-Resume step: <one exact first action after unblock>
+SHIPTASK RUN REPORT
+Outcome: COMPLETED | PARTIAL | BLOCKED | NO WORK
+Итог: <plain-language result>
+Что произошло и почему: <causal explanation, not symptom>
+Что агент проверил и сделал: <diagnosis and self-recovery>
+Состояние scope: <Tasks/result/effects/comments/Goal>
+Что осталось: <zero or one exact blocker>
+Следующий шаг: <one exact action or not-applicable>
+Technical evidence: <refs, SHAs, checks and read-backs>
 ```
 
-Goal tool не хранит отдельное reason field. Поэтому `blocked` status без этого
-ledger недопустим, даже если tool threshold выполнен. Production approval,
-Goal objective или повторное чтение inventory не должны подменять missing
-reason/report channel.
+Начинать простым человеческим объяснением. Один reason code, raw error, список
+tool calls или фраза «нет комментария» не объясняют root cause и не разрешают
+`blocked`. Если причина не доказана, явно показать hypothesis/confidence и
+недостающее evidence.
 
 ## Resume
 
