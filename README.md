@@ -45,7 +45,10 @@ Ship Tasks is a separate plugin:
 
 Mentioning `$task-manager` alone still authorizes only the requested adapter
 operation. Use `$ship-tasks` or an unambiguous natural-language delivery request
-to execute work.
+that names an existing Task or selected Task Manager Project/Release/current
+scope. A delivery verb alone does not route ordinary code, product, repository,
+or plugin work into ShipTask. Create-and-deliver requires an explicit request
+to create exactly one Task in Task Manager and immediately start it.
 
 Mind Diary bundles one content skill. It selects one explicit Mind and revision,
 uses browse/search/fetch for bounded reads, and preserves immutable history,

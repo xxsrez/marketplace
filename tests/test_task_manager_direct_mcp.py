@@ -91,6 +91,41 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn('value: "task-manager"', metadata)
 
+    def test_ship_tasks_preserves_the_implicit_routing_gate(self) -> None:
+        manifest = read_json(
+            SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        )
+        self.assertEqual(manifest["version"], "0.1.1+codex.20260818211357")
+        self.assertIn("selected Task Manager", manifest["description"])
+        self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
+        self.assertTrue(
+            any(
+                prompt.startswith("Create exactly one Task in Task Manager")
+                for prompt in manifest["interface"]["defaultPrompt"]
+            )
+        )
+
+        skill = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "ship-tasks"
+            / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        frontmatter = skill.split("---", 2)[1]
+        self.assertIn("Одного delivery-глагола недостаточно", frontmatter)
+        self.assertIn("ровно одну Task именно в Task Manager", frontmatter)
+        self.assertNotIn(
+            "по естественным просьбам выполнить, исправить или довести",
+            frontmatter,
+        )
+        for prompt in (
+            "Выполни TM-123",
+            "Почини X сейчас",
+            "Исправь баг в plugin",
+            "Реализуй это изменение в коде",
+        ):
+            self.assertIn(prompt, skill)
+
 
 if __name__ == "__main__":
     unittest.main()

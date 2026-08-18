@@ -1,13 +1,49 @@
 ---
 name: ship-tasks
-description: "Доставлять Task Manager Tasks до terminal outcome при явном $ship-tasks и по естественным просьбам выполнить, исправить или довести одну Task, несколько Tasks, текущий Project/Release/scope. Использовать также для просьбы создать одну Task и сразу начать или выполнить её: это single create-and-deliver, а не backlog capture; и для явной настройки project memory ShipTask. Bare $ship-tasks запускает batch по memory current_scope; exact Task — single без Goal, multi-task/Project/Release — batch с Goal. Не использовать для чтения, статуса, аудита, объяснения, планирования, backlog capture или «просто добавь/положи в backlog/запланируй» без delivery intent. Task Manager — live task source; ShipTask владеет delivery policy, memory — project selectors/profile. После полного evidence автоматически принять result, опубликовать native COMPLETED до Done и выпускать verified non-production без confirmation. Production, destructive data, secrets, privacy, access policy и external recipients требуют explicit authority."
+description: "Доставлять однозначно выбранный Task Manager scope до terminal outcome. Использовать явно через $ship-tasks; implicit invocation — только когда delivery intent сопровождается exact существующей Task (например TM-123) либо уже выбранным Task Manager Project/Release/current scope. Одного delivery-глагола недостаточно: обычные просьбы исправить продукт, код, repository или plugin без Task Manager anchor не активируют ShipTask. Create-and-deliver использовать только при явной просьбе создать ровно одну Task именно в Task Manager и сразу начать/выполнить её; также использовать для явной настройки ShipTask project memory. Bare $ship-tasks запускает batch по memory current_scope; exact Task — single без Goal, multi-task/Project/Release — batch с Goal. Не использовать для чтения, статуса, аудита, объяснения, планирования или backlog capture."
 ---
 
 # Ship Tasks
 
-Применять одну business delivery policy к explicit и implicit delivery intent.
-Task Manager skill/connector использовать как technical adapter; project memory
-использовать как selector/profile hint, но не как live task state.
+Применять одну business delivery policy только после прохождения invocation
+gate. Task Manager skill/connector использовать как technical adapter; project
+memory использовать как selector/profile hint, но не как live task state.
+
+## Проверить invocation gate
+
+Gate пройден только в одном из случаев:
+
+1. Пользователь явно вызвал `$ship-tasks`.
+2. Natural-language запрос одновременно содержит delivery intent и
+   ровно один однозначный Task Manager delivery anchor, уже присутствующий в prompt или
+   выбранном Task Manager context:
+   - exact существующую Task вроде `TM-123`;
+   - явно выбранный Task Manager Project, Release или current scope;
+   - explicit просьбу создать ровно одну Task именно в Task Manager и сразу
+     начать или выполнить её (`single create-and-deliver`).
+3. Пользователь явно просит настроить или обновить ShipTask project memory.
+
+Один delivery verb недостаточен. Обычные просьбы «почини X сейчас», «исправь
+баг в plugin» или «реализуй это изменение в коде» без Task Manager anchor не
+активируют ShipTask. Текущий repository, software project, code task или
+release target не являются Task Manager scope. Не читать memory и не вызывать
+Task Manager/Goal tools, чтобы найти или создать anchor задним числом.
+
+Если gate не пройден, ShipTask не владеет запросом: выполнить обычный
+code/product/plugin workflow без ShipTask lifecycle, Goal, reports или Task
+Manager mutations.
+
+Regression examples:
+
+| Prompt | Route |
+|---|---|
+| `$ship-tasks` | ShipTask `batch` |
+| `Выполни TM-123` | ShipTask `single` |
+| `Доведи выбранный Task Manager Project/Release/current scope` | ShipTask `batch` |
+| `Создай ровно одну Task в Task Manager и сразу начни выполнять её` | ShipTask `single create-and-deliver` |
+| `Почини X сейчас` | обычный workflow, не ShipTask |
+| `Исправь баг в plugin` | обычный workflow, не ShipTask |
+| `Реализуй это изменение в коде` | обычный workflow, не ShipTask |
 
 ## Классифицировать intent до mutations
 
@@ -17,16 +53,19 @@ Task Manager skill/connector использовать как technical adapter; 
 |---|---|---|
 | Bare `$ship-tasks` | `batch` по memory `current_scope` | обязательный |
 | Exact одна Task, явно или natural language | `single` | нет |
-| Создать одну Task и сразу начать/выполнить её | `single` (`create-and-deliver`) | нет |
-| Несколько Tasks, Project, Release или current scope | `batch` | обязательный |
+| Создать ровно одну Task в Task Manager и сразу начать/выполнить её | `single` (`create-and-deliver`) | нет |
+| Несколько Tasks или выбранный Task Manager Project/Release/current scope | `batch` | обязательный |
 | Явно оформить/обновить ShipTask memory | `memory-maintenance` | нет |
 | Read/status/audit/explain/plan/backlog capture | `non-delivery` | нет |
 
 - Delivery verbs: выполнить, исправить, реализовать, довести, доставить,
-  протестировать и выпустить выбранную Task/scope.
-- Комбинация create intent и delivery intent, например «создай задачу и начинай
-  делать», является `single create-and-deliver`. Не считать её backlog capture
-  и не завершать flow после одного `create_task`.
+  протестировать и выпустить выбранную Task/scope. Они необходимы для implicit
+  delivery, но без Task Manager anchor недостаточны.
+- Комбинация explicit Task Manager create intent и delivery intent, например
+  «создай ровно одну Task в Task Manager и начинай делать», является `single
+  create-and-deliver`. Не считать её backlog capture.
+  Не завершать flow после одного `create_task`. Создание/выполнение другой
+  сущности этот mode не включает.
 - «Просто добавь», «положи в backlog», «запланируй» не запускают delivery и не
   меняют lifecycle существующей Task.
 - Explicit read-only/local-only/no-deploy ограничивает более общий delivery
@@ -40,8 +79,11 @@ Task Manager skill/connector использовать как technical adapter; 
 - Exact selector в текущем prompt выше memory default и действует только в
   этом run. Не объединять scopes и не переписывать memory молча.
 
-Для `non-delivery` не исполнять этот delivery workflow: выполнить только exact
-read/planning Task Manager request через adapter. Для `memory-maintenance`
+Natural-language read/status/audit/explain/plan/backlog request не активирует
+ShipTask и маршрутизируется напрямую в Task Manager adapter, когда он нужен.
+Если `non-delivery` intent пришёл вместе с explicit `$ship-tasks`, не исполнять
+delivery workflow: выполнить только exact read/planning Task Manager request
+через adapter. Для `memory-maintenance`
 прочитать [project-memory reference](references/project-memory.md) полностью,
 собрать source-grounded profile и записать memory только по explicit request.
 
