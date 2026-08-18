@@ -12,7 +12,7 @@ acceptance задана ADR-0005 и канонической specification.
 - Stale acceptance context
 - Deferred Task
 - Comment handoff
-- Blocker analysis and self-recovery
+- Finalization analysis and self-recovery
 - Non-production release
 - Production boundary
 - Deferred-only handoff
@@ -167,25 +167,24 @@ user impact/remaining risk и report key для exact Task/result.
 сохранить тот же handoff в consolidated interaction output, оставить affected
 Task non-terminal и продолжить независимую runnable work.
 
-## Blocker analysis and self-recovery
+## Finalization analysis and self-recovery
 
-Перед blocking input, финальным «продолжить невозможно» или Goal `blocked`
-прочитать [run-report reference](run-report.md). Сначала установить root cause,
-а не повторить симптом:
+Перед любым terminal outcome, blocking pause или финальным ответом прочитать
+[run-report reference](run-report.md) и выполнить общий finalization pass:
 
-1. Восстановить expected flow, causal timeline и первое расхождение.
-2. Проверить current Task/Goal/source/effect state и operations, которыми агент
-   фактически располагает.
-3. Отделить подтверждённое evidence от inference и указать confidence.
+1. Сопоставить requested outcome с фактическим результатом.
+2. Перечитать current Task/Goal/source/effect state и существенное evidence.
+3. Объяснить material gaps и отделить подтверждённую причину от inference.
 4. Найти safe in-scope recovery actions и выполнить их, если authority уже
    существует.
-5. Перечитать affected state и повторить disposition.
+5. Перечитать affected state, повторить нужные checks и начать finalization
+   заново.
 
-Если доступная operation устраняет причину, `blocked` запрещён. Не считать
-внешним blocker обычный comment/status write, reconciliation read, retry после
-установленной transient cause или другой предусмотренный project recovery step.
-Остановиться можно только когда self-recovery исчерпан и требуется реальное
-user decision, новая authority или внешний state change.
+Blocker остаётся blocker до устранения. Доступный recovery не отменяет его, но
+показывает, что meaningful progress ещё возможен и terminal Goal `blocked` пока
+не обоснован. Остановиться можно только когда blocker сохраняется,
+self-recovery исчерпан и требуется реальное user decision, новая authority или
+внешний state change.
 
 ## Non-production release
 
@@ -248,27 +247,15 @@ runnable queue.
 
 ## Terminal run report
 
-Каждый terminal exit заканчивается `SHIPTASK RUN REPORT` по
+Каждый terminal exit заканчивается глубоким компактным `SHIPTASK RUN REPORT` по
 [run-report reference](run-report.md). Task comments не заменяют этот report.
-Для `blocked` показать его пользователю до status write; после write финальный
-ответ обязан отразить фактический Goal status.
+Report сначала объясняет человеку итог, текущий статус и причины, а затем даёт
+только evidence, ограничения и следующий шаг, необходимые для понимания.
 
-```text
-SHIPTASK RUN REPORT
-Outcome: COMPLETED | PARTIAL | BLOCKED | NO WORK
-Итог: <plain-language result>
-Что произошло и почему: <causal explanation, not symptom>
-Что агент проверил и сделал: <diagnosis and self-recovery>
-Состояние scope: <Tasks/result/effects/comments/Goal>
-Что осталось: <zero or one exact blocker>
-Следующий шаг: <one exact action or not-applicable>
-Technical evidence: <refs, SHAs, checks and read-backs>
-```
-
-Начинать простым человеческим объяснением. Один reason code, raw error, список
-tool calls или фраза «нет комментария» не объясняют root cause и не разрешают
-`blocked`. Если причина не доказана, явно показать hypothesis/confidence и
-недостающее evidence.
+Не заполнять жёсткий шаблон и не выгружать process diary, все tool calls, raw
+errors или полные inventories. Для `blocked` показать понятную diagnosis до
+status write; после write финальный ответ обязан отразить фактический Goal
+status. Один reason code или технический симптом не заменяет объяснение.
 
 ## Resume
 

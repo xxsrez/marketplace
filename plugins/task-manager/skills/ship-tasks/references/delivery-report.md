@@ -39,9 +39,7 @@ authority или сообщает, что feature ещё не работает. 
    `completion-remains`/`deferred` и продолжить независимый workflow.
 
 Этот gap не является global `TASK CONTEXT ALARM`, но блокирует `Done` affected
-Task и Goal completion, пока Task остаётся в scope. Как только current connector
-предоставляет native comment write/read, продолжить с report step без отдельного
-ShipTask version gate.
+Task и Goal completion, пока Task остаётся в scope.
 
 ## Write и reconciliation
 
@@ -112,10 +110,12 @@ handoff, а consolidated decision request формируется после ис
 
 ## Общий формат
 
-Начинать с outcome, а не с process diary. Масштабировать detail по task type и
-risk. Plain text является безопасным baseline. Использовать Markdown только
+Начинать с outcome, а не с process diary. Report должен быть глубоким, но
+компактным: сначала понять результат, причины и evidence, затем оставить только
+то, что помогает человеку быстро понять Task. Масштабировать detail по task type
+и risk. Plain text является безопасным baseline. Использовать Markdown только
 если current comment renderer доказан; Mermaid — только при подтверждённом
-rendering, иначе text diagram.
+rendering.
 
 ```text
 SHIPTASK DELIVERY REPORT
@@ -127,11 +127,8 @@ Report key: shiptask/<task-ref>/<state>/<result-identity>
 Outcome
 <Что теперь получил пользователь или какое решение требуется.>
 
-How it works / What happened
+How it works / Why
 <Короткое объяснение main flow либо failure narrative.>
-
-Diagram
-<Одна полезная flow/boundary/causal diagram либо compact before/after.>
 
 Evidence
 - <acceptance criterion> -> <exact check/result>
@@ -152,9 +149,8 @@ Limits and next action
 - exact targeted/batch/external evidence;
 - limitations, remaining risk и optional user verification/reopen guidance.
 
-Для trivial change вместо diagram использовать compact before/after. Для
-non-trivial feature или cross-component change включить одну-две схемы, только
-если они ускоряют понимание.
+Diagram или compact before/after добавлять только если они ускоряют понимание;
+сложность Task сама по себе не делает визуализацию обязательной.
 
 ## Material failure report
 

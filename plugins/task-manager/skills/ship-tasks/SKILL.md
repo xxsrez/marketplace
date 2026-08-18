@@ -264,13 +264,18 @@ partial только ради освобождения capacity.
 - Не выполнять reset/clean/stash/force-push/takeover или удаление чужой work
   при dirty/shared drift. Изолировать affected lane или alarm shared conflict.
 
-## Завершить по mode
+## Осмыслить и завершить по mode
 
-Перед blocking input, утверждением «продолжить невозможно» либо terminal Goal
-decision прочитать [run-report reference](references/run-report.md) полностью.
-Провести causal analysis, проверить доступные safe in-scope recovery actions и
-выполнить их самостоятельно. Если имеющаяся operation/authority устраняет
-причину, `blocked` запрещён: перечитать state и продолжить workflow.
+Перед любым terminal outcome, blocking pause или финальным ответом прочитать
+[run-report reference](references/run-report.md) полностью и выполнить
+finalization pass. Сопоставить обещанный и фактический результат, перечитать
+current scope/state/evidence, объяснить material gaps и проверить доступный
+safe in-scope recovery.
+
+Blocker остаётся blocker до устранения. Если current operation/authority
+позволяют его устранить или закончить reconciliation, выполнить recovery,
+перечитать affected state и начать finalization pass заново. Пока meaningful
+progress возможен, финальный Goal status `blocked` ещё не обоснован.
 
 Для `single` перечитать Task и доказать: exact result, acceptance, targeted и
 singleton batch gates, required effects, automatic acceptance, published
@@ -286,15 +291,16 @@ report и truthful terminal status. Goal identity — `not-applicable`.
 - Task Manager projection и result identities reconciled;
 - decision queue пуста.
 
-Если остаётся runnable work — продолжить. Если остаются только deferred Tasks —
-показать одну consolidated queue и не завершать Goal. `blocked` применять только
-после строгого tool threshold, проведённого causal analysis и user-visible
-`SHIPTASK RUN REPORT`. Один reason code, raw error или status write без
-понятного объяснения, recovery checks и exact resume step запрещён. При полном
-evidence вызвать `update_goal(status="complete")` последним.
+Если остаётся runnable или recovery work — продолжить. Если остаются только
+deferred Tasks — показать одну consolidated queue и не завершать Goal. Goal
+`blocked` применять только после строгого tool threshold, когда blocker всё ещё
+существует, self-recovery исчерпан и понятное объяснение уже дано пользователю.
+При полном evidence вызвать `update_goal(status="complete")`
+последним.
 
 Каждый terminal exit (`complete`, `blocked`, partial/deferred, `no-work`)
-заканчивается `SHIPTASK RUN REPORT`: сначала простыми словами итог, causal
-explanation и выполненный self-recovery, затем scope/statuses, result/effects,
-comments, Goal, remaining work и technical evidence. Не выдавать
-unknown/skipped effect за verified completion.
+заканчивается глубоким компактным `SHIPTASK RUN REPORT`. Сначала дать итог,
+текущий статус и причинную модель простым языком; затем только evidence,
+ограничения и следующий шаг, необходимые человеку. Не выгружать process diary,
+raw tool output или исчерпывающие inventories. Не выдавать unknown/skipped
+effect за verified completion.

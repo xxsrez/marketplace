@@ -1,87 +1,92 @@
-# Причинный анализ и финальный ShipTask run report
+# Осмысленная финализация и ShipTask run report
 
-Прочитать перед blocking input, terminal Goal decision или финальным ответом.
-Task comment объясняет одну Task; этот report объясняет человеку весь run и не
-заменяет Task comments, checks, status read-back или external evidence.
+Прочитать перед любым terminal outcome, blocking pause или финальным ответом.
+Task comment объясняет одну Task; этот reference задаёт finalization pass и
+объяснение всего run человеку. Он не меняет Task comment/status rules и не
+заменяет checks, read-back или external evidence.
 
-## Перед blocked
+## Finalization pass
 
-Нельзя завершать run на первом симптоме. До утверждения «продолжить невозможно»:
+Не выбирать terminal outcome по последнему tool result. Сначала построить
+целостную и проверенную картину:
 
-1. Сформулировать симптом и impact без protocol jargon.
-2. Восстановить causal timeline: expected step, observed state, last successful
-   step и первое расхождение.
-3. Проверить вероятную root cause текущими authoritative reads/tools. Для
-   capability issue отдельно проверить фактически доступные operations,
-   authority, attempted outcome и current Task state; не выводить отсутствие
-   capability только из отсутствующего результата.
-4. Перечислить safe in-scope recovery actions и выполнить их, если они уже
-   разрешены. Обычный retry после установленной transient cause, missing
-   reconciliation read, доступный comment/status write, refresh или другой
-   предусмотренный project recovery step не требуют нового user decision.
-5. После recovery перечитать affected Task/Goal/source/effect state и повторить
-   terminal decision.
+1. Сопоставить requested outcome с фактически полученным результатом.
+2. Перечитать current Task/Goal/source/effect state и проверить, что scope,
+   counts, identities и существенное evidence согласованы.
+3. Найти необъяснённые gaps и значимые проблемы. Для каждого material gap
+   установить root cause настолько, насколько позволяет evidence; отделить факт
+   от hypothesis и указать uncertainty только там, где она влияет на вывод.
+4. Проверить current operations, authority и project recovery policy. Если
+   безопасное in-scope действие может устранить проблему или завершить
+   reconciliation, выполнить его самостоятельно.
+5. После любого recovery перечитать affected state, повторить нужные checks и
+   начать finalization pass заново. Не писать terminal report по устаревшему
+   состоянию.
+6. Выбрать outcome только когда состояние устойчиво: `COMPLETED`, `PARTIAL`,
+   `BLOCKED` или `NO WORK`.
 
-Если доступное действие устраняет blocker, `blocked` запрещён: продолжить run.
-Если действия исчерпаны и требуется внешнее решение/state change, показать
-анализ пользователю до допустимого `update_goal(status="blocked")`. Повторный
-poll без нового evidence не считается отдельной recovery attempt или новым
+Этот анализ обязателен и при успехе. Не искать искусственный incident, но
+проверить, что достигнут именно обещанный результат, причины ключевых решений
+понятны, evidence относится к exact result, а ограничения названы честно.
+
+## Blocker и Goal `blocked`
+
+Blocker — фактическое условие, не позволяющее завершить результат. Он остаётся
+blocker до устранения, даже если агент уже видит способ recovery.
+
+Если recovery безопасен, находится в scope и уже разрешён, выполнить его,
+зафиксировать устранение blocker и продолжить. Это не означает, что blocker не
+существовал; это означает, что meaningful progress был возможен, поэтому
+terminal `update_goal(status="blocked")` ещё не был допустим.
+
+Goal `blocked` возможен только когда blocker остаётся, доступный self-recovery
+исчерпан, требуется user decision/new authority/external state change и выполнен
+строгий tool threshold. Повторный poll без нового evidence не считается новым
 blocker occurrence.
 
-## Human-readable explanation
+До status write дать пользователю понятное объяснение причины и состояния.
+После status write финальный ответ должен отражать фактический Goal status.
 
-Начинать с 2–5 предложений простым языком:
+## Глубокий компактный отчёт
 
-- что агент пытался завершить;
-- что фактически произошло;
-- почему это произошло — root cause, а не только symptom;
-- смог ли агент исправить это сам и что именно сделал;
-- если не смог — почему требуется человек или внешний state change.
+Глубина — это качество понимания, а не объём. Сначала установить факты,
+причинность и disposition; затем сжать их до минимальной формы, из которой
+человеку сразу понятны:
 
-После этого дать проверяемые детали. Reason code разрешён только как appendix,
-не как замена объяснению. При недоказанной причине писать `вероятная причина`
-и confidence, а не категоричное утверждение.
+- что получилось или не получилось;
+- какой сейчас статус и почему;
+- чем существенные выводы подтверждены;
+- осталось ли действие, решение или ограничение.
 
-## Финальный формат
+Начинать с результата. Писать простым языком на уровне задачи пользователя.
+Technical terms оставлять только когда без них теряется смысл или проверяемость.
+Не перечислять все tool calls, промежуточные ошибки, файлы, Tasks или checks;
+использовать counts и исключения, а exact refs — только для полезной навигации.
 
-Каждый terminal exit skill заканчивается компактным отчётом:
+Структуру адаптировать, а не заполнять механически. Обычно достаточно:
 
 ```text
-SHIPTASK RUN REPORT
-Outcome: COMPLETED | PARTIAL | BLOCKED | NO WORK
+SHIPTASK RUN REPORT — COMPLETED | PARTIAL | BLOCKED | NO WORK
 
-Итог
-<Что получил пользователь или почему результат пока неполный.>
+Итог и статус
+<Полученный результат или точная граница незавершённого.>
 
-Что произошло и почему
-<Понятная causal narrative; evidence и inference разделены.>
+Почему так
+<Ключевая причинная модель, важные решения и выполненный recovery.>
 
-Что агент проверил и сделал
-<Ключевые diagnosis/recovery/actions и их результат.>
+Подтверждение
+<Минимальный набор evidence, на котором держится вывод.>
 
-Состояние scope
-<Task counts/identifiers/statuses, result/release identity, comments и Goal.>
-
-Что осталось
-<Zero remaining work либо один точный unresolved blocker/decision.>
-
-Следующий шаг
-<Одно конкретное действие или not-applicable.>
-
-Technical evidence
-<Exact refs, SHAs, checks, deploy/read-back identities; только полезные детали.>
+Осталось / следующий шаг
+<Реальное ограничение и одно действие либо «ничего».>
 ```
 
-Для completed/no-work не выдумывать incident section: коротко объяснить outcome
-и доказательства. Для partial/blocked обязательно показать impact, root cause с
-confidence, recovery attempts, почему дальнейшее self-recovery невозможно и
-exact resume step.
+Объединять или опускать секции, которые не добавляют смысла. При простом успехе
+может хватить нескольких предложений и короткого evidence list. При сложном
+успехе объяснить ключевой flow и tradeoffs. При partial/blocked обязательно
+назвать impact, причину или честную границу знания, выполненный self-recovery,
+почему агент больше не может продолжить сам и exact resume condition.
 
-Перед Goal `blocked` этот report должен уже доказать, что:
-
-- тот же blocker удовлетворяет строгому tool threshold;
-- complete inventory не содержит доступной runnable или recovery work;
-- агент не может устранить причину имеющимися operations и authority;
-- требуемое внешнее изменение или решение названо точно;
-- Task comments имеют truthful disposition;
-- после status write финальный ответ показывает фактический Goal state.
+Report недопустим, если это только reason code, raw error, status inventory или
+фраза о недостающем effect. Он должен передавать уже осмысленный вывод, а не
+перекладывать диагностику на пользователя.
