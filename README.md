@@ -13,18 +13,23 @@ Then install either plugin:
 
 1. Open **Plugins → Task Manager** or **Plugins → Mind Diary** and click
    **Install**.
-2. Click **Authenticate** and sign in to the selected product.
-3. Start a new task in Codex.
+2. For Task Manager, start using the plugin and authenticate when Codex first
+   connects to its MCP server. Mind Diary requests authentication during
+   installation.
+3. Start a new task in Codex after installation or authentication so it loads
+   the selected plugin's current skills and tools.
 
-No server URL, client ID, secret, or personal API token is required. Each plugin
-uses its own registered app connector and OAuth.
+No server URL, client ID, secret, or personal API token is required. Task
+Manager distributes its production MCP connection directly and authenticates
+on first use. Mind Diary uses its registered app connector and authenticates on
+install.
 
 The plugins connect to:
 
 - Task Manager: `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
 - Mind Diary: `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
 
-Task Manager bundles two skills behind one OAuth connector:
+Task Manager bundles two skills behind one OAuth-protected MCP connection:
 
 - `task-manager` is the technical adapter for OAuth/MCP discovery, canonical
   references, pagination, safe writes, optimistic concurrency, and native
@@ -45,8 +50,7 @@ Repository layout:
 
 - `.agents/plugins/marketplace.json` — the ordered marketplace catalog;
 - `plugins/task-manager/.codex-plugin/plugin.json` — plugin manifest;
-- `plugins/task-manager/.app.json` — registered Task Manager app connector;
-- `plugins/task-manager/.mcp.json` — remote MCP and OAuth resource;
+- `plugins/task-manager/.mcp.json` — direct production MCP and OAuth resource;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
 - `plugins/task-manager/skills/ship-tasks/` — Task Manager delivery workflow;
@@ -63,6 +67,7 @@ catalog entry. Task Manager remains independently installable as
 Validate plugin changes before publishing:
 
 ```bash
+python3 -m unittest discover -s tests -p 'test_*.py' -v
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/task-manager/skills/task-manager
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
@@ -70,9 +75,11 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/mind-diary/skills/mind-diary
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
+  plugins/task-manager
+python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/mind-diary
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
-  plugins/task-manager/.app.json plugins/task-manager/.mcp.json \
+  plugins/task-manager/.mcp.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
   plugins/mind-diary/.app.json plugins/mind-diary/.mcp.json \
   .agents/plugins/marketplace.json
