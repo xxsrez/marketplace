@@ -9,6 +9,7 @@ verification.
 
 - Capability gate
 - Write и reconciliation
+- Strategic Explainer composition
 - Deferred/BLOCKED handoff
 - Общий формат
 - Success report
@@ -47,6 +48,10 @@ Task и Goal completion, пока Task остаётся в scope.
   Task.
 - Публиковать `REWORK REQUIRED`/`BLOCKED` report после material failure,
   changes-requested или blocker, который важно объяснить пользователю.
+- Перед каждым новым report comment независимо от state выполнить обязательную
+  [Strategic Explainer composition](strategic-explainer.md). Сначала ShipTask
+  выбирает truthful state и фиксирует evidence, затем Explainer формирует
+  человеческий narrative.
 - Для каждого task-local defer обязательно публиковать `BLOCKED` report; если
   comments недоступны, сам comment delivery становится частью blocker.
 - Не публиковать `ACCEPTANCE READY`: terminal-ready evidence автоматически
@@ -72,10 +77,50 @@ Report key: shiptask/<canonical-task-ref>/<STATE>/<exact-result-identity>
 
 Не включать secrets, signed URLs или private raw logs в key либо body.
 
+## Strategic Explainer composition
+
+Любой новый ShipTask report comment со state `COMPLETED`, `REWORK REQUIRED`,
+`BLOCKED` или `CANCELED` должен содержать narrative, прошедший Strategic
+Explainer contract. Это относится и к простому success.
+
+Порядок обязателен:
+
+1. ShipTask выполняет task-level finalization: перечитывает current
+   Task/result/effects, проверяет exact evidence и доступный safe self-recovery.
+   Затем самостоятельно фиксирует report state, verified/unverified scenarios,
+   user impact, evidence/confidence, constraints и уже допустимый next action.
+   Любое изменение состояния перезапускает этот шаг и инвалидирует старый brief.
+2. Сформировать task-scoped `Technical Brief` с `Target surface: TASK_COMMENT`
+   по [handoff contract](strategic-explainer.md). Не просить Explainer выбрать
+   state, blocker, authority или terminal transition.
+3. Получить `User Brief` из свежего субагента. Перед составлением comment
+   выполнить forward trace и reverse coverage.
+4. Собрать final comment из двух слоёв:
+   - authoritative envelope: report type, `State`, Task, result identity,
+     report key и exact evidence;
+   - Explainer narrative: outcome, impact, понятная причина/граница, требуемое
+     действие и next state.
+5. Удалить только явное дублирование. Не возвращать process diary или
+   необъяснённый jargon и не менять смысл brief.
+6. Выполнить обычный duplicate search, write и read-back.
+
+В user-visible body не упоминать Strategic Explainer, субагента, Technical
+Brief, delegation или orchestration. Если subagent/skill недоступен, ShipTask
+локально применяет тот же contract и фиксирует `degraded-adaptation` только во
+внутреннем evidence; это не разрешает опубликовать raw technical summary.
+
+Если Technical Brief противоречив или не содержит decision-relevant факт,
+вернуться к finalization. Нельзя компенсировать неполное состояние красивой
+формулировкой.
+
 ## Deferred/BLOCKED handoff
 
 Deferred report не обязан быть incident postmortem. Его задача — показать один
 точный material blocker и позволить следующему run безопасно продолжить.
+Task-level Strategic Explainer explanation должен существовать до write. Если
+тот же blocker удерживает весь scope, до user-facing blocking handoff и
+`update_goal(status="blocked")` требуется также scope-level explanation из
+совместимого либо нового brief.
 
 ```text
 SHIPTASK DELIVERY REPORT
@@ -124,11 +169,11 @@ Task: <identifier> — <title>
 Result: <commit/build/deploy/artifact identity or not-applicable>
 Report key: shiptask/<task-ref>/<state>/<result-identity>
 
-Outcome
-<Что теперь получил пользователь или какое решение требуется.>
+Outcome and impact
+<Task-scoped User Brief: что получил пользователь или какая граница осталась.>
 
 How it works / Why
-<Короткое объяснение main flow либо failure narrative.>
+<Только material часть User Brief; убрать секцию, если она дублирует outcome.>
 
 Evidence
 - <acceptance criterion> -> <exact check/result>
@@ -141,7 +186,7 @@ Limits and next action
 
 ## Success report
 
-Объяснить:
+Task-scoped User Brief должен объяснить:
 
 - user outcome и наблюдаемое новое поведение;
 - основной runtime/data flow простыми словами;
@@ -159,7 +204,9 @@ rollback/revert, invalidated candidate, repeated rework или настоящи�
 после execution. Обычный красный тест, найденный и исправленный внутри
 implementation loop, сам по себе не требует incident comment.
 
-Добавить к общему формату:
+Task-scoped User Brief должен передать impact, причинную модель и recovery на
+уровне пользователя. Authoritative confidence и exact evidence ShipTask
+сохраняет в envelope. При необходимости добавить к общему формату:
 
 ```text
 Impact

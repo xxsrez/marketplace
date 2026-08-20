@@ -93,13 +93,26 @@ Report недопустим, если это только reason code, raw error
 
 ## Strategic Explainer
 
-Перед material partial/blocked handoff, подтверждённым запросом user
-action/authority или сложным technical terminal result выполнить отдельный
-[Strategic Explainer handoff](strategic-explainer.md). Новый субагент получает
-только ограниченный `Technical Brief` и возвращает `User Brief`; он не выбирает
-outcome, status, recovery или authority. После изменения state старый brief
-считать stale.
+Каждый новый Task report comment проходит отдельный task-scoped
+[Strategic Explainer handoff](strategic-explainer.md), включая простой
+`COMPLETED` success. Новый субагент получает только ограниченный `Technical
+Brief` и возвращает `User Brief`; он не выбирает outcome, report state,
+recovery или authority.
 
-Для простого success отдельный субагент не нужен. Если subagent tools или skill
-недоступны, применить тот же User Brief contract самостоятельно; formatting
-layer не создаёт новый blocker и не оправдывает technical jargon без контекста.
+Для terminal chat report:
+
+- при exact single-Task result можно переиспользовать проверенный task-level
+  brief, если audience/facts/state/dependency/next action совпадают; planned
+  comment/read-back и terminal status reconciliation не делают его stale, если
+  совпали с переданным next-state contract и не выявили drift;
+- для aggregate batch, нескольких blockers, material partial или другого
+  audience нужен новый scope-level brief;
+- до `update_goal(status="blocked")` scope-level plain-language explanation уже
+  должно быть подготовлено и показано пользователю;
+- после recovery, divergent write или другого material meaning change старый
+  brief считать stale.
+
+Если subagent tools или skill недоступны, применить тот же User Brief contract
+самостоятельно и отметить `degraded-adaptation` только во внутреннем evidence.
+Formatting layer не создаёт новый blocker, но raw reason code или technical
+summary не являются допустимым fallback.

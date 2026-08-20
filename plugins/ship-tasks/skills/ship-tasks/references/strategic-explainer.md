@@ -1,31 +1,35 @@
 # Strategic Explainer handoff для ShipTask
 
-Прочитать перед user-facing handoff с material partial/blocked outcome, запросом
-user action/authority или сложным technical terminal result. Общий behavioral
-contract находится в sibling-skill
+Прочитать перед каждым новым ShipTask Task report comment и перед terminal
+user-facing handoff. Общий behavioral contract находится в sibling-skill
 [`$strategic-explainer`](../../strategic-explainer/SKILL.md).
 
 ## Когда вызывать
 
-Вызвать свежий Strategic Explainer, если выполняется хотя бы одно условие:
+Вызвать свежий Strategic Explainer обязательно:
 
-- ShipTask собирается сообщить `PARTIAL` или `BLOCKED` из-за material gap;
+- перед каждым новым Task report comment: `COMPLETED`, `REWORK REQUIRED`,
+  `BLOCKED` или `CANCELED`;
+- перед scope-level `PARTIAL` или `BLOCKED` user-facing handoff;
 - для продолжения действительно нужен user action, decision, новая authority,
   другой человек/аккаунт или external state change;
-- сложный terminal result содержит несколько независимых сценариев, акторов или
-  ограничений;
-- без адаптации в user-facing ответ попадут внутренние terms, account types,
-  transport paths, tool mechanics или status inventory.
+- для aggregate batch result, который не представлен одним task-scoped brief.
 
-Для простого success, который ясно объясняется одной-двумя фразами, отдельный
-model run не нужен. Обычная промежуточная red/green iteration также не является
-trigger.
+Простой success не освобождает Task comment от Explainer pipeline. Его exact
+task-scoped brief можно переиспользовать в single-Task chat report при
+совместимом material meaning. Planned comment/read-back и terminal status
+reconciliation не делают его stale, если совпали с next-state contract и не
+выявили drift. Обычная промежуточная red/green iteration не создаёт comment и
+поэтому не является trigger.
 
 ## Сформировать Technical Brief
 
 Перед spawn перечитать exact current state. Передать только:
 
 ```text
+Target surface: TASK_COMMENT | RUN_REPORT
+Artifact scope: <exact Task ref or aggregate run identity>
+Authoritative report state: <state already chosen by ShipTask>
 Audience and goal:
 Reader purpose:
 Confirmed outcome:
@@ -38,6 +42,7 @@ Candidate user dependency:
 Next-state contract:
 Useful identifiers:
 Output language and channel:
+Required authoritative envelope:
 
 Scenario:
 Expected user-visible behavior:
@@ -59,21 +64,26 @@ state. Не просить Explainer решать, существует ли blo
 `Needed input` не является разрешением просить пользователя и появляется
 только для подтверждённой dependency.
 
+`Target surface` и `Artifact scope` не дают Explainer authority над comment или
+run. `Authoritative report state` уже выбран ShipTask. `Required authoritative
+envelope` перечисляет refs/fields, которые ShipTask добавит после adaptation и
+которые Explainer не должен превращать в process narrative.
+
 Не передавать full conversation, process diary, raw logs, intended wording или
 готовый вывод. Если два ограничения независимы, описать их отдельными
 сценариями, а не одним техническим абзацем.
 
 ## Запустить свежий субагент
 
-Использовать built-in `default` agent с отдельным task name
-`strategic_explainer` и без унаследованной истории (`fork_turns="none"`, когда
-этот параметр доступен). Не задавать model override: наследовать текущий model
-и reasoning effort. В initial task явно потребовать:
+Использовать built-in `default` agent с уникальным task name
+`strategic_explainer_<surface>_<scope>` и без унаследованной истории
+(`fork_turns="none"`, когда этот параметр доступен). Не задавать model override:
+наследовать текущий model и reasoning effort. В initial task явно потребовать:
 
 1. применить `$strategic-explainer`;
 2. не выполнять writes, recovery, status/Goal decisions или external actions;
 3. обработать только переданный Technical Brief и не вызывать tools;
-4. вернуть `User Brief` родительскому агенту;
+4. вернуть `User Brief` для exact target surface родительскому агенту;
 5. поместить недостающие факты только в `PARENT NOTES`.
 
 Дождаться результата. Не переиспользовать старый Strategic Explainer thread для
@@ -91,12 +101,22 @@ Strategic Explainer не создаёт facts, authority, lifecycle status ил�
 ShipTask самостоятельно выбирает recovery, user request, Task/Goal transition
 и terminal outcome по действующему contract.
 
-User-facing handoff должен сохранить ясную формулировку Explainer, но можно
-добавить минимальные evidence refs и фактический status после решений ShipTask.
-Не включать `PARENT NOTES`, не возвращать technical jargon, который brief уже
-перевёл, и не рассказывать пользователю о субагенте или внутренней orchestration.
+Task comment и user-facing handoff должны сохранить ясную формулировку
+Explainer. ShipTask добавляет authoritative envelope, minimal evidence refs и
+фактический status, но не подменяет narrative собственной technical summary.
+Не включать `PARENT NOTES`, не возвращать jargon, который brief уже перевёл, и
+не рассказывать пользователю о субагенте или внутренней orchestration.
+
+Переиспользовать brief между `TASK_COMMENT` и `RUN_REPORT` можно только когда
+audience, artifact scope, facts, state, user dependency и next action совпадают
+по смыслу. Planned comment/read-back и terminal status reconciliation допустимы,
+если они совпали с next-state contract и не выявили drift. Recovery, divergent
+write или другое material meaning change делают brief stale. Для aggregate
+batch, нескольких blocked Tasks или другого audience запустить новый scope-level
+Explainer.
 
 Если subagent tools или `$strategic-explainer` недоступны либо вызов завершился
 ошибкой, не создавать из этого новый Task/Goal blocker и не скрывать исходный
-outcome. Применить тот же User Brief contract самостоятельно и зафиксировать
-degraded adaptation только во внутреннем evidence.
+outcome. Применить тот же User Brief contract самостоятельно, выполнить те же
+forward/reverse checks и зафиксировать `degraded-adaptation` только во
+внутреннем evidence. Raw technical comment не является допустимым fallback.

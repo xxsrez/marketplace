@@ -283,13 +283,25 @@ partial только ради освобождения capacity.
 ## Опубликовать Task report
 
 Перед первым report decision прочитать
-[delivery-report reference](references/delivery-report.md) полностью.
+[delivery-report reference](references/delivery-report.md) и
+[Strategic Explainer handoff](references/strategic-explainer.md) полностью.
 
 - Native comment является обязательным terminal effect для completed,
   materially failed/rework или blocked Task.
+- Перед comment-level Technical Brief выполнить task-level finalization:
+  перечитать Task/result/effects, проверить exact evidence и доступный safe
+  self-recovery. Если состояние изменилось, повторить finalization и не
+  использовать старый brief.
+- Каждый новый `COMPLETED`, `REWORK REQUIRED`, `BLOCKED` или `CANCELED` comment
+  обязан пройти task-scoped Strategic Explainer pipeline, включая простой
+  success. Сначала ShipTask выбирает state и фиксирует evidence, затем свежий
+  субагент возвращает `User Brief` для comment.
 - Success: `COMPLETED` после checks/effects и до `Done`. Failure/rework/blocker:
   `REWORK REQUIRED`/`BLOCKED` с impact, checkpoint, evidence, cause confidence,
   remaining risk и exact resume decision.
+- Final comment объединяет authoritative envelope (`State`, Task, result,
+  report key, exact evidence) и Explainer narrative. Выполнить forward trace и
+  reverse coverage; не заменять narrative process diary.
 - Использовать stable report identity, искать equivalent comment, выполнять
   read-back. `not-available` или `write-outcome-unknown` блокирует terminal
   transition affected Task.
@@ -330,6 +342,8 @@ report и truthful terminal status. Goal identity — `not-applicable`.
 - final review batch относится к exact final integrated result;
 - duplicate scenarios, checks и external effects имеют exact evidence;
 - для каждой изменённой/materially failed Task report опубликован и перечитан;
+- narrative каждого нового report прошёл task-scoped Strategic Explainer
+  contract либо отмеченный internal `degraded-adaptation` с теми же checks;
 - Task Manager projection и result identities reconciled;
 - decision queue пуста.
 
@@ -340,16 +354,27 @@ deferred Tasks — показать одну consolidated queue и не заве
 При полном evidence вызвать `update_goal(status="complete")`
 последним.
 
-Перед material partial/blocked handoff, подтверждённым запросом user
-action/authority или сложным technical terminal result прочитать
-[Strategic Explainer handoff](references/strategic-explainer.md) полностью.
-Сформировать ограниченный `Technical Brief`, запустить новый built-in `default`
-субагент без inherited conversation context и явно поручить ему применить
-`$strategic-explainer`. Использовать возвращённый `User Brief` только как
-communication layer: status, recovery, action и Goal transition решать по
-исходному evidence и authority. После изменения state старый brief не
-переиспользовать. Если subagent/skill недоступен, самостоятельно применить тот
-же contract; communication helper не создаёт новый terminal blocker.
+Каждый Task comment уже получает task-scoped `User Brief`. Для exact single-Task
+chat report можно переиспользовать его только при совпадающих audience, facts,
+state, dependency и next action. Planned comment/read-back и terminal status
+reconciliation не делают brief stale, если совпали с его next-state contract и
+не выявили drift. Для aggregate batch, нескольких blockers, material partial
+или другого audience сформировать новый scope-level `Technical Brief`,
+запустить fresh built-in `default` без inherited conversation context и поручить
+ему применить `$strategic-explainer`.
+Для каждого invocation передавать только ограниченный `Technical Brief` для
+exact target surface и scope.
+
+До публикации `BLOCKED` comment должно существовать task-level explanation. До
+blocking user handoff и допустимого `update_goal(status="blocked")` должно
+существовать scope-level explanation; при exact single-Task совпадении это может
+быть тот же проверенный brief. Использовать `User Brief` только как
+communication layer: status, recovery, action, report identity и Goal transition
+решать по исходному evidence и authority. После material state change старый
+brief не переиспользовать. Если subagent/skill недоступен, самостоятельно
+применить тот же contract и отметить internal `degraded-adaptation`;
+communication helper не создаёт новый terminal blocker, но raw technical
+summary не является допустимым fallback.
 
 Каждый terminal exit (`complete`, `blocked`, partial/deferred, `no-work`)
 заканчивается глубоким компактным `SHIPTASK RUN REPORT`. Сначала дать итог,

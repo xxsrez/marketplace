@@ -1,6 +1,6 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.1+codex.20260820105247",
+  "version": "0.1.1+codex.20260820150451",
   "description": "Deliver selected Task Manager work and explain technical outcomes in clear user language.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Ship Tasks",
     "shortDescription": "Deliver work and explain outcomes clearly.",
-    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Strategic Explainer turns technical results and blockers into clear outcome-first User Briefs without taking actions or making status decisions.",
+    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Every Ship Tasks completion, rework, or blocker report uses Strategic Explainer for the human-facing narrative while Ship Tasks retains status and evidence authority.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
