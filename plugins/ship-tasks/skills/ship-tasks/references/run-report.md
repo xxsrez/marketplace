@@ -96,13 +96,15 @@ Report недопустим, если это только reason code, raw error
 Каждый новый Task report comment проходит отдельный task-scoped
 [Strategic Explainer handoff](strategic-explainer.md), включая простой
 `COMPLETED` success. Новый субагент получает только ограниченный `Technical
-Brief` и возвращает `User Brief`; он не выбирает outcome, report state,
-recovery или authority.
+Brief` через `fork_turns="none"` и возвращает свободное стратегическое
+объяснение; он не выбирает outcome, report state, recovery или authority.
+ShipTask читает это объяснение и пишет окончательный report своими словами,
+сохраняя его material meaning.
 
 Для terminal chat report:
 
 - при exact single-Task result можно переиспользовать проверенный task-level
-  brief, если audience/facts/state/dependency/next action совпадают; planned
+  explanation, если audience/facts/state/dependency/next action совпадают; planned
   comment/read-back и terminal status reconciliation не делают его stale, если
   совпали с переданным next-state contract и не выявили drift;
 - для aggregate batch, нескольких blockers, material partial или другого
@@ -110,9 +112,13 @@ recovery или authority.
 - до `update_goal(status="blocked")` scope-level plain-language explanation уже
   должно быть подготовлено и показано пользователю;
 - после recovery, divergent write или другого material meaning change старый
-  brief считать stale.
+  explanation считать stale.
 
-Если subagent tools или skill недоступны, применить тот же User Brief contract
+Если subagent tools или skill недоступны, применить тот же смысловой contract
 самостоятельно и отметить `degraded-adaptation` только во внутреннем evidence.
 Formatting layer не создаёт новый blocker, но raw reason code или technical
 summary не являются допустимым fallback.
+
+`CONTEXT_INTEGRITY_ERROR` не является недоступностью. ShipTask исправляет вызов
+и один раз повторяет fresh subagent с `fork_turns="none"`; повторный отказ
+останавливает report workflow до любых Task Manager writes.

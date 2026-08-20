@@ -295,19 +295,22 @@ partial только ради освобождения capacity.
 - Каждый новый `COMPLETED`, `REWORK REQUIRED`, `BLOCKED` или `CANCELED` comment
   обязан пройти task-scoped Strategic Explainer pipeline, включая простой
   success. Сначала ShipTask выбирает state и фиксирует evidence, затем свежий
-  субагент возвращает `User Brief` для comment.
+  субагент возвращает свободное стратегическое объяснение для родителя.
 - Success: `COMPLETED` после checks/effects и до `Done`. Failure/rework/blocker:
   `REWORK REQUIRED`/`BLOCKED` с impact, checkpoint, evidence, cause confidence,
   remaining risk и exact resume decision.
-- Final comment объединяет authoritative envelope (`State`, Task, короткий
-  result identity и report key) и Explainer narrative. Exact evidence остаётся
-  внутренним, кроме минимального refs, нужного для навигации или действия.
-  Выполнить forward trace и reverse coverage; не заменять narrative process
-  diary.
-- Fresh handoff означает built-in `default` с `fork_turns="none"` (или точный
-  эквивалент без истории). `fork_turns="all"`, старый Explainer thread или
-  inherited tactical context недействительны; при невозможности изоляции
-  использовать `degraded-adaptation`, а не такой запуск.
+- Final comment родитель пишет своими словами после чтения Explainer output.
+  Сохранить outcome, impact, причинную границу, confidence и next state; можно
+  менять форму, но нельзя копировать механически, противоречить объяснению или
+  заменять его собственной process diary. Authoritative envelope и evidence
+  добавлять по исходным фактам. Выполнить forward trace и reverse coverage.
+- Fresh handoff означает built-in `default` с точным `fork_turns="none"`.
+  `fork_turns="all"`, положительное число fork turns и старый Explainer thread
+  запрещены. Initial task содержит только bounded Technical Brief.
+- При `CONTEXT_INTEGRITY_ERROR` не выполнять report/status/Goal writes:
+  исправить invocation и один раз перезапустить новый default subagent с
+  `fork_turns="none"`. Повторный отказ останавливает report workflow как
+  внутреннюю orchestration failure, а не blocker Task.
 - Использовать stable report identity, искать equivalent comment, выполнять
   read-back. `not-available` или `write-outcome-unknown` блокирует terminal
   transition affected Task.
@@ -360,34 +363,31 @@ deferred Tasks — показать одну consolidated queue и не заве
 При полном evidence вызвать `update_goal(status="complete")`
 последним.
 
-Каждый Task comment уже получает task-scoped `User Brief`. Для exact single-Task
-chat report можно переиспользовать его только при совпадающих audience, facts,
-state, dependency и next action. Planned comment/read-back и terminal status
-reconciliation не делают brief stale, если совпали с его next-state contract и
-не выявили drift. Для aggregate batch, нескольких blockers, material partial
-или другого audience сформировать новый scope-level `Technical Brief`,
-запустить fresh built-in `default` без inherited conversation context и поручить
-ему применить `$strategic-explainer`.
+Каждый Task comment получает task-scoped стратегическое объяснение как смысловую
+основу. Для exact single-Task chat report можно переиспользовать его только при
+совпадающих audience, facts, state, dependency и next action. Planned
+comment/read-back и terminal status reconciliation не делают explanation stale,
+если они совпали с next-state contract и не выявили drift. Для aggregate batch,
+нескольких blockers, material partial или другого audience сформировать новый
+scope-level `Technical Brief`, запустить fresh built-in `default` с
+`fork_turns="none"` и поручить ему применить `$strategic-explainer`.
 Для каждого invocation передавать только ограниченный `Technical Brief` для
 exact target surface и scope.
 
-`User Brief` — единственный источник user-facing narrative. После успешного
-ответа Explainer родитель не переписывает объяснение по raw evidence: он
-вставляет brief без изменения смысла и добавляет только минимальный envelope
-(`State`, Task, короткий result identity, report key). Для `TASK_COMMENT`
-действует presentation gate: обычно не более 1 600 символов narrative,
-трёх bullets/строк и без URL, query parameters, endpoint paths, signed URLs,
-`file_id`/`download_url`, полных UUID, хэшей, provider IDs, raw errors или
-полного inventory. Если gate не пройден, brief перезапустить/сжать до write;
-raw technical summary запрещён.
+При корректном invocation Explainer возвращает обычный содержательный текст, не
+structured result и не copy-ready comment. Родитель обязан его прочитать и
+самостоятельно сформулировать user-facing narrative своими словами, сохранив
+material meaning. Если explanation противоречит evidence или потерял важный
+факт, исправить Technical Brief и повторить fresh invocation, а не игнорировать
+Explainer и не собирать комментарий из raw process history.
 
 До публикации `BLOCKED` comment должно существовать task-level explanation. До
 blocking user handoff и допустимого `update_goal(status="blocked")` должно
 существовать scope-level explanation; при exact single-Task совпадении это может
-быть тот же проверенный brief. Использовать `User Brief` только как
+быть то же проверенное объяснение. Использовать его только как
 communication layer: status, recovery, action, report identity и Goal transition
 решать по исходному evidence и authority. После material state change старый
-brief не переиспользовать. Если subagent/skill недоступен, самостоятельно
+output не переиспользовать. Если subagent/skill недоступен, самостоятельно
 применить тот же contract и отметить internal `degraded-adaptation`;
 communication helper не создаёт новый terminal blocker, но raw technical
 summary не является допустимым fallback.

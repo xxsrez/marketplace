@@ -52,6 +52,10 @@ User impact:
 Needed input:
 ```
 
+Это bounded handoff prompt, а не схема результата. Удалить неприменимые поля и
+изложить факты связным текстом, если так яснее; не добавлять full conversation,
+tool transcript или process diary.
+
 `Candidate user dependency` включать только когда исходное evidence уже
 показывает, что основной агент не может продолжить без человека или внешнего
 state. Не просить Explainer решать, существует ли blocker, какой status выбрать
@@ -77,58 +81,54 @@ envelope` перечисляет refs/fields, которые ShipTask добав
 
 Использовать built-in `default` agent с уникальным task name
 `strategic_explainer_<surface>_<scope>` и без унаследованной истории.
-В orchestration API передавать `fork_turns="none"`; `fork_turns="all"`,
-продолжение старого thread или любой другой inherited tactical context
-недействительны для этого handoff. Если изолированный запуск недоступен,
-применить локальный `degraded-adaptation`, а не запускать Explainer на полной
-истории. Не задавать model override: наследовать текущий model и reasoning
-effort. В initial task явно потребовать:
+В orchestration API передавать точный `fork_turns="none"`; `fork_turns="all"`,
+положительное число fork turns и продолжение старого thread запрещены. Не
+задавать model override: наследовать текущий model и reasoning effort. В initial
+task явно потребовать:
 
 1. применить `$strategic-explainer`;
 2. не выполнять writes, recovery, status/Goal decisions или external actions;
 3. обработать только переданный Technical Brief и не вызывать tools;
-4. вернуть `User Brief` для exact target surface родительскому агенту;
-5. поместить недостающие факты только в `PARENT NOTES`;
-6. для durable comment/report вернуть компактный текст: 1–3 предложения,
-   максимум три bullets/строки и обычно не более 1 600 символов; не включать
-   URL, параметры, endpoint paths, signed URLs, `file_id`/`download_url`,
-   полные UUID, хэши или raw tool errors без явной необходимости для действия.
+4. до анализа проверить, что перед current handoff нет более ранних
+   user/assistant turns или tool transcript;
+5. при загрязнении вернуть только `CONTEXT_INTEGRITY_ERROR` с инструкцией
+   перезапустить default subagent через `fork_turns="none"`;
+6. при чистом контексте вернуть свободное стратегическое объяснение как
+   смысловую основу для родителя, не structured result и не copy-ready comment.
 
 Дождаться результата. Не переиспользовать старый Strategic Explainer thread для
 другого состояния: чистый context является частью design. Если после brief был
 выполнен recovery или изменилось evidence, сформировать новый brief и запустить
 новый субагент с уникальным task-name suffix.
 
+Если получен `CONTEXT_INTEGRITY_ERROR`, не переходить к local adaptation и не
+делать comment/status/Goal writes. Исправить собственный вызов и один раз создать
+новый default subagent с `fork_turns="none"`. Повторный context-integrity отказ
+останавливает report workflow до любых Task Manager mutations и сообщается как
+внутренняя orchestration failure, а не blocker Task.
+
 ## Использовать результат безопасно
 
 Выполнить два независимых прохода: forward trace сверяет каждое существенное
-утверждение `User Brief` с исходным evidence; reverse coverage проверяет, что
-каждый decision-relevant факт brief сохранён либо осознанно исключён как не
-влияющий на outcome, impact/risk, action или confidence.
+утверждение стратегического объяснения с исходным evidence; reverse coverage
+проверяет, что каждый decision-relevant факт handoff сохранён либо осознанно
+исключён как не влияющий на outcome, impact/risk, action или confidence.
 Strategic Explainer не создаёт facts, authority, lifecycle status или решение.
 ShipTask самостоятельно выбирает recovery, user request, Task/Goal transition
 и terminal outcome по действующему contract.
 
-Task comment и user-facing handoff должны сохранить ясную формулировку
-Explainer. ShipTask добавляет authoritative envelope, minimal evidence refs и
-фактический status, но не подменяет narrative собственной technical summary.
-Не включать `PARENT NOTES`, не возвращать jargon, который brief уже перевёл, и
-не рассказывать пользователю о субагенте или внутренней orchestration.
+ShipTask обязан прочитать объяснение и самостоятельно написать Task comment или
+user-facing handoff своими словами. Он может сокращать, перестраивать и
+адаптировать форму под channel, но сохраняет outcome, impact, причинную границу,
+confidence, подтверждённую dependency и next state. Нельзя копировать ответ
+механически, противоречить ему, добавлять неподтверждённый смысл или заменять
+его собственной technical summary/process diary.
 
-`User Brief` является единственным источником narrative. Родитель не имеет
-права заново сочинять user-facing объяснение по raw evidence после успешного
-ответа Explainer: он может только вставить brief без изменения смысла и
-добавить минимальный envelope из allow-list (`State`, Task, короткий result
-identity и `Report key`). Exact evidence, URLs, provider IDs, параметры и
-полные списки операций остаются внутренними, если человек явно не должен
-использовать их для навигации или действия.
-
-Перед write выполнить presentation gate. Для `TASK_COMMENT` по умолчанию:
-narrative не более 1 600 символов, всего не более трёх bullets/строк и без
-сырого URL/параметров/ID-dump. Если assembled comment не проходит этот gate,
-не публиковать его: перезапустить свежий Explainer с более узким brief либо
-выполнить локальный `degraded-adaptation` с теми же fidelity checks. Raw
-technical summary не является допустимым fallback.
+Authoritative envelope, exact status и нужные evidence refs ShipTask добавляет
+по исходным фактам. В пользовательском тексте не рассказывать о субагенте или
+внутренней orchestration. Технические детали и identifiers оставлять только
+когда они помогают человеку понять вывод, проверить его или выполнить действие;
+не переносить полный execution transcript.
 
 Переиспользовать brief между `TASK_COMMENT` и `RUN_REPORT` можно только когда
 audience, artifact scope, facts, state, user dependency и next action совпадают
@@ -138,8 +138,9 @@ write или другое material meaning change делают brief stale. Дл
 batch, нескольких blocked Tasks или другого audience запустить новый scope-level
 Explainer.
 
-Если subagent tools или `$strategic-explainer` недоступны либо вызов завершился
-ошибкой, не создавать из этого новый Task/Goal blocker и не скрывать исходный
-outcome. Применить тот же User Brief contract самостоятельно, выполнить те же
+Если subagent tools или `$strategic-explainer` действительно недоступны, не
+создавать из этого новый Task/Goal blocker и не скрывать исходный outcome.
+Применить тот же смысловой contract самостоятельно, выполнить те же
 forward/reverse checks и зафиксировать `degraded-adaptation` только во
-внутреннем evidence. Raw technical comment не является допустимым fallback.
+внутреннем evidence. `CONTEXT_INTEGRITY_ERROR` не является недоступностью и
+всегда требует исправленного fresh invocation.

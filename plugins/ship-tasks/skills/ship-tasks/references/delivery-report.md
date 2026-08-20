@@ -93,32 +93,25 @@ Explainer contract. Это относится и к простому success.
 2. Сформировать task-scoped `Technical Brief` с `Target surface: TASK_COMMENT`
    по [handoff contract](strategic-explainer.md). Не просить Explainer выбрать
    state, blocker, authority или terminal transition.
-3. Получить `User Brief` из свежего субагента. Перед составлением comment
-   выполнить forward trace и reverse coverage.
-4. Собрать final comment из двух слоёв:
-   - authoritative envelope: report type, `State`, Task, короткий result
-     identity и report key; exact evidence остаётся внутренним, кроме
-     минимального идентификатора, который действительно нужен человеку для
-     навигации или действия;
-   - Explainer narrative: outcome, impact, понятная причина/граница, требуемое
-     действие и next state.
-5. Удалить только явное дублирование. Не возвращать process diary или
-   необъяснённый jargon и не менять смысл brief. Не сочинять narrative заново
-   из raw evidence после успешного ответа Explainer.
+3. Запустить свежего subagent с `fork_turns="none"` и получить свободное
+   стратегическое объяснение. При `CONTEXT_INTEGRITY_ERROR` исправить invocation
+   и один раз повторить fresh spawn; до успешного результата не выполнять
+   comment/status/Goal writes.
+4. Прочитать объяснение и самостоятельно написать final comment своими словами.
+   Сохранить outcome, impact, причинную границу, confidence, требуемое действие
+   и next state; форму адаптировать под Task Manager.
+5. Добавить authoritative envelope: report type, `State`, Task, result identity,
+   report key и необходимое evidence. Не копировать Explainer output механически,
+   не противоречить ему, не добавлять неподтверждённый смысл и не заменять его
+   process diary. Перед write выполнить forward trace и reverse coverage.
 6. Выполнить обычный duplicate search, write и read-back.
-
-Для `TASK_COMMENT` действует presentation gate: narrative обычно не длиннее
-1 600 символов, весь comment — не более трёх bullets/строк сверх envelope.
-По умолчанию запрещены URL, query parameters, endpoint paths, signed URLs,
-`file_id`/`download_url`, полные UUID, хэши, provider/environment IDs, raw tool
-errors и полные inventories. Если assembled body нарушает gate, его нельзя
-публиковать: нужен новый узкий brief или локальный `degraded-adaptation` с теми
-же forward/reverse checks. Raw technical summary не является fallback.
 
 В user-visible body не упоминать Strategic Explainer, субагента, Technical
 Brief, delegation или orchestration. Если subagent/skill недоступен, ShipTask
 локально применяет тот же contract и фиксирует `degraded-adaptation` только во
 внутреннем evidence; это не разрешает опубликовать raw technical summary.
+Context-integrity failure не является недоступностью: её надо исправить через
+fresh invocation, а при повторном отказе остановиться до Task Manager writes.
 
 Если Technical Brief противоречив или не содержит decision-relevant факт,
 вернуться к finalization. Нельзя компенсировать неполное состояние красивой
@@ -161,10 +154,10 @@ Resume step
 <Первое безопасное действие после unblock.>
 ```
 
-В `BLOCKED` comment не переносить список URL, deployment/archive IDs, OAuth
-метаданные, Attachment refs или полный журнал smoke. Если человеку нужен
-конкретный адрес или ref для следующего действия, оставить только этот один
-идентификатор и объяснить его роль.
+В `BLOCKED` comment не переносить полный технический журнал. URL, identifier
+или environment detail оставлять только тогда, когда они помогают человеку
+понять вывод, проверить его или выполнить следующее действие; роль такой детали
+нужно объяснить обычными словами.
 
 Для `production-approval-required` указать exact production target и candidate
 identity, но не формулировать Task/Goal/успешный UAT как уже выданное approval.
@@ -189,14 +182,14 @@ Result: <commit/build/deploy/artifact identity or not-applicable>
 Report key: shiptask/<task-ref>/<state>/<result-identity>
 
 Outcome and impact
-<Task-scoped User Brief: что получил пользователь или какая граница осталась.>
+<Что получил пользователь или какая граница осталась, сформулированное
+родителем после чтения Strategic Explainer output.>
 
 How it works / Why
-<Только material часть User Brief; убрать секцию, если она дублирует outcome.>
+<Только material причинная модель; убрать секцию, если она дублирует outcome.>
 
 Evidence
-- <не более трёх компактных user-relevant фактов; exact refs — только если
-  человеку нужен этот один идентификатор для навигации или действия>
+- <acceptance criterion> -> <exact check/result>
 - Batch: <краткий aggregate result либо not-applicable>
 - External effect: <verified result или not-applicable>
 
@@ -206,7 +199,7 @@ Limits and next action
 
 ## Success report
 
-Task-scoped User Brief должен объяснить:
+Task-scoped comment должен объяснить:
 
 - user outcome и наблюдаемое новое поведение;
 - основной runtime/data flow простыми словами;
@@ -224,8 +217,9 @@ rollback/revert, invalidated candidate, repeated rework или настоящи�
 после execution. Обычный красный тест, найденный и исправленный внутри
 implementation loop, сам по себе не требует incident comment.
 
-Task-scoped User Brief должен передать impact, причинную модель и recovery на
-уровне пользователя. Authoritative confidence и exact evidence ShipTask
+Task-scoped comment должен передать impact, причинную модель и recovery на
+уровне пользователя. Его формулирует ShipTask своими словами на основе
+стратегического объяснения. Authoritative confidence и exact evidence ShipTask
 сохраняет в envelope. При необходимости добавить к общему формату:
 
 ```text

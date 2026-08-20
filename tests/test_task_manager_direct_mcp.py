@@ -135,7 +135,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertEqual(manifest["version"], "0.1.2+codex.20260820215102")
+        self.assertEqual(manifest["version"], "0.1.3+codex.20260820222548")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertTrue(
@@ -183,10 +183,35 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         self.assertIn("name: strategic-explainer", skill)
         self.assertIn("Technical Brief", skill)
-        self.assertIn("User Brief", skill)
+        self.assertIn("свободное стратегическое объяснение", skill)
+        self.assertIn("CONTEXT_INTEGRITY_ERROR", skill)
+        self.assertIn('fork_turns="none"', skill)
+        self.assertIn("сформулирует своими словами", skill)
+        self.assertNotIn("User Brief", skill)
+        self.assertNotIn("PARENT NOTES", skill)
         self.assertNotIn("ShipTask", skill)
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
+
+    def test_ship_tasks_repairs_contaminated_explainer_invocation(self) -> None:
+        skill = (
+            SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        handoff = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "ship-tasks"
+            / "references"
+            / "strategic-explainer.md"
+        ).read_text(encoding="utf-8")
+
+        for text in (skill, handoff):
+            self.assertIn('fork_turns="none"', text)
+            self.assertIn("CONTEXT_INTEGRITY_ERROR", text)
+            self.assertIn("своими словами", text)
+        self.assertIn("один раз перезапустить", skill)
+        self.assertIn("не переходить к local adaptation", handoff)
+        self.assertNotIn("User Brief` — единственный источник", handoff)
 
 
 if __name__ == "__main__":
