@@ -1,7 +1,7 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260817220943",
-  "description": "Connect Mind Diary and work with your private, revisioned knowledge spaces.",
+  "version": "0.1.0+codex.20260820070820",
+  "description": "Connect the Mind Diary UAT pilot and work with your private, revisioned knowledge spaces.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -17,9 +17,9 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Mind Diary",
-    "shortDescription": "Browse and update your revisioned Minds.",
-    "longDescription": "Connect Codex to Mind Diary with OAuth. Browse, search, fetch, validate, export, and safely commit Markdown Memories in the Minds you can access. Every write preserves immutable history and uses optimistic concurrency.",
+    "displayName": "Mind Diary UAT",
+    "shortDescription": "Browse and update Minds in the UAT pilot.",
+    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Browse, search, fetch, validate, export, and safely commit Markdown Memories in the Minds you can access. Every write preserves immutable history and uses optimistic concurrency.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -37,6 +37,5 @@
     "logo": "./assets/mind-diary-logo.svg",
     "logoDark": "./assets/mind-diary-logo.svg"
   },
-  "mcpServers": "./.mcp.json",
-  "apps": "./.app.json"
+  "mcpServers": "./.mcp.json"
 }

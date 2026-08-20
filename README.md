@@ -12,18 +12,17 @@ codex plugin marketplace add xxsrez/marketplace
 Then install the plugins you need:
 
 1. Open **Plugins → Task Manager**, **Plugins → Ship Tasks**, or
-   **Plugins → Mind Diary** and click **Install**.
-2. For Task Manager, start using the plugin and authenticate when Codex first
-   connects to its MCP server. Mind Diary requests authentication during
-   installation. Ship Tasks has no connector of its own and requires Task
-   Manager to be installed separately.
+   **Plugins → Mind Diary UAT** and click **Install**.
+2. For Task Manager or Mind Diary, start using the plugin and authenticate when
+   Codex first connects to its MCP server. Ship Tasks has no connector of its
+   own and requires Task Manager to be installed separately.
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
 No server URL, client ID, secret, or personal API token is required. Task
-Manager distributes its production MCP connection directly and authenticates
-on first use. Mind Diary uses its registered app connector and authenticates on
-install.
+Manager and Mind Diary UAT distribute their MCP connections directly and
+authenticate with OAuth on first use. Mind Diary remains a restricted UAT
+pilot; this package is not a production or public-directory release.
 
 The plugins connect to:
 
@@ -65,8 +64,7 @@ Repository layout:
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
-- `plugins/mind-diary/.app.json` — registered Mind Diary app connector;
-- `plugins/mind-diary/.mcp.json` — Mind Diary MCP and OAuth resource;
+- `plugins/mind-diary/.mcp.json` — direct Mind Diary MCP and OAuth resource;
 - `plugins/mind-diary/assets/` — Mind Diary brand assets;
 - `plugins/mind-diary/skills/mind-diary/` — bounded content workflow guidance.
 
@@ -95,7 +93,7 @@ jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.mcp.json \
   plugins/ship-tasks/.codex-plugin/plugin.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
-  plugins/mind-diary/.app.json plugins/mind-diary/.mcp.json \
+  plugins/mind-diary/.mcp.json \
   .agents/plugins/marketplace.json
 ! rg -n 'Single-task delivery|Work completion reports|without a Goal|deliver one' \
   plugins/task-manager/skills/task-manager
