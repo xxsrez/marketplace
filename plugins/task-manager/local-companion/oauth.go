@@ -260,7 +260,7 @@ func (manager *oauthManager) register(ctx context.Context, redirectURI string) (
 		return "", err
 	}
 	if status != http.StatusCreated {
-		return "", parseOAuthError(status, responseBody)
+		return "", registrationError(status)
 	}
 	var response struct {
 		ClientID string `json:"client_id"`
@@ -269,6 +269,19 @@ func (manager *oauthManager) register(ctx context.Context, redirectURI string) (
 		return "", newLocalError("oauth_registration_failed", "OAuth registration returned invalid metadata")
 	}
 	return response.ClientID, nil
+}
+
+func registrationError(status int) error {
+	if status == http.StatusUnauthorized || status == http.StatusForbidden {
+		return newLocalError(
+			"oauth_registration_blocked",
+			fmt.Sprintf("Task Manager OAuth registration is blocked before user consent (HTTP %d)", status),
+		)
+	}
+	return newLocalError(
+		"oauth_registration_failed",
+		fmt.Sprintf("Task Manager OAuth registration was rejected (HTTP %d)", status),
+	)
 }
 
 func (manager *oauthManager) exchangeCode(

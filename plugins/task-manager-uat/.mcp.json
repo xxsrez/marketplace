@@ -1,15 +1,11 @@
 {
   "mcpServers": {
     "task-manager-uat": {
-      "type": "http",
-      "url": "https://task-manager-uat.xxsrez-work.chatgpt.site/api/mcp",
-      "oauth_resource": "https://task-manager-uat.xxsrez-work.chatgpt.site/api/mcp"
-    },
-    "task-manager-local-uat": {
       "command": "./bin/task-manager-local-launcher",
       "args": [
         "--origin",
-        "https://task-manager-uat.xxsrez-work.chatgpt.site"
+        "https://task-manager-uat.xxsrez-work.chatgpt.site",
+        "--private-uat-bridge"
       ],
       "cwd": ".",
       "startup_timeout_sec": 10,

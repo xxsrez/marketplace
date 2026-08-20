@@ -16,6 +16,10 @@ type localUploader interface {
 	UploadLocalFile(context.Context, localFileInput) (uploadResult, error)
 }
 
+type remoteMCP interface {
+	Forward(context.Context, jsonRPCRequest, bool) (json.RawMessage, *jsonRPCError)
+}
+
 type jsonRPCRequest struct {
 	JSONRPC string          `json:"jsonrpc"`
 	ID      json.RawMessage `json:"id,omitempty"`
@@ -35,7 +39,13 @@ type jsonRPCError struct {
 	Message string `json:"message"`
 }
 
-func serveMCP(ctx context.Context, input io.Reader, output io.Writer, uploader localUploader) error {
+func serveMCP(
+	ctx context.Context,
+	input io.Reader,
+	output io.Writer,
+	uploader localUploader,
+	remote remoteMCP,
+) error {
 	scanner := bufio.NewScanner(input)
 	scanner.Buffer(make([]byte, 64*1024), 1024*1024)
 	encoder := json.NewEncoder(output)
@@ -94,7 +104,7 @@ func serveMCP(ctx context.Context, input io.Reader, output io.Writer, uploader l
 					delete(activeCalls, key)
 					activeMutex.Unlock()
 				}()
-				result, protocolErr := handleMCPRequest(callCtx, request, uploader)
+				result, protocolErr := handleMCPRequest(callCtx, request, uploader, remote)
 				response := jsonRPCResponse{JSONRPC: "2.0", ID: request.ID, Result: result}
 				if protocolErr != nil {
 					response.Result = nil
@@ -104,7 +114,7 @@ func serveMCP(ctx context.Context, input io.Reader, output io.Writer, uploader l
 			}(request)
 			continue
 		}
-		result, protocolErr := handleMCPRequest(ctx, request, uploader)
+		result, protocolErr := handleMCPRequest(ctx, request, uploader, remote)
 		if len(request.ID) == 0 {
 			continue
 		}
@@ -134,9 +144,13 @@ func handleMCPRequest(
 	ctx context.Context,
 	request jsonRPCRequest,
 	uploader localUploader,
+	remote remoteMCP,
 ) (any, *jsonRPCError) {
 	switch request.Method {
 	case "initialize":
+		if remote != nil {
+			return remote.Forward(ctx, request, false)
+		}
 		var params struct {
 			ProtocolVersion string `json:"protocolVersion"`
 		}
@@ -152,17 +166,54 @@ func handleMCPRequest(
 				"name": "task-manager-local", "title": "Task Manager Local Files", "version": "0.1.0",
 			},
 		}, nil
-	case "notifications/initialized", "notifications/cancelled":
+	case "notifications/initialized":
+		if remote != nil {
+			return remote.Forward(ctx, request, false)
+		}
+		return nil, nil
+	case "notifications/cancelled":
 		return nil, nil
 	case "ping":
+		if remote != nil {
+			return remote.Forward(ctx, request, false)
+		}
 		return map[string]any{}, nil
 	case "tools/list":
+		if remote != nil {
+			result, protocolErr := remote.Forward(ctx, request, false)
+			if protocolErr != nil {
+				return nil, protocolErr
+			}
+			return mergeRemoteTools(result)
+		}
 		return map[string]any{"tools": []any{uploadLocalFileTool()}}, nil
 	case "tools/call":
-		return handleToolCall(ctx, request.Params, uploader)
+		return handleToolCall(ctx, request, uploader, remote)
 	default:
+		if remote != nil {
+			return remote.Forward(ctx, request, false)
+		}
 		return nil, &jsonRPCError{Code: -32601, Message: "Method not found"}
 	}
+}
+
+func mergeRemoteTools(raw json.RawMessage) (any, *jsonRPCError) {
+	var result map[string]any
+	if err := json.Unmarshal(raw, &result); err != nil {
+		return nil, &jsonRPCError{Code: -32603, Message: "Remote MCP returned an invalid tools list"}
+	}
+	tools, ok := result["tools"].([]any)
+	if !ok {
+		return nil, &jsonRPCError{Code: -32603, Message: "Remote MCP returned an invalid tools list"}
+	}
+	for _, tool := range tools {
+		definition, ok := tool.(map[string]any)
+		if ok && definition["name"] == "upload_local_file" {
+			return nil, &jsonRPCError{Code: -32603, Message: "Remote MCP tool namespace conflicts with the local bridge"}
+		}
+	}
+	result["tools"] = append(tools, uploadLocalFileTool())
+	return result, nil
 }
 
 func uploadLocalFileTool() map[string]any {
@@ -203,15 +254,23 @@ func uploadLocalFileTool() map[string]any {
 	}
 }
 
-func handleToolCall(ctx context.Context, rawParams json.RawMessage, uploader localUploader) (any, *jsonRPCError) {
+func handleToolCall(
+	ctx context.Context,
+	request jsonRPCRequest,
+	uploader localUploader,
+	remote remoteMCP,
+) (any, *jsonRPCError) {
 	var params struct {
 		Name      string          `json:"name"`
 		Arguments json.RawMessage `json:"arguments"`
 	}
-	if err := json.Unmarshal(rawParams, &params); err != nil || params.Name == "" {
+	if err := json.Unmarshal(request.Params, &params); err != nil || params.Name == "" {
 		return nil, &jsonRPCError{Code: -32602, Message: "Invalid params"}
 	}
 	if params.Name != "upload_local_file" {
+		if remote != nil {
+			return remote.Forward(ctx, request, true)
+		}
 		return nil, &jsonRPCError{Code: -32602, Message: "Unknown tool"}
 	}
 	var input localFileInput

@@ -1,6 +1,6 @@
 # Task Manager local file companion
 
-This bundled stdio MCP server exposes one tool:
+This bundled stdio MCP server normally exposes one tool:
 
 `upload_local_file(path, idempotencyKey, expectedByteSize?, expectedSha256?, displayFilename?)`
 
@@ -15,6 +15,13 @@ The returned `fileRef` is deliberately unbound. Use the remote
 `attach_file_to_task` tool with a separate bind idempotency key, then use its
 `attachmentRef` in Task descriptions or native comments.
 
+For the explicitly installed `task-manager-uat` validation profile, the same
+binary runs with `--private-uat-bridge`. That mode is fail-closed to the exact
+`task-manager-uat` origin and proxies the deployed remote MCP through the local
+stdio connection, preserving remote tool schemas and
+`_meta["openai/fileParams"]` while adding `upload_local_file`. It refuses the
+production origin.
+
 ## Authentication and lifecycle
 
 First use opens the system browser for Task Manager Authorization Code + PKCE
@@ -26,6 +33,15 @@ expired refresh token causes a fresh browser reconnect. Reinstall/update leaves
 the Keychain item available for the same origin; uninstall removes the plugin
 files and no background process remains. The user can revoke the OAuth grant in
 Task Manager Settings, and a later use reconnects.
+
+Private UAT has a second, operator-only credential at the outer Sites boundary.
+It is read only from the macOS Keychain service
+`com.xxsrez.task-manager.uat.sites-bypass`, account
+`https://task-manager-uat.xxsrez-work.chatgpt.site`, and is injected only into
+requests to that exact HTTPS origin. It is never accepted as a flag, tool
+argument, plugin field, environment variable or transcript value. This Sites
+credential only passes the private hosting gate; ordinary Task Manager OAuth
+still establishes the user, scopes and ACL context.
 
 ## Packaging and portability
 

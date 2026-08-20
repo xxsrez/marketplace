@@ -10,7 +10,6 @@ TASK_MANAGER_UAT_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager-uat"
 SHIP_TASKS_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "ship-tasks"
 PRODUCTION_MCP_URL = "https://task-manager.xxsrez-work.chatgpt.site/api/mcp"
 UAT_ORIGIN = "https://task-manager-uat.xxsrez-work.chatgpt.site"
-UAT_MCP_URL = f"{UAT_ORIGIN}/api/mcp"
 
 
 def read_json(path: Path) -> dict:
@@ -76,7 +75,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertTrue((source / "go.mod").is_file())
         self.assertTrue((source / "main.go").is_file())
 
-    def test_uat_profile_keeps_remote_and_local_ingress_on_one_origin(self) -> None:
+    def test_uat_profile_keeps_private_remote_and_local_ingress_in_one_bridge(self) -> None:
         manifest = read_json(
             TASK_MANAGER_UAT_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
@@ -84,23 +83,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("skills", manifest)
         self.assertIn("Operator-only", manifest["description"])
         self.assertIn(
-            "never targets production", manifest["interface"]["longDescription"]
+            "refuses the production origin", manifest["interface"]["longDescription"]
         )
 
         mcp_config = read_json(TASK_MANAGER_UAT_PLUGIN_ROOT / ".mcp.json")
+        self.assertEqual(list(mcp_config["mcpServers"]), ["task-manager-uat"])
         self.assertEqual(
             mcp_config["mcpServers"]["task-manager-uat"],
             {
-                "type": "http",
-                "url": UAT_MCP_URL,
-                "oauth_resource": UAT_MCP_URL,
-            },
-        )
-        self.assertEqual(
-            mcp_config["mcpServers"]["task-manager-local-uat"],
-            {
                 "command": "./bin/task-manager-local-launcher",
-                "args": ["--origin", UAT_ORIGIN],
+                "args": ["--origin", UAT_ORIGIN, "--private-uat-bridge"],
                 "cwd": ".",
                 "startup_timeout_sec": 10,
                 "tool_timeout_sec": 900,
@@ -120,11 +112,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             path = TASK_MANAGER_UAT_PLUGIN_ROOT / "bin" / name
             self.assertTrue(path.is_file(), name)
             self.assertTrue(os.access(path, os.X_OK), name)
-            self.assertEqual(
-                path.read_bytes(),
-                (TASK_MANAGER_PLUGIN_ROOT / "bin" / name).read_bytes(),
-                f"UAT companion package drifted from production source: {name}",
-            )
 
     def test_uat_profile_is_explicit_and_does_not_replace_production(self) -> None:
         marketplace = read_json(

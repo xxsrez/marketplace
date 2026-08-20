@@ -21,9 +21,12 @@ Then install the plugins you need:
    the selected plugin's current skills and tools.
 
 `task-manager-uat@srez-marketplace` is an operator-only release-validation
-profile. Install it explicitly only for synthetic UAT smoke. Its remote MCP and
-bundled local companion both target `task-manager-uat`, so a local upload and
-the later `attach_file_to_task` bind cannot cross environments. It does not
+profile. Install it explicitly only for synthetic UAT smoke. A bundled local
+stdio bridge proxies the deployed private UAT MCP and adds exact-path upload, so
+`fileRef` upload and the later `attach_file_to_task` bind cannot cross
+environments. The outer Sites bypass credential and the ordinary Task Manager
+OAuth refresh credential remain separate Keychain items; neither is stored in
+plugin configuration. The bridge refuses the production origin and does not
 replace or reconfigure the production `task-manager` plugin.
 
 No server URL, client ID, secret, or personal API token is required. Task
@@ -81,8 +84,8 @@ Repository layout:
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
 - `plugins/task-manager-uat/.codex-plugin/plugin.json` — explicit UAT-only
   validation manifest;
-- `plugins/task-manager-uat/.mcp.json` and `bin/` — aligned UAT remote MCP and
-  local-file companion package;
+- `plugins/task-manager-uat/.mcp.json` and `bin/` — private UAT MCP/local-file
+  bridge package;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/strategic-explainer/` — generic communication
