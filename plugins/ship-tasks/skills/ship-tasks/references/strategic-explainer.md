@@ -27,6 +27,7 @@ trigger.
 
 ```text
 Audience and goal:
+Reader purpose:
 Confirmed outcome:
 Unfinished or unknown:
 User impact:
@@ -34,14 +35,29 @@ Evidence and confidence:
 Current capability and attempts:
 Constraints:
 Candidate user dependency:
+Next-state contract:
 Useful identifiers:
 Output language and channel:
+
+Scenario:
+Expected user-visible behavior:
+State: VERIFIED | FAILED | UNVERIFIED | NOT_APPLICABLE
+Evidence basis:
+User impact:
+Needed input:
 ```
 
 `Candidate user dependency` включать только когда исходное evidence уже
 показывает, что основной агент не может продолжить без человека или внешнего
 state. Не просить Explainer решать, существует ли blocker, какой status выбрать
 или какую authority считать достаточной.
+
+`Reader purpose` формулирует, что пользователь должен понять или суметь сделать
+после чтения. `Next-state contract` называет actor, минимальное действие,
+причину, observable success signal и что ShipTask сможет продолжить после него.
+Для material или multi-scenario ситуации заполнять отдельный scenario ledger;
+`Needed input` не является разрешением просить пользователя и появляется
+только для подтверждённой dependency.
 
 Не передавать full conversation, process diary, raw logs, intended wording или
 готовый вывод. Если два ограничения независимы, описать их отдельными
@@ -56,7 +72,7 @@ state. Не просить Explainer решать, существует ли blo
 
 1. применить `$strategic-explainer`;
 2. не выполнять writes, recovery, status/Goal decisions или external actions;
-3. обработать только переданный Technical Brief;
+3. обработать только переданный Technical Brief и не вызывать tools;
 4. вернуть `User Brief` родительскому агенту;
 5. поместить недостающие факты только в `PARENT NOTES`.
 
@@ -67,15 +83,18 @@ state. Не просить Explainer решать, существует ли blo
 
 ## Использовать результат безопасно
 
-Сверить каждое существенное утверждение `User Brief` с исходным evidence.
+Выполнить два независимых прохода: forward trace сверяет каждое существенное
+утверждение `User Brief` с исходным evidence; reverse coverage проверяет, что
+каждый decision-relevant факт brief сохранён либо осознанно исключён как не
+влияющий на outcome, impact/risk, action или confidence.
 Strategic Explainer не создаёт facts, authority, lifecycle status или решение.
 ShipTask самостоятельно выбирает recovery, user request, Task/Goal transition
 и terminal outcome по действующему contract.
 
 User-facing handoff должен сохранить ясную формулировку Explainer, но можно
 добавить минимальные evidence refs и фактический status после решений ShipTask.
-Не включать `PARENT NOTES` и не возвращать technical jargon, который brief уже
-перевёл.
+Не включать `PARENT NOTES`, не возвращать technical jargon, который brief уже
+перевёл, и не рассказывать пользователю о субагенте или внутренней orchestration.
 
 Если subagent tools или `$strategic-explainer` недоступны либо вызов завершился
 ошибкой, не создавать из этого новый Task/Goal blocker и не скрывать исходный
