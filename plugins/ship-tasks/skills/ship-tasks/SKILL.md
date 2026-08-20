@@ -370,7 +370,8 @@ comment/read-back и terminal status reconciliation не делают explanatio
 если они совпали с next-state contract и не выявили drift. Для aggregate batch,
 нескольких blockers, material partial или другого audience сформировать новый
 scope-level `Technical Brief`, запустить fresh built-in `default` с
-`fork_turns="none"` и поручить ему применить `$strategic-explainer`.
+`fork_turns="none"` и поручить ему применить установленный catalog skill
+`$ship-tasks:strategic-explainer`.
 Для каждого invocation передавать только ограниченный `Technical Brief` для
 exact target surface и scope.
 

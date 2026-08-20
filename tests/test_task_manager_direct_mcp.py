@@ -135,7 +135,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertEqual(manifest["version"], "0.1.3+codex.20260820222548")
+        self.assertEqual(manifest["version"], "0.1.4+codex.20260820223214")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertTrue(
@@ -209,6 +209,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             self.assertIn('fork_turns="none"', text)
             self.assertIn("CONTEXT_INTEGRITY_ERROR", text)
             self.assertIn("своими словами", text)
+            self.assertIn("$ship-tasks:strategic-explainer", text)
         self.assertIn("один раз перезапустить", skill)
         self.assertIn("не переходить к local adaptation", handoff)
         self.assertNotIn("User Brief` — единственный источник", handoff)

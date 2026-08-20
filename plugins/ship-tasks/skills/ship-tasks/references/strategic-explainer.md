@@ -86,7 +86,7 @@ envelope` перечисляет refs/fields, которые ShipTask добав
 задавать model override: наследовать текущий model и reasoning effort. В initial
 task явно потребовать:
 
-1. применить `$strategic-explainer`;
+1. применить установленный catalog skill `$ship-tasks:strategic-explainer`;
 2. не выполнять writes, recovery, status/Goal decisions или external actions;
 3. обработать только переданный Technical Brief и не вызывать tools;
 4. до анализа проверить, что перед current handoff нет более ранних
@@ -138,8 +138,9 @@ write или другое material meaning change делают brief stale. Дл
 batch, нескольких blocked Tasks или другого audience запустить новый scope-level
 Explainer.
 
-Если subagent tools или `$strategic-explainer` действительно недоступны, не
-создавать из этого новый Task/Goal blocker и не скрывать исходный outcome.
+Если subagent tools или `$ship-tasks:strategic-explainer` действительно
+недоступны, не создавать из этого новый Task/Goal blocker и не скрывать исходный
+outcome.
 Применить тот же смысловой contract самостоятельно, выполнить те же
 forward/reverse checks и зафиксировать `degraded-adaptation` только во
 внутреннем evidence. `CONTEXT_INTEGRITY_ERROR` не является недоступностью и

@@ -1,7 +1,7 @@
 interface:
   display_name: "Strategic Explainer"
   short_description: "Объяснить технический результат простым языком"
-  default_prompt: "Используй $strategic-explainer, чтобы осмыслить этот технический контекст и дать ясное outcome-first стратегическое объяснение без новых решений и предположений."
+  default_prompt: "Примени Strategic Explainer, чтобы осмыслить этот технический контекст и дать ясное outcome-first стратегическое объяснение без новых решений и предположений."
 
 policy:
   allow_implicit_invocation: true
