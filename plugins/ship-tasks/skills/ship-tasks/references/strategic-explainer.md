@@ -76,15 +76,23 @@ envelope` перечисляет refs/fields, которые ShipTask добав
 ## Запустить свежий субагент
 
 Использовать built-in `default` agent с уникальным task name
-`strategic_explainer_<surface>_<scope>` и без унаследованной истории
-(`fork_turns="none"`, когда этот параметр доступен). Не задавать model override:
-наследовать текущий model и reasoning effort. В initial task явно потребовать:
+`strategic_explainer_<surface>_<scope>` и без унаследованной истории.
+В orchestration API передавать `fork_turns="none"`; `fork_turns="all"`,
+продолжение старого thread или любой другой inherited tactical context
+недействительны для этого handoff. Если изолированный запуск недоступен,
+применить локальный `degraded-adaptation`, а не запускать Explainer на полной
+истории. Не задавать model override: наследовать текущий model и reasoning
+effort. В initial task явно потребовать:
 
 1. применить `$strategic-explainer`;
 2. не выполнять writes, recovery, status/Goal decisions или external actions;
 3. обработать только переданный Technical Brief и не вызывать tools;
 4. вернуть `User Brief` для exact target surface родительскому агенту;
-5. поместить недостающие факты только в `PARENT NOTES`.
+5. поместить недостающие факты только в `PARENT NOTES`;
+6. для durable comment/report вернуть компактный текст: 1–3 предложения,
+   максимум три bullets/строки и обычно не более 1 600 символов; не включать
+   URL, параметры, endpoint paths, signed URLs, `file_id`/`download_url`,
+   полные UUID, хэши или raw tool errors без явной необходимости для действия.
 
 Дождаться результата. Не переиспользовать старый Strategic Explainer thread для
 другого состояния: чистый context является частью design. Если после brief был
@@ -106,6 +114,21 @@ Explainer. ShipTask добавляет authoritative envelope, minimal evidence 
 фактический status, но не подменяет narrative собственной technical summary.
 Не включать `PARENT NOTES`, не возвращать jargon, который brief уже перевёл, и
 не рассказывать пользователю о субагенте или внутренней orchestration.
+
+`User Brief` является единственным источником narrative. Родитель не имеет
+права заново сочинять user-facing объяснение по raw evidence после успешного
+ответа Explainer: он может только вставить brief без изменения смысла и
+добавить минимальный envelope из allow-list (`State`, Task, короткий result
+identity и `Report key`). Exact evidence, URLs, provider IDs, параметры и
+полные списки операций остаются внутренними, если человек явно не должен
+использовать их для навигации или действия.
+
+Перед write выполнить presentation gate. Для `TASK_COMMENT` по умолчанию:
+narrative не более 1 600 символов, всего не более трёх bullets/строк и без
+сырого URL/параметров/ID-dump. Если assembled comment не проходит этот gate,
+не публиковать его: перезапустить свежий Explainer с более узким brief либо
+выполнить локальный `degraded-adaptation` с теми же fidelity checks. Raw
+technical summary не является допустимым fallback.
 
 Переиспользовать brief между `TASK_COMMENT` и `RUN_REPORT` можно только когда
 audience, artifact scope, facts, state, user dependency и next action совпадают

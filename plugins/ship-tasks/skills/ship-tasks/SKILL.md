@@ -299,9 +299,15 @@ partial только ради освобождения capacity.
 - Success: `COMPLETED` после checks/effects и до `Done`. Failure/rework/blocker:
   `REWORK REQUIRED`/`BLOCKED` с impact, checkpoint, evidence, cause confidence,
   remaining risk и exact resume decision.
-- Final comment объединяет authoritative envelope (`State`, Task, result,
-  report key, exact evidence) и Explainer narrative. Выполнить forward trace и
-  reverse coverage; не заменять narrative process diary.
+- Final comment объединяет authoritative envelope (`State`, Task, короткий
+  result identity и report key) и Explainer narrative. Exact evidence остаётся
+  внутренним, кроме минимального refs, нужного для навигации или действия.
+  Выполнить forward trace и reverse coverage; не заменять narrative process
+  diary.
+- Fresh handoff означает built-in `default` с `fork_turns="none"` (или точный
+  эквивалент без истории). `fork_turns="all"`, старый Explainer thread или
+  inherited tactical context недействительны; при невозможности изоляции
+  использовать `degraded-adaptation`, а не такой запуск.
 - Использовать stable report identity, искать equivalent comment, выполнять
   read-back. `not-available` или `write-outcome-unknown` блокирует terminal
   transition affected Task.
@@ -364,6 +370,16 @@ reconciliation не делают brief stale, если совпали с его 
 ему применить `$strategic-explainer`.
 Для каждого invocation передавать только ограниченный `Technical Brief` для
 exact target surface и scope.
+
+`User Brief` — единственный источник user-facing narrative. После успешного
+ответа Explainer родитель не переписывает объяснение по raw evidence: он
+вставляет brief без изменения смысла и добавляет только минимальный envelope
+(`State`, Task, короткий result identity, report key). Для `TASK_COMMENT`
+действует presentation gate: обычно не более 1 600 символов narrative,
+трёх bullets/строк и без URL, query parameters, endpoint paths, signed URLs,
+`file_id`/`download_url`, полных UUID, хэшей, provider IDs, raw errors или
+полного inventory. Если gate не пройден, brief перезапустить/сжать до write;
+raw technical summary запрещён.
 
 До публикации `BLOCKED` comment должно существовать task-level explanation. До
 blocking user handoff и допустимого `update_goal(status="blocked")` должно

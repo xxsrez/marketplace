@@ -96,13 +96,24 @@ Explainer contract. Это относится и к простому success.
 3. Получить `User Brief` из свежего субагента. Перед составлением comment
    выполнить forward trace и reverse coverage.
 4. Собрать final comment из двух слоёв:
-   - authoritative envelope: report type, `State`, Task, result identity,
-     report key и exact evidence;
+   - authoritative envelope: report type, `State`, Task, короткий result
+     identity и report key; exact evidence остаётся внутренним, кроме
+     минимального идентификатора, который действительно нужен человеку для
+     навигации или действия;
    - Explainer narrative: outcome, impact, понятная причина/граница, требуемое
      действие и next state.
 5. Удалить только явное дублирование. Не возвращать process diary или
-   необъяснённый jargon и не менять смысл brief.
+   необъяснённый jargon и не менять смысл brief. Не сочинять narrative заново
+   из raw evidence после успешного ответа Explainer.
 6. Выполнить обычный duplicate search, write и read-back.
+
+Для `TASK_COMMENT` действует presentation gate: narrative обычно не длиннее
+1 600 символов, весь comment — не более трёх bullets/строк сверх envelope.
+По умолчанию запрещены URL, query parameters, endpoint paths, signed URLs,
+`file_id`/`download_url`, полные UUID, хэши, provider/environment IDs, raw tool
+errors и полные inventories. Если assembled body нарушает gate, его нельзя
+публиковать: нужен новый узкий brief или локальный `degraded-adaptation` с теми
+же forward/reverse checks. Raw technical summary не является fallback.
 
 В user-visible body не упоминать Strategic Explainer, субагента, Technical
 Brief, delegation или orchestration. Если subagent/skill недоступен, ShipTask
@@ -130,7 +141,9 @@ Result: <exact checkpoint identity or not-started>
 Report key: shiptask/<task-ref>/BLOCKED/<checkpoint-identity>
 
 Why this Task was deferred
-<Reason code и почему safe default здесь недостаточен.>
+<Одно понятное предложение: что осталось непроверенным/недоступным и почему
+без этого результат нельзя считать завершённым. Внутренний reason code — только
+при необходимости и после человеческого объяснения.>
 
 Last safe checkpoint
 <Что завершено, проверено и не будет повторяться без причины.>
@@ -148,6 +161,11 @@ Resume step
 <Первое безопасное действие после unblock.>
 ```
 
+В `BLOCKED` comment не переносить список URL, deployment/archive IDs, OAuth
+метаданные, Attachment refs или полный журнал smoke. Если человеку нужен
+конкретный адрес или ref для следующего действия, оставить только этот один
+идентификатор и объяснить его роль.
+
 Для `production-approval-required` указать exact production target и candidate
 identity, но не формулировать Task/Goal/успешный UAT как уже выданное approval.
 Не задавать вопрос в comment, если ещё остаётся runnable work: comment является
@@ -158,7 +176,8 @@ handoff, а consolidated decision request формируется после ис
 Начинать с outcome, а не с process diary. Report должен быть глубоким, но
 компактным: сначала понять результат, причины и evidence, затем оставить только
 то, что помогает человеку быстро понять Task. Масштабировать detail по task type
-и risk. Plain text является безопасным baseline. Использовать Markdown только
+и risk, но размер evidence сам по себе не является основанием для user-visible
+dump. Plain text является безопасным baseline. Использовать Markdown только
 если current comment renderer доказан; Mermaid — только при подтверждённом
 rendering.
 
@@ -176,9 +195,10 @@ How it works / Why
 <Только material часть User Brief; убрать секцию, если она дублирует outcome.>
 
 Evidence
-- <acceptance criterion> -> <exact check/result>
-- Batch: <identity and aggregate gate>
-- External effect: <verified result or not-applicable>
+- <не более трёх компактных user-relevant фактов; exact refs — только если
+  человеку нужен этот один идентификатор для навигации или действия>
+- Batch: <краткий aggregate result либо not-applicable>
+- External effect: <verified result или not-applicable>
 
 Limits and next action
 <Ограничения, remaining risk и optional verification/reopen guidance.>

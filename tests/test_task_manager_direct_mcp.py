@@ -135,7 +135,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertEqual(manifest["version"], "0.1.1+codex.20260820150451")
+        self.assertEqual(manifest["version"], "0.1.2+codex.20260820215102")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertTrue(

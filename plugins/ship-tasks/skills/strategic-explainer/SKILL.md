@@ -49,6 +49,11 @@ NOT_APPLICABLE`, evidence basis, user impact и подтверждённый nee
 При работе субагентом с полным Technical Brief не вызывать tools и не собирать
 дополнительный context. Недостающее вернуть в `PARENT NOTES`.
 
+Источником фактов для субагента является только переданный Technical Brief.
+Если orchestration по ошибке оставил доступной историю родительского разговора,
+игнорировать её и не извлекать из неё факты, формулировки или intended wording;
+при отсутствии самодостаточного brief вернуть пробелы в `PARENT NOTES`.
+
 Если skill вызван напрямую на конкретном локальном материале, собрать только
 недостающие факты из названных read-only источников и свернуть их в тот же
 contract. Не читать широкие логи, историю или unrelated files без необходимости.
@@ -98,6 +103,12 @@ impact/risk, action или confidence.
   частью незавершённого результата.
 - Не упоминать в User Brief Strategic Explainer, субагента, Technical Brief,
   delegation или внутреннюю orchestration.
+- Для durable comment/report соблюдать compact channel budget: 1–3 предложения
+  с итогом в начале, затем не более трёх коротких bullets/строк и обычно не
+  более 1 600 символов. Не перепечатывать raw evidence, URL, query parameters,
+  endpoint paths, signed URLs, `file_id`/`download_url`, полные UUID, хэши,
+  provider IDs или tool errors; exact identifier оставлять только если он
+  прямо нужен человеку для навигации или действия.
 
 ## Вернуть User Brief
 
@@ -122,6 +133,11 @@ impact/risk, action или confidence.
 использовать компактную таблицу `сценарий / статус / что требуется`. Если
 пользовательское действие не подтверждено, не добавлять просьбу «на всякий
 случай».
+
+Перед возвратом проверить, что текст можно вставить в указанную user-visible
+поверхность без дополнительной переписи родителем. Если для этого не хватает
+факта, сократить текст нельзя честно или нарушается channel budget, вернуть
+минимальный User Brief и точный `PARENT NOTES`, а не полный технический отчёт.
 
 Когда вход неполон, после доступной части `User Brief` добавить отдельный
 `PARENT NOTES` с минимальным списком фактов, которых не хватает. Этот раздел
@@ -151,3 +167,5 @@ table.
 - Brief не содержит решения, status claim или authority, которых не было во
   входе.
 - Читателю не нужно знать внутренние tools, protocols или source code.
+- Для durable channel brief соблюдает compact budget и не превращает
+  `Useful identifiers` в raw evidence dump.
