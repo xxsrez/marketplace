@@ -82,10 +82,28 @@ Task Manager discussion.
   `get_task_attachment` for metadata and protected preview/original URLs, and
   `download_task_attachment` when the client needs the protected original as a
   resource link.
-- Upload only through `upload_task_attachment` with the native OpenAI file
-  parameter advertised by the tool. A local path, base64 payload, or arbitrary
-  URL is not a fallback transport. Reuse an idempotency key only for the exact
-  same Task and file.
+- Route the source before upload:
+  - a native OpenAI file object can go to `upload_file`; retain its verified
+    `fileRef`, then call `attach_file_to_task` after the target Task exists;
+  - when the target Task already exists and no staged workflow is needed,
+    `upload_task_attachment` remains the one-call compatibility wrapper;
+  - an existing `fileRef` goes only to `get_file`, `delete_file`, or
+    `attach_file_to_task`; it is not a durable body reference;
+  - an existing `attachmentRef` goes to Task attachment/comment tools, not back
+    through upload;
+  - never pass a local path, base64 payload, DOM URL, or arbitrary remote URL to
+    hosted MCP. Use a separately callable local source adapter when one is
+    available; otherwise report that the source has not entered native upload.
+- `upload_file` and `upload_task_attachment` advertise the native `file`
+  parameter through `_meta["openai/fileParams"]`. Their `file_id` and temporary
+  `download_url` are transport inputs, not storage identity. Reuse an upload
+  idempotency key only for identical bytes and metadata; use an independent
+  stable key for bind.
+- File-first example: `upload_file(file, uploadKey)` → verify
+  filename/MIME/byteSize/SHA-256/state → create or resolve Task →
+  `attach_file_to_task(taskRef, fileRef, bindKey)` → use the returned
+  `attachmentRef` in a comment or description → read back both Task attachment
+  metadata and the comment/thread.
 - Attachment refs are opaque. To embed an image or link a file, insert the
   returned `attachment:v1:<ref>` token into the Task description or native
   Comment body through the ordinary versioned write. Do not copy protected
@@ -96,6 +114,14 @@ Task Manager discussion.
 - Before `delete_task_attachment`, list the current attachment and pass its
   version. Remove every live description/comment ref first; deletion is soft
   and the server rejects referenced or inaccessible attachments.
+
+File errors deliberately disclose little. Invalid source URL, content, MIME,
+size, or filename is an input error. Reusing an upload/bind key for a changed
+payload is a conflict. Unknown, foreign, expired, deleted, already-bound, and
+post-bind `fileRef` reads are unavailable without confirming which condition
+occurred. If bind fails, keep the verified `fileRef` only when it remains
+readable through `get_file`; otherwise reread the Task attachments before any
+retry so an unknown write outcome cannot create duplicate work.
 
 ## Task comments
 
