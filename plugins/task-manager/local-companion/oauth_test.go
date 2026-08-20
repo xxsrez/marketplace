@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"sync"
 	"testing"
 )
@@ -177,5 +178,40 @@ func TestOAuthRejectsNonHTTPSNonLoopbackOrigin(t *testing.T) {
 	var localErr *localError
 	if !errors.As(err, &localErr) || localErr.Code != "invalid_origin" {
 		t.Fatalf("error = %v", err)
+	}
+}
+
+func TestOAuthRegistrationEdgeFailureIsActionableAndBounded(t *testing.T) {
+	t.Parallel()
+	server := httptest.NewTLSServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/oauth/register" {
+			http.NotFound(writer, request)
+			return
+		}
+		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		writer.WriteHeader(http.StatusUnauthorized)
+		_, _ = writer.Write([]byte(`<html><body>Sign in required: private edge detail</body></html>`))
+	}))
+	defer server.Close()
+
+	manager, err := newOAuthManager(
+		server.URL, server.Client(), &memoryCredentialStore{}, &callbackBrowser{},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = manager.Token(context.Background())
+	var localErr *localError
+	if !errors.As(err, &localErr) {
+		t.Fatalf("error type = %T: %v", err, err)
+	}
+	if localErr.Code != "oauth_registration_blocked" {
+		t.Fatalf("error code = %q", localErr.Code)
+	}
+	if !strings.Contains(localErr.Message, "HTTP 401") {
+		t.Fatalf("error message = %q", localErr.Message)
+	}
+	if strings.Contains(localErr.Message, "private edge detail") || strings.Contains(localErr.Message, "<html>") {
+		t.Fatalf("error disclosed edge response body: %q", localErr.Message)
 	}
 }

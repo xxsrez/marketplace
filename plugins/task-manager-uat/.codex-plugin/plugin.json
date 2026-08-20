@@ -1,6 +1,6 @@
 {
   "name": "task-manager-uat",
-  "version": "0.1.0+codex.20260820225320",
+  "version": "0.1.0+codex.20260820230932",
   "description": "Operator-only Task Manager UAT profile for end-to-end connector and local-file validation.",
   "author": {
     "name": "Andrey Myasnikov",
