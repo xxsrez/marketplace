@@ -1,6 +1,6 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.4+codex.20260820223214",
+  "version": "0.1.5+codex.20260820235047",
   "description": "Deliver selected Task Manager work and explain technical outcomes in clear user language.",
   "author": {
     "name": "Andrey Myasnikov",

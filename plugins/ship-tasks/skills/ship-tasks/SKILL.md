@@ -87,6 +87,37 @@ delivery workflow: выполнить только exact read/planning Task Mana
 прочитать [project-memory reference](references/project-memory.md) полностью,
 собрать source-grounded profile и записать memory только по explicit request.
 
+## Необязательно назвать свежий Codex thread
+
+Title текущего Codex thread — необязательная UI metadata, не Task Manager write,
+не evidence и не terminal effect. Если текущая surface предоставляет
+current-thread read (например, `codex_app__read_thread`) и setter title
+(например, `codex_app__set_thread_title`), выполнить этот шаг только при всех
+условиях:
+
+1. metadata явно подтверждает, что текущий запрос — первый пользовательский
+   ход нового thread без завершённых предыдущих ходов; при неизвестном сигнале
+   title не менять;
+2. текущий title пустой либо очевидно auto-generated из `$ship-tasks` или его
+   catalog link. Любой другой непустой title считать пользовательским;
+3. invocation gate пройден и live canonical scope уже разрешён.
+
+Сначала прочитать current-thread metadata; после scope resolution вызвать setter
+не более одного раза. Title, начинающийся с `ShipTask ·`, повторно не менять.
+Формат выбрать по exact scope:
+
+- single Task: `ShipTask · <Task ref> · <short Task title>`;
+- batch Project/Release: `ShipTask · <Project name> · <Release name>`;
+- batch без Release: `ShipTask · <Project name> · batch`;
+- bare `$ship-tasks`: тот же формат после разрешения memory `current_scope`;
+- create-and-deliver: single-формат после create/read-back Task.
+
+Сжать label до короткого нормализованного имени без status, дат, branch или
+длинного acceptance text. Если app title tool отсутствует или завершился
+ошибкой, продолжить обычный workflow без retry и без blocker. Не использовать
+этот шаг на последующих ходах или при повторном `$ship-tasks` в существующей
+сессии.
+
 ## Разрешить project context и scope
 
 Перед `batch`, bare invocation или использованием remembered project defaults
