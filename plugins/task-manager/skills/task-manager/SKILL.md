@@ -85,6 +85,11 @@ Task Manager discussion.
 - Route the source before upload:
   - a native OpenAI file object can go to `upload_file`; retain its verified
     `fileRef`, then call `attach_file_to_task` after the target Task exists;
+  - an exact user-authorized absolute filesystem path can go only to the local
+    `upload_local_file` companion. Pass a stable upload key and, when known,
+    expected byte size/SHA-256. Verify its returned metadata, then pass only the
+    resulting `fileRef` to remote `attach_file_to_task` with an independent bind
+    key;
   - when the target Task already exists and no staged workflow is needed,
     `upload_task_attachment` remains the one-call compatibility wrapper;
   - an existing `fileRef` goes only to `get_file`, `delete_file`, or
@@ -92,8 +97,20 @@ Task Manager discussion.
   - an existing `attachmentRef` goes to Task attachment/comment tools, not back
     through upload;
   - never pass a local path, base64 payload, DOM URL, or arbitrary remote URL to
-    hosted MCP. Use a separately callable local source adapter when one is
-    available; otherwise report that the source has not entered native upload.
+    hosted MCP. Local paths enter only through `upload_local_file`; otherwise
+    report that the source has not entered native upload.
+- `upload_local_file` is a separate local stdio tool, not a hosted Task Manager
+  tool. It requires one absolute path and still obeys the Codex host sandbox and
+  approval policy. It rejects relative paths, globs, directories,
+  final-component symlinks and special files; computes a stable bounded
+  snapshot and SHA-256 before network
+  I/O; and sends only basename/display filename, MIME, idempotency key and bytes.
+  It returns no local path. On first use, its browser PKCE consent is separate
+  from the remote MCP connection; refresh credentials live in macOS Keychain.
+- Reuse a local upload idempotency key only for identical bytes and metadata. A
+  network error is not evidence that upload failed: retry the exact source with
+  the same key. Never change the path, display filename or expected metadata
+  while reusing that key.
 - `upload_file` and `upload_task_attachment` advertise the native `file`
   parameter through `_meta["openai/fileParams"]`. Their `file_id` and temporary
   `download_url` are transport inputs, not storage identity. Reuse an upload
@@ -104,6 +121,11 @@ Task Manager discussion.
   `attach_file_to_task(taskRef, fileRef, bindKey)` → use the returned
   `attachmentRef` in a comment or description → read back both Task attachment
   metadata and the comment/thread.
+- Local file-first example: `upload_local_file(path, uploadKey,
+  expectedByteSize, expectedSha256)` → verify the local/server metadata and
+  `sourceVerified=true` → create or resolve Task →
+  `attach_file_to_task(taskRef, fileRef, bindKey)` → use only the returned
+  `attachmentRef` in description/comment → read back attachment and thread.
 - Attachment refs are opaque. To embed an image or link a file, insert the
   returned `attachment:v1:<ref>` token into the Task description or native
   Comment body through the ordinary versioned write. Do not copy protected

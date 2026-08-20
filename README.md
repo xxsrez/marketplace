@@ -29,11 +29,16 @@ The plugins connect to:
 - Task Manager: `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
 - Mind Diary: `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
 
-Task Manager is an adapter-only plugin with one OAuth-protected MCP connection:
+Task Manager is an adapter-only plugin with two coordinated MCP components:
 
 - `task-manager` provides OAuth/MCP discovery, canonical
   references, pagination, safe writes, optimistic concurrency, and native
   comment mechanics.
+- `task-manager-local` is a bundled macOS stdio companion with one
+  `upload_local_file` tool. It reads one exact host-authorized regular file,
+  uploads a verified snapshot into the common `fileRef` workflow, stores its
+  rotating OAuth refresh token in Keychain, and never sends the full path to
+  Task Manager. The remote `attach_file_to_task` tool performs the later bind.
 
 Ship Tasks is a separate plugin:
 
@@ -62,6 +67,8 @@ Repository layout:
 - `.agents/plugins/marketplace.json` — the ordered marketplace catalog;
 - `plugins/task-manager/.codex-plugin/plugin.json` — plugin manifest;
 - `plugins/task-manager/.mcp.json` — direct production MCP and OAuth resource;
+- `plugins/task-manager/bin/` and `local-companion/` — bundled macOS local-file
+  launcher, binaries, source and tests;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
@@ -82,6 +89,7 @@ Validate plugin changes before publishing:
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py' -v
+(cd plugins/task-manager/local-companion && go test -race ./...)
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/task-manager/skills/task-manager
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \

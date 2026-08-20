@@ -4,6 +4,12 @@
       "type": "http",
       "url": "https://task-manager.xxsrez-work.chatgpt.site/api/mcp",
       "oauth_resource": "https://task-manager.xxsrez-work.chatgpt.site/api/mcp"
+    },
+    "task-manager-local": {
+      "command": "./bin/task-manager-local-launcher",
+      "cwd": ".",
+      "startup_timeout_sec": 10,
+      "tool_timeout_sec": 900
     }
   }
 }

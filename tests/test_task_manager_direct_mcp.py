@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 from pathlib import Path
 
@@ -43,6 +44,34 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
                 "oauth_resource": PRODUCTION_MCP_URL,
             },
         )
+
+    def test_local_companion_is_bundled_without_plaintext_credentials(self) -> None:
+        mcp_config = read_json(TASK_MANAGER_PLUGIN_ROOT / ".mcp.json")
+        local = mcp_config["mcpServers"]["task-manager-local"]
+        self.assertEqual(
+            local,
+            {
+                "command": "./bin/task-manager-local-launcher",
+                "cwd": ".",
+                "startup_timeout_sec": 10,
+                "tool_timeout_sec": 900,
+            },
+        )
+        serialized = json.dumps(mcp_config).lower()
+        self.assertNotIn("refresh_token", serialized)
+        self.assertNotIn("client_secret", serialized)
+        for name in (
+            "task-manager-local-launcher",
+            "task-manager-local-darwin-arm64",
+            "task-manager-local-darwin-amd64",
+        ):
+            path = TASK_MANAGER_PLUGIN_ROOT / "bin" / name
+            self.assertTrue(path.is_file(), name)
+            self.assertTrue(os.access(path, os.X_OK), name)
+
+        source = TASK_MANAGER_PLUGIN_ROOT / "local-companion"
+        self.assertTrue((source / "go.mod").is_file())
+        self.assertTrue((source / "main.go").is_file())
 
     def test_task_manager_plugin_is_adapter_only(self) -> None:
         self.assertTrue(
