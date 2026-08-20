@@ -1,6 +1,6 @@
 ---
 name: task-manager
-description: Use Task Manager through its connected MCP tools as a technical adapter to find, filter, inspect, create, update, and comment on tasks and to navigate projects and releases. Trigger for Task Manager data access, canonical reference resolution, current versions, OAuth capabilities, pagination, safe writes, and native comment operations. Do not independently define or run delivery, Goal, verification, release, report-content, or terminal-status policy; a calling workflow such as ShipTask owns those decisions.
+description: Use Task Manager through its connected MCP tools as a technical adapter to find, filter, inspect, create, update, relate, and comment on tasks; work with native attachments; and navigate projects and releases. Trigger for Task Manager data access, canonical reference resolution, current versions, OAuth capabilities, pagination, safe writes, relations, hierarchy, labels, attachments, and native comments. Do not independently define or run delivery, Goal, verification, release, report-content, or terminal-status policy; a calling workflow such as ShipTask owns those decisions.
 ---
 
 # Task Manager
@@ -58,6 +58,44 @@ Task Manager discussion.
   for the intended task first to avoid duplicates.
 - Task Manager tools intentionally do not expose administration, sharing,
   ownership transfer, workflow configuration, or backup operations.
+
+### Labels, hierarchy, relations, and moves
+
+- Treat Label, parent Task, relation, Project, Release, and workflow status refs
+  as canonical opaque identifiers. Resolve them through reads before writes.
+- Use the dedicated Label tools for one assignment change and
+  `replace_task_labels` for an atomic full replacement. Do not infer catalog
+  administration from assignment intent.
+- Pass the current child Task version to `set_task_parent` and
+  `create_subtask`. Same-Project and cycle rules are server-enforced.
+- Relation create requires one stable idempotency key. Relation update/delete
+  uses the current relation version; changing to `duplicate_of` also requires
+  the current source Task version. `blocked_by` and `duplicates` are relative
+  read presentations, not stored relation types.
+- Use `move_task` rather than generic `update_task` for a Project change. Read
+  the target Project first and explicitly clear or replace incompatible Release
+  or assignee values; the returned identifier is authoritative.
+
+## Native attachments
+
+- Call `list_task_attachments` only after selecting a Task. Use
+  `get_task_attachment` for metadata and protected preview/original URLs, and
+  `download_task_attachment` when the client needs the protected original as a
+  resource link.
+- Upload only through `upload_task_attachment` with the native OpenAI file
+  parameter advertised by the tool. A local path, base64 payload, or arbitrary
+  URL is not a fallback transport. Reuse an idempotency key only for the exact
+  same Task and file.
+- Attachment refs are opaque. To embed an image or link a file, insert the
+  returned `attachment:v1:<ref>` token into the Task description or native
+  Comment body through the ordinary versioned write. Do not copy protected
+  URLs into durable text.
+- Comment composition is upload first, then `add_task_comment`,
+  `reply_to_task_comment`, or `edit_task_comment`, followed by comment and
+  attachment read-back. Comment reads return bounded refs, not binary data.
+- Before `delete_task_attachment`, list the current attachment and pass its
+  version. Remove every live description/comment ref first; deletion is soft
+  and the server rejects referenced or inaccessible attachments.
 
 ## Task comments
 

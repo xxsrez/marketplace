@@ -1,7 +1,7 @@
 {
   "name": "task-manager",
-  "version": "0.7.0+codex.20260818201548",
-  "description": "Connect Task Manager to find, inspect, create, update, and comment on work safely.",
+  "version": "0.7.0+codex.20260820083627",
+  "description": "Connect Task Manager to inspect and safely mutate tasks, relations, comments, and native attachments.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -17,8 +17,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Task Manager",
-    "shortDescription": "Find and manage Task Manager data safely.",
-    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical project, release, and task references, inspect complete task context and current versions, create or update work safely, and use native comments. Delivery workflows such as ShipTask are installed separately.",
+    "shortDescription": "Manage tasks, relations, comments, and files safely.",
+    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical references and current versions, mutate task metadata, labels, hierarchy and relations, and use native comments and private attachments. Delivery workflows such as ShipTask are installed separately.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -28,8 +28,8 @@
     "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
       "List tasks for a project or release and help me choose what to do next",
-      "Update the title of TM-123 using its current version",
-      "Add a comment to TM-123 and confirm it was published"
+      "Relate two tasks using their current canonical references",
+      "Upload a file to TM-123 and add it to a native comment"
     ],
     "brandColor": "#6D5CE7",
     "composerIcon": "./assets/composer-icon.svg",
