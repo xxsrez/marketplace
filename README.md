@@ -1,7 +1,8 @@
 # Srez Marketplace
 
 This is Andrey's extensible Codex plugin marketplace. It contains independent
-Task Manager, Ship Tasks, and Mind Diary plugins under `plugins/`.
+Task Manager, Task Manager UAT, Ship Tasks, and Mind Diary plugins under
+`plugins/`.
 
 Add the marketplace once:
 
@@ -19,6 +20,12 @@ Then install the plugins you need:
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
+`task-manager-uat@srez-marketplace` is an operator-only release-validation
+profile. Install it explicitly only for synthetic UAT smoke. Its remote MCP and
+bundled local companion both target `task-manager-uat`, so a local upload and
+the later `attach_file_to_task` bind cannot cross environments. It does not
+replace or reconfigure the production `task-manager` plugin.
+
 No server URL, client ID, secret, or personal API token is required. Task
 Manager and Mind Diary UAT distribute their MCP connections directly and
 authenticate with OAuth on first use. Mind Diary remains a restricted UAT
@@ -27,6 +34,7 @@ pilot; this package is not a production or public-directory release.
 The plugins connect to:
 
 - Task Manager: `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
+- Task Manager UAT validation: `https://task-manager-uat.xxsrez-work.chatgpt.site/api/mcp`
 - Mind Diary: `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
 
 Task Manager is an adapter-only plugin with two coordinated MCP components:
@@ -71,6 +79,10 @@ Repository layout:
   launcher, binaries, source and tests;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
+- `plugins/task-manager-uat/.codex-plugin/plugin.json` — explicit UAT-only
+  validation manifest;
+- `plugins/task-manager-uat/.mcp.json` and `bin/` — aligned UAT remote MCP and
+  local-file companion package;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/strategic-explainer/` — generic communication
@@ -83,7 +95,9 @@ Repository layout:
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
 `task-manager@srez-marketplace`; Ship Tasks is independently installable as
-`ship-tasks@srez-marketplace`.
+`ship-tasks@srez-marketplace`. The UAT validation profile is independently
+installable as `task-manager-uat@srez-marketplace` and is never the normal
+Task Manager data plane.
 
 Validate plugin changes before publishing:
 
@@ -101,11 +115,15 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/task-manager
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
+  plugins/task-manager-uat
+python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/mind-diary
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.mcp.json \
+  plugins/task-manager-uat/.codex-plugin/plugin.json \
+  plugins/task-manager-uat/.mcp.json \
   plugins/ship-tasks/.codex-plugin/plugin.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
   plugins/mind-diary/.mcp.json \

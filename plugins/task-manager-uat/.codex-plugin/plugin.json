@@ -1,0 +1,36 @@
+{
+  "name": "task-manager-uat",
+  "version": "0.1.0+codex.20260820225320",
+  "description": "Operator-only Task Manager UAT profile for end-to-end connector and local-file validation.",
+  "author": {
+    "name": "Andrey Myasnikov",
+    "url": "https://github.com/xxsrez"
+  },
+  "homepage": "https://task-manager-uat.xxsrez-work.chatgpt.site",
+  "repository": "https://github.com/xxsrez/marketplace",
+  "keywords": [
+    "tasks",
+    "uat",
+    "mcp",
+    "testing"
+  ],
+  "interface": {
+    "displayName": "Task Manager UAT",
+    "shortDescription": "Validate Task Manager safely against UAT.",
+    "longDescription": "Operator-only validation profile. Both the hosted MCP connector and bundled macOS local-file companion target Task Manager UAT, so fileRef upload and bind stay inside one isolated test environment. Use synthetic data only; this plugin never targets production.",
+    "developerName": "Andrey Myasnikov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://task-manager-uat.xxsrez-work.chatgpt.site",
+    "defaultPrompt": [
+      "List my UAT tasks and confirm the connector origin",
+      "Upload an exact local file into Task Manager UAT",
+      "Run the UAT file-first upload and bind smoke"
+    ],
+    "brandColor": "#D97706"
+  },
+  "mcpServers": "./.mcp.json"
+}

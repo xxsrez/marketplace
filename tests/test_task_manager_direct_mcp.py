@@ -6,8 +6,11 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 TASK_MANAGER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager"
+TASK_MANAGER_UAT_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager-uat"
 SHIP_TASKS_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "ship-tasks"
 PRODUCTION_MCP_URL = "https://task-manager.xxsrez-work.chatgpt.site/api/mcp"
+UAT_ORIGIN = "https://task-manager-uat.xxsrez-work.chatgpt.site"
+UAT_MCP_URL = f"{UAT_ORIGIN}/api/mcp"
 
 
 def read_json(path: Path) -> dict:
@@ -72,6 +75,71 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         source = TASK_MANAGER_PLUGIN_ROOT / "local-companion"
         self.assertTrue((source / "go.mod").is_file())
         self.assertTrue((source / "main.go").is_file())
+
+    def test_uat_profile_keeps_remote_and_local_ingress_on_one_origin(self) -> None:
+        manifest = read_json(
+            TASK_MANAGER_UAT_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        )
+        self.assertEqual(manifest["name"], "task-manager-uat")
+        self.assertNotIn("skills", manifest)
+        self.assertIn("Operator-only", manifest["description"])
+        self.assertIn(
+            "never targets production", manifest["interface"]["longDescription"]
+        )
+
+        mcp_config = read_json(TASK_MANAGER_UAT_PLUGIN_ROOT / ".mcp.json")
+        self.assertEqual(
+            mcp_config["mcpServers"]["task-manager-uat"],
+            {
+                "type": "http",
+                "url": UAT_MCP_URL,
+                "oauth_resource": UAT_MCP_URL,
+            },
+        )
+        self.assertEqual(
+            mcp_config["mcpServers"]["task-manager-local-uat"],
+            {
+                "command": "./bin/task-manager-local-launcher",
+                "args": ["--origin", UAT_ORIGIN],
+                "cwd": ".",
+                "startup_timeout_sec": 10,
+                "tool_timeout_sec": 900,
+            },
+        )
+        serialized = json.dumps(mcp_config).lower()
+        self.assertNotIn("task-manager.xxsrez-work.chatgpt.site", serialized)
+        self.assertNotIn("bypass", serialized)
+        self.assertNotIn("refresh_token", serialized)
+        self.assertNotIn("client_secret", serialized)
+
+        for name in (
+            "task-manager-local-launcher",
+            "task-manager-local-darwin-arm64",
+            "task-manager-local-darwin-amd64",
+        ):
+            path = TASK_MANAGER_UAT_PLUGIN_ROOT / "bin" / name
+            self.assertTrue(path.is_file(), name)
+            self.assertTrue(os.access(path, os.X_OK), name)
+            self.assertEqual(
+                path.read_bytes(),
+                (TASK_MANAGER_PLUGIN_ROOT / "bin" / name).read_bytes(),
+                f"UAT companion package drifted from production source: {name}",
+            )
+
+    def test_uat_profile_is_explicit_and_does_not_replace_production(self) -> None:
+        marketplace = read_json(
+            REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json"
+        )
+        names = [plugin["name"] for plugin in marketplace["plugins"]]
+        self.assertEqual(names.count("task-manager"), 1)
+        self.assertEqual(names.count("task-manager-uat"), 1)
+
+        production_config = read_json(TASK_MANAGER_PLUGIN_ROOT / ".mcp.json")
+        self.assertEqual(
+            production_config["mcpServers"]["task-manager"]["url"],
+            PRODUCTION_MCP_URL,
+        )
+        self.assertNotIn("task-manager-uat", production_config["mcpServers"])
 
     def test_task_manager_plugin_is_adapter_only(self) -> None:
         self.assertTrue(
