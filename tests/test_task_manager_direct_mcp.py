@@ -56,6 +56,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertFalse(
             (TASK_MANAGER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
         )
+        self.assertFalse(
+            (TASK_MANAGER_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
+        )
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(
@@ -81,6 +84,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
                 / "SKILL.md"
             ).is_file()
         )
+        self.assertTrue(
+            (
+                SHIP_TASKS_PLUGIN_ROOT
+                / "skills"
+                / "strategic-explainer"
+                / "SKILL.md"
+            ).is_file()
+        )
 
         metadata = (
             SHIP_TASKS_PLUGIN_ROOT
@@ -95,7 +106,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertEqual(manifest["version"], "0.1.1+codex.20260818211357")
+        self.assertEqual(manifest["version"], "0.1.1+codex.20260820102823")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertTrue(
@@ -125,6 +136,28 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "Реализуй это изменение в коде",
         ):
             self.assertIn(prompt, skill)
+
+    def test_strategic_explainer_is_a_generic_sibling_skill(self) -> None:
+        skill = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "strategic-explainer"
+            / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        metadata = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "strategic-explainer"
+            / "agents"
+            / "openai.yaml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("name: strategic-explainer", skill)
+        self.assertIn("Technical Brief", skill)
+        self.assertIn("User Brief", skill)
+        self.assertNotIn("ShipTask", skill)
+        self.assertNotIn("Task Manager", skill)
+        self.assertIn('display_name: "Strategic Explainer"', metadata)
 
 
 if __name__ == "__main__":

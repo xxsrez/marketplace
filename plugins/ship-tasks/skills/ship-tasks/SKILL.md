@@ -340,6 +340,17 @@ deferred Tasks — показать одну consolidated queue и не заве
 При полном evidence вызвать `update_goal(status="complete")`
 последним.
 
+Перед material partial/blocked handoff, подтверждённым запросом user
+action/authority или сложным technical terminal result прочитать
+[Strategic Explainer handoff](references/strategic-explainer.md) полностью.
+Сформировать ограниченный `Technical Brief`, запустить новый built-in `default`
+субагент без inherited conversation context и явно поручить ему применить
+`$strategic-explainer`. Использовать возвращённый `User Brief` только как
+communication layer: status, recovery, action и Goal transition решать по
+исходному evidence и authority. После изменения state старый brief не
+переиспользовать. Если subagent/skill недоступен, самостоятельно применить тот
+же contract; communication helper не создаёт новый terminal blocker.
+
 Каждый terminal exit (`complete`, `blocked`, partial/deferred, `no-work`)
 заканчивается глубоким компактным `SHIPTASK RUN REPORT`. Сначала дать итог,
 текущий статус и причинную модель простым языком; затем только evidence,

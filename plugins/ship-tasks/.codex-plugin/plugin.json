@@ -1,7 +1,7 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.1+codex.20260818211357",
-  "description": "Deliver explicitly invoked or selected Task Manager work safely through ShipTask.",
+  "version": "0.1.1+codex.20260820102823",
+  "description": "Deliver selected Task Manager work and explain technical outcomes in clear user language.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -13,13 +13,15 @@
     "delivery",
     "verification",
     "releases",
+    "communication",
+    "explanation",
     "productivity"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Ship Tasks",
-    "shortDescription": "Deliver Task Manager work safely.",
-    "longDescription": "Install ShipTask separately from the Task Manager connector, then deliver work through explicit $ship-tasks or natural language that names an existing Task or already selected Task Manager Project, Release, or current scope. A delivery verb alone does not route ordinary code, product, repository, or plugin fixes into ShipTask.",
+    "shortDescription": "Deliver work and explain outcomes clearly.",
+    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Strategic Explainer turns technical results and blockers into clear outcome-first User Briefs without taking actions or making status decisions.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -29,8 +31,8 @@
     "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
       "Deliver TM-123 to a verified terminal outcome",
-      "Deliver the selected Task Manager release",
-      "Create exactly one Task in Task Manager and immediately start delivering it"
+      "Create exactly one Task in Task Manager and immediately start delivering it",
+      "Use Strategic Explainer to clarify this technical result"
     ],
     "brandColor": "#6D5CE7"
   }

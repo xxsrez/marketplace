@@ -39,6 +39,9 @@ Ship Tasks is a separate plugin:
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
   report content, and terminal status policy;
+- `strategic-explainer` is a generic sibling skill that turns bounded technical
+  context into clear outcome-first User Briefs without making decisions or
+  performing mutations;
 - it depends on the separately installed Task Manager plugin for MCP tools and
   authentication, but does not bundle or duplicate that connector.
 
@@ -63,6 +66,8 @@ Repository layout:
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
+- `plugins/ship-tasks/skills/strategic-explainer/` — generic communication
+  skill used directly or in a fresh subagent;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
 - `plugins/mind-diary/.mcp.json` — direct Mind Diary MCP and OAuth resource;
 - `plugins/mind-diary/assets/` — Mind Diary brand assets;
@@ -82,6 +87,8 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/ship-tasks/skills/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/ship-tasks/skills/strategic-explainer
+python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/mind-diary/skills/mind-diary
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/task-manager
@@ -99,5 +106,7 @@ jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/skills/task-manager
 diff -qr /Users/andrey/Projects/Home/ShipTask/ship-tasks \
   plugins/ship-tasks/skills/ship-tasks
+diff -qr /Users/andrey/Projects/Home/ShipTask/strategic-explainer \
+  plugins/ship-tasks/skills/strategic-explainer
 git diff --check
 ```

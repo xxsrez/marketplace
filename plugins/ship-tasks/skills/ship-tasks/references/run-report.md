@@ -90,3 +90,16 @@ SHIPTASK RUN REPORT — COMPLETED | PARTIAL | BLOCKED | NO WORK
 Report недопустим, если это только reason code, raw error, status inventory или
 фраза о недостающем effect. Он должен передавать уже осмысленный вывод, а не
 перекладывать диагностику на пользователя.
+
+## Strategic Explainer
+
+Перед material partial/blocked handoff, подтверждённым запросом user
+action/authority или сложным technical terminal result выполнить отдельный
+[Strategic Explainer handoff](strategic-explainer.md). Новый субагент получает
+только ограниченный `Technical Brief` и возвращает `User Brief`; он не выбирает
+outcome, status, recovery или authority. После изменения state старый brief
+считать stale.
+
+Для простого success отдельный субагент не нужен. Если subagent tools или skill
+недоступны, применить тот же User Brief contract самостоятельно; formatting
+layer не создаёт новый blocker и не оправдывает technical jargon без контекста.

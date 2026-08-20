@@ -1,0 +1,7 @@
+interface:
+  display_name: "Strategic Explainer"
+  short_description: "Объяснить технический результат простым языком"
+  default_prompt: "Используй $strategic-explainer, чтобы превратить этот технический контекст в ясный outcome-first User Brief без новых решений и предположений."
+
+policy:
+  allow_implicit_invocation: true
