@@ -319,14 +319,18 @@ partial только ради освобождения capacity.
 
 - Native comment является обязательным terminal effect для completed,
   materially failed/rework или blocked Task.
-- Перед comment-level Technical Brief выполнить task-level finalization:
+- Перед comment-level Strategic Handoff выполнить task-level finalization:
   перечитать Task/result/effects, проверить exact evidence и доступный safe
   self-recovery. Если состояние изменилось, повторить finalization и не
-  использовать старый brief.
+  использовать старый handoff.
+- Отдельно сформулировать обязательный `Problem to solve`: beneficiary, desired
+  observable outcome и exact scope. Task ref или технический title недостаточны;
+  strategic view в handoff не пересказывать — его находит Explainer.
 - Каждый новый `COMPLETED`, `REWORK REQUIRED`, `BLOCKED` или `CANCELED` comment
   обязан пройти task-scoped Strategic Explainer pipeline, включая простой
-  success. Сначала ShipTask выбирает state и фиксирует evidence, затем свежий
-  субагент возвращает свободное стратегическое объяснение для родителя.
+  success. Сначала ShipTask выбирает state и фиксирует current facts, затем
+  свежий субагент сам выполняет bounded read-only strategic discovery и
+  возвращает explanation с source basis для родителя.
 - Success: `COMPLETED` после checks/effects и до `Done`. Failure/rework/blocker:
   `REWORK REQUIRED`/`BLOCKED` с impact, checkpoint, evidence, cause confidence,
   remaining risk и exact resume decision.
@@ -337,11 +341,16 @@ partial только ради освобождения capacity.
   добавлять по исходным фактам. Выполнить forward trace и reverse coverage.
 - Fresh handoff означает built-in `default` с точным `fork_turns="none"`.
   `fork_turns="all"`, положительное число fork turns и старый Explainer thread
-  запрещены. Initial task содержит только bounded Technical Brief.
+  запрещены. Initial task содержит только bounded `Strategic Handoff` с
+  `Problem to solve`, `Current-State Brief` и strategic discovery anchors.
 - При `CONTEXT_INTEGRITY_ERROR` не выполнять report/status/Goal writes:
   исправить invocation и один раз перезапустить новый default subagent с
   `fork_turns="none"`. Повторный отказ останавливает report workflow как
   внутреннюю orchestration failure, а не blocker Task.
+- При `PROBLEM_CONTEXT_ERROR` перечитать canonical Task/acceptance и explicit
+  context, исправить semantic problem и один раз повторить fresh invocation. Если
+  beneficiary и desired outcome всё ещё не установлены, остановиться до writes
+  и запросить exact problem context; local wording fallback запрещён.
 - Использовать stable report identity, искать equivalent comment, выполнять
   read-back. `not-available` или `write-outcome-unknown` блокирует terminal
   transition affected Task.
@@ -400,17 +409,19 @@ deferred Tasks — показать одну consolidated queue и не заве
 comment/read-back и terminal status reconciliation не делают explanation stale,
 если они совпали с next-state contract и не выявили drift. Для aggregate batch,
 нескольких blockers, material partial или другого audience сформировать новый
-scope-level `Technical Brief`, запустить fresh built-in `default` с
+scope-level `Strategic Handoff`, запустить fresh built-in `default` с
 `fork_turns="none"` и поручить ему применить установленный catalog skill
 `$ship-tasks:strategic-explainer`.
-Для каждого invocation передавать только ограниченный `Technical Brief` для
-exact target surface и scope.
+Для каждого invocation передавать только bounded handoff для exact target
+surface/scope. После gates Explainer сам читает available exact Task relations,
+Project/Release context и repository strategic documents через read-only tools;
+не передавать ему готовый strategic conclusion.
 
 При корректном invocation Explainer возвращает обычный содержательный текст, не
 structured result и не copy-ready comment. Родитель обязан его прочитать и
 самостоятельно сформулировать user-facing narrative своими словами, сохранив
 material meaning. Если explanation противоречит evidence или потерял важный
-факт, исправить Technical Brief и повторить fresh invocation, а не игнорировать
+факт, исправить Strategic Handoff и повторить fresh invocation, а не игнорировать
 Explainer и не собирать комментарий из raw process history.
 
 До публикации `BLOCKED` comment должно существовать task-level explanation. До
@@ -420,9 +431,10 @@ blocking user handoff и допустимого `update_goal(status="blocked")` 
 communication layer: status, recovery, action, report identity и Goal transition
 решать по исходному evidence и authority. После material state change старый
 output не переиспользовать. Если subagent/skill недоступен, самостоятельно
-применить тот же contract и отметить internal `degraded-adaptation`;
-communication helper не создаёт новый terminal blocker, но raw technical
-summary не является допустимым fallback.
+применить тот же problem gate, bounded read-only strategic discovery,
+source-state classification и fidelity contract; отметить internal
+`degraded-adaptation`. Communication helper не создаёт новый terminal blocker,
+но raw technical summary не является допустимым fallback.
 
 Каждый terminal exit (`complete`, `blocked`, partial/deferred, `no-work`)
 заканчивается глубоким компактным `SHIPTASK RUN REPORT`. Сначала дать итог,

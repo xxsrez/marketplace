@@ -88,15 +88,19 @@ Explainer contract. Это относится и к простому success.
 1. ShipTask выполняет task-level finalization: перечитывает current
    Task/result/effects, проверяет exact evidence и доступный safe self-recovery.
    Затем самостоятельно фиксирует report state, verified/unverified scenarios,
-   user impact, evidence/confidence, constraints и уже допустимый next action.
-   Любое изменение состояния перезапускает этот шаг и инвалидирует старый brief.
-2. Сформировать task-scoped `Technical Brief` с `Target surface: TASK_COMMENT`
-   по [handoff contract](strategic-explainer.md). Не просить Explainer выбрать
-   state, blocker, authority или terminal transition.
+   observed user impact, evidence/confidence, constraints и уже допустимый next
+   action. Любое изменение состояния перезапускает этот шаг и инвалидирует
+   старый handoff.
+2. Сформировать task-scoped `Strategic Handoff` с обязательным `Problem to
+   solve`, authoritative `Current-State Brief`, `Target surface: TASK_COMMENT`
+   и exact discovery anchors по [handoff contract](strategic-explainer.md). Не
+   передавать готовый strategic view и не просить Explainer выбрать state,
+   blocker, authority или terminal transition.
 3. Запустить свежего subagent с `fork_turns="none"` и получить свободное
-   стратегическое объяснение. При `CONTEXT_INTEGRITY_ERROR` исправить invocation
-   и один раз повторить fresh spawn; до успешного результата не выполнять
-   comment/status/Goal writes.
+   problem-first объяснение и source basis после bounded read-only discovery.
+   При `CONTEXT_INTEGRITY_ERROR` или `PROBLEM_CONTEXT_ERROR` исправить invocation
+   по handoff contract и один раз повторить fresh spawn; до успешного результата
+   не выполнять comment/status/Goal writes.
 4. Прочитать объяснение и самостоятельно написать final comment своими словами.
    Сохранить outcome, impact, причинную границу, confidence, требуемое действие
    и next state; форму адаптировать под Task Manager.
@@ -106,14 +110,15 @@ Explainer contract. Это относится и к простому success.
    process diary. Перед write выполнить forward trace и reverse coverage.
 6. Выполнить обычный duplicate search, write и read-back.
 
-В user-visible body не упоминать Strategic Explainer, субагента, Technical
-Brief, delegation или orchestration. Если subagent/skill недоступен, ShipTask
+В user-visible body не упоминать Strategic Explainer, субагента, Strategic
+Handoff, delegation или orchestration. Если subagent/skill недоступен, ShipTask
 локально применяет тот же contract и фиксирует `degraded-adaptation` только во
 внутреннем evidence; это не разрешает опубликовать raw technical summary.
 Context-integrity failure не является недоступностью: её надо исправить через
 fresh invocation, а при повторном отказе остановиться до Task Manager writes.
 
-Если Technical Brief противоречив или не содержит decision-relevant факт,
+Если Strategic Handoff противоречив, не содержит semantic problem или
+decision-relevant current-state fact,
 вернуться к finalization. Нельзя компенсировать неполное состояние красивой
 формулировкой.
 

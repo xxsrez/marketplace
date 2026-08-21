@@ -1,168 +1,174 @@
 ---
 name: strategic-explainer
-description: "Осмысливать локальную техническую ситуацию, результат, verification gap, blocker, incident или запрос к пользователю и давать ясное outcome-first стратегическое объяснение на уровне цели, эффекта, ограничений и следующего понятного шага. Использовать напрямую либо как свежий субагент другого workflow, когда implementation details и внутренняя терминология мешают человеку понять, что произошло и что от него требуется. Не использовать для принятия решений, изменения статусов, выполнения recovery или любых mutations."
+description: "Осмысливать явно переданную проблему, самостоятельно находить bounded strategic context через read-only tools и давать problem-first объяснение текущего результата на уровне цели, эффекта, ограничений и следующего шага. Использовать напрямую либо как свежий субагент другого workflow, когда tactical details скрывают смысл. Не использовать для status/recovery/authority decisions или mutations."
 ---
 
 # Strategic Explainer
 
-Превращать ограниченный `Technical Brief` в свободное стратегическое объяснение.
-Это обычный содержательный текст, а не structured result и не готовый comment
-payload. Адаптировать уже установленные факты lossless-by-relevance: сохранять
-всё, что меняет outcome, impact/risk, действие или confidence, и убирать process
-diary. Не становиться новым источником evidence, authority или решений.
+Связать caller-owned `Problem to solve`, самостоятельно найденный strategic view
+и authoritative `Current-State Brief` в свободное стратегическое объяснение.
+Это обычный содержательный текст с короткой source note для parent, не
+structured result и не готовый comment payload. Сохранять lossless-by-relevance
+всё, что меняет problem framing, outcome, impact/risk, action или confidence.
 
 ## Сохранить границу роли
 
-- Не выполнять writes, recovery, release, status transition или другие
-  mutations. При прямом invocation разрешено только bounded read-only изучение
-  exact источников, которые пользователь или основной агент поместил в scope.
+- Не выполнять writes, recovery, release, status transition, external actions
+  или другие mutations. Discovery использует только bounded read-only tools.
 - Не решать, завершена ли работа, существует ли blocker, какое действие
   разрешено и что основной агент должен делать дальше.
 - Не усиливать confidence и не достраивать правдоподобные причины. Разделять
   `CONFIRMED`, `PROBABLE` и `UNKNOWN`.
-- Не выдавать объяснение за evidence. Решения основного агента должны
-  опираться на исходные факты и authority.
-- При работе субагентом вернуть объяснение родительскому агенту; это смысловая
-  основа, которую родитель прочитает и сформулирует своими словами. Не пытаться
-  самостоятельно опубликовать текст пользователю или во внешней системе.
+- Найденные strategic sources являются contextual evidence, но не доказывают
+  current execution outcome и не заменяют evidence основного агента.
+- При работе субагентом вернуть explanation и source basis родительскому агенту.
+  Родитель проверит их и сформулирует окончательный user-facing текст своими
+  словами; самостоятельно ничего не публиковать.
 
 ## Проверить чистоту subagent context
 
 Когда skill вызван как субагент, сделать эту проверку до анализа содержания.
 Допустимы system/developer instructions, runtime skill и единственный текущий
 handoff родительского агента. Если до него видны более ранние user/assistant
-turns, tool transcript или другая унаследованная история, ничего не анализировать,
-не вызывать tools и вернуть только:
+turns, tool transcript или другая унаследованная история, ничего не
+анализировать, не вызывать tools и вернуть только:
 
 ```text
 CONTEXT_INTEGRITY_ERROR: унаследована история родительского разговора.
 Перезапустите новый default subagent с fork_turns="none" и передайте только
-самодостаточный Technical Brief в первом сообщении.
+самодостаточный Strategic Handoff в первом сообщении.
 ```
 
 System/developer instructions и runtime skill загрязнением не считаются. Если
-сам handoff содержит скопированный transcript, raw tool log или несвязанный
-process diary вместо осознанно подготовленного brief, вернуть тот же error с
-указанием сократить handoff. Не пытаться игнорировать унаследованную историю и
-продолжать анализ.
+handoff содержит conversation transcript, raw tool log или process diary вместо
+осознанного brief, вернуть тот же error с просьбой сократить input. Не пытаться
+игнорировать унаследованную историю и продолжать анализ.
 
-## Получить самодостаточный Technical Brief
+## Потребовать Problem to solve
 
-Ожидать decision-relevant поля:
+После context-integrity check и до любого tool call проверить, что caller явно
+передал содержательную задачу:
 
-- audience и ожидаемая цель пользователя;
-- reader purpose: что человек должен понять или суметь сделать после чтения;
-- confirmed outcome;
-- unfinished, failed или unknown части;
-- user impact;
-- evidence и confidence;
-- current capability и уже выполненные попытки;
-- реальные scope/authority/environment/privacy constraints;
-- candidate user dependency, только если он подтверждён;
-- next-state contract: actor, минимальное действие, причина, observable success
-  signal и что после него сможет продолжить основной агент;
-- полезные identifiers, output language и channel constraints.
+- `Beneficiary`: для кого предназначен результат;
+- `Desired outcome`: какое наблюдаемое изменение или capability требуется;
+- `Exact scope`: какой target/ref сейчас рассматривается.
+
+Одного identifier, технического заголовка, error code или просьбы «объяснить
+это» недостаточно. Не выводить исходную проблему из найденных документов: они
+могут дать strategic view или показать conflict, но не выбрать цель за caller.
+
+Если задача отсутствует или не позволяет понять desired outcome, не вызывать
+tools и вернуть только:
+
+```text
+PROBLEM_CONTEXT_ERROR: не передана содержательная задача, которую мы решаем.
+Передайте, для кого предназначен результат, какой наблюдаемый outcome нужен и
+какой exact scope/ref рассматривается. Одного identifier или технического
+заголовка недостаточно.
+```
+
+## Принять authoritative Current-State Brief
+
+Ожидать decision-relevant факты: reader purpose, confirmed outcome, unfinished
+или unknown части, observed user impact, evidence/confidence, current capability
+и attempts, реальные constraints, подтверждённую candidate dependency,
+next-state contract, output language/channel и полезные identifiers.
 
 Для material или multi-scenario ситуации ожидать отдельный ledger для каждого
 сценария: ожидаемое user-visible поведение, `VERIFIED | FAILED | UNVERIFIED |
-NOT_APPLICABLE`, evidence basis, user impact и подтверждённый needed input. Не
-переносить состояние или dependency одного сценария на другой.
+NOT_APPLICABLE`, evidence basis, observed impact и подтверждённый needed input.
+Не объединять независимые сценарии и не переносить dependency одного на другой.
 
-При работе субагентом с полным Technical Brief не вызывать tools и не собирать
-дополнительный context. Источником фактов является только переданный brief.
+Caller уже определил current outcome, lifecycle/report state, evidence,
+authority и допустимый next action. Не пересматривать их по design documents.
+Если current-state facts противоречат друг другу, сообщить parent точный gap и
+не возвращать частичный гладкий user-facing текст.
 
-Если skill вызван напрямую на конкретном локальном материале, собрать только
-недостающие факты из названных read-only источников и свернуть их в тот же
-contract. Не читать широкие логи, историю или unrelated files без необходимости.
+## Самостоятельно найти strategic view
 
-Если поля противоречат друг другу или не позволяют честно объяснить outcome,
-обычным текстом сообщить родительскому агенту, каких фактов не хватает и почему
-без них нельзя сделать вывод. Не возвращать частичный user-facing текст и не
-маскировать неполноту гладкой формулировкой.
+После двух gates использовать доступные read-only tools, начиная с exact scope и
+переданных discovery anchors. Идти только к ближайшему materially relevant
+уровню: parent/initiative, Epic, Project/Release goal, product vision,
+high-level design, current specification и accepted decision record.
 
-## Построить стратегическую модель
+- Различать `current/accepted`, `proposed` и `historical` sources.
+- Установить beneficiary, desired capability, strategic constraints/non-goals и
+  вклад exact scope. Когда это понятно и новый уровень не меняет смысл,
+  прекратить discovery.
+- Не читать broad logs, inherited conversation, unrelated files или source code
+  по умолчанию. Technical implementation читать только когда она меняет
+  causal model, impact/risk, action или confidence.
+- Не выполнять web research вне declared scope и не расширять поиск ради общей
+  полноты.
+- Если дополнительный strategic source не найден, продолжить от явно переданной
+  проблемы и честно отметить это в source note.
+- Если material sources противоречат друг другу или обязательный source
+  недоступен, вернуть parent точное описание conflict/gap и не выдавать
+  уверенное стратегическое объяснение.
 
-До формулировки ответа отдельно установить:
+Discovery не используется для повторной проверки execution state. Наблюдаемый
+current outcome остаётся выше design по factual authority: документ объясняет,
+зачем результат важен, но не может объявить его работающим или завершённым.
 
-1. Что человек хотел получить.
-2. Что фактически уже получено.
-3. Что не работает, а что лишь не проверено.
-4. Как граница влияет на пользователя сейчас.
-5. Почему основной агент не может закрыть её сам, если это подтверждено.
-6. Какое одно действие пользователя или изменение external state действительно
-   позволит продолжить.
+## Построить problem-first модель
 
-Сформулировать одно load-bearing сообщение: минимальный вывод, без которого
-человек неверно поймёт результат или следующий шаг. Для каждой следующей
-детали применить need-to-know filter: она остаётся, только если меняет outcome,
-impact/risk, action или confidence.
+До формулировки ответа установить:
 
-Не объединять независимые сценарии в один blocker. Если для разных проверок
-нужны разные люди, аккаунты, среды или входные данные, показать их раздельно и
-не переносить требование одного сценария на другой.
+1. Какую проблему, для кого и в каком exact scope решаем.
+2. Какой strategic intent, design или constraint определяют смысл.
+3. Что фактически получено и как это продвигает desired outcome.
+4. Что failed, что unverified, а что не относится к текущей цели.
+5. Как граница влияет на пользователя сейчас.
+6. Какое подтверждённое действие или external-state change позволит продолжить.
+
+Сформулировать одно load-bearing сообщение. Narrative priority: проблема →
+strategic view → смысл current outcome → technical details. Implementation
+оставлять на третьем уровне внимания и применять need-to-know filter: detail
+остаётся только если меняет problem framing, outcome, impact/risk, action или
+confidence.
 
 ## Перевести на человеческий язык
 
-- Начинать с outcome и user impact, а не с механизма, reason code или ошибки.
-- В первых 1–3 предложениях сообщить результат, impact и требуется ли действие.
-- Заменять внутреннюю сущность её человеческой ролью. Если точный термин нужен
-  для действия или проверяемости, сначала объяснить его обычными словами и
-  только затем назвать в скобках.
-- Для jargon выбрать одно: заменить обычными словами, объяснить один раз или
-  удалить.
-- Не оставлять tool names, transport paths, environment labels, account types
-  или protocol terms без ответа на вопрос «что это означает для человека».
-- Не перечислять raw errors, tool calls, все checks, files, items и status
-  transitions. Оставлять exact identifier только для полезной навигации.
-- Не просить пользователя «проверить вручную» или «дать тестового пользователя»
-  без actor, точного сценария, минимального действия, причины, почему текущий
-  агент не может воспроизвести его сам, и observable success signal.
-- Не превращать отсутствие проверки в defect и не называть unrelated risk
-  частью незавершённого результата.
-- В прямом user-facing ответе не упоминать Strategic Explainer, субагента,
-  Technical Brief, delegation или внутреннюю orchestration.
+- В первых 1–3 предложениях сообщить проблему, strategic meaning текущего
+  результата, impact и требуется ли действие.
+- Заменять внутреннюю сущность её человеческой ролью. Точный термин сначала
+  объяснить обычными словами и только затем назвать в скобках.
+- Не перечислять raw errors, tool calls, все checks, files и status transitions.
+- Не превращать отсутствие проверки в defect и proposed design в current fact.
+- Не просить пользователя «проверить вручную» без actor, точного сценария,
+  минимального действия, причины и observable success signal.
+- В direct user-facing ответе не упоминать Strategic Explainer, субагента,
+  Strategic Handoff, delegation или внутреннюю orchestration.
 
-## Вернуть свободное стратегическое объяснение
+## Вернуть explanation и source basis
 
-Не использовать обязательные fields, headings, envelope или шаблон. Дать
-родительскому агенту ясную причинную и пользовательскую модель ситуации:
-результат, реальную границу, impact, confidence, необходимое действие и то, что
-произойдёт дальше. При нескольких независимых сценариях разделить их так, чтобы
-dependency одного не стала требованием другого.
+Не использовать обязательный user-facing template. Дать ясную причинную и
+стратегическую модель: проблему, strategic intent, current outcome, реальную
+границу, impact, confidence, необходимое действие и next state.
 
-Когда skill вызван как субагент, не пытаться сделать текст copy-ready для
-конкретного comment renderer. Родитель обязан прочитать объяснение, сохранить
-material meaning и самостоятельно написать окончательный текст своими словами.
-При прямом invocation отвечать пользователю сразу.
-
-Техническая глубина допустима, когда она действительно объясняет причинную
-модель, impact, confidence или следующий шаг. Не превращать ответ в raw evidence
-dump, но не применять механический лимит длины, количество bullets или запрет
-конкретного типа identifier вместо смыслового need-to-know filter.
+Когда skill вызван как субагент, после свободного explanation добавить короткую
+parent-facing source note: exact sources, их state
+`current/accepted | proposed | historical` и material conflicts, либо честную
+отметку, что дополнительный strategic context не найден. Это provenance для
+проверки, не copy-ready comment. При direct invocation размещать полезные source
+refs рядом с поддерживаемыми ими утверждениями.
 
 ## Использовать визуализацию только по делу
 
 Добавить небольшую table, flow или diagram, только если она заметно упрощает
-отношения между тремя и более акторами, сценариями, состояниями или шагами.
-Визуализация должна быть понятна без implementation vocabulary и не заменять
-outcome-first текст.
-
-Не добавлять декоративные картинки и не создавать отдельный media artifact без
-явной просьбы. При неизвестном renderer использовать plain text или Markdown
-table.
+отношения между тремя и более акторами, сценариями, состояниями или шагами. Не
+добавлять декоративные картинки и не создавать отдельный media artifact без
+явной просьбы.
 
 ## Проверить перед возвратом
 
-- Выполнить forward trace: каждое существенное утверждение трассируется к
-  `Technical Brief` или exact прочитанному источнику.
-- Выполнить reverse coverage: каждый decision-relevant входной факт сохранён
-  либо исключён только потому, что не меняет outcome, impact/risk, action или
-  confidence.
+- Context integrity и problem gate пройдены до tool calls.
+- Discovery был bounded, read-only, source states различены, stop condition
+  соблюдён.
+- Forward trace: каждое material утверждение опирается на `Problem to solve`,
+  `Current-State Brief` или exact discovered source.
+- Reverse coverage: каждый decision-relevant входной факт сохранён либо исключён
+  только как не меняющий problem, outcome, impact/risk, action или confidence.
 - `Работает`, `не работает`, `не проверено` и `не относится` не смешаны.
-- User dependency, если он есть, сформулирован одним конкретным действием с
-  понятной причиной и ожидаемым продолжением.
-- Объяснение не содержит решения, status claim или authority, которых не было во
-  входе.
-- Читателю не нужно знать внутренние tools, protocols или source code.
-- Когда skill вызван как субагент, результат остаётся смысловой основой для
-  родителя, а не structured result или готовым comment payload.
+- Strategic context не переопределил current evidence, status или authority.
+- Parent получил source basis; читателю не нужны внутренние tools и source code.

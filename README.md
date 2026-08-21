@@ -63,9 +63,9 @@ Ship Tasks is a separate plugin:
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
   report content, and terminal status policy;
-- `strategic-explainer` is a generic sibling skill that turns bounded technical
-  context into clear outcome-first User Briefs without making decisions or
-  performing mutations;
+- `strategic-explainer` is a generic sibling skill that requires an explicit
+  problem, finds bounded strategic context through read-only tools, and returns
+  a problem-first explanation without making decisions or mutations;
 - it depends on the separately installed Task Manager plugin for MCP tools and
   authentication, but does not bundle or duplicate that connector.
 
@@ -96,8 +96,8 @@ Repository layout:
   connection and manually started loopback ingress mode;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
-- `plugins/ship-tasks/skills/strategic-explainer/` — generic communication
-  skill used directly or in a fresh subagent;
+- `plugins/ship-tasks/skills/strategic-explainer/` — generic problem-first
+  strategic discovery skill used directly or in a fresh subagent;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
 - `plugins/mind-diary/.mcp.json` — direct Mind Diary MCP and OAuth resource;
 - `plugins/mind-diary/assets/` — Mind Diary brand assets;

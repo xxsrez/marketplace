@@ -1,7 +1,7 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.5+codex.20260820235047",
-  "description": "Deliver selected Task Manager work and explain technical outcomes in clear user language.",
+  "version": "0.1.6+codex.20260821111515",
+  "description": "Deliver selected Task Manager work and derive problem-first strategic explanations from bounded read-only context.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -20,8 +20,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Ship Tasks",
-    "shortDescription": "Deliver work and explain outcomes clearly.",
-    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Every Ship Tasks completion, rework, or blocker report uses Strategic Explainer for the human-facing narrative while Ship Tasks retains status and evidence authority.",
+    "shortDescription": "Deliver work with problem-first explanations.",
+    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Every Ship Tasks report gives Strategic Explainer an explicit problem and current facts; the Explainer independently finds bounded read-only strategic context while Ship Tasks retains status and execution-evidence authority.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -32,7 +32,7 @@
     "defaultPrompt": [
       "Deliver TM-123 to a verified terminal outcome",
       "Create exactly one Task in Task Manager and immediately start delivering it",
-      "Use Strategic Explainer to clarify this technical result"
+      "Use Strategic Explainer with an explicit problem to find strategic context and explain the current result"
     ],
     "brandColor": "#6D5CE7"
   }

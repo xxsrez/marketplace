@@ -95,11 +95,12 @@ Report недопустим, если это только reason code, raw error
 
 Каждый новый Task report comment проходит отдельный task-scoped
 [Strategic Explainer handoff](strategic-explainer.md), включая простой
-`COMPLETED` success. Новый субагент получает только ограниченный `Technical
-Brief` через `fork_turns="none"` и возвращает свободное стратегическое
-объяснение; он не выбирает outcome, report state, recovery или authority.
-ShipTask читает это объяснение и пишет окончательный report своими словами,
-сохраняя его material meaning.
+`COMPLETED` success. Новый субагент получает bounded `Strategic Handoff` с
+обязательным `Problem to solve` через `fork_turns="none"`, самостоятельно
+выполняет bounded read-only strategic discovery и возвращает свободное
+объяснение с source basis. Он не выбирает outcome, report state, recovery или
+authority. ShipTask читает результат и пишет окончательный report своими
+словами, сохраняя material meaning.
 
 Для terminal chat report:
 
@@ -122,3 +123,9 @@ summary не являются допустимым fallback.
 `CONTEXT_INTEGRITY_ERROR` не является недоступностью. ShipTask исправляет вызов
 и один раз повторяет fresh subagent с `fork_turns="none"`; повторный отказ
 останавливает report workflow до любых Task Manager writes.
+
+`PROBLEM_CONTEXT_ERROR` также не является недоступностью: ShipTask обязан
+передать semantic beneficiary/desired outcome/exact scope, а не заменять задачу
+identifier или техническим title. После одного исправленного fresh invocation
+неустранённый problem gap останавливает report workflow до writes и явно
+возвращается пользователю.
