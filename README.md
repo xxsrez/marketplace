@@ -14,16 +14,20 @@ Then install the plugins you need:
 
 1. Open **Plugins → Task Manager**, **Plugins → Ship Tasks**, or
    **Plugins → Mind Diary UAT** and click **Install**.
-2. For Task Manager or Mind Diary, start using the plugin and authenticate when
-   Codex first connects to its MCP server. Ship Tasks has no connector of its
-   own and requires Task Manager to be installed separately.
+2. For Task Manager, complete the native OAuth **Connect** step during install
+   or upgrade. Mind Diary authenticates when Codex first connects to its MCP
+   server. Ship Tasks has no connector of its own and requires Task Manager to
+   be installed separately.
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
 No server URL, client ID, secret, or personal API token is required. Task
-Manager and Mind Diary UAT distribute their MCP connections directly and
-authenticate with OAuth on first use. Mind Diary remains a restricted UAT
-pilot; this package is not a production or public-directory release.
+Manager and Mind Diary UAT distribute their MCP connections directly. Task
+Manager authenticates during install so an upgraded client cannot silently
+fall back to an obsolete registered app connector; after that, new server tools
+are discovered from the live MCP connection without Developer mode or connector
+re-registration. Mind Diary remains a restricted UAT pilot; this package is not
+a production or public-directory release.
 
 The plugins connect to:
 

@@ -15,13 +15,13 @@ def read_json(path: Path) -> dict:
 
 
 class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
-    def test_marketplace_defers_authentication_until_first_use(self) -> None:
+    def test_marketplace_authenticates_direct_mcp_during_install(self) -> None:
         marketplace = read_json(REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json")
         task_manager = next(
             plugin for plugin in marketplace["plugins"] if plugin["name"] == "task-manager"
         )
 
-        self.assertEqual(task_manager["policy"]["authentication"], "ON_USE")
+        self.assertEqual(task_manager["policy"]["authentication"], "ON_INSTALL")
 
     def test_manifest_distributes_direct_mcp_without_registered_app(self) -> None:
         manifest = read_json(
