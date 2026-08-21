@@ -148,7 +148,10 @@ Resume step: <first safe next action after unblock>
 Reason codes включают `production-approval-required`,
 `external-approval-required`, `ambiguous-product-decision`,
 `out-of-scope-authority`, `external-access`, `unsafe-recovery` и
-`shared-dependency`. Reason `acceptance-required` запрещён.
+`shared-dependency`. Review dispositions `verification-blocked` и
+`task-contract-conflict` использовать без подмены причины общим
+`external-access` или `ambiguous-product-decision`. Reason `acceptance-required`
+запрещён.
 
 Не переизбирать deferred Task в том же run без нового evidence, authority или
 external state change. Deferred Task продолжает удерживать Goal active.
@@ -159,15 +162,17 @@ deferred Task: записать его в final findings, не расширят�
 
 ## Comment handoff
 
-Для каждого defer обязательно опубликовать и перечитать `BLOCKED`
-delivery-report comment до освобождения lane. Включить все поля decision queue,
-user impact/remaining risk и report key для exact Task/result.
+Для каждого defer обязательно подготовить и попытаться опубликовать с
+read-back `BLOCKED` delivery-report comment. Включить все поля decision queue,
+user impact/remaining risk и report key для exact Task/result. Доступный
+comment публикуется до освобождения lane.
 
 Если comments недоступны или write outcome unknown, не использовать
 `description`/другой field как fallback. Записать comment delivery как отдельный
 communication remainder, сохранить тот же handoff в consolidated interaction
 output, оставить affected Task в truthful status и продолжить независимую
-runnable work.
+runnable work. Недоступный comment не превращает Task в product defect и не
+меняет уже установленный review disposition.
 
 ## Finalization analysis and bounded repair
 

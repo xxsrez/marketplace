@@ -160,7 +160,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertEqual(manifest["version"], "0.1.6+codex.20260821132430")
+        self.assertRegex(manifest["version"], r"^0\.1\.6\+codex\.\d{14}$")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertTrue(
@@ -183,13 +183,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "по естественным просьбам выполнить, исправить или довести",
             frontmatter,
         )
-        for prompt in (
-            "Выполни TM-123",
-            "Почини X сейчас",
-            "Исправь баг в plugin",
-            "Реализуй это изменение в коде",
-        ):
-            self.assertIn(prompt, skill)
+        self.assertIn("## 1. Проверить запуск и выбрать mode", skill)
+        self.assertIn(
+            "Один delivery verb, текущий repository или software project не являются",
+            skill,
+        )
+        self.assertIn("Read/status/audit/explain/plan/backlog capture", skill)
+        self.assertIn("обычный workflow без ShipTask lifecycle", skill)
 
     def test_ship_tasks_classifies_review_outcomes_without_retry_loops(self) -> None:
         skill = (
@@ -218,8 +218,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ):
             self.assertIn(outcome, skill)
         self.assertIn("In Review → In Progress", skill)
-        self.assertIn("не добиваться Goal `blocked` искусственными повторами", skill)
-        self.assertIn("не объявлять весь batch defective", skill)
+        self.assertIn("не создавать дополнительные Goal turns ради Goal `blocked`", skill)
+        self.assertIn("не делает весь batch defective", skill)
         self.assertIn("communication remainder", report)
         self.assertIn("truthful `In Review → In Progress`", report)
         self.assertIn("Decision support request", handoff)
@@ -283,8 +283,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             self.assertIn("PROBLEM_CONTEXT_ERROR", text)
             self.assertIn("своими словами", text)
             self.assertIn("$ship-tasks:strategic-explainer", text)
-        self.assertIn("один раз перезапустить", skill)
-        self.assertIn("bounded read-only strategic discovery", skill)
+        self.assertIn("раз запустить новый fresh subagent", skill)
+        self.assertIn("bounded `Strategic Handoff`", skill)
+        self.assertIn("bounded read-only", handoff)
         self.assertIn("local wording", handoff)
         self.assertIn("fallback", handoff)
         self.assertIn("доступные read-only tools", handoff)

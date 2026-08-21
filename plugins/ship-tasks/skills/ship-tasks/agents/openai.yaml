@@ -1,7 +1,7 @@
 interface:
   display_name: "Ship Tasks"
   short_description: "Доставить выбранный Task Manager scope"
-  default_prompt: "Используй $ship-tasks для выбранного Task Manager scope: классифицируй single или batch; explicit команду создать ровно одну Task в Task Manager и сразу выполнить её веди как single create-and-deliver, а не backlog capture. Возьми bare scope из project memory, перечитай live Task Manager state, создай Goal только для batch, выполни verification и required non-production effects, опубликуй native report и автоматически доведи полный evidence до terminal status."
+  default_prompt: "Используй $ship-tasks для выбранного Task Manager scope: классифицируй single или batch; explicit команду создать ровно одну Task в Task Manager и сразу выполнить её веди как single create-and-deliver, а не backlog capture. Возьми bare scope из project memory, перечитай live Task Manager state, создай Goal только для batch, а каждую In Review Task за один проход отнеси к conflict, доказанному success, доказанному failure или невозможности проверки. Выполни verification и required non-production effects, опубликуй понятный native report, не повторяй неизменившуюся приёмку и доведи статус до outcome, который доказан фактами."
 
 dependencies:
   tools:

@@ -1,6 +1,6 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.6+codex.20260821132430",
+  "version": "0.1.6+codex.20260821141029",
   "description": "Deliver selected Task Manager work and derive problem-first strategic explanations from bounded read-only context.",
   "author": {
     "name": "Andrey Myasnikov",

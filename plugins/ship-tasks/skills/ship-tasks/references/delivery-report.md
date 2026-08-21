@@ -38,10 +38,12 @@ authority или сообщает, что feature ещё не работает. 
 3. Сохранить report и gap в review/interaction output.
 4. Для proven failure выполнить truthful `In Review → In Progress`, оставив
    comment communication remainder; для `verification-blocked` сохранить
-   `In Review`; для success не выполнять `Done`.
+   `In Review`; для success не выполнять `Done`; для нового canceled
+   outcome не выполнять terminal `Canceled` write.
 
-Этот gap не является global `TASK CONTEXT ALARM`. Он блокирует `Done`, но не
-truthful rework status. Не повторять acceptance scenario ради comment delivery.
+Этот gap не является global `TASK CONTEXT ALARM`. Он блокирует новый terminal
+status write, но не truthful non-terminal rework/blocker status. Не повторять
+acceptance scenario ради comment delivery.
 
 ## Write и reconciliation
 
@@ -228,10 +230,12 @@ Diagram или compact before/after добавлять только если о�
 
 ## Material failure report
 
-Material failure — это user-visible impact, failed batch/external effect,
-rollback/revert, invalidated candidate, repeated rework или настоящий blocker
-после execution. Обычный красный тест, найденный и исправленный внутри
-implementation loop, сам по себе не требует incident comment.
+Material failure — это доказанное невыполнение acceptance, user-visible impact,
+failed external effect, rollback/revert, repeated rework или настоящий blocker после
+execution. Падение batch gate без task-level attribution может быть material
+run-level event, но не доказывает failure каждого member. Обычный красный тест,
+найденный и исправленный внутри implementation loop, сам по себе не требует
+incident comment.
 
 Не смешивать proven failure и `verification-blocked`. Первый требует прямого
 расхождения exact candidate с acceptance и truthful `In Progress`; второй

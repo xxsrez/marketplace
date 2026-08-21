@@ -5,481 +5,292 @@ description: "Доставлять однозначно выбранный Task 
 
 # Ship Tasks
 
-Применять одну business delivery policy только после прохождения invocation
-gate. Task Manager skill/connector использовать как technical adapter; project
-memory использовать как selector/profile hint, но не как live task state.
+ShipTask владеет business delivery policy. Task Manager skill и connector
+использовать как technical adapter. Project memory даёт selectors и
+project profile, но не live Task state и не authority.
 
-## Проверить invocation gate
+## 1. Проверить запуск и выбрать mode
 
-Gate пройден только в одном из случаев:
+Invocation gate пройден только в одном из случаев:
 
 1. Пользователь явно вызвал `$ship-tasks`.
-2. Natural-language запрос одновременно содержит delivery intent и
-   ровно один однозначный Task Manager delivery anchor, уже присутствующий в prompt или
-   выбранном Task Manager context:
-   - exact существующую Task вроде `TM-123`;
-   - явно выбранный Task Manager Project, Release или current scope;
-   - explicit просьбу создать ровно одну Task именно в Task Manager и сразу
-     начать или выполнить её (`single create-and-deliver`).
-3. Пользователь явно просит настроить или обновить ShipTask project memory.
+2. Запрос одновременно содержит delivery intent и один однозначный
+   Task Manager anchor: exact Task, уже выбранный Project/Release/current
+   scope либо явный create-and-deliver ровно одной Task.
+3. Пользователь явно просит настроить ShipTask project memory.
 
-Один delivery verb недостаточен. Обычные просьбы «почини X сейчас», «исправь
-баг в plugin» или «реализуй это изменение в коде» без Task Manager anchor не
-активируют ShipTask. Текущий repository, software project, code task или
-release target не являются Task Manager scope. Не читать memory и не вызывать
-Task Manager/Goal tools, чтобы найти или создать anchor задним числом.
+Один delivery verb, текущий repository или software project не являются
+Task Manager anchor. Не читать memory и не вызывать Task Manager/Goal tools,
+чтобы придумать anchor задним числом. Если gate не пройден,
+выполнить обычный workflow без ShipTask lifecycle, Goal и reports.
 
-Если gate не пройден, ShipTask не владеет запросом: выполнить обычный
-code/product/plugin workflow без ShipTask lifecycle, Goal, reports или Task
-Manager mutations.
-
-Regression examples:
-
-| Prompt | Route |
-|---|---|
-| `$ship-tasks` | ShipTask `batch` |
-| `Выполни TM-123` | ShipTask `single` |
-| `Доведи выбранный Task Manager Project/Release/current scope` | ShipTask `batch` |
-| `Создай ровно одну Task в Task Manager и сразу начни выполнять её` | ShipTask `single create-and-deliver` |
-| `Почини X сейчас` | обычный workflow, не ShipTask |
-| `Исправь баг в plugin` | обычный workflow, не ShipTask |
-| `Реализуй это изменение в коде` | обычный workflow, не ShipTask |
-
-## Классифицировать intent до mutations
-
-Выбрать ровно один mode:
-
-| Intent | Mode | Goal |
+| Запрос | Mode | Goal |
 |---|---|---|
-| Bare `$ship-tasks` | `batch` по memory `current_scope` | обязательный |
-| Exact одна Task, явно или natural language | `single` | нет |
-| Создать ровно одну Task в Task Manager и сразу начать/выполнить её | `single` (`create-and-deliver`) | нет |
-| Несколько Tasks или выбранный Task Manager Project/Release/current scope | `batch` | обязательный |
-| Явно оформить/обновить ShipTask memory | `memory-maintenance` | нет |
+| Bare `$ship-tasks` | `batch` по memory `current_scope` | обязателен |
+| Exact одна Task | `single` | нет |
+| Ровно одна новая Task в Task Manager и сразу выполнить | `single create-and-deliver` | нет |
+| Несколько Tasks, Project, Release или current scope | `batch` | обязателен |
+| Явно оформить memory | `memory-maintenance` | нет |
 | Read/status/audit/explain/plan/backlog capture | `non-delivery` | нет |
 
-- Delivery verbs: выполнить, исправить, реализовать, довести, доставить,
-  протестировать и выпустить выбранную Task/scope. Они необходимы для implicit
-  delivery, но без Task Manager anchor недостаточны.
-- Комбинация explicit Task Manager create intent и delivery intent, например
-  «создай ровно одну Task в Task Manager и начинай делать», является `single
-  create-and-deliver`. Не считать её backlog capture.
-  Не завершать flow после одного `create_task`. Создание/выполнение другой
-  сущности этот mode не включает.
-- «Просто добавь», «положи в backlog», «запланируй» не запускают delivery и не
-  меняют lifecycle существующей Task.
-- Explicit read-only/local-only/no-deploy ограничивает более общий delivery
-  verb.
-- `single` требует ровно одну canonical Task до implementation. Обычный single
-  разрешает существующую Task. `Create-and-deliver` сначала разрешает exact
-  parent/content/acceptance/write authority, создаёт ровно одну Task, выполняет
-  canonical read-back и использует только её. При нуле или нескольких
-  совпадениях обычного single остановиться до mutation; не создавать замену и
-  не выбирать похожую Task. Terminal Task не reopen-ить без explicit request.
-- Exact selector в текущем prompt выше memory default и действует только в
-  этом run. Не объединять scopes и не переписывать memory молча.
+«Просто добавь», «положи в backlog» и «запланируй» не запускают
+delivery. Explicit read-only/local-only/no-deploy ограничивает более общий
+delivery verb. Exact selector текущего запроса выше memory default только
+для текущего run.
 
-Natural-language read/status/audit/explain/plan/backlog request не активирует
-ShipTask и маршрутизируется напрямую в Task Manager adapter, когда он нужен.
-Если `non-delivery` intent пришёл вместе с explicit `$ship-tasks`, не исполнять
-delivery workflow: выполнить только exact read/planning Task Manager request
-через adapter. Для `memory-maintenance`
-прочитать [project-memory reference](references/project-memory.md) полностью,
-собрать source-grounded profile и записать memory только по explicit request.
+В `memory-maintenance` полностью прочитать
+[project-memory reference](references/project-memory.md) и писать memory только
+по явной просьбе. В `non-delivery` выполнить только точный read или planning
+request через adapter, если он нужен.
 
-## Необязательно назвать свежий Codex thread
+## 2. Разрешить exact scope и live state
 
-Title текущего Codex thread — необязательная UI metadata, не Task Manager write,
-не evidence и не terminal effect. Если текущая surface предоставляет
-current-thread read (например, `codex_app__read_thread`) и setter title
-(например, `codex_app__set_thread_title`), выполнить этот шаг только при всех
-условиях:
+Для `batch`, bare invocation и remembered defaults полностью прочитать
+[project-memory reference](references/project-memory.md). Приоритет:
 
-1. metadata явно подтверждает, что текущий запрос — первый пользовательский
-   ход нового thread без завершённых предыдущих ходов; при неизвестном сигнале
-   title не менять;
-2. текущий title пустой либо очевидно auto-generated из `$ship-tasks` или его
-   catalog link. Любой другой непустой title считать пользовательским;
-3. invocation gate пройден и live canonical scope уже разрешён.
-
-Сначала прочитать current-thread metadata; после scope resolution вызвать setter
-не более одного раза. Title, начинающийся с `ShipTask ·`, повторно не менять.
-Формат выбрать по exact scope:
-
-- single Task: `ShipTask · <Task ref> · <short Task title>`;
-- batch Project/Release: `ShipTask · <Project name> · <Release name>`;
-- batch без Release: `ShipTask · <Project name> · batch`;
-- bare `$ship-tasks`: тот же формат после разрешения memory `current_scope`;
-- create-and-deliver: single-формат после create/read-back Task.
-
-Сжать label до короткого нормализованного имени без status, дат, branch или
-длинного acceptance text. Если app title tool отсутствует или завершился
-ошибкой, продолжить обычный workflow без retry и без blocker. Не использовать
-этот шаг на последующих ходах или при повторном `$ship-tasks` в существующей
-сессии.
-
-## Разрешить project context и scope
-
-Перед `batch`, bare invocation или использованием remembered project defaults
-прочитать [project-memory reference](references/project-memory.md) полностью.
-
-Scope precedence:
-
-1. exact selector текущего prompt;
-2. project memory `current_scope` для bare/current-scope intent;
-3. current Task Manager canonical lookup;
+1. exact selector текущего запроса;
+2. memory `current_scope` для bare/current-scope intent;
+3. current canonical lookup;
 4. complete live inventory и full Task detail.
 
-Memory хранит selectors, repository, branches, commands, environments,
-verification/release/recovery profile и authority hints. Никогда не считать её
-authority для current Task detail/status/`version`/relations/comments/access,
-connector capabilities, deploy result или user approval.
+Memory не доказывает current status, `version`, relations, comments, access,
+connector capability, deploy result или approval. Если обязательный context
+отсутствует, неоднозначен или противоречит live evidence так, что write
+небезопасен, выдать global `TASK CONTEXT ALARM` и не мутировать ничего.
 
-Если обязательная memory недоступна, не загружена на этой Codex surface,
-неоднозначна, устарела или противоречит current evidence так, что mutation
-небезопасна, выдать global `TASK CONTEXT ALARM`: known scope, conflicting facts
-и sources, last safe checkpoint, одно exact решение. Не создавать Goal, не
-менять Task, code, Git, deploy state или memory до разрешения alarm.
-
-## Получить authoritative Task Manager state
-
-Использовать current Task Manager adapter instructions и tool descriptions для
-exact payloads. Сохранить минимальные invariants даже если adapter skill не был
-отдельно загружен:
+Через Task Manager adapter:
 
 1. Проверить workspace identity, read/write capabilities и status catalog.
-2. Разрешить Project/Release/Task selectors только в current canonical refs;
-   проверить Release membership и resource ACL.
-3. Для multi-task boundary получить все страницы inventory до `hasMore=false`.
-   Counts/первая страница не являются complete inventory.
-4. До dependency, acceptance, relation или write reasoning получить full detail
-   каждой рабочей Task. External context читать только при material provenance.
-5. Для `duplicate_of` прочитать canonical Task и все её duplicates как review
-   scenarios, но не выделять duplicates отдельной execution work.
-6. Проверить native Task comment create/list/read и authority. Imported
-   comments не являются write capability.
+2. Разрешить Project/Release/Task только в current canonical refs; проверить
+   Release membership и ACL.
+3. Для multi-task boundary пройти все страницы до `hasMore=false`.
+4. До dependency, acceptance, relation или write reasoning получить full detail.
+5. Для `duplicate_of` прочитать canonical Task и все incoming duplicates как
+   review scenarios, не как отдельную execution work.
+6. Проверить native comment create/list/read; imported comments не являются
+   write capability.
 
-Перед каждым Task update перечитать detail и передать current `version`. При
-`version_conflict` перечитать и повторить только всё ещё применимый intent. Не
-перетирать unrelated edits. После write выполнить read-back. Не повторять
-create/comment write вслепую после unknown outcome; сначала искать duplicate.
+Перед каждым Task update перечитать detail и передать current `version`.
+При `version_conflict` перечитать и повторить только всё ещё применимый
+intent. После write обязателен read-back. Не повторять create/comment вслепую
+после unknown outcome; сначала искать duplicate.
 
-## Установить lifecycle и рабочий scope
+Необязательно можно один раз назвать свежий Codex thread `ShipTask · ...`,
+но только если surface надёжно подтверждает первый ход, title пуст или
+очевидно сгенерирован, а live scope уже разрешён. Отсутствие title tool
+никогда не блокирует delivery.
+
+## 3. Создать Goal только для batch
+
+В `single`, `memory-maintenance` и `non-delivery` не вызывать Goal tools.
+В `batch` после exact refs и complete read-only inventory, но до первой
+non-Goal mutation:
+
+1. Вызвать `get_goal`. Если нужные Goal tools недоступны, выдать
+   `TASK CONTEXT ALARM`.
+2. Создать Goal без token budget, если user не задал его явно, либо
+   продолжить только совместимый незавершённый Goal того же exact scope.
+3. Зафиксировать objective, observable done criteria, verification, allowed writes и
+   blocker rules.
+4. Оставлять Goal активным при любой in-scope `To Do`, `In Progress`,
+   `In Review`, deferred Task, rework/completion remainder или unresolved defect.
+
+Task-level `BLOCKED`, run `PARTIAL`/`BLOCKED` и Goal status — разные состояния.
+Task-local проблема оставляет Goal активным. Не повторять действие
+и не создавать дополнительные Goal turns ради Goal `blocked`.
+
+## 4. Согласовать lifecycle с фактами
 
 ```text
-Backlog                         excluded; no ShipTask writes
-  \- exact just-created Task -> To Do   create-and-deliver recovery only
-To Do -> In Progress -> In Review -> Done
-                         \-----> Canceled
+Backlog                         excluded; no writes
+  └─ exact just-created Task → To Do   create-and-deliver recovery only
+To Do → In Progress → In Review → Done
+                         └──────→ Canceled
 Duplicate                       terminal review context only
 ```
 
-- Рабочие statuses: `To Do`, `In Progress`, `In Review` по current canonical
-  catalog. Terminal аналоги распознавать по current category/status.
-- Pre-existing `Backlog` исключён из delivery даже при Project/Release scope.
-  Не выполнять и не менять его. Узкое исключение — exact Task, только что
-  созданная текущим `create-and-deliver`: если adapter вернул её в `Backlog`,
-  перечитать current `version`, перевести только её в current `To Do` и сделать
-  read-back. Это не разрешает выбирать другую Backlog Task.
-- Для `create-and-deliver` создать Task сразу в current `To Do`, когда adapter
-  это поддерживает. После canonical/full-detail read-back и успешного preflight
-  перевести её в `In Progress`, перечитать и только затем начать implementation.
-  Не выдавать один create или оставшийся `Backlog`/`To Do` за начатое execution.
-- `To Do` переводить в `In Progress` после preflight; `In Review` — только
-  после targeted gate; `Done` — только после полного terminal evidence и
-  published/read-back `COMPLETED` comment.
-- Любая `In Review` Task означает незавершённую классификацию результата, а не
-  human acceptance и не доказанный success.
+- Pre-existing `Backlog` не выполнять и не менять. Exact Task, только что
+  созданную current create-and-deliver, можно вывести из default `Backlog`
+  в current `To Do` после read-back.
+- `To Do → In Progress` только после preflight; `In Progress → In Review`
+  только после passing targeted gate и integration.
+- `In Review` означает незавершённую классификацию result. Сам status не
+  доказывает ни success, ни failure, ни пройденную проверку.
+- `Done` разрешён только после полного terminal evidence и published/read-back
+  `COMPLETED`. Новый `Canceled` transition также требует `CANCELED` report.
 
-## Создать Goal только для batch
+## 5. Разобрать каждую `In Review` за один проход
 
-В `single`, `memory-maintenance` и `non-delivery` не вызывать Goal tools.
+Перечитать current Task, acceptance, dependencies, material duplicates, accepted
+project decisions и явные уточнения пользователя. История изменений acceptance
+сама по себе не является conflict. После одного bounded diagnostic pass выбрать
+ровно один исход:
 
-В `batch` после exact refs и complete read-only inventory, но до code, Git,
-Task Manager, ownership или external writes:
+| Исход | Достаточное основание | Действие |
+|---|---|---|
+| `task-contract-conflict` | Current mandatory requirements противоречат друг другу или не задают наблюдаемый result | Если exact correction однозначно следует из current accepted source и write authority уже есть, исправить contract и перечитать. Иначе оставить `In Review`, подготовить `BLOCKED` с точным противоречием и нужным решением. |
+| `verified-success` | Полный evidence set доказывает current acceptance на exact result | Опубликовать/read-back `COMPLETED`, перевести в `Done`, перечитать. |
+| `verified-failure` | Надёжное наблюдение exact candidate в совместимой среде прямо нарушает acceptance | Подготовить `REWORK REQUIRED`, перевести `In Review → In Progress`, перечитать и начать rework. |
+| `verification-blocked` | Доступная проверка не доказывает ни success, ни failure | Оставить `In Review`, подготовить `BLOCKED` и завершить попытку до нового result/evidence/environment/access/authority/Task contract. |
 
-1. Вызвать `get_goal`; при отсутствии обязательных Goal tools выдать
-   `TASK CONTEXT ALARM`.
-2. Создать Goal без token budget, если пользователь отдельно не задал numeric
-   budget, либо продолжить только совместимый незавершённый Goal того же exact
-   scope/outcome. Несовместимый Goal не заменять и не завершать.
-3. Зафиксировать objective, observable done criteria, verification, exact
-   scope/allowed writes и blocker rules.
-4. Удерживать Goal активным при любой in-scope `To Do`, `In Progress`,
-   `In Review`, rework/completion remnant, deferred Task или unresolved in-scope
-   defect. Завершить Goal последним lifecycle write после final reconciliation.
+Ошибка test harness, недоступный actor/access, несовместимая среда или
+отсутствие наблюдаемости не доказывают product failure. Падение aggregate gate
+без task-level attribution не делает весь batch defective: неразличимые members
+остаются `In Review` до separating diagnostic.
 
-## Провести preflight
+Для `verification-blocked` попросить Strategic Explainer дать 2–4 способа
+провести приёмку: prerequisites, что каждый способ докажет, tradeoff,
+observable success signal и recommended next attempt.
 
-До execution определить exact scope, acceptance/dependencies, repository and
-integration identity, allowed writes, targeted gate, batch gate/triggers,
-external effects, exact release target/environment class, smoke/recovery и
-отдельные external approval gates.
+Не повторять тот же acceptance scenario, poll, comment или Goal turn без
+конкретного изменения входных условий.
+
+## 6. Выполнить и проверить
+
+До execution определить acceptance/dependencies, repository/integration identity,
+allowed writes, targeted gate, batch gate и triggers, external effects, release target,
+environment class, smoke/recovery и external approvals.
 
 Disposition precedence для batch:
 
 ```text
 global-conflict
--> actionable completion-remains
--> resume
--> work-remains
--> deferred-only
--> no-work
+→ actionable completion-remains
+→ resume
+→ work-remains
+→ deferred-only
+→ no-work
 ```
 
-Global connector/scope/applicable-Goal/ownership/shared-state conflict даёт
-`TASK CONTEXT ALARM`. Task-local ambiguity даёт `deferred`; продолжать другие
-runnable Tasks. В `single` при `verification-blocked` сохранить `In Review`, а
-при proven failure перевести `In Review → In Progress`; подготовить truthful
-report и не выбирать другую Task.
+Global connector/scope/Goal/ownership/shared-state conflict даёт
+`TASK CONTEXT ALARM`. Task-local ambiguity откладывает только affected Task.
 
-## Никогда не требовать ручную приёмку
+`single` всегда serial. Для batch выбирать isolated lanes по dependencies,
+conflicts, verification, integration и review capacity. Один writer владеет одной
+Task; integration owner выполняет fan-in. Без реально запущенных isolated
+workers active write target равен `1`.
 
-- Acceptance criteria — проверяемые completion criteria, не human sign-off.
-- Не просить «принять» result, не создавать `acceptance-required` и не оставлять
-  terminal-ready Task в `In Review`.
-- После passing acceptance, targeted gate, applicable exact review-batch gate,
-  integration, required effects и resolved findings автоматически принять exact
-  result, опубликовать/read-back `COMPLETED`, перевести Task в `Done` и
-  перечитать её.
-- Старые memory/rollout/report/Goal/plan правила о ручной приёмке считать
-  superseded historical evidence. Никогда не переводить Goal в `blocked` по этой причине.
-- Automatic acceptance не заменяет production, destructive-data, secrets,
-  privacy, access-policy или external-recipient authority.
-
-## Разобрать `In Review` за один проход
-
-Перечитать current Task, acceptance, dependencies, material duplicates,
-accepted project decisions и явные уточнения пользователя. Несколько прошлых
-редакций acceptance сами по себе не означают противоречие: работать по current
-authoritative contract. После одного bounded diagnostic pass выбрать ровно одно:
-
-1. `task-contract-conflict`: current mandatory requirements противоречат друг
-   другу или не задают наблюдаемый результат. Однозначно разрешимый conflict
-   исправить по current accepted sources, перечитать Task и классифицировать
-   снова. Material choice оставить в `In Review` с `BLOCKED` explanation.
-2. `verified-success`: полный evidence set доказывает current acceptance.
-   Опубликовать/read-back `COMPLETED`, перевести в `Done`, перечитать.
-3. `verified-failure`: надёжное наблюдение exact candidate в совместимой среде
-   прямо противоречит acceptance. Подготовить через Strategic Explainer
-   `REWORK REQUIRED`, перевести `In Review → In Progress`, перечитать и начать
-   rework. Недоступный comment channel оставляет communication remainder, но не
-   разрешает держать доказанно сломанный result в `In Review`.
-4. `verification-blocked`: доступная проверка не доказывает ни success, ни
-   failure. Оставить `In Review`, подготовить `BLOCKED` explanation и завершить
-   попытку до нового result/evidence/environment/access/authority/Task contract.
-
-Ошибка test harness, недоступный actor/access, несовместимая среда или отсутствие
-наблюдаемости не доказывают product failure. Доказанное расхождение нельзя
-переименовывать в unknown. Для `verification-blocked` запросить у Strategic
-Explainer 2–4 способа провести приёмку: prerequisites, что каждый способ
-докажет, tradeoff, observable success signal и recommended next attempt.
-
-Не повторять тот же acceptance scenario, poll, comment или Goal turn без
-конкретного изменения входных условий. Task `BLOCKED`, run `PARTIAL`/`BLOCKED` и
-Goal status различаются. Task-local review blocker оставляет batch Goal active;
-не добиваться Goal `blocked` искусственными повторами.
-
-## Продолжать автономно и соблюдать release boundary
-
-Перед execution или первым defer/release decision прочитать
-[autonomy and release reference](references/autonomy-and-release.md) полностью.
-
-- Не задавать пользователю вопрос посреди runnable queue. Выбирать безопасный
-  обратимый in-scope default; material decision/authority blocker defer-ить с
-  checkpoint и продолжать независимую work.
-- Перед blocking input повторить complete inventory. При
-  `runnable_count > 0` blocking input запрещён.
-- Для каждого defer подготовить и при доступной capability
-  опубликовать/read-back `BLOCKED` handoff. Без comment capability показать тот
-  же handoff в run report и оставить communication remainder; никогда не писать
-  report в `description` и не повторять acceptance ради comment delivery.
-- ShipTask delivery intent является standing authority для ordinary exact
-  verified non-production target: local/dev/test/QA/UAT/staging/preview/sandbox.
-  Выполнить required build/deploy/bounded migration/smoke/repair/rollback без
-  дополнительного confirmation.
-- Никогда не выполнять production release без explicit user authority для
-  exact production target/current scope. Unknown environment считать
-  production-like. Подготовить non-production evidence, defer-ить с
-  `production-approval-required` и продолжить runnable work.
-
-## Выполнить, интегрировать и проверить
-
-`single` всегда serial и использует risk-appropriate singleton review batch.
-Для batch выбирать adaptive isolated lanes по dependency, conflict,
-verification, integration и review capacity; один writer владеет одной Task,
-integration owner выполняет fan-in в dependency order. Не максимизировать
-agent count ради числа.
-
-Различать active write target и review batch target. Без фактически запущенных
-isolated concurrent workers active write target равен `1`, даже для большого
-batch. Вести run-scoped active lane set: подтверждённый `To Do → In Progress`
-занимает lane; общий commit/UAT/full gate/comment не делает `In Progress`
-waiting room для уже targeted-verified integrated candidate.
-
-Перед каждым новым `To Do → In Progress` выполнить status-reconciliation
-barrier. Task текущего run, на которой implementation/rework закончились,
-сначала перевести в `In Review` и перечитать; незавершённый partial blocker —
-truthful defer; terminal result — terminal read-back. Unknown/unreconciled
-status write оставляет lane занятой. Не начинать новую Task, если занятые lanes
-достигли active write target; targeted-verified candidate нельзя defer-ить как
-partial только ради освобождения capacity.
+Перед каждым новым `To Do → In Progress` выполнить status-reconciliation:
+законченный implementation/rework должен сначала перейти в `In Review`,
+честно отложенный partial result — освободить lane, terminal result — пройти
+terminal read-back. Unknown status write не освобождает lane.
 
 Для каждой Task:
 
-1. Зафиксировать canonical ref, current detail/version/status, acceptance,
-   dependencies, result base и release target.
+1. Зафиксировать canonical ref, detail/version/status, acceptance, dependencies,
+   result base и release target.
 2. `To Do` начать после preflight; `In Progress` продолжить из coherent
-   checkpoint; `In Review` сначала провести через однократную классификацию выше,
-   не реализовывать заново без proven finding.
-3. Реализовать минимальный целостный in-scope result и выполнить per-Task targeted gate.
-4. Покрыть material duplicate scenarios. Отдельную проблему вынести как
-   finding/scope decision без silent work expansion.
-5. Интегрировать exact candidate, перевести его в `In Review` и сформировать
-   evidence identity. Завершить status write/read-back до освобождения lane и
-   старта replacement Task; ожидание общего batch gate/effect этого не отменяет.
-6. По batch trigger выполнить independent review и review-batch gate на exact
-   integrated members/result. Не запускать дорогой full gate для каждого
-   member без risk reason.
-7. Выполнить required external effects и независимо проверить exact target.
-8. Failed gate локализовать. При proven failure подготовить `REWORK REQUIRED`,
-   затронутые Tasks вернуть в `In Progress`, выполнить rework и новые gates. При
-   неясной attribution не объявлять весь batch defective: оставить members в
-   `In Review`, зафиксировать `verification-blocked` и предложить diagnostic
-   gate, который разделит affected scenarios.
+   checkpoint; `In Review` сначала классифицировать, а не реализовывать
+   заново без finding.
+3. Реализовать минимальный целостный in-scope result; покрыть material
+   duplicate scenarios; выполнить per-Task targeted gate.
+4. Интегрировать exact candidate, перевести его в `In Review` и перечитать.
+5. По trigger выполнить independent review и review-batch gate на exact integrated
+   identity. Не запускать дорогой full gate для каждой Task без risk reason.
+6. Выполнить required external effects и независимо проверить exact target.
+7. Failed gate локализовать. Только proven failure возвращает Task в
+   `In Progress`; unclear attribution оставляет неразличимые members в `In Review`
+   как `verification-blocked`.
 
-## Опубликовать Task report
+## 7. Продолжать автономно и соблюдать release boundary
 
-Перед первым report decision прочитать
+Перед execution, первым defer или release decision полностью прочитать
+[autonomy and release reference](references/autonomy-and-release.md).
+
+- Не задавать task-local вопрос пока есть runnable work. Обратимый локальный
+  default выбирать самостоятельно; material decision/authority blocker откладывать
+  с checkpoint и продолжать независимые Tasks.
+- Перед blocking input повторить complete inventory. При `runnable_count > 0`
+  blocking input запрещён.
+- Для defer подготовить и попытаться опубликовать/read-back `BLOCKED`.
+  Без comment capability показать тот же handoff в run report, оставить
+  communication remainder и не использовать Task fields как fallback.
+- ShipTask delivery intent разрешает ordinary exact verified non-production workflow:
+  local/dev/test/QA/UAT/staging/preview/sandbox build, deploy, bounded migration, smoke,
+  repair и rollback.
+- Production release требует explicit user authority для exact target/current scope.
+  Unknown environment считать production-like. Без approval выполнить безопасную
+  preparation/non-production verification, затем defer с
+  `production-approval-required`.
+
+Automatic acceptance не заменяет production, destructive-data, secrets, privacy,
+access-policy, external-recipient или external-approver authority.
+
+## 8. Никогда не ждать ручную приёмку
+
+Acceptance criteria — проверяемые completion criteria, а не human sign-off.
+После passing acceptance, targeted gate, applicable exact review-batch gate, integration,
+required effects и resolved findings автоматически принять exact result,
+опубликовать/read-back `COMPLETED`, перевести Task в `Done` и перечитать.
+
+Не просить «принять» result, не создавать `acceptance-required`, не публиковать
+`ACCEPTANCE READY` и не оставлять terminal-ready Task в `In Review`. Старые
+memory/rollout/report/Goal/plan правила о ручной приёмке считать superseded
+historical evidence.
+
+## 9. Опубликовать понятный Task report
+
+Перед первым report decision полностью прочитать
 [delivery-report reference](references/delivery-report.md) и
-[Strategic Explainer handoff](references/strategic-explainer.md) полностью.
+[Strategic Explainer handoff](references/strategic-explainer.md).
 
-- Native comment обязателен для completed, materially failed/rework или blocked
-  Task. Только `COMPLETED` является barrier перед `Done`; отсутствие rework
-  comment не отменяет truthful `In Review → In Progress`.
-- Перед comment-level Strategic Handoff выполнить task-level finalization:
-  перечитать Task/result/effects, проверить exact evidence и доступный
-  безопасный bounded repair. Если состояние изменилось, повторить finalization и не
-  использовать старый handoff.
-- Отдельно сформулировать обязательный `Problem to solve`: beneficiary, desired
-  observable outcome и exact scope. Task ref или технический title недостаточны;
-  strategic view в handoff не пересказывать — его находит Explainer.
-- Каждый новый `COMPLETED`, `REWORK REQUIRED`, `BLOCKED` или `CANCELED` comment
-  обязан пройти task-scoped Strategic Explainer pipeline, включая простой
-  success. Сначала ShipTask выбирает state и фиксирует current facts, затем
-  свежий субагент сам выполняет bounded read-only strategic discovery и
-  возвращает explanation с source basis для родителя.
-- Success: `COMPLETED` после checks/effects и до `Done`. Failure/rework/blocker:
-  `REWORK REQUIRED`/`BLOCKED` с impact, checkpoint, evidence, cause confidence,
-  remaining risk и exact resume decision.
-- Для `verification-blocked` передать `Decision support request` на 2–4 способа
-  получить недостающее доказательство и сохранить краткое сравнение в comment.
-- Final comment родитель пишет своими словами после чтения Explainer output.
-  Сохранить outcome, impact, причинную границу, confidence и next state; можно
-  менять форму, но нельзя копировать механически, противоречить объяснению или
-  заменять его собственной process diary. Authoritative envelope и evidence
-  добавлять по исходным фактам. Выполнить forward trace и reverse coverage.
-- Fresh handoff означает built-in `default` с точным `fork_turns="none"`.
-  `fork_turns="all"`, положительное число fork turns и старый Explainer thread
-  запрещены. Initial task содержит только bounded `Strategic Handoff` с
-  `Problem to solve`, `Current-State Brief` и strategic discovery anchors.
-- При `CONTEXT_INTEGRITY_ERROR` исправить invocation и один раз перезапустить
-  новый default subagent с `fork_turns="none"`. При повторном отказе применить
-  contract локально как `degraded-adaptation`; communication helper не блокирует
-  truthful `In Review → In Progress`, но `COMPLETED` comment остаётся barrier до
-  `Done`.
-- При `PROBLEM_CONTEXT_ERROR` перечитать canonical Task/acceptance и explicit
-  context, исправить semantic problem и один раз повторить fresh invocation. Если
-  beneficiary и desired outcome всё ещё не установлены, классифицировать
-  `task-contract-conflict` и запросить exact problem context; local wording
-  fallback запрещён.
-- Использовать stable report identity, искать equivalent comment, выполнять
-  read-back. `not-available` или `write-outcome-unknown` блокирует `Done`, но не
-  truthful rework transition; непубликованный narrative остаётся отдельным
-  communication remainder.
-- Никогда не писать report в description, acceptance, status text или другой
-  Task field. Не публиковать `ACCEPTANCE READY`.
+| Report state | Status rule при недоступном comment channel |
+|---|---|
+| `COMPLETED` | Не переводить в `Done`; приёмку не повторять. |
+| `CANCELED` для нового transition | Не выполнять terminal status write. |
+| `REWORK REQUIRED` | Выполнить truthful `In Review → In Progress`; оставить communication remainder. |
+| `BLOCKED` | Сохранить status, который диктует Task outcome; показать handoff в run report. |
 
-## Ограничивать defects и recovery
+Перед каждым новым `COMPLETED`, `REWORK REQUIRED`, `BLOCKED` или `CANCELED`:
 
-- Автоматически исправлять только acceptance/project-policy in-scope defect.
-- Blocking out-of-scope finding defer-ит affected Task; non-blocking finding
-  остаётся final-only. Не создавать follow-up Task без explicit authority.
-- При resume перечитать Task, workspace/Git, checks и external state. Старый
-  report — checkpoint, не current proof.
-- Не выполнять reset/clean/stash/force-push/takeover или удаление чужой work
-  при dirty/shared drift. Изолировать affected lane или alarm shared conflict.
+1. ShipTask перечитывает Task/result/effects, проверяет evidence и доступный
+   bounded repair, затем сам выбирает truthful state, authority и next action.
+2. Сформулировать semantic `Problem to solve`: beneficiary, desired observable outcome и
+   exact scope. Task ref/title не заменяют проблему.
+3. Создать bounded `Strategic Handoff` и запустить fresh built-in `default`
+   subagent с точным `fork_turns="none"`, поручив применить
+   `$ship-tasks:strategic-explainer`. Не передавать inherited history, raw logs,
+   process diary или готовый strategic conclusion.
+4. Прочитать свободное problem-first explanation и source basis. Explainer не
+   выбирает status, recovery, authority или Goal transition.
+5. ShipTask пишет final comment своими словами: сохраняет problem, outcome,
+   impact, причинную границу, confidence и next state; добавляет authoritative
+   envelope и evidence из исходных фактов. Выполнить forward trace и reverse coverage.
+6. Найти equivalent report по stable key, записать без blind retry и перечитать.
 
-## Осмыслить и завершить по mode
+При `CONTEXT_INTEGRITY_ERROR` или `PROBLEM_CONTEXT_ERROR` исправить handoff и один
+раз запустить новый fresh subagent. Повторный orchestration failure переходит
+в локальную `degraded-adaptation`; это не блокирует truthful rework status.
+Если после перечитывания Task нельзя сформулировать саму проблему, это
+`task-contract-conflict`, а не повод придумывать текст.
 
-Перед любым terminal outcome, blocking pause или финальным ответом прочитать
-[run-report reference](references/run-report.md) полностью и выполнить
-finalization pass. Сопоставить обещанный и фактический результат, перечитать
-current scope/state/evidence, объяснить material gaps и проверить доступный
-safe in-scope recovery.
+Для `verification-blocked` передать `Decision support request` на 2–4 способа
+приёмки. Никогда не писать report в description, acceptance, status text или другое
+Task field. Не публиковать `ACCEPTANCE READY`.
 
-Blocker остаётся blocker до устранения. Если current operation/authority
-позволяют его устранить или закончить reconciliation, выполнить одно bounded
-recovery, перечитать affected state и начать finalization pass заново. Без
-material state change не повторять действие или проверку.
+## 10. Финализировать run
 
-Для `single` перечитать Task и доказать: exact result, acceptance, targeted и
-singleton batch gates, required effects, automatic acceptance, published
-report и truthful terminal status. Goal identity — `not-applicable`.
+Перед terminal outcome, blocking pause или финальным ответом полностью прочитать
+[run-report reference](references/run-report.md) и выполнить finalization pass:
 
-Для `batch` перед terminal claim повторить complete inventory и проверить:
+1. Сопоставить обещанный и фактический result.
+2. Перечитать current Task/Goal/source/effect state и material evidence.
+3. Объяснить gaps и отделить доказанную причину от предположения.
+4. Выполнить один safe bounded in-scope repair, если authority уже есть;
+   перечитать state, повторить нужные checks и начать finalization заново.
+5. Без material state change не повторять repair, приёмку, poll или Goal turn.
 
-- zero unfinished/deferred in-scope working Tasks и unresolved in-scope defects;
-- `Backlog` исключён и показан отдельно;
-- final review batch относится к exact final integrated result;
-- duplicate scenarios, checks и external effects имеют exact evidence;
-- для каждой изменённой/materially failed Task report опубликован и перечитан;
-- narrative каждого нового report прошёл task-scoped Strategic Explainer
-  contract либо отмеченный internal `degraded-adaptation` с теми же checks;
-- Task Manager projection и result identities reconciled;
-- decision queue пуста.
+Для `single` доказать exact result, acceptance, singleton gates, effects, report и
+truthful status. Goal — `not-applicable`.
 
-Если остаётся runnable или recovery work — продолжить. Если остаются только
-deferred Tasks — показать одну consolidated queue, оставить Goal active и
-остановить текущий run без искусственных повторов. При полном evidence вызвать
-`update_goal(status="complete")`
-последним.
+Для `batch` перед terminal claim повторить complete inventory. Goal завершается
+последним lifecycle write только когда нет `To Do`, `In Progress`, `In Review`,
+deferred Tasks, unresolved in-scope defects или incomplete required effects. Если
+остались только deferred Tasks, показать одну consolidated queue, оставить
+Goal активным и остановить текущий run без искусственных повторов.
 
-Каждый Task comment получает task-scoped стратегическое объяснение как смысловую
-основу. Для exact single-Task chat report можно переиспользовать его только при
-совпадающих audience, facts, state, dependency и next action. Planned
-comment/read-back и terminal status reconciliation не делают explanation stale,
-если они совпали с next-state contract и не выявили drift. Для aggregate batch,
-нескольких blockers, material partial или другого audience сформировать новый
-scope-level `Strategic Handoff`, запустить fresh built-in `default` с
-`fork_turns="none"` и поручить ему применить установленный catalog skill
-`$ship-tasks:strategic-explainer`.
-Для каждого invocation передавать только bounded handoff для exact target
-surface/scope. После gates Explainer сам читает available exact Task relations,
-Project/Release context и repository strategic documents через read-only tools;
-не передавать ему готовый strategic conclusion.
-
-При корректном invocation Explainer возвращает обычный содержательный текст, не
-structured result и не copy-ready comment. Родитель обязан его прочитать и
-самостоятельно сформулировать user-facing narrative своими словами, сохранив
-material meaning. Если explanation противоречит evidence или потерял важный
-факт, исправить Strategic Handoff и повторить fresh invocation, а не игнорировать
-Explainer и не собирать комментарий из raw process history.
-
-До публикации `BLOCKED` comment должно существовать task-level explanation. До
-blocking user handoff должно существовать scope-level explanation; при exact
-single-Task совпадении это может быть то же проверенное объяснение. Использовать его только как
-communication layer: status, recovery, action, report identity и Goal transition
-решать по исходному evidence и authority. После material state change старый
-output не переиспользовать. Если subagent/skill недоступен, самостоятельно
-применить тот же problem gate, bounded read-only strategic discovery,
-source-state classification и fidelity contract; отметить internal
-`degraded-adaptation`. Communication helper не создаёт новый terminal blocker,
-но raw technical summary не является допустимым fallback.
-
-Каждый terminal exit (`complete`, `blocked`, partial/deferred, `no-work`)
-заканчивается глубоким компактным `SHIPTASK RUN REPORT`. Сначала дать итог,
-текущий статус и причинную модель простым языком; затем только evidence,
-ограничения и следующий шаг, необходимые человеку. Не выгружать process diary,
-raw tool output или исчерпывающие inventories. Не выдавать unknown/skipped
-effect за verified completion.
+Каждый exit (`COMPLETED`, `PARTIAL`, `BLOCKED`, `NO WORK`) заканчивается глубоким,
+но компактным `SHIPTASK RUN REPORT`: сначала итог, текущий статус и причина
+простыми словами; затем только нужные evidence, ограничения и следующий шаг.
+Не выгружать process diary, raw tool output или полный inventory и не выдавать
+unknown/skipped effect за verified completion.
