@@ -1,6 +1,6 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.6+codex.20260821111515",
+  "version": "0.1.6+codex.20260821132430",
   "description": "Deliver selected Task Manager work and derive problem-first strategic explanations from bounded read-only context.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Ship Tasks",
     "shortDescription": "Deliver work with problem-first explanations.",
-    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Every Ship Tasks report gives Strategic Explainer an explicit problem and current facts; the Explainer independently finds bounded read-only strategic context while Ship Tasks retains status and execution-evidence authority.",
+    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. In Review work is classified once as a task-contract conflict, verified success, verified failure, or a genuine verification blocker; unchanged acceptance attempts are not repeated. Every Ship Tasks report gives Strategic Explainer an explicit problem and current facts; the Explainer independently finds bounded read-only strategic context while Ship Tasks retains status and execution-evidence authority.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [

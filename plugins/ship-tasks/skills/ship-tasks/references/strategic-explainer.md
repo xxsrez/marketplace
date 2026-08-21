@@ -22,7 +22,7 @@ user-facing handoff. Общий behavioral contract находится в siblin
 
 Перед spawn перечитать exact current Task/result/effects и самостоятельно
 зафиксировать report state, evidence, verified/unverified scenarios, current
-constraints, safe self-recovery и допустимый next action. Explainer не выбирает
+constraints, доступный bounded repair и допустимый next action. Explainer не выбирает
 state, blocker, authority или terminal transition.
 
 Отдельно сформулировать содержательную задачу, которую решает exact scope. Она
@@ -56,6 +56,7 @@ Current capability and attempts:
 Constraints:
 Candidate user dependency:
 Next-state contract:
+Decision support request:
 Output language and channel:
 Required authoritative envelope:
 
@@ -80,6 +81,12 @@ Needed input:
 показывает, что основной агент не может продолжить без человека или external
 state. `Next-state contract` называет actor, минимальное действие, причину,
 observable success signal и что ShipTask сможет продолжить после него.
+
+Для `verification-blocked` обязательно заполнить `Decision support request`:
+попросить 2–4 реалистичных способа получить недостающее доказательство. Для
+каждого нужны prerequisites, что он доказывает, основной tradeoff и observable
+success signal; один способ можно рекомендовать. Это не просьба выбрать status,
+authority или выполнить действие.
 
 Для material или multi-scenario ситуации заполнять отдельный scenario ledger.
 `Needed input` не является разрешением просить пользователя. Не смешивать
@@ -129,10 +136,12 @@ confidence.
 
 ### Context integrity
 
-При `CONTEXT_INTEGRITY_ERROR` не выполнять comment/status/Goal writes. Исправить
-orchestration и один раз создать новый default subagent с `fork_turns="none"`.
-Повторный отказ останавливает report workflow как внутреннюю orchestration
-failure, а не blocker доставляемой Task.
+При `CONTEXT_INTEGRITY_ERROR` не использовать ответ и не публиковать comment.
+Исправить orchestration и один раз создать новый default subagent с
+`fork_turns="none"`.
+При повторном отказе применить contract локально как `degraded-adaptation`.
+Communication helper не блокирует truthful rework status; `COMPLETED` comment
+остаётся обязательным до `Done`.
 
 ### Missing problem
 
@@ -142,9 +151,9 @@ user/project context, исправляет handoff и один раз запус
 subagent. Нельзя заменять semantic problem одним Task ref/title.
 
 Если ShipTask всё ещё не может честно сформулировать beneficiary и desired
-outcome, он останавливает report workflow до comment/status/Goal writes и прямо
-запрашивает недостающий problem context. Не объявлять это product defect или
-terminal blocker Task и не переходить к local wording fallback.
+outcome, это `task-contract-conflict`: ShipTask прямо запрашивает недостающий
+problem context, не объявляет product defect и не переходит к local wording
+fallback.
 
 ### Strategic source gap
 

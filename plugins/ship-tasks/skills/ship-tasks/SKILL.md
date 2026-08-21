@@ -188,7 +188,8 @@ Duplicate                       terminal review context only
 - `To Do` переводить в `In Progress` после preflight; `In Review` — только
   после targeted gate; `Done` — только после полного terminal evidence и
   published/read-back `COMPLETED` comment.
-- Любая `In Review` Task означает `completion-remains`, а не human acceptance.
+- Любая `In Review` Task означает незавершённую классификацию результата, а не
+  human acceptance и не доказанный success.
 
 ## Создать Goal только для batch
 
@@ -228,9 +229,9 @@ global-conflict
 
 Global connector/scope/applicable-Goal/ownership/shared-state conflict даёт
 `TASK CONTEXT ALARM`. Task-local ambiguity даёт `deferred`; продолжать другие
-runnable Tasks. В `single` при material blocker/failure опубликовать и
-перечитать truthful report, сохранить non-terminal status и завершить flow, не
-выбирая другую Task.
+runnable Tasks. В `single` при `verification-blocked` сохранить `In Review`, а
+при proven failure перевести `In Review → In Progress`; подготовить truthful
+report и не выбирать другую Task.
 
 ## Никогда не требовать ручную приёмку
 
@@ -246,6 +247,39 @@ runnable Tasks. В `single` при material blocker/failure опубликова
 - Automatic acceptance не заменяет production, destructive-data, secrets,
   privacy, access-policy или external-recipient authority.
 
+## Разобрать `In Review` за один проход
+
+Перечитать current Task, acceptance, dependencies, material duplicates,
+accepted project decisions и явные уточнения пользователя. Несколько прошлых
+редакций acceptance сами по себе не означают противоречие: работать по current
+authoritative contract. После одного bounded diagnostic pass выбрать ровно одно:
+
+1. `task-contract-conflict`: current mandatory requirements противоречат друг
+   другу или не задают наблюдаемый результат. Однозначно разрешимый conflict
+   исправить по current accepted sources, перечитать Task и классифицировать
+   снова. Material choice оставить в `In Review` с `BLOCKED` explanation.
+2. `verified-success`: полный evidence set доказывает current acceptance.
+   Опубликовать/read-back `COMPLETED`, перевести в `Done`, перечитать.
+3. `verified-failure`: надёжное наблюдение exact candidate в совместимой среде
+   прямо противоречит acceptance. Подготовить через Strategic Explainer
+   `REWORK REQUIRED`, перевести `In Review → In Progress`, перечитать и начать
+   rework. Недоступный comment channel оставляет communication remainder, но не
+   разрешает держать доказанно сломанный result в `In Review`.
+4. `verification-blocked`: доступная проверка не доказывает ни success, ни
+   failure. Оставить `In Review`, подготовить `BLOCKED` explanation и завершить
+   попытку до нового result/evidence/environment/access/authority/Task contract.
+
+Ошибка test harness, недоступный actor/access, несовместимая среда или отсутствие
+наблюдаемости не доказывают product failure. Доказанное расхождение нельзя
+переименовывать в unknown. Для `verification-blocked` запросить у Strategic
+Explainer 2–4 способа провести приёмку: prerequisites, что каждый способ
+докажет, tradeoff, observable success signal и recommended next attempt.
+
+Не повторять тот же acceptance scenario, poll, comment или Goal turn без
+конкретного изменения входных условий. Task `BLOCKED`, run `PARTIAL`/`BLOCKED` и
+Goal status различаются. Task-local review blocker оставляет batch Goal active;
+не добиваться Goal `blocked` искусственными повторами.
+
 ## Продолжать автономно и соблюдать release boundary
 
 Перед execution или первым defer/release decision прочитать
@@ -256,9 +290,10 @@ runnable Tasks. В `single` при material blocker/failure опубликова
   checkpoint и продолжать независимую work.
 - Перед blocking input повторить complete inventory. При
   `runnable_count > 0` blocking input запрещён.
-- Для каждого defer обязательно опубликовать/read-back `BLOCKED` handoff. Без
-  comment capability оставить Task non-terminal и включить comment delivery в
-  blocker; никогда не писать report в `description`.
+- Для каждого defer подготовить и при доступной capability
+  опубликовать/read-back `BLOCKED` handoff. Без comment capability показать тот
+  же handoff в run report и оставить communication remainder; никогда не писать
+  report в `description` и не повторять acceptance ради comment delivery.
 - ShipTask delivery intent является standing authority для ordinary exact
   verified non-production target: local/dev/test/QA/UAT/staging/preview/sandbox.
   Выполнить required build/deploy/bounded migration/smoke/repair/rollback без
@@ -295,8 +330,8 @@ partial только ради освобождения capacity.
 1. Зафиксировать canonical ref, current detail/version/status, acceptance,
    dependencies, result base и release target.
 2. `To Do` начать после preflight; `In Progress` продолжить из coherent
-   checkpoint; `In Review` сначала проверять как exact candidate, не
-   реализовывать заново без finding.
+   checkpoint; `In Review` сначала провести через однократную классификацию выше,
+   не реализовывать заново без proven finding.
 3. Реализовать минимальный целостный in-scope result и выполнить per-Task targeted gate.
 4. Покрыть material duplicate scenarios. Отдельную проблему вынести как
    finding/scope decision без silent work expansion.
@@ -307,9 +342,11 @@ partial только ради освобождения capacity.
    integrated members/result. Не запускать дорогой full gate для каждого
    member без risk reason.
 7. Выполнить required external effects и независимо проверить exact target.
-8. Failed gate локализовать: затронутые Tasks вернуть в `In Progress`, выполнить
-   rework и повторные gates. При неясной attribution invalidated весь связанный
-   batch.
+8. Failed gate локализовать. При proven failure подготовить `REWORK REQUIRED`,
+   затронутые Tasks вернуть в `In Progress`, выполнить rework и новые gates. При
+   неясной attribution не объявлять весь batch defective: оставить members в
+   `In Review`, зафиксировать `verification-blocked` и предложить diagnostic
+   gate, который разделит affected scenarios.
 
 ## Опубликовать Task report
 
@@ -317,11 +354,12 @@ partial только ради освобождения capacity.
 [delivery-report reference](references/delivery-report.md) и
 [Strategic Explainer handoff](references/strategic-explainer.md) полностью.
 
-- Native comment является обязательным terminal effect для completed,
-  materially failed/rework или blocked Task.
+- Native comment обязателен для completed, materially failed/rework или blocked
+  Task. Только `COMPLETED` является barrier перед `Done`; отсутствие rework
+  comment не отменяет truthful `In Review → In Progress`.
 - Перед comment-level Strategic Handoff выполнить task-level finalization:
-  перечитать Task/result/effects, проверить exact evidence и доступный safe
-  self-recovery. Если состояние изменилось, повторить finalization и не
+  перечитать Task/result/effects, проверить exact evidence и доступный
+  безопасный bounded repair. Если состояние изменилось, повторить finalization и не
   использовать старый handoff.
 - Отдельно сформулировать обязательный `Problem to solve`: beneficiary, desired
   observable outcome и exact scope. Task ref или технический title недостаточны;
@@ -334,6 +372,8 @@ partial только ради освобождения capacity.
 - Success: `COMPLETED` после checks/effects и до `Done`. Failure/rework/blocker:
   `REWORK REQUIRED`/`BLOCKED` с impact, checkpoint, evidence, cause confidence,
   remaining risk и exact resume decision.
+- Для `verification-blocked` передать `Decision support request` на 2–4 способа
+  получить недостающее доказательство и сохранить краткое сравнение в comment.
 - Final comment родитель пишет своими словами после чтения Explainer output.
   Сохранить outcome, impact, причинную границу, confidence и next state; можно
   менять форму, но нельзя копировать механически, противоречить объяснению или
@@ -343,17 +383,20 @@ partial только ради освобождения capacity.
   `fork_turns="all"`, положительное число fork turns и старый Explainer thread
   запрещены. Initial task содержит только bounded `Strategic Handoff` с
   `Problem to solve`, `Current-State Brief` и strategic discovery anchors.
-- При `CONTEXT_INTEGRITY_ERROR` не выполнять report/status/Goal writes:
-  исправить invocation и один раз перезапустить новый default subagent с
-  `fork_turns="none"`. Повторный отказ останавливает report workflow как
-  внутреннюю orchestration failure, а не blocker Task.
+- При `CONTEXT_INTEGRITY_ERROR` исправить invocation и один раз перезапустить
+  новый default subagent с `fork_turns="none"`. При повторном отказе применить
+  contract локально как `degraded-adaptation`; communication helper не блокирует
+  truthful `In Review → In Progress`, но `COMPLETED` comment остаётся barrier до
+  `Done`.
 - При `PROBLEM_CONTEXT_ERROR` перечитать canonical Task/acceptance и explicit
   context, исправить semantic problem и один раз повторить fresh invocation. Если
-  beneficiary и desired outcome всё ещё не установлены, остановиться до writes
-  и запросить exact problem context; local wording fallback запрещён.
+  beneficiary и desired outcome всё ещё не установлены, классифицировать
+  `task-contract-conflict` и запросить exact problem context; local wording
+  fallback запрещён.
 - Использовать stable report identity, искать equivalent comment, выполнять
-  read-back. `not-available` или `write-outcome-unknown` блокирует terminal
-  transition affected Task.
+  read-back. `not-available` или `write-outcome-unknown` блокирует `Done`, но не
+  truthful rework transition; непубликованный narrative остаётся отдельным
+  communication remainder.
 - Никогда не писать report в description, acceptance, status text или другой
   Task field. Не публиковать `ACCEPTANCE READY`.
 
@@ -376,9 +419,9 @@ current scope/state/evidence, объяснить material gaps и провери
 safe in-scope recovery.
 
 Blocker остаётся blocker до устранения. Если current operation/authority
-позволяют его устранить или закончить reconciliation, выполнить recovery,
-перечитать affected state и начать finalization pass заново. Пока meaningful
-progress возможен, финальный Goal status `blocked` ещё не обоснован.
+позволяют его устранить или закончить reconciliation, выполнить одно bounded
+recovery, перечитать affected state и начать finalization pass заново. Без
+material state change не повторять действие или проверку.
 
 Для `single` перечитать Task и доказать: exact result, acceptance, targeted и
 singleton batch gates, required effects, automatic acceptance, published
@@ -397,10 +440,9 @@ report и truthful terminal status. Goal identity — `not-applicable`.
 - decision queue пуста.
 
 Если остаётся runnable или recovery work — продолжить. Если остаются только
-deferred Tasks — показать одну consolidated queue и не завершать Goal. Goal
-`blocked` применять только после строгого tool threshold, когда blocker всё ещё
-существует, self-recovery исчерпан и понятное объяснение уже дано пользователю.
-При полном evidence вызвать `update_goal(status="complete")`
+deferred Tasks — показать одну consolidated queue, оставить Goal active и
+остановить текущий run без искусственных повторов. При полном evidence вызвать
+`update_goal(status="complete")`
 последним.
 
 Каждый Task comment получает task-scoped стратегическое объяснение как смысловую
@@ -425,9 +467,8 @@ material meaning. Если explanation противоречит evidence или 
 Explainer и не собирать комментарий из raw process history.
 
 До публикации `BLOCKED` comment должно существовать task-level explanation. До
-blocking user handoff и допустимого `update_goal(status="blocked")` должно
-существовать scope-level explanation; при exact single-Task совпадении это может
-быть то же проверенное объяснение. Использовать его только как
+blocking user handoff должно существовать scope-level explanation; при exact
+single-Task совпадении это может быть то же проверенное объяснение. Использовать его только как
 communication layer: status, recovery, action, report identity и Goal transition
 решать по исходному evidence и authority. После material state change старый
 output не переиспользовать. Если subagent/skill недоступен, самостоятельно

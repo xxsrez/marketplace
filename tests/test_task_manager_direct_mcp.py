@@ -160,7 +160,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertEqual(manifest["version"], "0.1.6+codex.20260821111515")
+        self.assertEqual(manifest["version"], "0.1.6+codex.20260821132430")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertTrue(
@@ -190,6 +190,47 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "Реализуй это изменение в коде",
         ):
             self.assertIn(prompt, skill)
+
+    def test_ship_tasks_classifies_review_outcomes_without_retry_loops(self) -> None:
+        skill = (
+            SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        report = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "ship-tasks"
+            / "references"
+            / "delivery-report.md"
+        ).read_text(encoding="utf-8")
+        handoff = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "ship-tasks"
+            / "references"
+            / "strategic-explainer.md"
+        ).read_text(encoding="utf-8")
+
+        for outcome in (
+            "task-contract-conflict",
+            "verified-success",
+            "verified-failure",
+            "verification-blocked",
+        ):
+            self.assertIn(outcome, skill)
+        self.assertIn("In Review → In Progress", skill)
+        self.assertIn("не добиваться Goal `blocked` искусственными повторами", skill)
+        self.assertIn("не объявлять весь batch defective", skill)
+        self.assertIn("communication remainder", report)
+        self.assertIn("truthful `In Review → In Progress`", report)
+        self.assertIn("Decision support request", handoff)
+        self.assertIn("2–4 реалистичных способа", handoff)
+        for retired in (
+            "строгого tool threshold",
+            "строгого model-tool threshold",
+            "blocker occurrence",
+            "self-recovery",
+        ):
+            self.assertNotIn(retired, skill)
 
     def test_strategic_explainer_is_a_generic_sibling_skill(self) -> None:
         skill = (
@@ -244,7 +285,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             self.assertIn("$ship-tasks:strategic-explainer", text)
         self.assertIn("один раз перезапустить", skill)
         self.assertIn("bounded read-only strategic discovery", skill)
-        self.assertIn("local wording fallback", handoff)
+        self.assertIn("local wording", handoff)
+        self.assertIn("fallback", handoff)
         self.assertIn("доступные read-only tools", handoff)
         self.assertNotIn("User Brief` — единственный источник", handoff)
 

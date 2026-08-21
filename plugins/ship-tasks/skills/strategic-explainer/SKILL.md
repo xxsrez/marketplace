@@ -72,7 +72,8 @@ PROBLEM_CONTEXT_ERROR: не передана содержательная зад
 Ожидать decision-relevant факты: reader purpose, confirmed outcome, unfinished
 или unknown части, observed user impact, evidence/confidence, current capability
 и attempts, реальные constraints, подтверждённую candidate dependency,
-next-state contract, output language/channel и полезные identifiers.
+next-state contract, optional `Decision support request`, output language/channel
+и полезные identifiers.
 
 Для material или multi-scenario ситуации ожидать отдельный ledger для каждого
 сценария: ожидаемое user-visible поведение, `VERIFIED | FAILED | UNVERIFIED |
@@ -120,6 +121,12 @@ current outcome остаётся выше design по factual authority: док�
 4. Что failed, что unverified, а что не относится к текущей цели.
 5. Как граница влияет на пользователя сейчас.
 6. Какое подтверждённое действие или external-state change позволит продолжить.
+
+Если caller передал `Decision support request`, сравнить 2–4 реально
+различающихся варианта. Для каждого кратко назвать prerequisites, какой gap он
+закрывает, основной tradeoff и observable success signal; один вариант можно
+рекомендовать с причиной. Не придумывать недоступные capabilities, не менять
+установленный state/authority и не выдавать вариант за выполненное действие.
 
 Сформулировать одно load-bearing сообщение. Narrative priority: проблема →
 strategic view → смысл current outcome → technical details. Implementation

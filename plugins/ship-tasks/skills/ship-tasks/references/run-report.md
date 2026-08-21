@@ -29,23 +29,22 @@ Task comment объясняет одну Task; этот reference задаёт f
 проверить, что достигнут именно обещанный результат, причины ключевых решений
 понятны, evidence относится к exact result, а ограничения названы честно.
 
-## Blocker и Goal `blocked`
+## Blocker Task и незавершённый Goal
 
 Blocker — фактическое условие, не позволяющее завершить результат. Он остаётся
-blocker до устранения, даже если агент уже видит способ recovery.
+blocker до устранения, даже если агент уже видит один допустимый способ repair.
 
-Если recovery безопасен, находится в scope и уже разрешён, выполнить его,
-зафиксировать устранение blocker и продолжить. Это не означает, что blocker не
-существовал; это означает, что meaningful progress был возможен, поэтому
-terminal `update_goal(status="blocked")` ещё не был допустим.
+Если repair безопасен, находится в scope и уже разрешён, выполнить его один раз,
+перечитать результат и продолжить при material state change.
 
-Goal `blocked` возможен только когда blocker остаётся, доступный self-recovery
-исчерпан, требуется user decision/new authority/external state change и выполнен
-строгий tool threshold. Повторный poll без нового evidence не считается новым
-blocker occurrence.
+Task `BLOCKED`, run `PARTIAL`/`BLOCKED` и Goal status не равны друг другу.
+Task-local blocker оставляет Goal активным и незавершённым. Не повторять тот же
+repair, poll, acceptance scenario или Goal turn без нового result, evidence,
+environment, access, authority либо Task contract.
 
-До status write дать пользователю понятное объяснение причины и состояния.
-После status write финальный ответ должен отражать фактический Goal status.
+Перед blocking handoff дать пользователю понятное объяснение причины и состояния.
+Финальный ответ должен отражать фактический Goal status без попытки подогнать его
+под Task report.
 
 ## Глубокий компактный отчёт
 
@@ -84,7 +83,7 @@ SHIPTASK RUN REPORT — COMPLETED | PARTIAL | BLOCKED | NO WORK
 Объединять или опускать секции, которые не добавляют смысла. При простом успехе
 может хватить нескольких предложений и короткого evidence list. При сложном
 успехе объяснить ключевой flow и tradeoffs. При partial/blocked обязательно
-назвать impact, причину или честную границу знания, выполненный self-recovery,
+назвать impact, причину или честную границу знания, выполненный bounded repair,
 почему агент больше не может продолжить сам и exact resume condition.
 
 Report недопустим, если это только reason code, raw error, status inventory или
@@ -110,8 +109,8 @@ authority. ShipTask читает результат и пишет окончат
   совпали с переданным next-state contract и не выявили drift;
 - для aggregate batch, нескольких blockers, material partial или другого
   audience нужен новый scope-level brief;
-- до `update_goal(status="blocked")` scope-level plain-language explanation уже
-  должно быть подготовлено и показано пользователю;
+- до blocking handoff scope-level plain-language explanation уже должно быть
+  подготовлено и показано пользователю;
 - после recovery, divergent write или другого material meaning change старый
   explanation считать stale.
 
@@ -122,10 +121,10 @@ summary не являются допустимым fallback.
 
 `CONTEXT_INTEGRITY_ERROR` не является недоступностью. ShipTask исправляет вызов
 и один раз повторяет fresh subagent с `fork_turns="none"`; повторный отказ
-останавливает report workflow до любых Task Manager writes.
+переходит в локальную `degraded-adaptation`, не блокируя truthful rework status.
 
 `PROBLEM_CONTEXT_ERROR` также не является недоступностью: ShipTask обязан
 передать semantic beneficiary/desired outcome/exact scope, а не заменять задачу
 identifier или техническим title. После одного исправленного fresh invocation
-неустранённый problem gap останавливает report workflow до writes и явно
+неустранённый problem gap становится `task-contract-conflict` и явно
 возвращается пользователю.

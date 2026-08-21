@@ -12,7 +12,7 @@ acceptance задана ADR-0005 и канонической specification.
 - Stale acceptance context
 - Deferred Task
 - Comment handoff
-- Finalization analysis and self-recovery
+- Finalization analysis and bounded repair
 - Non-production release
 - Production boundary
 - Deferred-only handoff
@@ -116,7 +116,7 @@ current skill, создать `acceptance-required`, оставить terminal-r
 Если такой blocker уже записан старым run, при resume удалить его из current
 decision queue, заново проверить exact result/evidence и выполнить обычный
 automatic terminal transition. Не считать повторное чтение того же stale text
-новым blocker occurrence.
+основанием для новой попытки или нового объяснения.
 
 ## Deferred Task
 
@@ -124,9 +124,10 @@ automatic terminal transition. Не считать повторное чтени
 
 - `To Do` — execution не начинался;
 - `In Progress` — существует partial implementation/rework;
-- `In Review` — exact candidate machine-verified, но ждёт material decision,
-  production/external approval или недостающий terminal evidence. Обычный
-  terminal-ready result не defer-ить: автоматически перевести в `Done`.
+- `In Review` — candidate ждёт material decision, production/external approval
+  либо классифицирован как `verification-blocked`, потому что доступный способ
+  проверки не различает success и failure. Обычный terminal-ready result не
+  defer-ить: автоматически перевести в `Done`.
 
 Не переводить в `Done`, `Canceled`, `Duplicate` и не изобретать provider status
 `Blocked`. Не создавать replacement/follow-up Task без отдельной authority.
@@ -163,11 +164,12 @@ delivery-report comment до освобождения lane. Включить в�
 user impact/remaining risk и report key для exact Task/result.
 
 Если comments недоступны или write outcome unknown, не использовать
-`description`/другой field как fallback. Добавить comment delivery в blocker,
-сохранить тот же handoff в consolidated interaction output, оставить affected
-Task non-terminal и продолжить независимую runnable work.
+`description`/другой field как fallback. Записать comment delivery как отдельный
+communication remainder, сохранить тот же handoff в consolidated interaction
+output, оставить affected Task в truthful status и продолжить независимую
+runnable work.
 
-## Finalization analysis and self-recovery
+## Finalization analysis and bounded repair
 
 Перед любым terminal outcome, blocking pause или финальным ответом прочитать
 [run-report reference](run-report.md) и выполнить общий finalization pass:
@@ -175,16 +177,15 @@ Task non-terminal и продолжить независимую runnable work.
 1. Сопоставить requested outcome с фактическим результатом.
 2. Перечитать current Task/Goal/source/effect state и существенное evidence.
 3. Объяснить material gaps и отделить подтверждённую причину от inference.
-4. Найти safe in-scope recovery actions и выполнить их, если authority уже
+4. Найти safe in-scope repair actions и выполнить их, если authority уже
    существует.
 5. Перечитать affected state, повторить нужные checks и начать finalization
    заново.
 
-Blocker остаётся blocker до устранения. Доступный recovery не отменяет его, но
-показывает, что meaningful progress ещё возможен и terminal Goal `blocked` пока
-не обоснован. Остановиться можно только когда blocker сохраняется,
-self-recovery исчерпан и требуется реальное user decision, новая authority или
-внешний state change.
+Blocker остаётся blocker до устранения. Допустимый repair выполнить один раз и
+перечитать affected state. Без material state change не повторять repair,
+acceptance scenario или объяснение. Остановиться можно, когда blocker сохраняется
+и требуется реальное user decision, новая authority или внешний state change.
 
 ## Non-production release
 
@@ -241,9 +242,8 @@ runnable queue.
 4. Сгруппировать оставшиеся по reason/dependency.
 5. Показать один consolidated decision request с recommended defaults.
 6. Оставить plan и Goal незавершёнными. Не вызывать Goal completion.
-7. Применять Goal `blocked` только после строгого model-tool threshold, а не
-   после первого defer или одного turn без progress, и только после полного
-   causal analysis и human-readable run report.
+7. Оставить Goal активным. Не повторять acceptance, poll или дополнительный Goal
+   turn ради смены status; task-local blocker уже полностью описан handoff.
 
 ## Terminal run report
 

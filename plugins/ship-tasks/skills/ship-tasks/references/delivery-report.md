@@ -35,12 +35,13 @@ authority или сообщает, что feature ещё не работает. 
 
 1. Не вызывать `update_task` ради report.
 2. Не менять `description`, acceptance, status text или другой Task field.
-3. Сохранить report и blocker в review/interaction output.
-4. Оставить Task truthful non-terminal, классифицировать её как
-   `completion-remains`/`deferred` и продолжить независимый workflow.
+3. Сохранить report и gap в review/interaction output.
+4. Для proven failure выполнить truthful `In Review → In Progress`, оставив
+   comment communication remainder; для `verification-blocked` сохранить
+   `In Review`; для success не выполнять `Done`.
 
-Этот gap не является global `TASK CONTEXT ALARM`, но блокирует `Done` affected
-Task и Goal completion, пока Task остаётся в scope.
+Этот gap не является global `TASK CONTEXT ALARM`. Он блокирует `Done`, но не
+truthful rework status. Не повторять acceptance scenario ради comment delivery.
 
 ## Write и reconciliation
 
@@ -48,12 +49,16 @@ Task и Goal completion, пока Task остаётся в scope.
   Task.
 - Публиковать `REWORK REQUIRED`/`BLOCKED` report после material failure,
   changes-requested или blocker, который важно объяснить пользователю.
+- Для `verification-blocked` включать 2–4 способа получить недостающее
+  доказательство: prerequisites, доказательную силу, tradeoff, observable success
+  signal и recommended next attempt.
 - Перед каждым новым report comment независимо от state выполнить обязательную
   [Strategic Explainer composition](strategic-explainer.md). Сначала ShipTask
   выбирает truthful state и фиксирует evidence, затем Explainer формирует
   человеческий narrative.
 - Для каждого task-local defer обязательно публиковать `BLOCKED` report; если
-  comments недоступны, сам comment delivery становится частью blocker.
+  comments недоступны, comment delivery остаётся communication remainder, а не
+  новым product/acceptance blocker.
 - Не публиковать `ACCEPTANCE READY`: terminal-ready evidence автоматически
   приводит к `COMPLETED`; не писать comment на каждую внутреннюю red/green
   iteration.
@@ -86,7 +91,7 @@ Explainer contract. Это относится и к простому success.
 Порядок обязателен:
 
 1. ShipTask выполняет task-level finalization: перечитывает current
-   Task/result/effects, проверяет exact evidence и доступный safe self-recovery.
+   Task/result/effects, проверяет exact evidence и доступный bounded repair.
    Затем самостоятельно фиксирует report state, verified/unverified scenarios,
    observed user impact, evidence/confidence, constraints и уже допустимый next
    action. Любое изменение состояния перезапускает этот шаг и инвалидирует
@@ -99,8 +104,9 @@ Explainer contract. Это относится и к простому success.
 3. Запустить свежего subagent с `fork_turns="none"` и получить свободное
    problem-first объяснение и source basis после bounded read-only discovery.
    При `CONTEXT_INTEGRITY_ERROR` или `PROBLEM_CONTEXT_ERROR` исправить invocation
-   по handoff contract и один раз повторить fresh spawn; до успешного результата
-   не выполнять comment/status/Goal writes.
+   по handoff contract и один раз повторить fresh spawn; повторный orchestration
+   отказ обрабатывается локальной `degraded-adaptation`, а missing semantic
+   problem — как `task-contract-conflict`.
 4. Прочитать объяснение и самостоятельно написать final comment своими словами.
    Сохранить outcome, impact, причинную границу, confidence, требуемое действие
    и next state; форму адаптировать под Task Manager.
@@ -115,7 +121,8 @@ Handoff, delegation или orchestration. Если subagent/skill недосту
 локально применяет тот же contract и фиксирует `degraded-adaptation` только во
 внутреннем evidence; это не разрешает опубликовать raw technical summary.
 Context-integrity failure не является недоступностью: её надо исправить через
-fresh invocation, а при повторном отказе остановиться до Task Manager writes.
+fresh invocation, а при повторном отказе применить contract локально. Это не
+разрешает ослабить `COMPLETED` comment barrier перед `Done`.
 
 Если Strategic Handoff противоречив, не содержит semantic problem или
 decision-relevant current-state fact,
@@ -127,9 +134,9 @@ decision-relevant current-state fact,
 Deferred report не обязан быть incident postmortem. Его задача — показать один
 точный material blocker и позволить следующему run безопасно продолжить.
 Task-level Strategic Explainer explanation должен существовать до write. Если
-тот же blocker удерживает весь scope, до user-facing blocking handoff и
-`update_goal(status="blocked")` требуется также scope-level explanation из
-совместимого либо нового brief.
+тот же blocker удерживает весь scope, до user-facing blocking handoff требуется
+также scope-level explanation из совместимого либо нового brief. Task-local
+blocker оставляет batch Goal active; не повторять проверку ради Goal status.
 
 ```text
 SHIPTASK DELIVERY REPORT
@@ -151,6 +158,10 @@ Impact
 
 Recommended default
 <Один конкретный вариант и tradeoff либо not-applicable.>
+
+Acceptance options (только для verification-blocked)
+- <Способ: prerequisites; что доказывает; tradeoff; observable success signal.>
+- <Ещё один реально отличающийся способ.>
 
 Decision or authority needed
 <Одно точное material decision, access или production/external approval.>
@@ -221,6 +232,11 @@ Material failure — это user-visible impact, failed batch/external effect,
 rollback/revert, invalidated candidate, repeated rework или настоящий blocker
 после execution. Обычный красный тест, найденный и исправленный внутри
 implementation loop, сам по себе не требует incident comment.
+
+Не смешивать proven failure и `verification-blocked`. Первый требует прямого
+расхождения exact candidate с acceptance и truthful `In Progress`; второй
+означает, что product behavior не установлен, сохраняет `In Review` и использует
+`BLOCKED` format с вариантами приёмки.
 
 Task-scoped comment должен передать impact, причинную модель и recovery на
 уровне пользователя. Его формулирует ShipTask своими словами на основе
