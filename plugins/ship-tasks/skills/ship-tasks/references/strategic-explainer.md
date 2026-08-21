@@ -6,7 +6,6 @@ repair или terminal outcome.
 
 ## Что передать
 
-Свежему subagent с `fork_turns="none"` и
 `$ship-tasks:strategic-explainer` передаётся короткий handoff:
 
 ```text
@@ -47,9 +46,7 @@ decision-relevant входов. Затем сам пишет окончател�
 Source note остаётся внутренним основанием. В comment не упоминаются subagent,
 Strategic Explainer, handoff или orchestration.
 
-Если helper недоступен, ShipTask сначала восстанавливает его как необходимый
-инструмент. Если это невозможно в current authority, зависимый lifecycle
-transition не выполняется: локальный текст не выдаётся за применение
-Strategic Explainer. Если handoff не содержит содержательной проблемы или
-противоречит current facts, сначала исправляется handoff; красивый текст не
-компенсирует неверное состояние.
+Обязательный результат — применённый Strategic Explainer и понятный comment.
+Конституция не задаёт конкретный invocation или recovery flow. Если handoff не
+содержит содержательной проблемы либо противоречит current facts, красивый текст
+не компенсирует неверное состояние.

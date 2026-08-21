@@ -187,7 +187,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Обычная просьба исправить код/продукт", skill)
         self.assertIn("Чтение, аудит, объяснение, planning/backlog capture", skill)
 
-    def test_ship_tasks_classifies_review_outcomes_without_retry_loops(self) -> None:
+    def test_ship_tasks_classifies_review_outcomes_without_tool_choreography(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -214,11 +214,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ):
             self.assertIn(outcome, skill)
         self.assertIn("In Review → In Progress", skill)
-        self.assertIn("Goal хранит progress, но не определяет Task outcome", skill)
+        self.assertIn("Goal только для учёта batch progress", skill)
         self.assertIn("не доказывает defect каждой", skill)
         self.assertIn("Перед любым существенным status transition", skill)
-        self.assertIn("сначала восстанови", skill)
+        self.assertIn("Доказательство важнее выбранного способа", skill)
+        self.assertIn("Сбой одного выбранного", skill)
+        self.assertIn("не делает его обязательным", skill)
+        self.assertIn("как обеспечить это, решает агент", skill)
         self.assertIn("продолжай rework в этом же", skill)
+        self.assertNotIn("сначала восстанови", skill)
+        self.assertNotIn("после material repair", skill)
         self.assertNotIn("communication remainder", report)
         self.assertIn("Только затем выполнить status write", report)
         self.assertIn("Decision support request", handoff)
@@ -264,7 +269,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
 
-    def test_ship_tasks_requires_a_fresh_explainer_without_local_fallback(self) -> None:
+    def test_ship_tasks_uses_explainer_without_prescribing_invocation(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -276,16 +281,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "strategic-explainer.md"
         ).read_text(encoding="utf-8")
 
-        for text in (skill, handoff):
-            self.assertIn('fork_turns="none"', text)
-            self.assertIn("Problem to solve", text)
-            self.assertIn("$ship-tasks:strategic-explainer", text)
-        self.assertIn("сначала восстанови его", skill)
-        self.assertIn("Без Strategic Explainer", skill)
-        self.assertIn("discovery только read-only", skill)
+        self.assertIn("$ship-tasks:strategic-explainer", skill)
+        self.assertIn("$ship-tasks:strategic-explainer", handoff)
+        self.assertIn("Problem to solve", handoff)
+        self.assertIn("способ выполнения этого требования выбирает агент", skill)
+        self.assertIn("не задаёт конкретный invocation или recovery flow", handoff)
+        self.assertIn("Strategic discovery остаётся read-only", skill)
         self.assertIn("bounded/read-only", handoff)
-        self.assertIn("локальный текст не выдаётся", handoff)
-        self.assertIn("transition не выполняется", handoff)
+        self.assertNotIn('fork_turns="none"', skill)
+        self.assertNotIn('fork_turns="none"', handoff)
+        self.assertNotIn("сначала восстанови", skill)
 
 
 if __name__ == "__main__":

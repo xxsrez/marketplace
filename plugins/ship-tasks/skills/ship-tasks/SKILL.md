@@ -19,23 +19,21 @@ description: "Доставлять однозначно выбранный Task 
 
 Для bare invocation прочитай
 [project memory](references/project-memory.md). Prompt selector имеет приоритет,
-но не обновляет memory. Через Task Manager adapter разреши canonical refs,
-прочитай все страницы до `hasMore=false`, затем current detail, acceptance,
-relations, status, `version` и materially relevant comments. Memory не заменяет
-live state.
+но не обновляет memory. Через Task Manager adapter разреши полный exact scope и
+перечитай live Task state, acceptance, relations и materially relevant comments.
+Memory не заменяет live state.
 
-Создай Goal только для batch после exact scope resolution и до первой non-Goal
-mutation. Goal хранит progress, но не определяет Task outcome, число попыток или
-status. Несовместимый active Goal либо неразрешимый shared scope/authority →
-`TASK CONTEXT ALARM` до mutation.
+Используй Goal только для учёта batch progress; single работает без Goal. Goal
+не определяет Task outcome, число попыток или status. Неразрешимый конфликт
+scope/shared state/authority → `TASK CONTEXT ALARM` до небезопасных writes.
 
 ## 2. Соблюдай обязательные требования
 
 ### Правдивый статус и обязательный комментарий
 
 Перед любым существенным status transition опубликуй понятный native Task
-Manager comment и перечитай его. Затем измени status с current `version` и
-перечитай Task. Исключение — очевидный старт `To Do → In Progress`.
+Manager comment и перечитай его. Затем измени status и перечитай Task.
+Исключение — очевидный старт `To Do → In Progress`.
 
 Комментарий обязателен перед `In Progress → In Review`, `In Review → In
 Progress`, `In Review → Done`, reopen из terminal status, новым
@@ -48,26 +46,22 @@ Task comment; `description` и другие fields не являются fallbac
 произойдёт дальше. Пиши на языке пользователя; внутренние reason codes, смесь
 жаргона и отчёт о процессе не являются объяснением.
 
-### Необходимый инструмент сначала восстанови
+### Доказательство важнее выбранного способа
 
-Если нужный инструмент отсутствует или не работает:
+Сам выбирай инструменты, способы диагностики и приёмки. Сбой одного выбранного
+способа не делает его обязательным, не доказывает defect и не создаёт blocker
+сам по себе. Можно исправить инструмент, заменить его, объединить несколько
+источников evidence или перестроить проверку — в зависимости от ситуации.
 
-1. установи требуемую операцию и фактическую поломку;
-2. диагностируй и попытайся безопасно восстановить основной способ в текущем
-   scope и authority;
-3. после material repair повтори исходную операцию;
-4. альтернативу используй только после repair attempt и только если она
-   доказывает то же требование, не более слабое.
+Нельзя снижать current acceptance или называть результат проверенным без
+достаточного evidence. Если в текущем scope и полномочиях доказать success или
+failure не удаётся, это `verification-blocked`: назови границу знания, влияние
+и условие, при котором приёмка станет возможной. Фиксированного числа попыток
+или обязательного порядка действий нет.
 
-Не продолжай молча так, будто инструмент не нужен. Остановись, когда продолжение
-требует новой authority, опасного действия или внешнего state change, и ясно
-назови причину, impact и условие возобновления. Фиксированного числа попыток нет;
-не повторяй действие без изменившегося состояния.
-
-До material delivery mutations проверь comment create и comment list/read. Если
-сломан сам comment channel и его нельзя восстановить, не выполняй существенный
-status transition и не начинай новые delivery mutations, которые нельзя будет
-объяснить в Task.
+Обязательный Task comment — требуемый результат, а не предписанный tool flow.
+Существенный transition завершён только когда comment действительно существует
+в Task и перечитан; как обеспечить это, решает агент.
 
 ### Сохраняй authority boundary
 
@@ -80,15 +74,11 @@ sandbox effects разрешены после надёжного определ�
 
 ## 3. Выполни и проверь result
 
-Следуй repository/project instructions, сохраняй unrelated user changes,
-реализуй минимальный целостный in-scope result и выбирай проверки, которые
-доказывают current Task contract. Установи exact result identity и проверь
-required runtime/external effects. Недоступное называй `not-available`, а не
-verified.
-
-Если safe in-scope repair способен устранить найденную проблему, выполни его и
-перечитай affected state. Out-of-scope finding не исправляй и не превращай в
-новую Task без authority.
+Реализуй целостный in-scope result и получи evidence, достаточный для current
+Task contract и обязательных runtime/external effects. Способ реализации,
+диагностики и проверки выбирай сам. Недоступное называй `not-available`, а не
+verified. Out-of-scope finding не исправляй и не превращай в новую Task без
+authority.
 
 Когда candidate готов, через Strategic Explainer сформулируй comment о результате
 и проведённой проверке, опубликуй и перечитай его, затем переведи
@@ -108,8 +98,8 @@ verified.
   acceptance. Сначала comment с observed failure, impact и причиной возврата,
   затем `In Review → In Progress`; перечитай Task и продолжай rework в этом же
   run.
-- `verification-blocked`: нельзя доказать ни success, ни failure. Сначала
-  восстанови нужные инструменты/среду, если это безопасно возможно. Иначе comment
+- `verification-blocked`: выбранные агентом разумные способы не позволяют
+  доказать ни success, ни failure в текущем scope и полномочиях. Comment
   объясняет границу знания и 2–4 способа приёмки с предпосылками, доказательной
   силой, trade-off, рекомендацией и success signal; Task остаётся `In Review`.
 - `verified-success`: acceptance, checks, result identity и required effects
@@ -125,13 +115,11 @@ Task. Сначала получи separating evidence; не возвращай �
 `$ship-tasks:strategic-explainer`. ShipTask сначала сам устанавливает facts,
 outcome, status, authority и next action; Explainer этого не решает.
 
-Передай semantic `Problem to solve`, current facts, известное/неизвестное,
-impact и bounded strategic anchors. Используй свежего subagent с
-`fork_turns="none"`; discovery только read-only и по необходимости. Проверь
-ответ и сам напиши final comment без упоминания внутренней orchestration. Если
-helper недоступен, сначала восстанови его по правилу необходимого инструмента.
-Без Strategic Explainer не изображай это требование выполненным и не выполняй
-зависящий от comment существенный transition.
+Передай решаемую проблему, current facts, известное/неизвестное и влияние.
+Strategic discovery остаётся read-only и выполняется только по необходимости.
+Проверь ответ и сам напиши final comment без упоминания внутренней orchestration.
+Обязательное требование — применить Strategic Explainer и получить понятный
+comment; способ выполнения этого требования выбирает агент.
 
 Handoff contract: [reference](references/strategic-explainer.md). Требования к
 comment: [delivery report](references/delivery-report.md).
@@ -139,14 +127,11 @@ comment: [delivery report](references/delivery-report.md).
 ## 6. Продолжай автономно и финализируй
 
 Task-local blocker не останавливает независимую runnable работу. В batch перед
-ожиданием пользователя перечитай полный inventory; пока остаётся безопасная
-in-scope работа, продолжай её. Goal остаётся active при любой `To Do`,
-`In Progress`, `In Review`, rework, незавершённом effect или unresolved in-scope
-defect.
+ожиданием пользователя проверь весь scope; пока остаётся безопасная in-scope
+работа, продолжай её. Goal остаётся active, пока scope не завершён фактически.
 
 Перед финальным ответом перечитай affected Tasks, comments, statuses, Goal и
-external effects. Выполни доступный safe repair. Затем дай outcome-first
-`SHIPTASK RUN REPORT`: result и state, что доказано/не проверено, причина gap,
-выполненный repair и точное условие продолжения. Не заменяй Task comments этим
-ответом. Batch Goal заверши только после fresh full inventory без незавершённой
-in-scope работы.
+external effects. Затем дай outcome-first `SHIPTASK RUN REPORT`: result и state,
+что доказано/не проверено, причина gap и точное условие продолжения. Не заменяй
+Task comments этим ответом. Batch Goal заверши только после повторной проверки,
+что в scope нет незавершённой in-scope работы.
