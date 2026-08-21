@@ -1,6 +1,6 @@
 {
   "name": "task-manager",
-  "version": "0.7.3+codex.20260821103100",
+  "version": "0.7.4+codex.20260821120000",
   "description": "Connect Task Manager to inspect and safely mutate work, including staged upload from native or exact local files.",
   "author": {
     "name": "Andrey Myasnikov",

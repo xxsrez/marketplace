@@ -112,12 +112,11 @@ Task Manager discussion.
   only in process memory, so a new companion process authorizes again. Bind
   calls the canonical Agent REST endpoint and returns `attachmentRef`; hosted
   Codex and hosted MCP are not part of this local workflow.
-- The operator-only UAT profile uses an exact loopback transport started only
-  for a local-file smoke. If it is absent, report the actionable local-ingress
-  requirement; do not fall back to production or hosted MCP. Never request or
-  pass a Sites token in tool arguments or chat. The ingress accepts it only on
-  its manual stdin, keeps it in memory, and never uses Keychain or
-  `/usr/bin/security`.
+- A production local-file canary requires explicit production authority from
+  the calling workflow. It uses the ordinary packaged companion directly
+  against production Agent REST; never introduce a private-UAT proxy, Sites
+  bypass, Keychain, `/usr/bin/security`, persistent credential or background
+  retry process as an upload workaround.
 - Reuse a local upload idempotency key only for identical bytes and metadata. A
   network error is not evidence that upload failed: retry the exact source with
   the same key. Never change the path, display filename or expected metadata

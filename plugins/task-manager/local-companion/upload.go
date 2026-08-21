@@ -268,10 +268,6 @@ func (client *uploadClient) attach(
 }
 
 func (client *uploadClient) networkErrorMessage(fallback string) string {
-	parsed, err := url.Parse(client.transportOrigin)
-	if err == nil && parsed.Scheme == "http" && parsed.Hostname() == "127.0.0.1" {
-		return privateUATIngressCommandHint()
-	}
 	return fallback
 }
 

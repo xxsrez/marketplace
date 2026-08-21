@@ -7,41 +7,21 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"os/signal"
 	"runtime"
-	"syscall"
 	"time"
 )
 
 const productionTaskManagerOrigin = "https://task-manager.xxsrez-work.chatgpt.site"
-const uatTaskManagerOrigin = "https://task-manager-uat.xxsrez-work.chatgpt.site"
 
 func main() {
 	origin := flag.String("origin", productionTaskManagerOrigin, "Task Manager site origin")
 	transportOrigin := flag.String(
 		"transport-origin", "", "Optional exact 127.0.0.1 ingress used for machine requests",
 	)
-	serveUATIngress := flag.Bool(
-		"serve-private-uat-ingress", false, "Serve the bounded private UAT ingress on loopback",
-	)
 	flag.Parse()
 	if runtime.GOOS != "darwin" {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion currently supports macOS only.")
 		os.Exit(1)
-	}
-	if *serveUATIngress {
-		token, err := readSitesBypassToken(os.Stdin)
-		if err != nil {
-			exitWithLocalError("Task Manager private UAT ingress requires one token on stdin.")
-			os.Exit(1)
-		}
-		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-		defer stop()
-		if err := runPrivateUATIngress(ctx, defaultPrivateUATIngressListen, token); err != nil {
-			exitWithLocalError("Task Manager private UAT ingress could not run on loopback.")
-			os.Exit(1)
-		}
-		return
 	}
 	httpClient := &http.Client{
 		Timeout:   15 * time.Minute,

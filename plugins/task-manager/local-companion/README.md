@@ -27,34 +27,12 @@ upload or bind call opens the system browser for Task Manager Authorization
 Code + PKCE consent through a random loopback callback and a dynamically
 registered public client. Access and refresh tokens stay only in process memory;
 a new companion process authorizes again. A revoked refresh token reconnects in
-the same bounded operation. The stdio companion does not contain a private-UAT
-hosting credential.
+the same bounded operation. The stdio companion contains no Sites bypass or
+private-UAT hosting credential.
 
-## Owner-only UAT
-
-The UAT plugin points machine requests at `http://127.0.0.1:47821`. Nothing is
-started there automatically. Immediately before a UAT local-file smoke, the
-operator starts the same binary in bounded ingress mode and supplies the Sites
-bypass value once through stdin:
-
-```zsh
-read -rs 'TM_UAT_SITES_TOKEN?UAT Sites token: '
-printf '\n'
-exec {TM_UAT_TOKEN_FD}< <(printf '%s' "$TM_UAT_SITES_TOKEN")
-unset TM_UAT_SITES_TOKEN
-./bin/task-manager-local-launcher --serve-private-uat-ingress <&$TM_UAT_TOKEN_FD
-exec {TM_UAT_TOKEN_FD}<&-
-unset TM_UAT_TOKEN_FD
-```
-
-The value is not an argument, environment variable, config entry or Keychain
-item. The short-lived process-substitution writer feeds an inherited descriptor,
-then the parent shell variable is cleared before the foreground ingress starts.
-The ingress binds exact `127.0.0.1:47821`, keeps the value only in process
-memory, exposes only OAuth plus staged-file/TaskAttachment REST routes, rejects
-MCP/UI/arbitrary proxy traffic and disappears when the process stops. Browser
-authorization still opens the owner-only UAT Site directly. Ordinary UAT UI use
-does not require this ingress.
+Release acceptance uses the production origin only after explicit production
+approval. A bounded canary may require one first-use browser PKCE consent, but
+never stores credentials in Keychain or starts a proxy/daemon.
 
 ## Packaging and portability
 

@@ -1,7 +1,7 @@
 # Srez Marketplace
 
 This is Andrey's extensible Codex plugin marketplace. It contains independent
-Task Manager, Task Manager UAT, Ship Tasks, and Mind Diary plugins under
+Task Manager, Ship Tasks, and Mind Diary plugins under
 `plugins/`.
 
 Add the marketplace once:
@@ -20,21 +20,6 @@ Then install the plugins you need:
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
-`task-manager-uat@srez-marketplace` is an operator-only release-validation
-profile. Install it explicitly only for synthetic UAT smoke. A bundled local
-stdio process exposes exact-path upload plus Agent REST bind; there is no hosted
-UAT MCP connection. Initialization and tool discovery perform no network, browser
-or credential operation in the local process; Task Manager OAuth begins only
-when a local file operation is called and remains in process memory. The package
-contains no persistent Sites bypass credential and does not replace or
-reconfigure the production `task-manager` plugin.
-
-The UAT Site remains owner-only. For a local-file smoke, an operator manually
-starts a bounded loopback ingress and supplies the Sites token once through
-stdin. The ingress keeps it only in process memory, exposes no MCP/UI/arbitrary
-proxy routes and stops with the process. Ordinary UAT use needs neither the
-ingress nor a public connector edge.
-
 No server URL, client ID, secret, or personal API token is required. Task
 Manager and Mind Diary UAT distribute their MCP connections directly and
 authenticate with OAuth on first use. Mind Diary remains a restricted UAT
@@ -43,8 +28,6 @@ pilot; this package is not a production or public-directory release.
 The plugins connect to:
 
 - Task Manager: `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
-- Task Manager UAT validation: local stdio companion plus owner-only
-  `https://task-manager-uat.xxsrez-work.chatgpt.site`
 - Mind Diary: `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
 
 Task Manager is an adapter-only plugin with two coordinated MCP components:
@@ -90,10 +73,6 @@ Repository layout:
   launcher, binaries, source and tests;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
-- `plugins/task-manager-uat/.codex-plugin/plugin.json` — explicit UAT-only
-  validation manifest;
-- `plugins/task-manager-uat/.mcp.json` and `bin/` — local-file validation
-  connection and manually started loopback ingress mode;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/strategic-explainer/` — generic problem-first
@@ -106,9 +85,7 @@ Repository layout:
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
 `task-manager@srez-marketplace`; Ship Tasks is independently installable as
-`ship-tasks@srez-marketplace`. The UAT validation profile is independently
-installable as `task-manager-uat@srez-marketplace` and is never the normal
-Task Manager data plane.
+`ship-tasks@srez-marketplace`.
 
 Validate plugin changes before publishing:
 
@@ -126,15 +103,11 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/task-manager
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
-  plugins/task-manager-uat
-python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/mind-diary
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.mcp.json \
-  plugins/task-manager-uat/.codex-plugin/plugin.json \
-  plugins/task-manager-uat/.mcp.json \
   plugins/ship-tasks/.codex-plugin/plugin.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
   plugins/mind-diary/.mcp.json \

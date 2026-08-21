@@ -344,12 +344,7 @@ func (manager *oauthManager) requestTokens(ctx context.Context, form url.Values)
 func (manager *oauthManager) doBounded(request *http.Request) ([]byte, int, error) {
 	response, err := manager.httpClient.Do(request)
 	if err != nil {
-		message := "Task Manager OAuth endpoint is unavailable"
-		if transport, parseErr := url.Parse(manager.transportOrigin); parseErr == nil &&
-			transport.Scheme == "http" && transport.Hostname() == "127.0.0.1" {
-			message = privateUATIngressCommandHint()
-		}
-		return nil, 0, newLocalError("oauth_network_error", message)
+		return nil, 0, newLocalError("oauth_network_error", "Task Manager OAuth endpoint is unavailable")
 	}
 	defer response.Body.Close()
 	body, err := io.ReadAll(io.LimitReader(response.Body, 256*1024+1))

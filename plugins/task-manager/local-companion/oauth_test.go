@@ -222,14 +222,14 @@ func TestOAuthRegistrationFailureIsActionableAndBounded(t *testing.T) {
 	}
 }
 
-func TestOAuthManagerExplainsMissingPrivateUATIngress(t *testing.T) {
+func TestOAuthManagerReportsUnavailableEndpointWithoutUpstreamDetails(t *testing.T) {
 	t.Parallel()
 	client := &http.Client{Transport: failingRoundTripper(func(*http.Request) (*http.Response, error) {
 		return nil, errors.New("connection refused")
 	})}
 	manager, err := newOAuthManager(
-		uatTaskManagerOrigin,
-		"http://127.0.0.1:47821",
+		productionTaskManagerOrigin,
+		"",
 		client,
 		&memoryCredentialStore{},
 		&callbackBrowser{},
@@ -241,7 +241,7 @@ func TestOAuthManagerExplainsMissingPrivateUATIngress(t *testing.T) {
 	_, _, err = manager.doBounded(request)
 	var localErr *localError
 	if !errors.As(err, &localErr) || localErr.Code != "oauth_network_error" ||
-		!strings.Contains(localErr.Message, defaultPrivateUATIngressListen) {
+		localErr.Message != "Task Manager OAuth endpoint is unavailable" {
 		t.Fatalf("error = %#v", err)
 	}
 }

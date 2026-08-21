@@ -39,18 +39,6 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
-    },
-    {
-      "name": "task-manager-uat",
-      "source": {
-        "source": "local",
-        "path": "./plugins/task-manager-uat"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_USE"
-      },
-      "category": "Productivity"
     }
   ]
 }
