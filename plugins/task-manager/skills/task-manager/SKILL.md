@@ -106,7 +106,9 @@ Task Manager discussion.
   snapshot and SHA-256 before network
   I/O; and sends only basename/display filename, MIME, idempotency key and bytes.
   It returns no local path. On first use, its browser PKCE consent is separate
-  from the remote MCP connection; refresh credentials live in macOS Keychain.
+  from the remote MCP connection. Initialization and tool discovery perform no
+  network, browser or credential-store access; OAuth metadata and tokens remain
+  only in process memory, so a new companion process authorizes again.
 - Reuse a local upload idempotency key only for identical bytes and metadata. A
   network error is not evidence that upload failed: retry the exact source with
   the same key. Never change the path, display filename or expected metadata

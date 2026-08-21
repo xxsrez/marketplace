@@ -75,7 +75,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertTrue((source / "go.mod").is_file())
         self.assertTrue((source / "main.go").is_file())
 
-    def test_uat_profile_keeps_private_remote_and_local_ingress_in_one_bridge(self) -> None:
+    def test_uat_profile_separates_hosted_mcp_from_lazy_local_ingress(self) -> None:
         manifest = read_json(
             TASK_MANAGER_UAT_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
@@ -83,16 +83,28 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("skills", manifest)
         self.assertIn("Operator-only", manifest["description"])
         self.assertIn(
-            "refuses the production origin", manifest["interface"]["longDescription"]
+            "separate connections", manifest["interface"]["longDescription"]
         )
+        self.assertIn("process memory", manifest["interface"]["longDescription"])
 
         mcp_config = read_json(TASK_MANAGER_UAT_PLUGIN_ROOT / ".mcp.json")
-        self.assertEqual(list(mcp_config["mcpServers"]), ["task-manager-uat"])
+        self.assertEqual(
+            list(mcp_config["mcpServers"]),
+            ["task-manager-uat", "task-manager-uat-local"],
+        )
         self.assertEqual(
             mcp_config["mcpServers"]["task-manager-uat"],
             {
+                "type": "http",
+                "url": f"{UAT_ORIGIN}/api/mcp",
+                "oauth_resource": f"{UAT_ORIGIN}/api/mcp",
+            },
+        )
+        self.assertEqual(
+            mcp_config["mcpServers"]["task-manager-uat-local"],
+            {
                 "command": "./bin/task-manager-local-launcher",
-                "args": ["--origin", UAT_ORIGIN, "--private-uat-bridge"],
+                "args": ["--origin", UAT_ORIGIN],
                 "cwd": ".",
                 "startup_timeout_sec": 10,
                 "tool_timeout_sec": 900,
@@ -112,6 +124,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             path = TASK_MANAGER_UAT_PLUGIN_ROOT / "bin" / name
             self.assertTrue(path.is_file(), name)
             self.assertTrue(os.access(path, os.X_OK), name)
+            binary = path.read_bytes()
+            self.assertNotIn(b"/usr/bin/security", binary, name)
+            self.assertNotIn(b"private-uat-bridge", binary, name)
+
+        source = TASK_MANAGER_PLUGIN_ROOT / "local-companion"
+        self.assertFalse((source / "remote_mcp.go").exists())
+        self.assertFalse((source / "sites_bypass.go").exists())
+        self.assertFalse((source / "credential_darwin.go").exists())
 
     def test_uat_profile_is_explicit_and_does_not_replace_production(self) -> None:
         marketplace = read_json(
@@ -190,7 +210,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertEqual(manifest["version"], "0.1.4+codex.20260820223214")
+        self.assertEqual(manifest["version"], "0.1.5+codex.20260820235047")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertTrue(

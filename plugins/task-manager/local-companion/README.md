@@ -11,37 +11,21 @@ size/SHA-256 expectations, and uploads the snapshot to Task Manager
 verified MIME, stable idempotency key and bytes leave the Mac. The local path is
 not sent to Task Manager and is not returned by the tool.
 
-The returned `fileRef` is deliberately unbound. Use the remote
-`attach_file_to_task` tool with a separate bind idempotency key, then use its
-`attachmentRef` in Task descriptions or native comments.
-
-For the explicitly installed `task-manager-uat` validation profile, the same
-binary runs with `--private-uat-bridge`. That mode is fail-closed to the exact
-`task-manager-uat` origin and proxies the deployed remote MCP through the local
-stdio connection, preserving remote tool schemas and
-`_meta["openai/fileParams"]` while adding `upload_local_file`. It refuses the
-production origin.
+The returned `fileRef` is deliberately unbound. Use the separately configured
+hosted `attach_file_to_task` tool with a separate bind idempotency key, then use
+its `attachmentRef` in Task descriptions or native comments. This process never
+proxies remote MCP discovery or tool calls.
 
 ## Authentication and lifecycle
 
-First use opens the system browser for Task Manager Authorization Code + PKCE
-consent through a random loopback callback and a dynamically registered public
-client. The access token remains in process memory. Client metadata and the
-rotating refresh token are stored as one macOS Keychain generic-password item;
-they are never accepted as tool arguments or plugin configuration. A revoked or
-expired refresh token causes a fresh browser reconnect. Reinstall/update leaves
-the Keychain item available for the same origin; uninstall removes the plugin
-files and no background process remains. The user can revoke the OAuth grant in
-Task Manager Settings, and a later use reconnects.
-
-Private UAT has a second, operator-only credential at the outer Sites boundary.
-It is read only from the macOS Keychain service
-`com.xxsrez.task-manager.uat.sites-bypass`, account
-`https://task-manager-uat.xxsrez-work.chatgpt.site`, and is injected only into
-requests to that exact HTTPS origin. It is never accepted as a flag, tool
-argument, plugin field, environment variable or transcript value. This Sites
-credential only passes the private hosting gate; ordinary Task Manager OAuth
-still establishes the user, scopes and ACL context.
+Starting the process, MCP initialization, ping and `tools/list` perform no
+network, browser, Keychain or `/usr/bin/security` operation. The first actual
+`upload_local_file` call opens the system browser for Task Manager Authorization
+Code + PKCE consent through a random loopback callback and a dynamically
+registered public client. Access and refresh tokens stay only in process memory;
+a new companion process authorizes again. A revoked refresh token reconnects in
+the same bounded upload call. The companion has no Sites bypass mode and does
+not contain a private-UAT hosting credential.
 
 ## Packaging and portability
 

@@ -22,12 +22,17 @@ Then install the plugins you need:
 
 `task-manager-uat@srez-marketplace` is an operator-only release-validation
 profile. Install it explicitly only for synthetic UAT smoke. A bundled local
-stdio bridge proxies the deployed private UAT MCP and adds exact-path upload, so
-`fileRef` upload and the later `attach_file_to_task` bind cannot cross
-environments. The outer Sites bypass credential and the ordinary Task Manager
-OAuth refresh credential remain separate Keychain items; neither is stored in
-plugin configuration. The bridge refuses the production origin and does not
-replace or reconfigure the production `task-manager` plugin.
+stdio process exposes only exact-path upload, while hosted MCP remains a separate
+HTTP connection. Initialization and tool discovery perform no network, browser
+or credential operation in the local process; Task Manager OAuth begins only
+when `upload_local_file` is called and remains in process memory. The package
+contains no Sites bypass credential or private-UAT proxy and does not replace or
+reconfigure the production `task-manager` plugin.
+
+The UAT Site is owner-only. Its hosted MCP therefore remains unreachable to a
+normal remote connector until a separately approved machine-only connector edge
+exists; installing this profile does not weaken the Site access policy or hide
+that gate behind a local secret-bearing proxy.
 
 No server URL, client ID, secret, or personal API token is required. Task
 Manager and Mind Diary UAT distribute their MCP connections directly and
@@ -47,9 +52,9 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
   comment mechanics.
 - `task-manager-local` is a bundled macOS stdio companion with one
   `upload_local_file` tool. It reads one exact host-authorized regular file,
-  uploads a verified snapshot into the common `fileRef` workflow, stores its
-  rotating OAuth refresh token in Keychain, and never sends the full path to
-  Task Manager. The remote `attach_file_to_task` tool performs the later bind.
+  uploads a verified snapshot into the common `fileRef` workflow, keeps OAuth
+  only in process memory after first use, and never sends the full path to Task
+  Manager. The remote `attach_file_to_task` tool performs the later bind.
 
 Ship Tasks is a separate plugin:
 
@@ -84,8 +89,8 @@ Repository layout:
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
 - `plugins/task-manager-uat/.codex-plugin/plugin.json` — explicit UAT-only
   validation manifest;
-- `plugins/task-manager-uat/.mcp.json` and `bin/` — private UAT MCP/local-file
-  bridge package;
+- `plugins/task-manager-uat/.mcp.json` and `bin/` — separate hosted UAT MCP and
+  local-file validation connections;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/strategic-explainer/` — generic communication

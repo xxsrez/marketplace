@@ -12,11 +12,34 @@ type fakeLocalUploader struct {
 	result uploadResult
 	err    error
 	input  localFileInput
+	calls  int
 }
 
 func (uploader *fakeLocalUploader) UploadLocalFile(_ context.Context, input localFileInput) (uploadResult, error) {
+	uploader.calls++
 	uploader.input = input
 	return uploader.result, uploader.err
+}
+
+func TestMCPInitializeAndToolsListHaveNoUploadSideEffects(t *testing.T) {
+	t.Parallel()
+	uploader := &fakeLocalUploader{}
+	input := strings.Join([]string{
+		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25"}}`,
+		`{"jsonrpc":"2.0","method":"notifications/initialized"}`,
+		`{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}`,
+		`{"jsonrpc":"2.0","id":3,"method":"ping","params":{}}`,
+	}, "\n") + "\n"
+	var output bytes.Buffer
+	if err := serveMCP(context.Background(), strings.NewReader(input), &output, uploader); err != nil {
+		t.Fatal(err)
+	}
+	if uploader.calls != 0 {
+		t.Fatalf("discovery invoked uploader %d times", uploader.calls)
+	}
+	if strings.Contains(output.String(), "authorization") || strings.Contains(output.String(), "Keychain") {
+		t.Fatalf("discovery returned an authentication side effect: %s", output.String())
+	}
 }
 
 type cancellingUploader struct {
@@ -45,7 +68,7 @@ func TestMCPInitializeListAndUploadCall(t *testing.T) {
 		`{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"upload_local_file","arguments":{"path":"/tmp/report.pdf","idempotencyKey":"stable-key","expectedByteSize":123,"expectedSha256":"` + strings.Repeat("a", 64) + `"}}}`,
 	}, "\n") + "\n"
 	var output bytes.Buffer
-	if err := serveMCP(context.Background(), strings.NewReader(input), &output, uploader, nil); err != nil {
+	if err := serveMCP(context.Background(), strings.NewReader(input), &output, uploader); err != nil {
 		t.Fatal(err)
 	}
 	lines := strings.Split(strings.TrimSpace(output.String()), "\n")
@@ -87,7 +110,7 @@ func TestMCPToolErrorIsBoundedAndDoesNotEchoPath(t *testing.T) {
 	uploader := &fakeLocalUploader{err: newLocalError("local_path_denied", "host access to the authorized path was denied")}
 	input := `{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"upload_local_file","arguments":{"path":"/Users/example/Secret/report.pdf","idempotencyKey":"stable"}}}` + "\n"
 	var output bytes.Buffer
-	if err := serveMCP(context.Background(), strings.NewReader(input), &output, uploader, nil); err != nil {
+	if err := serveMCP(context.Background(), strings.NewReader(input), &output, uploader); err != nil {
 		t.Fatal(err)
 	}
 	if strings.Contains(output.String(), "/Users/example") || strings.Contains(output.String(), "Secret") {
@@ -111,7 +134,7 @@ func TestMCPCancelNotificationCancelsUploadWithoutChangingRetryContract(t *testi
 		`{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":"upload-1","reason":"test"}}`,
 	}, "\n") + "\n"
 	var output bytes.Buffer
-	if err := serveMCP(context.Background(), strings.NewReader(input), &output, uploader, nil); err != nil {
+	if err := serveMCP(context.Background(), strings.NewReader(input), &output, uploader); err != nil {
 		t.Fatal(err)
 	}
 	<-uploader.canceled

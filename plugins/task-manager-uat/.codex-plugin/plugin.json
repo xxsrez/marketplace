@@ -1,7 +1,7 @@
 {
   "name": "task-manager-uat",
-  "version": "0.1.0+codex.20260820234830",
-  "description": "Operator-only private Task Manager UAT bridge for end-to-end connector and local-file validation.",
+  "version": "0.2.0+codex.20260821083319",
+  "description": "Operator-only Task Manager UAT profile with separate hosted MCP and on-demand local-file upload.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -17,7 +17,7 @@
   "interface": {
     "displayName": "Task Manager UAT",
     "shortDescription": "Validate Task Manager safely against UAT.",
-    "longDescription": "Operator-only validation profile. One bundled macOS stdio bridge proxies the private UAT MCP and adds exact-path upload while keeping Sites access and Task Manager OAuth as separate credentials in Keychain. Use synthetic data only; this plugin refuses the production origin.",
+    "longDescription": "Operator-only validation profile. Hosted UAT MCP and the macOS exact-path uploader are separate connections. The local process exposes only upload_local_file, performs no discovery-time network or credential access, and keeps Task Manager OAuth only in process memory. Use synthetic data only.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
