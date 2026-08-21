@@ -32,7 +32,8 @@ private-UAT hosting credential.
 
 Release acceptance uses the production origin only after explicit production
 approval. A bounded canary may require one first-use browser PKCE consent, but
-never stores credentials in Keychain or starts a proxy/daemon.
+never stores credentials in Keychain or starts a proxy/daemon. The shipped
+binary has no origin or transport override; production is its only data plane.
 
 ## Packaging and portability
 

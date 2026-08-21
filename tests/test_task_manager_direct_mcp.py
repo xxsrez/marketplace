@@ -72,6 +72,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             for forbidden in (
                 b"/usr/bin/security",
                 b"serve-private-uat-ingress",
+                b"transport-origin",
                 b"OAI-Sites-Authorization",
                 b"task-manager-uat.xxsrez-work.chatgpt.site",
             ):

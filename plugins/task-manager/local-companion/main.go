@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,11 +13,6 @@ import (
 const productionTaskManagerOrigin = "https://task-manager.xxsrez-work.chatgpt.site"
 
 func main() {
-	origin := flag.String("origin", productionTaskManagerOrigin, "Task Manager site origin")
-	transportOrigin := flag.String(
-		"transport-origin", "", "Optional exact 127.0.0.1 ingress used for machine requests",
-	)
-	flag.Parse()
 	if runtime.GOOS != "darwin" {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion currently supports macOS only.")
 		os.Exit(1)
@@ -32,17 +26,13 @@ func main() {
 	}
 	credentials := &volatileCredentialStore{}
 	manager, err := newOAuthManager(
-		*origin, *transportOrigin, httpClient, credentials, systemBrowser{},
+		productionTaskManagerOrigin, "", httpClient, credentials, systemBrowser{},
 	)
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion could not start: invalid origin.")
 		os.Exit(1)
 	}
-	requestOrigin := *transportOrigin
-	if requestOrigin == "" {
-		requestOrigin = *origin
-	}
-	service := newUploadClient(httpClient, requestOrigin, manager)
+	service := newUploadClient(httpClient, productionTaskManagerOrigin, manager)
 	if err := serveMCP(context.Background(), os.Stdin, os.Stdout, service); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion stopped because stdio transport failed.")
 		os.Exit(1)
