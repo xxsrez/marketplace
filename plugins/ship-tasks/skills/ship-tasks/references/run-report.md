@@ -6,7 +6,8 @@
 ## Перед ответом
 
 - Перечитать affected Tasks, comments, statuses, versions и relations.
-- Перечитать Goal в batch.
+- Перечитать Goal только в `batch-implementation` либо когда release продолжает
+  уже активный совместимый Goal массовой имплементации.
 - Проверить exact result identity и обязательные external effects.
 - Сопоставить обещанный результат с фактическим.
 - Убедиться, что больше нет безопасного in-scope пути, который агент считает
@@ -27,6 +28,7 @@
 оркестрации, если они не нужны пользователю. Если run успешен, объяснить
 полученный outcome, важное решение, проверку и реальные ограничения.
 
-Batch Goal завершается только после fresh full inventory без `To Do`,
-`In Progress`, `In Review`, rework, незавершённых effects и unresolved in-scope
-defects. Task-local blocker не переводит Goal в `blocked` автоматически.
+Goal `batch-implementation` завершается только после fresh full inventory без
+`To Do`, `In Progress`, `In Review`, rework, незавершённых effects и unresolved
+in-scope defects. Task-local blocker не переводит Goal в `blocked`
+автоматически. Release-only run Goal не создаёт и не финализирует.

@@ -7,8 +7,9 @@
 - Самостоятельно выбирай обратимые локальные решения, которые не меняют
   согласованный observable outcome.
 - Сам выбирай достаточный способ продвинуть Task и проверить результат.
-- Task-local blocker не останавливает независимые Tasks. В batch перед ожиданием
-  пользователя перечитай весь scope; при наличии runnable work продолжай.
+- Task-local blocker не останавливает независимые Tasks. В
+  `batch-implementation` перед ожиданием пользователя перечитай весь scope; при
+  наличии runnable work продолжай.
 - Не повторяй неизменившуюся операцию, проверку или poll. Повтор нужен после
   material change в result, tool, environment, access, authority или Task
   contract.
@@ -46,7 +47,7 @@ read-back, но выбор технического пути к этому ре�
 Перед defer опубликуй и перечитай понятный comment. Он сообщает, что уже
 установлено, что мешает продолжить, влияние и exact resume condition. Не
 создавай provider status `Blocked` и не создавай follow-up Task без authority.
-Task-local blocker оставляет batch Goal активным.
+Task-local blocker оставляет применимый Goal массовой имплементации активным.
 
 ## Non-production
 
@@ -65,6 +66,11 @@ Production workflow требует явного approval для exact target и 
 Без него оставь понятный Task comment, сохрани правдивый non-terminal status и
 продолжай независимую работу. Approval не отменяет checks, comment/read-back и
 terminal evidence.
+
+Production approval меняет authority, но не Goal policy. Release-only не создаёт
+Goal из-за production target, Project/Release selector или количества прочитанных
+Tasks. Уже активный Goal допустим только если он возник из массовой имплементации
+минимум двух Tasks и production release был его исходным done criterion.
 
 ## Resume
 

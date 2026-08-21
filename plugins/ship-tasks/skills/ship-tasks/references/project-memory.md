@@ -1,9 +1,9 @@
 # Project memory contract
 
 Этот reference задаёт логическую структуру project-specific context для
-ShipTask. Читать его полностью в `batch` mode, при bare `$ship-tasks`, при
-`memory-maintenance` и всякий раз, когда delivery зависит от сохранённого
-project profile.
+ShipTask. Читать его полностью в `batch-implementation`, при bare `$ship-tasks`,
+при `memory-maintenance` и всякий раз, когда delivery/release зависит от
+сохранённого project profile.
 
 ## Содержание
 
@@ -110,8 +110,8 @@ Memory maintenance начинается только по явной прось�
 5. Перечитать сохранённую memory, проверить обязательные поля и сообщить, на
    какой Codex surface она будет доступна.
 
-Обычный `single` или `batch` delivery может сообщить полезное предложение по
-memory, но не должен менять её как побочный эффект.
+Обычный `single`, `batch-implementation` или `release` delivery может сообщить
+полезное предложение по memory, но не должен менять её как побочный эффект.
 
 ## Проверка перед delivery
 

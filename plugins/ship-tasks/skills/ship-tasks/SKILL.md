@@ -1,6 +1,6 @@
 ---
 name: ship-tasks
-description: "Доставлять однозначно выбранный Task Manager scope до фактически проверенного результата. Использовать явно через $ship-tasks; implicit invocation — только при delivery intent с exact существующей Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope. Одного delivery-глагола недостаточно. Create-and-deliver — только при явной просьбе создать ровно одну Task в Task Manager и сразу выполнить её. Bare $ship-tasks запускает batch по project memory; single работает без Goal, batch — с Goal. Не использовать для чтения, статуса, аудита, объяснения, планирования или backlog capture."
+description: "Доставлять однозначно выбранный Task Manager scope до фактически проверенного результата. Использовать явно через $ship-tasks; implicit invocation — только при delivery intent с exact существующей Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope. Одного delivery-глагола недостаточно. Create-and-deliver — только при явной просьбе создать ровно одну Task в Task Manager и сразу выполнить её. Bare $ship-tasks разрешает mode по live inventory. Single и release работают без Goal; Goal нужен только для batch-implementation минимум двух Tasks. Не использовать для чтения, статуса, аудита, объяснения, планирования или backlog capture."
 ---
 
 # Ship Tasks
@@ -12,10 +12,16 @@ description: "Доставлять однозначно выбранный Task 
 ## 1. Выбери mode и exact scope
 
 - Exact Task или create-and-deliver одной Task → `single`, без Goal.
-- Project, Release, несколько Tasks, current scope или bare `$ship-tasks` →
-  `batch`, с Goal.
+- Реальная implementation/rework минимум двух concrete Tasks →
+  `batch-implementation`, с Goal.
+- Commit/push/publish/deploy/smoke/rollback уже подготовленного candidate →
+  `release`, без Goal, включая production release.
 - Чтение, аудит, объяснение, planning/backlog capture → не delivery.
 - Обычная просьба исправить код/продукт без Task Manager anchor → не ShipTask.
+
+Project, Release, current scope, несколько Tasks и bare `$ship-tasks` — selectors,
+а не modes. Определи фактическую работу после live inventory. Чтение, проверка,
+приёмка или lifecycle reconciliation нескольких Tasks не создают Goal.
 
 Для bare invocation прочитай
 [project memory](references/project-memory.md). Prompt selector имеет приоритет,
@@ -23,8 +29,12 @@ description: "Доставлять однозначно выбранный Task 
 перечитай live Task state, acceptance, relations и materially relevant comments.
 Memory не заменяет live state.
 
-Используй Goal только для учёта batch progress; single работает без Goal. Goal
-не определяет Task outcome, число попыток или status. Неразрешимый конфликт
+Создавай Goal только после подтверждения `batch-implementation` минимум двух
+Tasks и до первой implementation mutation. `single` и `release` работают без
+Goal. Release-only не создаёт, не переиспользует, не ретаргетит и не завершает
+Goal только ради release. Release может продолжить уже активный совместимый Goal,
+только если был его исходным done criterion; сам release новый Goal не создаёт.
+Goal не определяет Task outcome, число попыток или status. Неразрешимый конфликт
 scope/shared state/authority → `TASK CONTEXT ALARM` до небезопасных writes.
 
 ## 2. Соблюдай обязательные требования
@@ -126,12 +136,14 @@ comment: [delivery report](references/delivery-report.md).
 
 ## 6. Продолжай автономно и финализируй
 
-Task-local blocker не останавливает независимую runnable работу. В batch перед
-ожиданием пользователя проверь весь scope; пока остаётся безопасная in-scope
-работа, продолжай её. Goal остаётся active, пока scope не завершён фактически.
+Task-local blocker не останавливает независимую runnable работу. В
+`batch-implementation` перед ожиданием пользователя проверь весь scope; пока
+остаётся безопасная in-scope работа, продолжай её. Применимый Goal остаётся
+active, пока implementation scope не завершён фактически.
 
-Перед финальным ответом перечитай affected Tasks, comments, statuses, Goal и
-external effects. Затем дай outcome-first `SHIPTASK RUN REPORT`: result и state,
-что доказано/не проверено, причина gap и точное условие продолжения. Не заменяй
-Task comments этим ответом. Batch Goal заверши только после повторной проверки,
-что в scope нет незавершённой in-scope работы.
+Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
+Goal и external effects. Затем дай outcome-first `SHIPTASK RUN REPORT`: result и
+state, что доказано/не проверено, причина gap и точное условие продолжения. Не
+заменяй Task comments этим ответом. Goal `batch-implementation` заверши только
+после повторной проверки, что в scope нет незавершённой in-scope работы.
+Release-only run Goal не создаёт и не финализирует.

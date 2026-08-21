@@ -214,7 +214,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ):
             self.assertIn(outcome, skill)
         self.assertIn("In Review → In Progress", skill)
-        self.assertIn("Goal только для учёта batch progress", skill)
+        self.assertIn("batch-implementation`, с Goal", skill)
+        self.assertIn("минимум двух", skill)
+        self.assertIn("сам release новый Goal не создаёт", skill)
+        self.assertIn("Release-only run Goal не создаёт", skill)
+        self.assertNotIn("запускает batch по project memory", skill)
         self.assertIn("не доказывает defect каждой", skill)
         self.assertIn("Перед любым существенным status transition", skill)
         self.assertIn("Доказательство важнее выбранного способа", skill)
