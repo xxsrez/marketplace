@@ -1,6 +1,6 @@
 {
   "name": "task-manager-uat",
-  "version": "0.2.1+codex.20260821101932",
+  "version": "0.2.2+codex.20260821103100",
   "description": "Operator-only Task Manager UAT profile for on-demand local file-first validation.",
   "author": {
     "name": "Andrey Myasnikov",

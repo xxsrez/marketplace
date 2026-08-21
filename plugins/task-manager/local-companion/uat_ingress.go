@@ -76,6 +76,11 @@ func runPrivateUATIngress(ctx context.Context, listenAddress, token string) erro
 	if err != nil {
 		return newLocalError("uat_ingress_listen_failed", "private UAT ingress loopback port is unavailable")
 	}
+	_, _ = fmt.Fprintf(
+		os.Stderr,
+		"Task Manager private UAT ingress is listening on %s. Press Ctrl-C to stop.\n",
+		listenAddress,
+	)
 	server := &http.Server{
 		Handler:           ingress,
 		ReadHeaderTimeout: 5 * time.Second,
