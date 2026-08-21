@@ -178,18 +178,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
         frontmatter = skill.split("---", 2)[1]
         self.assertIn("Одного delivery-глагола недостаточно", frontmatter)
-        self.assertIn("ровно одну Task именно в Task Manager", frontmatter)
+        self.assertIn("ровно одну Task в Task Manager", frontmatter)
         self.assertNotIn(
             "по естественным просьбам выполнить, исправить или довести",
             frontmatter,
         )
-        self.assertIn("## 1. Проверить запуск и выбрать mode", skill)
-        self.assertIn(
-            "Один delivery verb, текущий repository или software project не являются",
-            skill,
-        )
-        self.assertIn("Read/status/audit/explain/plan/backlog capture", skill)
-        self.assertIn("обычный workflow без ShipTask lifecycle", skill)
+        self.assertIn("## 1. Выбери mode и exact scope", skill)
+        self.assertIn("Обычная просьба исправить код/продукт", skill)
+        self.assertIn("Чтение, аудит, объяснение, planning/backlog capture", skill)
 
     def test_ship_tasks_classifies_review_outcomes_without_retry_loops(self) -> None:
         skill = (
@@ -218,12 +214,15 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ):
             self.assertIn(outcome, skill)
         self.assertIn("In Review → In Progress", skill)
-        self.assertIn("не создавать дополнительные Goal turns ради Goal `blocked`", skill)
-        self.assertIn("не делает весь batch defective", skill)
-        self.assertIn("communication remainder", report)
-        self.assertIn("truthful `In Review → In Progress`", report)
+        self.assertIn("Goal хранит progress, но не определяет Task outcome", skill)
+        self.assertIn("не доказывает defect каждой", skill)
+        self.assertIn("Перед любым существенным status transition", skill)
+        self.assertIn("сначала восстанови", skill)
+        self.assertIn("продолжай rework в этом же", skill)
+        self.assertNotIn("communication remainder", report)
+        self.assertIn("Только затем выполнить status write", report)
         self.assertIn("Decision support request", handoff)
-        self.assertIn("2–4 реалистичных способа", handoff)
+        self.assertIn("2–4 способа", handoff)
         for retired in (
             "строгого tool threshold",
             "строгого model-tool threshold",
@@ -265,7 +264,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
 
-    def test_ship_tasks_repairs_contaminated_explainer_invocation(self) -> None:
+    def test_ship_tasks_requires_a_fresh_explainer_without_local_fallback(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -279,17 +278,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         for text in (skill, handoff):
             self.assertIn('fork_turns="none"', text)
-            self.assertIn("CONTEXT_INTEGRITY_ERROR", text)
-            self.assertIn("PROBLEM_CONTEXT_ERROR", text)
-            self.assertIn("своими словами", text)
+            self.assertIn("Problem to solve", text)
             self.assertIn("$ship-tasks:strategic-explainer", text)
-        self.assertIn("раз запустить новый fresh subagent", skill)
-        self.assertIn("bounded `Strategic Handoff`", skill)
-        self.assertIn("bounded read-only", handoff)
-        self.assertIn("local wording", handoff)
-        self.assertIn("fallback", handoff)
-        self.assertIn("доступные read-only tools", handoff)
-        self.assertNotIn("User Brief` — единственный источник", handoff)
+        self.assertIn("сначала восстанови его", skill)
+        self.assertIn("Без Strategic Explainer", skill)
+        self.assertIn("discovery только read-only", skill)
+        self.assertIn("bounded/read-only", handoff)
+        self.assertIn("локальный текст не выдаётся", handoff)
+        self.assertIn("transition не выполняется", handoff)
 
 
 if __name__ == "__main__":

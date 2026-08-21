@@ -45,9 +45,11 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
 Ship Tasks is a separate plugin:
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
-  report content, and terminal status policy. It separates contradictory Task
-  contracts, proven defects, proven success, and genuine verification blockers
-  without repeating unchanged acceptance attempts;
+  report content, and terminal status policy. Its constitution leaves the agent
+  free to choose implementation and verification while requiring a native
+  comment before every meaningful lifecycle transition, repair of a required
+  broken tool before any weaker alternative, and factual separation of Task
+  conflicts, proven defects, genuine verification blockers, and proven success;
 - `strategic-explainer` is a generic sibling skill that requires an explicit
   problem, finds bounded strategic context through read-only tools, and returns
   a problem-first explanation without making decisions or mutations;

@@ -1,270 +1,78 @@
-# Autonomous continuation и release authority
+# Автономность, восстановление и release authority
 
-Использовать этот reference для long-running multi-Task scope, task-local
-questions, missing authority и любых release/deploy effects. Automatic terminal
-acceptance задана ADR-0005 и канонической specification.
+Этот reference уточняет границы, но не задаёт пошаговый универсальный flow.
 
-## Содержание
+## Продолжение работы
 
-- Run invariant
-- Decision ladder
-- Automatic acceptance
-- Stale acceptance context
-- Deferred Task
-- Comment handoff
-- Finalization analysis and bounded repair
-- Non-production release
-- Production boundary
-- Deferred-only handoff
-- Terminal run report
-- Resume
+- Самостоятельно выбирай обратимые локальные решения, которые не меняют
+  согласованный observable outcome.
+- Если безопасный in-scope repair способен продвинуть Task, выполни его,
+  перечитай state и продолжай.
+- Task-local blocker не останавливает независимые Tasks. В batch перед ожиданием
+  пользователя перечитай весь scope; при наличии runnable work продолжай.
+- Не повторяй неизменившуюся операцию, проверку или poll. Повтор нужен после
+  material change в result, tool, environment, access, authority или Task
+  contract.
+- Нет фиксированного числа попыток. Остановка допустима, когда следующий шаг
+  требует новой authority, внешнего state change или небезопасного действия.
 
-## Run invariant
+Global `TASK CONTEXT ALARM` нужен только при конфликте exact scope, connector,
+Goal, shared integration state или общей authority, из-за которого любые
+оставшиеся writes небезопасны.
 
-Не останавливать весь run из-за одного изолированного вопроса. Пока существует
-dependency-ready Task, которую можно безопасно продолжать в exact scope,
-выбирать safe default либо defer-нуть blocked Task и двигаться дальше.
+## Необходимый инструмент
 
-Не задавать пользователю вопрос посреди runnable queue. Один consolidated
-decision request допустим, когда безопасная runnable работа исчерпана.
+Сбой нужного инструмента является частью текущей проблемы:
 
-В уже разрешённом exact scope перед task-local `request_user_input`, финальным
-вопросом с ожиданием ответа или иным blocking pause обязательно заново получить
-complete Task inventory и вычислить:
+1. назови требуемую операцию и наблюдаемый отказ;
+2. проверь current tool/catalog/configuration и ближайшую причину;
+3. выполни безопасный bounded repair в существующей authority;
+4. повтори исходную операцию после изменения;
+5. только затем оцени равноценную альтернативу.
 
-```text
-runnable_count = actionable To Do + actionable In Progress
-               + actionable In Review + actionable in-scope recovery
-```
+Альтернатива должна доказывать тот же requirement. Нельзя заменить runtime
+acceptance компиляцией, authenticated scenario — публичным endpoint, а native
+Task comment — полем description или ответом в Codex.
 
-Не включать уже deferred Tasks. При `runnable_count > 0` blocking input
-запрещён: сохранить decision, освободить lane и выбрать следующую runnable Task.
-Не использовать cached disposition или review precedence как замену fresh gate.
-Review packet и published comment являются evidence/handoff, а не разрешением
-приостановить оставшиеся implementation/resume lanes или ждать user acceptance.
+Если восстановление невозможно, обязательный lifecycle/blocker comment
+объясняет причину, impact, выполненную диагностику и условие возобновления. Если
+сломался сам comment channel, не выполнять существенный status transition и не
+начинать новую delivery mutation, которую нельзя будет объяснить в Task.
 
-Global `TASK CONTEXT ALARM` сохранять только для конфликта connector, exact
-scope, Goal, ownership, integration/shared state или authority, из-за которого
-небезопасна любая оставшаяся mutation.
+## Task-local defer
 
-## Decision ladder
+Сохраняй правдивый status:
 
-### 1. Выбрать самому
+- `To Do`, если execution не начинался;
+- `In Progress`, если есть partial implementation или rework;
+- `In Review`, если candidate предъявлен, но приёмка объективно заблокирована
+  или current contract требует material решения.
 
-Принять reasonable default без вопроса, если одновременно:
+Перед defer опубликуй и перечитай понятный comment. Он сообщает, что уже
+установлено, что мешает продолжить, влияние и exact resume condition. Не
+создавай provider status `Blocked` и не создавай follow-up Task без authority.
+Task-local blocker оставляет batch Goal активным.
 
-- решение обратимо либо легко корректируется;
-- оно локально affected Task и не меняет agreed product outcome;
-- acceptance допускает несколько эквивалентных реализаций;
-- blast radius, расходы и external effects ограничены;
-- решение не касается production, secrets, privacy, destructive durable data,
-  legal/financial commitment или внешнего получателя.
+## Non-production
 
-Зафиксировать выбранный вариант и rationale в evidence/review report. Не
-превращать каждую мелкую реализационную развилку в decision queue entry.
+Обычный необходимый release в local/dev/test/QA/UAT/staging/preview/sandbox
+входит в delivery authority после надёжной проверки target. Разрешены build,
+publish, deploy/redeploy, smoke и bounded repair/rollback затронутого
+non-production surface.
 
-### 2. Defer-нуть Task
+Это не разрешает permanent deletion, destructive durable-data reset без
+recovery, secrets/privacy/access-policy changes, external-recipient action,
+unbounded cost или unrelated cleanup.
 
-Использовать `deferred`, если Task требует:
+## Production
 
-- material product/architecture choice с разными observable outcomes;
-- production approval;
-- обязательный approval внешнего approver, прямо заданный Task/project policy;
-- out-of-scope change или новую Task authority;
-- destructive/secret/privacy/cost/external-recipient authority;
-- решения ambiguous requirement после bounded research;
-- external state change, access или dependency, локальных этой Task.
-
-Не угадывать и не расширять scope. Изолировать Task, освободить lane и
-продолжить другие Tasks.
-
-### 3. Остановить run
-
-Использовать global alarm, только если конфликт нельзя изолировать: exact scope
-или Goal не разрешены, connector/ownership не позволяют безопасный write,
-shared integration state повреждён/неоднозначен либо все remaining mutations
-зависят от одной общей отсутствующей authority.
-
-## Automatic acceptance
-
-Не считать terminal acceptance пользовательским вопросом. Invocation
-`$ship-tasks` разрешает автоматически принять exact result, когда полный
-evidence set доказывает acceptance criteria, targeted и applicable batch gates,
-integration identity, required effects и отсутствие unresolved in-scope finding.
-
-При таком результате не вызывать user input и не оставлять Task в `In Review`
-ради human acceptance: опубликовать и перечитать обязательный `COMPLETED`, затем
-перевести Task в `Done`, перечитать status/version и продолжить scope. Если
-comment write/read недоступен, Task остаётся non-terminal с отдельным
-terminal-effect blocker. После `Done` user reopen или новая Task запускают
-обычный последующий rework cycle; прошлый report остаётся historical checkpoint.
-
-Automatic acceptance не заменяет production approval, destructive/secret/
-privacy authority или обязательный approval внешнего approver.
-
-## Stale acceptance context
-
-`acceptance criteria` означает объективные Task completion criteria. Оно не
-означает human sign-off и не создаёт пользовательский вопрос.
-
-Любое старое требование explicit user acceptance из memory, rollout summary,
-previous report/Goal/plan, cached project context или старой документации
-считать superseded historical evidence. Такое правило не может переопределить
-current skill, создать `acceptance-required`, оставить terminal-ready Task в
-`In Review` или привести Goal к `blocked`.
-
-Если такой blocker уже записан старым run, при resume удалить его из current
-decision queue, заново проверить exact result/evidence и выполнить обычный
-automatic terminal transition. Не считать повторное чтение того же stale text
-основанием для новой попытки или нового объяснения.
-
-## Deferred Task
-
-Сохранять truthful non-terminal status:
-
-- `To Do` — execution не начинался;
-- `In Progress` — существует partial implementation/rework;
-- `In Review` — candidate ждёт material decision, production/external approval
-  либо классифицирован как `verification-blocked`, потому что доступный способ
-  проверки не различает success и failure. Обычный terminal-ready result не
-  defer-ить: автоматически перевести в `Done`.
-
-Не переводить в `Done`, `Canceled`, `Duplicate` и не изобретать provider status
-`Blocked`. Не создавать replacement/follow-up Task без отдельной authority.
-
-В current-run decision queue записать:
-
-```text
-Task: <canonical ref and identifier>
-Reason: <stable reason code>
-Current status/result: <truthful state and exact identity>
-Last safe checkpoint: <what is safely complete>
-Evidence: <checks/releases/findings already proven>
-Recommended default: <one concrete recommendation or not-applicable>
-Decision/authority needed: <one exact user/external decision>
-Resume step: <first safe next action after unblock>
-```
-
-Reason codes включают `production-approval-required`,
-`external-approval-required`, `ambiguous-product-decision`,
-`out-of-scope-authority`, `external-access`, `unsafe-recovery` и
-`shared-dependency`. Review dispositions `verification-blocked` и
-`task-contract-conflict` использовать без подмены причины общим
-`external-access` или `ambiguous-product-decision`. Reason `acceptance-required`
-запрещён.
-
-Не переизбирать deferred Task в том же run без нового evidence, authority или
-external state change. Deferred Task продолжает удерживать Goal active.
-
-Новый out-of-scope finding без blocking edge к in-scope Task не является
-deferred Task: записать его в final findings, не расширять Goal/scope, не
-создавать follow-up и не запрашивать решение в текущем run.
-
-## Comment handoff
-
-Для каждого defer обязательно подготовить и попытаться опубликовать с
-read-back `BLOCKED` delivery-report comment. Включить все поля decision queue,
-user impact/remaining risk и report key для exact Task/result. Доступный
-comment публикуется до освобождения lane.
-
-Если comments недоступны или write outcome unknown, не использовать
-`description`/другой field как fallback. Записать comment delivery как отдельный
-communication remainder, сохранить тот же handoff в consolidated interaction
-output, оставить affected Task в truthful status и продолжить независимую
-runnable work. Недоступный comment не превращает Task в product defect и не
-меняет уже установленный review disposition.
-
-## Finalization analysis and bounded repair
-
-Перед любым terminal outcome, blocking pause или финальным ответом прочитать
-[run-report reference](run-report.md) и выполнить общий finalization pass:
-
-1. Сопоставить requested outcome с фактическим результатом.
-2. Перечитать current Task/Goal/source/effect state и существенное evidence.
-3. Объяснить material gaps и отделить подтверждённую причину от inference.
-4. Найти safe in-scope repair actions и выполнить их, если authority уже
-   существует.
-5. Перечитать affected state, повторить нужные checks и начать finalization
-   заново.
-
-Blocker остаётся blocker до устранения. Допустимый repair выполнить один раз и
-перечитать affected state. Без material state change не повторять repair,
-acceptance scenario или объяснение. Остановиться можно, когда blocker сохраняется
-и требуется реальное user decision, новая authority или внешний state change.
-
-## Non-production release
-
-Считать `$ship-tasks` standing authority для обычного in-scope release workflow
-только после доказанной классификации exact target как local, development,
-test, QA, UAT, staging, preview или sandbox.
-
-Без дополнительного confirmation выполнять необходимые:
-
-- build/package и publish candidate;
-- deploy/redeploy exact validated result;
-- task-required non-production schema/data migration при bounded recovery;
-- environment smoke и terminal-relevant runtime checks;
-- bounded logs/metrics diagnosis;
-- repair, rollback или restore затронутого in-scope non-production surface.
-
-Не останавливаться с вопросом «деплоить ли на UAT/dev». Если обычный
-non-production release безопасно нужен для terminal evidence, выполнить его и
-проверить exact target. Временную in-scope поломку диагностировать и
-исправить/восстановить до перехода к другой независимой external mutation.
-
-Standing authority не разрешает permanent deletion, destructive shared/durable
-data reset без recovery, secrets exposure/rotation, unrelated cleanup,
-неограниченные расходы или действие вопреки explicit read-only request.
-
-## Production boundary
-
-Production release требует explicit user approval, однозначно относящегося к
-production target и текущему scope. Не считать approval:
-
-- Task/Release title или acceptance text;
-- Goal objective;
-- успешные checks, UAT deploy или automatic acceptance;
-- прошлый production approval для другого result/target;
-- наличие production pipeline либо deploy tool;
-- сам invocation `$ship-tasks`.
-
-Без approval выполнить безопасную preparation и non-production release/smoke,
-оставить Task в truthful status, defer-нуть с
-`production-approval-required`, обязательно написать `BLOCKED` comment при
-доступных comments и продолжить другие Tasks. Не спрашивать approval посреди
-runnable queue.
-
-Если environment не доказан как non-production, считать target production-like
-и применять тот же defer. Не выполнять exploratory production mutation.
-
-## Deferred-only handoff
-
-Когда runnable queue исчерпана:
-
-1. Повторить complete inventory и доказать `runnable_count = 0`.
-2. Перечитать deferred Tasks и доступные comments/external state.
-3. Удалить из queue entries, которые получили новое доказанное решение.
-4. Сгруппировать оставшиеся по reason/dependency.
-5. Показать один consolidated decision request с recommended defaults.
-6. Оставить plan и Goal незавершёнными. Не вызывать Goal completion.
-7. Оставить Goal активным. Не повторять acceptance, poll или дополнительный Goal
-   turn ради смены status; task-local blocker уже полностью описан handoff.
-
-## Terminal run report
-
-Каждый terminal exit заканчивается глубоким компактным `SHIPTASK RUN REPORT` по
-[run-report reference](run-report.md). Task comments не заменяют этот report.
-Report сначала объясняет человеку итог, текущий статус и причины, а затем даёт
-только evidence, ограничения и следующий шаг, необходимые для понимания.
-
-Не заполнять жёсткий шаблон и не выгружать process diary, все tool calls, raw
-errors или полные inventories. Для `blocked` показать понятную diagnosis до
-status write; после write финальный ответ обязан отразить фактический Goal
-status. Один reason code или технический симптом не заменяет объяснение.
+Production workflow требует явного approval для exact target и candidate.
+Без него оставь понятный Task comment, сохрани правдивый non-terminal status и
+продолжай независимую работу. Approval не отменяет checks, comment/read-back и
+terminal evidence.
 
 ## Resume
 
-После нового user decision/authority или external state change перечитать Task,
-comment thread, current `version`, source/integration identity, checks и release
-target. Продолжить с `Resume step`, только если старый checkpoint всё ещё valid;
-иначе пересчитать Task disposition и evidence с нуля.
+После нового evidence, authority или внешнего state перечитай Task, comments,
+result identity и affected environment. Не считать старый handoff текущим
+доказательством. Возобнови с первого безопасного действия, указанного в comment.
