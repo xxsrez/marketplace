@@ -151,3 +151,70 @@ func TestUploadLocalFileRejectsServerMetadataMismatch(t *testing.T) {
 	})
 	assertLocalErrorCode(t, err, "server_metadata_mismatch")
 }
+
+func TestAttachLocalFileToTaskUsesAgentRESTAndReturnsAttachmentRef(t *testing.T) {
+	t.Parallel()
+	var captured struct {
+		path          string
+		authorization string
+		contentType   string
+		body          map[string]string
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		captured.path = request.URL.Path
+		captured.authorization = request.Header.Get("Authorization")
+		captured.contentType = request.Header.Get("Content-Type")
+		_ = json.NewDecoder(request.Body).Decode(&captured.body)
+		original := "https://task-manager.test/api/agent/v1/tasks/TM-123/attachments/att_12345678/content?variant=original"
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(writer).Encode(map[string]any{"data": map[string]any{
+			"ref": "att_12345678", "filename": "bound-report.pdf",
+			"mediaType": "application/pdf", "byteSize": 41,
+			"checksumSha256": strings.Repeat("b", 64), "kind": "file",
+			"state": "ready", "version": 1,
+			"links": map[string]any{"original": original, "thumbnail": nil},
+		}})
+	}))
+	defer server.Close()
+
+	client := newUploadClient(server.Client(), server.URL, &staticTokenSource{token: "access-token"})
+	result, err := client.AttachLocalFileToTask(context.Background(), attachLocalFileInput{
+		TaskRef: "TM-123", FileRef: "file_12345678",
+		IdempotencyKey: "stable-bind-key", DisplayName: "bound-report.pdf",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if captured.path != "/api/agent/v1/tasks/TM-123/attachments" ||
+		captured.authorization != "Bearer access-token" ||
+		captured.contentType != "application/json" {
+		t.Fatalf("request = %#v", captured)
+	}
+	if captured.body["fileRef"] != "file_12345678" ||
+		captured.body["idempotencyKey"] != "stable-bind-key" ||
+		captured.body["displayName"] != "bound-report.pdf" {
+		t.Fatalf("body = %#v", captured.body)
+	}
+	if result.TaskRef != "TM-123" || result.AttachmentRef != "att_12345678" ||
+		result.ChecksumSHA256 != strings.Repeat("b", 64) || result.OriginalURL == nil {
+		t.Fatalf("result = %#v", result)
+	}
+}
+
+func TestAttachLocalFileToTaskRejectsInvalidInputsBeforeNetwork(t *testing.T) {
+	t.Parallel()
+	requestCount := 0
+	server := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+		requestCount++
+	}))
+	defer server.Close()
+	client := newUploadClient(server.Client(), server.URL, &staticTokenSource{token: "token"})
+	_, err := client.AttachLocalFileToTask(context.Background(), attachLocalFileInput{
+		TaskRef: "", FileRef: "file_12345678", IdempotencyKey: "bind-key",
+	})
+	assertLocalErrorCode(t, err, "invalid_arguments")
+	if requestCount != 0 {
+		t.Fatalf("invalid bind performed %d requests", requestCount)
+	}
+}

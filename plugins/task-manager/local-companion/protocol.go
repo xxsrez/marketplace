@@ -12,8 +12,9 @@ import (
 
 const mcpProtocolVersion = "2025-11-25"
 
-type localUploader interface {
+type localFileService interface {
 	UploadLocalFile(context.Context, localFileInput) (uploadResult, error)
+	AttachLocalFileToTask(context.Context, attachLocalFileInput) (attachResult, error)
 }
 
 type jsonRPCRequest struct {
@@ -39,7 +40,7 @@ func serveMCP(
 	ctx context.Context,
 	input io.Reader,
 	output io.Writer,
-	uploader localUploader,
+	service localFileService,
 ) error {
 	scanner := bufio.NewScanner(input)
 	scanner.Buffer(make([]byte, 64*1024), 1024*1024)
@@ -99,7 +100,7 @@ func serveMCP(
 					delete(activeCalls, key)
 					activeMutex.Unlock()
 				}()
-				result, protocolErr := handleMCPRequest(callCtx, request, uploader)
+				result, protocolErr := handleMCPRequest(callCtx, request, service)
 				response := jsonRPCResponse{JSONRPC: "2.0", ID: request.ID, Result: result}
 				if protocolErr != nil {
 					response.Result = nil
@@ -109,7 +110,7 @@ func serveMCP(
 			}(request)
 			continue
 		}
-		result, protocolErr := handleMCPRequest(ctx, request, uploader)
+		result, protocolErr := handleMCPRequest(ctx, request, service)
 		if len(request.ID) == 0 {
 			continue
 		}
@@ -138,7 +139,7 @@ func serveMCP(
 func handleMCPRequest(
 	ctx context.Context,
 	request jsonRPCRequest,
-	uploader localUploader,
+	service localFileService,
 ) (any, *jsonRPCError) {
 	switch request.Method {
 	case "initialize":
@@ -154,7 +155,7 @@ func handleMCPRequest(
 			"protocolVersion": protocolVersion,
 			"capabilities":    map[string]any{"tools": map[string]any{"listChanged": false}},
 			"serverInfo": map[string]any{
-				"name": "task-manager-local", "title": "Task Manager Local Files", "version": "0.1.0",
+				"name": "task-manager-local", "title": "Task Manager Local Files", "version": "0.2.0",
 			},
 		}, nil
 	case "notifications/initialized":
@@ -164,9 +165,9 @@ func handleMCPRequest(
 	case "ping":
 		return map[string]any{}, nil
 	case "tools/list":
-		return map[string]any{"tools": []any{uploadLocalFileTool()}}, nil
+		return map[string]any{"tools": []any{uploadLocalFileTool(), attachLocalFileToTaskTool()}}, nil
 	case "tools/call":
-		return handleToolCall(ctx, request, uploader)
+		return handleToolCall(ctx, request, service)
 	default:
 		return nil, &jsonRPCError{Code: -32601, Message: "Method not found"}
 	}
@@ -176,7 +177,7 @@ func uploadLocalFileTool() map[string]any {
 	return map[string]any{
 		"name":        "upload_local_file",
 		"title":       "Upload a local file",
-		"description": "Read one exact user-authorized absolute filesystem path through the Codex host, verify a stable regular-file snapshot, and upload it into Task Manager as an unbound StoredFile. Returns fileRef for attach_file_to_task. Never accepts directories, globs, final-component symlinks, devices, inline base64, or remote URLs; never sends the full path to Task Manager.",
+		"description": "Read one exact user-authorized absolute filesystem path through the Codex host, verify a stable regular-file snapshot, and upload it into Task Manager as an unbound StoredFile. Returns fileRef for attach_local_file_to_task. Never accepts directories, globs, final-component symlinks, devices, inline base64, or remote URLs; never sends the full path to Task Manager.",
 		"inputSchema": map[string]any{
 			"type": "object", "additionalProperties": false,
 			"required": []string{"path", "idempotencyKey"},
@@ -210,10 +211,44 @@ func uploadLocalFileTool() map[string]any {
 	}
 }
 
+func attachLocalFileToTaskTool() map[string]any {
+	return map[string]any{
+		"name":        "attach_local_file_to_task",
+		"title":       "Attach an uploaded local file to a Task",
+		"description": "Bind a verified fileRef returned by upload_local_file to one editable canonical Task through Task Manager Agent REST. Returns attachmentRef. This local tool performs the second staged operation without hosted MCP; use a bind idempotency key independent from the upload key.",
+		"inputSchema": map[string]any{
+			"type": "object", "additionalProperties": false,
+			"required": []string{"taskRef", "fileRef", "idempotencyKey"},
+			"properties": map[string]any{
+				"taskRef": map[string]any{
+					"type": "string", "minLength": 1, "maxLength": 200,
+					"description": "Canonical Task reference such as TM-123.",
+				},
+				"fileRef": map[string]any{
+					"type": "string", "minLength": 1, "maxLength": 200,
+					"description": "Opaque verified fileRef returned by upload_local_file.",
+				},
+				"idempotencyKey": map[string]any{
+					"type": "string", "minLength": 1, "maxLength": 200,
+					"description": "Stable bind retry key, independent from the upload key.",
+				},
+				"displayName": map[string]any{
+					"type": "string", "minLength": 1, "maxLength": 512,
+					"description": "Optional Task-facing attachment filename.",
+				},
+			},
+		},
+		"annotations": map[string]any{
+			"readOnlyHint": false, "destructiveHint": false,
+			"idempotentHint": true, "openWorldHint": true,
+		},
+	}
+}
+
 func handleToolCall(
 	ctx context.Context,
 	request jsonRPCRequest,
-	uploader localUploader,
+	service localFileService,
 ) (any, *jsonRPCError) {
 	var params struct {
 		Name      string          `json:"name"`
@@ -222,15 +257,24 @@ func handleToolCall(
 	if err := json.Unmarshal(request.Params, &params); err != nil || params.Name == "" {
 		return nil, &jsonRPCError{Code: -32602, Message: "Invalid params"}
 	}
-	if params.Name != "upload_local_file" {
+	var result any
+	var err error
+	switch params.Name {
+	case "upload_local_file":
+		var input localFileInput
+		if json.Unmarshal(params.Arguments, &input) != nil {
+			return toolError("invalid_arguments", "tool arguments are invalid"), nil
+		}
+		result, err = service.UploadLocalFile(ctx, input)
+	case "attach_local_file_to_task":
+		var input attachLocalFileInput
+		if json.Unmarshal(params.Arguments, &input) != nil {
+			return toolError("invalid_arguments", "tool arguments are invalid"), nil
+		}
+		result, err = service.AttachLocalFileToTask(ctx, input)
+	default:
 		return nil, &jsonRPCError{Code: -32602, Message: "Unknown tool"}
 	}
-	var input localFileInput
-	decoderErr := json.Unmarshal(params.Arguments, &input)
-	if decoderErr != nil {
-		return toolError("invalid_arguments", "tool arguments are invalid"), nil
-	}
-	result, err := uploader.UploadLocalFile(ctx, input)
 	if err != nil {
 		var localErr *localError
 		if errors.As(err, &localErr) {

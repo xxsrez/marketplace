@@ -22,17 +22,18 @@ Then install the plugins you need:
 
 `task-manager-uat@srez-marketplace` is an operator-only release-validation
 profile. Install it explicitly only for synthetic UAT smoke. A bundled local
-stdio process exposes only exact-path upload, while hosted MCP remains a separate
-HTTP connection. Initialization and tool discovery perform no network, browser
+stdio process exposes exact-path upload plus Agent REST bind; there is no hosted
+UAT MCP connection. Initialization and tool discovery perform no network, browser
 or credential operation in the local process; Task Manager OAuth begins only
-when `upload_local_file` is called and remains in process memory. The package
-contains no Sites bypass credential or private-UAT proxy and does not replace or
+when a local file operation is called and remains in process memory. The package
+contains no persistent Sites bypass credential and does not replace or
 reconfigure the production `task-manager` plugin.
 
-The UAT Site is owner-only. Its hosted MCP therefore remains unreachable to a
-normal remote connector until a separately approved machine-only connector edge
-exists; installing this profile does not weaken the Site access policy or hide
-that gate behind a local secret-bearing proxy.
+The UAT Site remains owner-only. For a local-file smoke, an operator manually
+starts a bounded loopback ingress and supplies the Sites token once through
+stdin. The ingress keeps it only in process memory, exposes no MCP/UI/arbitrary
+proxy routes and stops with the process. Ordinary UAT use needs neither the
+ingress nor a public connector edge.
 
 No server URL, client ID, secret, or personal API token is required. Task
 Manager and Mind Diary UAT distribute their MCP connections directly and
@@ -42,7 +43,8 @@ pilot; this package is not a production or public-directory release.
 The plugins connect to:
 
 - Task Manager: `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
-- Task Manager UAT validation: `https://task-manager-uat.xxsrez-work.chatgpt.site/api/mcp`
+- Task Manager UAT validation: local stdio companion plus owner-only
+  `https://task-manager-uat.xxsrez-work.chatgpt.site`
 - Mind Diary: `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
 
 Task Manager is an adapter-only plugin with two coordinated MCP components:
@@ -50,11 +52,12 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
 - `task-manager` provides OAuth/MCP discovery, canonical
   references, pagination, safe writes, optimistic concurrency, and native
   comment mechanics.
-- `task-manager-local` is a bundled macOS stdio companion with one
-  `upload_local_file` tool. It reads one exact host-authorized regular file,
+- `task-manager-local` is a bundled macOS stdio companion with
+  `upload_local_file` and `attach_local_file_to_task`. It reads one exact
+  host-authorized regular file,
   uploads a verified snapshot into the common `fileRef` workflow, keeps OAuth
   only in process memory after first use, and never sends the full path to Task
-  Manager. The remote `attach_file_to_task` tool performs the later bind.
+  Manager. The local bind tool performs the second staged Agent REST operation.
 
 Ship Tasks is a separate plugin:
 
@@ -89,8 +92,8 @@ Repository layout:
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
 - `plugins/task-manager-uat/.codex-plugin/plugin.json` — explicit UAT-only
   validation manifest;
-- `plugins/task-manager-uat/.mcp.json` and `bin/` — separate hosted UAT MCP and
-  local-file validation connections;
+- `plugins/task-manager-uat/.mcp.json` and `bin/` — local-file validation
+  connection and manually started loopback ingress mode;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/strategic-explainer/` — generic communication

@@ -12,6 +12,12 @@ import (
 	"testing"
 )
 
+type failingRoundTripper func(*http.Request) (*http.Response, error)
+
+func (roundTrip failingRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
+	return roundTrip(request)
+}
+
 type memoryCredentialStore struct {
 	mutex       sync.Mutex
 	record      oauthCredential
@@ -137,7 +143,7 @@ func TestOAuthFirstUseRefreshAndRevokedReconnect(t *testing.T) {
 
 	store := &memoryCredentialStore{}
 	browser := &callbackBrowser{}
-	manager, err := newOAuthManager(server.URL, server.Client(), store, browser)
+	manager, err := newOAuthManager(server.URL, "", server.Client(), store, browser)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -171,7 +177,7 @@ func TestOAuthFirstUseRefreshAndRevokedReconnect(t *testing.T) {
 
 func TestOAuthRejectsNonHTTPSNonLoopbackOrigin(t *testing.T) {
 	t.Parallel()
-	_, err := newOAuthManager("http://example.test", http.DefaultClient, &memoryCredentialStore{}, &callbackBrowser{})
+	_, err := newOAuthManager("http://example.test", "", http.DefaultClient, &memoryCredentialStore{}, &callbackBrowser{})
 	if err == nil {
 		t.Fatal("expected unsafe origin rejection")
 	}
@@ -181,7 +187,7 @@ func TestOAuthRejectsNonHTTPSNonLoopbackOrigin(t *testing.T) {
 	}
 }
 
-func TestOAuthRegistrationEdgeFailureIsActionableAndBounded(t *testing.T) {
+func TestOAuthRegistrationFailureIsActionableAndBounded(t *testing.T) {
 	t.Parallel()
 	server := httptest.NewTLSServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/oauth/register" {
@@ -190,12 +196,12 @@ func TestOAuthRegistrationEdgeFailureIsActionableAndBounded(t *testing.T) {
 		}
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 		writer.WriteHeader(http.StatusUnauthorized)
-		_, _ = writer.Write([]byte(`<html><body>Sign in required: private edge detail</body></html>`))
+		_, _ = writer.Write([]byte(`<html><body>Sign in required: private upstream detail</body></html>`))
 	}))
 	defer server.Close()
 
 	manager, err := newOAuthManager(
-		server.URL, server.Client(), &memoryCredentialStore{}, &callbackBrowser{},
+		server.URL, "", server.Client(), &memoryCredentialStore{}, &callbackBrowser{},
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -211,7 +217,31 @@ func TestOAuthRegistrationEdgeFailureIsActionableAndBounded(t *testing.T) {
 	if !strings.Contains(localErr.Message, "HTTP 401") {
 		t.Fatalf("error message = %q", localErr.Message)
 	}
-	if strings.Contains(localErr.Message, "private edge detail") || strings.Contains(localErr.Message, "<html>") {
-		t.Fatalf("error disclosed edge response body: %q", localErr.Message)
+	if strings.Contains(localErr.Message, "private upstream detail") || strings.Contains(localErr.Message, "<html>") {
+		t.Fatalf("error disclosed upstream response body: %q", localErr.Message)
+	}
+}
+
+func TestOAuthManagerExplainsMissingPrivateUATIngress(t *testing.T) {
+	t.Parallel()
+	client := &http.Client{Transport: failingRoundTripper(func(*http.Request) (*http.Response, error) {
+		return nil, errors.New("connection refused")
+	})}
+	manager, err := newOAuthManager(
+		uatTaskManagerOrigin,
+		"http://127.0.0.1:47821",
+		client,
+		&memoryCredentialStore{},
+		&callbackBrowser{},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request, _ := http.NewRequest(http.MethodPost, manager.transportOrigin+"/oauth/register", nil)
+	_, _, err = manager.doBounded(request)
+	var localErr *localError
+	if !errors.As(err, &localErr) || localErr.Code != "oauth_network_error" ||
+		!strings.Contains(localErr.Message, defaultPrivateUATIngressListen) {
+		t.Fatalf("error = %#v", err)
 	}
 }

@@ -75,7 +75,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertTrue((source / "go.mod").is_file())
         self.assertTrue((source / "main.go").is_file())
 
-    def test_uat_profile_separates_hosted_mcp_from_lazy_local_ingress(self) -> None:
+    def test_uat_profile_uses_only_lazy_local_file_runtime(self) -> None:
         manifest = read_json(
             TASK_MANAGER_UAT_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
@@ -83,28 +83,25 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("skills", manifest)
         self.assertIn("Operator-only", manifest["description"])
         self.assertIn(
-            "separate connections", manifest["interface"]["longDescription"]
+            "no hosted MCP dependency", manifest["interface"]["longDescription"]
         )
-        self.assertIn("process memory", manifest["interface"]["longDescription"])
+        self.assertIn("never uses Keychain", manifest["interface"]["longDescription"])
 
         mcp_config = read_json(TASK_MANAGER_UAT_PLUGIN_ROOT / ".mcp.json")
         self.assertEqual(
             list(mcp_config["mcpServers"]),
-            ["task-manager-uat", "task-manager-uat-local"],
-        )
-        self.assertEqual(
-            mcp_config["mcpServers"]["task-manager-uat"],
-            {
-                "type": "http",
-                "url": f"{UAT_ORIGIN}/api/mcp",
-                "oauth_resource": f"{UAT_ORIGIN}/api/mcp",
-            },
+            ["task-manager-uat-local"],
         )
         self.assertEqual(
             mcp_config["mcpServers"]["task-manager-uat-local"],
             {
                 "command": "./bin/task-manager-local-launcher",
-                "args": ["--origin", UAT_ORIGIN],
+                "args": [
+                    "--origin",
+                    UAT_ORIGIN,
+                    "--transport-origin",
+                    "http://127.0.0.1:47821",
+                ],
                 "cwd": ".",
                 "startup_timeout_sec": 10,
                 "tool_timeout_sec": 900,
@@ -115,6 +112,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("bypass", serialized)
         self.assertNotIn("refresh_token", serialized)
         self.assertNotIn("client_secret", serialized)
+        self.assertNotIn("oai-sites-authorization", serialized)
 
         for name in (
             "task-manager-local-launcher",

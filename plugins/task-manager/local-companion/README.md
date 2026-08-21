@@ -1,8 +1,10 @@
 # Task Manager local file companion
 
-This bundled stdio MCP server normally exposes one tool:
+This bundled stdio MCP server exposes two staged local tools:
 
 `upload_local_file(path, idempotencyKey, expectedByteSize?, expectedSha256?, displayFilename?)`
+
+`attach_local_file_to_task(taskRef, fileRef, idempotencyKey, displayName?)`
 
 It reads one absolute host-authorized path, rejects final-component symlinks and
 non-regular files, snapshots at most 25 MiB through a stable open handle, verifies optional
@@ -11,21 +13,48 @@ size/SHA-256 expectations, and uploads the snapshot to Task Manager
 verified MIME, stable idempotency key and bytes leave the Mac. The local path is
 not sent to Task Manager and is not returned by the tool.
 
-The returned `fileRef` is deliberately unbound. Use the separately configured
-hosted `attach_file_to_task` tool with a separate bind idempotency key, then use
-its `attachmentRef` in Task descriptions or native comments. This process never
-proxies remote MCP discovery or tool calls.
+The returned `fileRef` is deliberately unbound. Call
+`attach_local_file_to_task` with an independent bind idempotency key to receive
+the durable Task-scoped `attachmentRef`. Both operations use the canonical
+Agent REST contract; hosted Codex and hosted MCP are not part of the local-file
+workflow. The companion never proxies remote MCP discovery or tool calls.
 
 ## Authentication and lifecycle
 
 Starting the process, MCP initialization, ping and `tools/list` perform no
 network, browser, Keychain or `/usr/bin/security` operation. The first actual
-`upload_local_file` call opens the system browser for Task Manager Authorization
+upload or bind call opens the system browser for Task Manager Authorization
 Code + PKCE consent through a random loopback callback and a dynamically
 registered public client. Access and refresh tokens stay only in process memory;
 a new companion process authorizes again. A revoked refresh token reconnects in
-the same bounded upload call. The companion has no Sites bypass mode and does
-not contain a private-UAT hosting credential.
+the same bounded operation. The stdio companion does not contain a private-UAT
+hosting credential.
+
+## Owner-only UAT
+
+The UAT plugin points machine requests at `http://127.0.0.1:47821`. Nothing is
+started there automatically. Immediately before a UAT local-file smoke, the
+operator starts the same binary in bounded ingress mode and supplies the Sites
+bypass value once through stdin:
+
+```zsh
+read -rs 'TM_UAT_SITES_TOKEN?UAT Sites token: '
+printf '\n'
+exec {TM_UAT_TOKEN_FD}< <(printf '%s' "$TM_UAT_SITES_TOKEN")
+unset TM_UAT_SITES_TOKEN
+./bin/task-manager-local-launcher --serve-private-uat-ingress <&$TM_UAT_TOKEN_FD
+exec {TM_UAT_TOKEN_FD}<&-
+unset TM_UAT_TOKEN_FD
+```
+
+The value is not an argument, environment variable, config entry or Keychain
+item. The short-lived process-substitution writer feeds an inherited descriptor,
+then the parent shell variable is cleared before the foreground ingress starts.
+The ingress binds exact `127.0.0.1:47821`, keeps the value only in process
+memory, exposes only OAuth plus staged-file/TaskAttachment REST routes, rejects
+MCP/UI/arbitrary proxy traffic and disappears when the process stops. Browser
+authorization still opens the owner-only UAT Site directly. Ordinary UAT UI use
+does not require this ingress.
 
 ## Packaging and portability
 

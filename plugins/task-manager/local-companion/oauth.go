@@ -36,14 +36,15 @@ type browserOpener interface {
 }
 
 type oauthManager struct {
-	mutex        sync.Mutex
-	origin       string
-	resource     string
-	httpClient   *http.Client
-	credentials  credentialStore
-	browser      browserOpener
-	accessToken  string
-	accessExpiry time.Time
+	mutex           sync.Mutex
+	origin          string
+	transportOrigin string
+	resource        string
+	httpClient      *http.Client
+	credentials     credentialStore
+	browser         browserOpener
+	accessToken     string
+	accessExpiry    time.Time
 }
 
 type oauthTokens struct {
@@ -69,6 +70,7 @@ func (err *oauthProtocolError) Error() string {
 
 func newOAuthManager(
 	rawOrigin string,
+	rawTransportOrigin string,
 	httpClient *http.Client,
 	credentials credentialStore,
 	browser browserOpener,
@@ -77,8 +79,13 @@ func newOAuthManager(
 	if err != nil {
 		return nil, err
 	}
+	transportOrigin, err := validateTransportOrigin(rawTransportOrigin, origin)
+	if err != nil {
+		return nil, err
+	}
 	return &oauthManager{
-		origin: origin, resource: origin + "/api/mcp", httpClient: httpClient,
+		origin: origin, transportOrigin: transportOrigin,
+		resource: origin + "/api/mcp", httpClient: httpClient,
 		credentials: credentials, browser: browser,
 	}, nil
 }
@@ -248,7 +255,7 @@ func (manager *oauthManager) register(ctx context.Context, redirectURI string) (
 		"token_endpoint_auth_method": "none",
 	})
 	request, err := http.NewRequestWithContext(
-		ctx, http.MethodPost, manager.origin+"/oauth/register", strings.NewReader(string(body)),
+		ctx, http.MethodPost, manager.transportOrigin+"/oauth/register", strings.NewReader(string(body)),
 	)
 	if err != nil {
 		return "", newLocalError("oauth_registration_failed", "OAuth registration request could not be created")
@@ -312,7 +319,7 @@ func (manager *oauthManager) refresh(ctx context.Context, credential oauthCreden
 
 func (manager *oauthManager) requestTokens(ctx context.Context, form url.Values) (oauthTokens, error) {
 	request, err := http.NewRequestWithContext(
-		ctx, http.MethodPost, manager.origin+"/oauth/token", strings.NewReader(form.Encode()),
+		ctx, http.MethodPost, manager.transportOrigin+"/oauth/token", strings.NewReader(form.Encode()),
 	)
 	if err != nil {
 		return oauthTokens{}, newLocalError("oauth_token_failed", "OAuth token request could not be created")
@@ -337,7 +344,12 @@ func (manager *oauthManager) requestTokens(ctx context.Context, form url.Values)
 func (manager *oauthManager) doBounded(request *http.Request) ([]byte, int, error) {
 	response, err := manager.httpClient.Do(request)
 	if err != nil {
-		return nil, 0, newLocalError("oauth_network_error", "Task Manager OAuth endpoint is unavailable")
+		message := "Task Manager OAuth endpoint is unavailable"
+		if transport, parseErr := url.Parse(manager.transportOrigin); parseErr == nil &&
+			transport.Scheme == "http" && transport.Hostname() == "127.0.0.1" {
+			message = privateUATIngressCommandHint()
+		}
+		return nil, 0, newLocalError("oauth_network_error", message)
 	}
 	defer response.Body.Close()
 	body, err := io.ReadAll(io.LimitReader(response.Body, 256*1024+1))
@@ -377,6 +389,30 @@ func validateOAuthOrigin(rawOrigin string) (string, error) {
 		(parsed.Hostname() == "127.0.0.1" || parsed.Hostname() == "localhost" || parsed.Hostname() == "::1")
 	if parsed.Scheme != "https" && !loopback {
 		return "", newLocalError("invalid_origin", "Task Manager origin must use HTTPS")
+	}
+	return parsed.String(), nil
+}
+
+func validateTransportOrigin(rawTransportOrigin, logicalOrigin string) (string, error) {
+	value := strings.TrimSpace(rawTransportOrigin)
+	if value == "" {
+		return logicalOrigin, nil
+	}
+	parsed, err := url.Parse(strings.TrimRight(value, "/"))
+	if err != nil || parsed.Host == "" || parsed.User != nil || parsed.RawQuery != "" ||
+		parsed.Fragment != "" || parsed.Path != "" {
+		return "", newLocalError("invalid_transport_origin", "Task Manager transport origin is invalid")
+	}
+	if parsed.Scheme == "https" && parsed.String() == logicalOrigin {
+		return parsed.String(), nil
+	}
+	if parsed.Scheme != "http" || parsed.Hostname() != "127.0.0.1" {
+		return "", newLocalError(
+			"invalid_transport_origin", "Task Manager transport origin must be the logical HTTPS origin or 127.0.0.1",
+		)
+	}
+	if parsed.Port() == "" {
+		return "", newLocalError("invalid_transport_origin", "Task Manager loopback transport requires an explicit port")
 	}
 	return parsed.String(), nil
 }

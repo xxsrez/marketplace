@@ -88,8 +88,8 @@ Task Manager discussion.
   - an exact user-authorized absolute filesystem path can go only to the local
     `upload_local_file` companion. Pass a stable upload key and, when known,
     expected byte size/SHA-256. Verify its returned metadata, then pass only the
-    resulting `fileRef` to remote `attach_file_to_task` with an independent bind
-    key;
+    resulting `fileRef` to local `attach_local_file_to_task` with an independent
+    bind key;
   - when the target Task already exists and no staged workflow is needed,
     `upload_task_attachment` remains the one-call compatibility wrapper;
   - an existing `fileRef` goes only to `get_file`, `delete_file`, or
@@ -99,8 +99,9 @@ Task Manager discussion.
   - never pass a local path, base64 payload, DOM URL, or arbitrary remote URL to
     hosted MCP. Local paths enter only through `upload_local_file`; otherwise
     report that the source has not entered native upload.
-- `upload_local_file` is a separate local stdio tool, not a hosted Task Manager
-  tool. It requires one absolute path and still obeys the Codex host sandbox and
+- `upload_local_file` and `attach_local_file_to_task` are separate local stdio
+  tools, not hosted Task Manager tools. Upload requires one absolute path and
+  still obeys the Codex host sandbox and
   approval policy. It rejects relative paths, globs, directories,
   final-component symlinks and special files; computes a stable bounded
   snapshot and SHA-256 before network
@@ -108,7 +109,15 @@ Task Manager discussion.
   It returns no local path. On first use, its browser PKCE consent is separate
   from the remote MCP connection. Initialization and tool discovery perform no
   network, browser or credential-store access; OAuth metadata and tokens remain
-  only in process memory, so a new companion process authorizes again.
+  only in process memory, so a new companion process authorizes again. Bind
+  calls the canonical Agent REST endpoint and returns `attachmentRef`; hosted
+  Codex and hosted MCP are not part of this local workflow.
+- The operator-only UAT profile uses an exact loopback transport started only
+  for a local-file smoke. If it is absent, report the actionable local-ingress
+  requirement; do not fall back to production or hosted MCP. Never request or
+  pass a Sites token in tool arguments or chat. The ingress accepts it only on
+  its manual stdin, keeps it in memory, and never uses Keychain or
+  `/usr/bin/security`.
 - Reuse a local upload idempotency key only for identical bytes and metadata. A
   network error is not evidence that upload failed: retry the exact source with
   the same key. Never change the path, display filename or expected metadata
@@ -126,7 +135,7 @@ Task Manager discussion.
 - Local file-first example: `upload_local_file(path, uploadKey,
   expectedByteSize, expectedSha256)` → verify the local/server metadata and
   `sourceVerified=true` → create or resolve Task →
-  `attach_file_to_task(taskRef, fileRef, bindKey)` → use only the returned
+  `attach_local_file_to_task(taskRef, fileRef, bindKey)` → use only the returned
   `attachmentRef` in description/comment → read back attachment and thread.
 - Attachment refs are opaque. To embed an image or link a file, insert the
   returned `attachment:v1:<ref>` token into the Task description or native

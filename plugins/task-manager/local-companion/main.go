@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 	"time"
 )
 
@@ -16,10 +18,30 @@ const uatTaskManagerOrigin = "https://task-manager-uat.xxsrez-work.chatgpt.site"
 
 func main() {
 	origin := flag.String("origin", productionTaskManagerOrigin, "Task Manager site origin")
+	transportOrigin := flag.String(
+		"transport-origin", "", "Optional exact 127.0.0.1 ingress used for machine requests",
+	)
+	serveUATIngress := flag.Bool(
+		"serve-private-uat-ingress", false, "Serve the bounded private UAT ingress on loopback",
+	)
 	flag.Parse()
 	if runtime.GOOS != "darwin" {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion currently supports macOS only.")
 		os.Exit(1)
+	}
+	if *serveUATIngress {
+		token, err := readSitesBypassToken(os.Stdin)
+		if err != nil {
+			exitWithLocalError("Task Manager private UAT ingress requires one token on stdin.")
+			os.Exit(1)
+		}
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer stop()
+		if err := runPrivateUATIngress(ctx, defaultPrivateUATIngressListen, token); err != nil {
+			exitWithLocalError("Task Manager private UAT ingress could not run on loopback.")
+			os.Exit(1)
+		}
+		return
 	}
 	httpClient := &http.Client{
 		Timeout:   15 * time.Minute,
@@ -30,14 +52,18 @@ func main() {
 	}
 	credentials := &volatileCredentialStore{}
 	manager, err := newOAuthManager(
-		*origin, httpClient, credentials, systemBrowser{},
+		*origin, *transportOrigin, httpClient, credentials, systemBrowser{},
 	)
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion could not start: invalid origin.")
 		os.Exit(1)
 	}
-	uploader := newUploadClient(httpClient, *origin, manager)
-	if err := serveMCP(context.Background(), os.Stdin, os.Stdout, uploader); err != nil {
+	requestOrigin := *transportOrigin
+	if requestOrigin == "" {
+		requestOrigin = *origin
+	}
+	service := newUploadClient(httpClient, requestOrigin, manager)
+	if err := serveMCP(context.Background(), os.Stdin, os.Stdout, service); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion stopped because stdio transport failed.")
 		os.Exit(1)
 	}

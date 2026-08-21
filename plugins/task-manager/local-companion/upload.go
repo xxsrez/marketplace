@@ -17,9 +17,9 @@ type tokenSource interface {
 }
 
 type uploadClient struct {
-	httpClient *http.Client
-	origin     string
-	tokens     tokenSource
+	httpClient      *http.Client
+	transportOrigin string
+	tokens          tokenSource
 }
 
 type uploadResult struct {
@@ -51,8 +51,50 @@ type agentStoredFile struct {
 	Version        int64  `json:"version"`
 }
 
-func newUploadClient(httpClient *http.Client, origin string, tokens tokenSource) *uploadClient {
-	return &uploadClient{httpClient: httpClient, origin: strings.TrimRight(origin, "/"), tokens: tokens}
+type attachLocalFileInput struct {
+	TaskRef        string `json:"taskRef"`
+	FileRef        string `json:"fileRef"`
+	IdempotencyKey string `json:"idempotencyKey"`
+	DisplayName    string `json:"displayName,omitempty"`
+}
+
+type attachResult struct {
+	TaskRef        string  `json:"taskRef"`
+	AttachmentRef  string  `json:"attachmentRef"`
+	Filename       string  `json:"filename"`
+	MediaType      string  `json:"mediaType"`
+	ByteSize       int64   `json:"byteSize"`
+	ChecksumSHA256 string  `json:"checksumSha256"`
+	Kind           string  `json:"kind"`
+	State          string  `json:"state"`
+	ImageWidth     *int64  `json:"imageWidth,omitempty"`
+	ImageHeight    *int64  `json:"imageHeight,omitempty"`
+	Version        int64   `json:"version"`
+	OriginalURL    *string `json:"originalUrl,omitempty"`
+	ThumbnailURL   *string `json:"thumbnailUrl,omitempty"`
+}
+
+type agentAttachment struct {
+	Ref            string `json:"ref"`
+	Filename       string `json:"filename"`
+	MediaType      string `json:"mediaType"`
+	ByteSize       int64  `json:"byteSize"`
+	ChecksumSHA256 string `json:"checksumSha256"`
+	Kind           string `json:"kind"`
+	State          string `json:"state"`
+	ImageWidth     *int64 `json:"imageWidth,omitempty"`
+	ImageHeight    *int64 `json:"imageHeight,omitempty"`
+	Version        int64  `json:"version"`
+	Links          struct {
+		Original  *string `json:"original"`
+		Thumbnail *string `json:"thumbnail"`
+	} `json:"links"`
+}
+
+func newUploadClient(httpClient *http.Client, transportOrigin string, tokens tokenSource) *uploadClient {
+	return &uploadClient{
+		httpClient: httpClient, transportOrigin: strings.TrimRight(transportOrigin, "/"), tokens: tokens,
+	}
 }
 
 func (client *uploadClient) UploadLocalFile(ctx context.Context, input localFileInput) (uploadResult, error) {
@@ -83,7 +125,7 @@ func (client *uploadClient) upload(
 	prepared preparedLocalFile,
 ) (uploadResult, int, error) {
 	request, err := http.NewRequestWithContext(
-		ctx, http.MethodPost, client.origin+"/api/agent/v1/files", bytes.NewReader(prepared.Bytes),
+		ctx, http.MethodPost, client.transportOrigin+"/api/agent/v1/files", bytes.NewReader(prepared.Bytes),
 	)
 	if err != nil {
 		return uploadResult{}, 0, newLocalError("remote_request_failed", "upload request could not be created")
@@ -98,7 +140,7 @@ func (client *uploadClient) upload(
 	response, err := client.httpClient.Do(request)
 	if err != nil {
 		return uploadResult{}, 0, newLocalError(
-			"network_error", "upload did not complete; retry the identical file with the same idempotencyKey",
+			"network_error", client.networkErrorMessage("upload did not complete; retry the identical file with the same idempotencyKey"),
 		)
 	}
 	defer response.Body.Close()
@@ -135,6 +177,102 @@ func (client *uploadClient) upload(
 		Version: data.Version, SourceVerified: true,
 	}
 	return result, response.StatusCode, nil
+}
+
+func (client *uploadClient) AttachLocalFileToTask(
+	ctx context.Context,
+	input attachLocalFileInput,
+) (attachResult, error) {
+	taskRef := strings.TrimSpace(input.TaskRef)
+	fileRef := strings.TrimSpace(input.FileRef)
+	idempotencyKey := strings.TrimSpace(input.IdempotencyKey)
+	displayName := strings.TrimSpace(input.DisplayName)
+	if taskRef == "" || len(taskRef) > 200 || fileRef == "" || len(fileRef) > 200 ||
+		idempotencyKey == "" || len(idempotencyKey) > 200 || len(displayName) > 512 {
+		return attachResult{}, newLocalError("invalid_arguments", "taskRef, fileRef, or idempotencyKey is invalid")
+	}
+	payload := map[string]string{
+		"fileRef": fileRef, "idempotencyKey": idempotencyKey,
+	}
+	if displayName != "" {
+		payload["displayName"] = displayName
+	}
+	body, _ := json.Marshal(payload)
+	for attempt := 0; attempt < 2; attempt++ {
+		token, err := client.tokens.Token(ctx)
+		if err != nil {
+			return attachResult{}, err
+		}
+		result, status, err := client.attach(ctx, token, taskRef, body)
+		if status == http.StatusUnauthorized && attempt == 0 {
+			client.tokens.Invalidate()
+			continue
+		}
+		return result, err
+	}
+	return attachResult{}, newLocalError("remote_unauthenticated", "Task Manager authorization is unavailable")
+}
+
+func (client *uploadClient) attach(
+	ctx context.Context,
+	token, taskRef string,
+	body []byte,
+) (attachResult, int, error) {
+	request, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		client.transportOrigin+"/api/agent/v1/tasks/"+url.PathEscape(taskRef)+"/attachments",
+		bytes.NewReader(body),
+	)
+	if err != nil {
+		return attachResult{}, 0, newLocalError("remote_request_failed", "bind request could not be created")
+	}
+	request.Header.Set("Authorization", "Bearer "+token)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	response, err := client.httpClient.Do(request)
+	if err != nil {
+		return attachResult{}, 0, newLocalError(
+			"network_error", client.networkErrorMessage("bind did not complete; retry the same fileRef and Task with the same idempotencyKey"),
+		)
+	}
+	defer response.Body.Close()
+	responseBody, err := io.ReadAll(io.LimitReader(response.Body, 1024*1024+1))
+	if err != nil || len(responseBody) > 1024*1024 {
+		return attachResult{}, response.StatusCode, newLocalError(
+			"remote_response_invalid", "Task Manager returned an unreadable bind response",
+		)
+	}
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return attachResult{}, response.StatusCode, parseAgentAPIError(response.StatusCode, responseBody)
+	}
+	var envelope struct {
+		Data agentAttachment `json:"data"`
+	}
+	if json.Unmarshal(responseBody, &envelope) != nil || envelope.Data.Ref == "" ||
+		envelope.Data.State != "ready" || envelope.Data.Filename == "" ||
+		envelope.Data.ByteSize < 0 || envelope.Data.ChecksumSHA256 == "" {
+		return attachResult{}, response.StatusCode, newLocalError(
+			"remote_response_invalid", "Task Manager returned invalid attachment metadata",
+		)
+	}
+	data := envelope.Data
+	return attachResult{
+		TaskRef: taskRef, AttachmentRef: data.Ref, Filename: data.Filename,
+		MediaType: data.MediaType, ByteSize: data.ByteSize,
+		ChecksumSHA256: strings.ToLower(data.ChecksumSHA256), Kind: data.Kind,
+		State: data.State, ImageWidth: data.ImageWidth, ImageHeight: data.ImageHeight,
+		Version: data.Version, OriginalURL: data.Links.Original,
+		ThumbnailURL: data.Links.Thumbnail,
+	}, response.StatusCode, nil
+}
+
+func (client *uploadClient) networkErrorMessage(fallback string) string {
+	parsed, err := url.Parse(client.transportOrigin)
+	if err == nil && parsed.Scheme == "http" && parsed.Hostname() == "127.0.0.1" {
+		return privateUATIngressCommandHint()
+	}
+	return fallback
 }
 
 func parseAgentAPIError(status int, body []byte) error {

@@ -1,6 +1,6 @@
 {
   "name": "task-manager",
-  "version": "0.7.1+codex.20260821083319",
+  "version": "0.7.2+codex.20260821101932",
   "description": "Connect Task Manager to inspect and safely mutate work, including staged upload from native or exact local files.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Task Manager",
     "shortDescription": "Manage tasks, comments, and staged files safely.",
-    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical references and current versions, mutate task metadata, labels, hierarchy and relations, and use native comments and private attachments. A bundled macOS companion exposes only upload_local_file, reads one exact host-authorized path without sending it, and authorizes in memory only when the tool is called. Delivery workflows such as ShipTask are installed separately.",
+    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical references and current versions, mutate task metadata, labels, hierarchy and relations, and use native comments and private attachments. A bundled macOS companion exposes upload_local_file and attach_local_file_to_task, reads one exact host-authorized path without sending it, and authorizes in memory only when a local operation is called. Delivery workflows such as ShipTask are installed separately.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [

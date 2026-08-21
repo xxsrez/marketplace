@@ -1,7 +1,7 @@
 {
   "name": "task-manager-uat",
-  "version": "0.2.0+codex.20260821083319",
-  "description": "Operator-only Task Manager UAT profile with separate hosted MCP and on-demand local-file upload.",
+  "version": "0.2.1+codex.20260821101932",
+  "description": "Operator-only Task Manager UAT profile for on-demand local file-first validation.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -17,7 +17,7 @@
   "interface": {
     "displayName": "Task Manager UAT",
     "shortDescription": "Validate Task Manager safely against UAT.",
-    "longDescription": "Operator-only validation profile. Hosted UAT MCP and the macOS exact-path uploader are separate connections. The local process exposes only upload_local_file, performs no discovery-time network or credential access, and keeps Task Manager OAuth only in process memory. Use synthetic data only.",
+    "longDescription": "Operator-only validation profile. The macOS companion exposes upload_local_file and attach_local_file_to_task, performs no discovery-time network or credential access, and uses a manually started loopback-only private-UAT ingress when file validation is needed. It has no hosted MCP dependency and never uses Keychain. Use synthetic data only.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -26,9 +26,9 @@
     ],
     "websiteURL": "https://task-manager-uat.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
-      "List my UAT tasks and confirm the connector origin",
       "Upload an exact local file into Task Manager UAT",
-      "Run the UAT file-first upload and bind smoke"
+      "Bind a verified local fileRef to a UAT Task",
+      "Run the local UAT file-first upload and bind smoke"
     ],
     "brandColor": "#D97706"
   },
