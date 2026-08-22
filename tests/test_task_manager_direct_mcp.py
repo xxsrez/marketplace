@@ -177,8 +177,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "SKILL.md"
         ).read_text(encoding="utf-8")
         frontmatter = skill.split("---", 2)[1]
-        self.assertIn("Одного delivery-глагола недостаточно", frontmatter)
-        self.assertIn("ровно одну Task в Task Manager", frontmatter)
+        self.assertIn("одного delivery-глагола недостаточно", frontmatter.lower())
+        self.assertIn("создать и сразу выполнить одну Task", frontmatter)
         self.assertNotIn(
             "по естественным просьбам выполнить, исправить или довести",
             frontmatter,
@@ -205,6 +205,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "references"
             / "strategic-explainer.md"
         ).read_text(encoding="utf-8")
+        run_report = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "ship-tasks"
+            / "references"
+            / "run-report.md"
+        ).read_text(encoding="utf-8")
 
         for outcome in (
             "task-contract-conflict",
@@ -226,12 +233,21 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("не делает его обязательным", skill)
         self.assertIn("как обеспечить это, решает агент", skill)
         self.assertIn("продолжай rework в этом же", skill)
+        self.assertIn("Native comment create/list/read", skill)
+        self.assertIn("Всегда создай и перечитай обязательный comment", skill)
+        self.assertIn("немедленно сообщи в Codex chat", skill)
+        self.assertIn("opening Task comment", skill)
+        self.assertIn("каждые 10 минут", skill)
+        self.assertIn("incident ledger", skill)
         self.assertNotIn("сначала восстанови", skill)
         self.assertNotIn("после material repair", skill)
         self.assertNotIn("communication remainder", report)
         self.assertIn("Только затем выполнить status write", report)
         self.assertIn("Decision support request", handoff)
-        self.assertIn("2–4 способа", handoff)
+        self.assertIn("strongest feasible способ", handoff)
+        self.assertNotIn("2–4 способа", handoff)
+        self.assertIn("found and resolved", run_report)
+        self.assertIn("не совместим с clean success", run_report)
         for retired in (
             "строгого tool threshold",
             "строгого model-tool threshold",

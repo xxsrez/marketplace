@@ -24,8 +24,8 @@ Strategic discovery anchors
 
 Decision support request
 - Объяснить результат человеческим языком.
-- Для verification blocker: сравнить 2–4 способа провести приёмку и
-  рекомендовать следующий вариант.
+- Для verification blocker: рекомендовать strongest feasible способ получить
+  evidence; сравнить alternatives только при реальном material выборе.
 ```
 
 Не передавать готовый желаемый вывод, полный tool transcript или process diary.

@@ -1,6 +1,6 @@
 ---
 name: ship-tasks
-description: "Доставлять однозначно выбранный Task Manager scope до фактически проверенного результата. Использовать явно через $ship-tasks; implicit invocation — только при delivery intent с exact существующей Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope. Одного delivery-глагола недостаточно. Create-and-deliver — только при явной просьбе создать ровно одну Task в Task Manager и сразу выполнить её. Bare $ship-tasks разрешает mode по live inventory. Single и release работают без Goal; Goal нужен только для batch-implementation минимум двух Tasks. Не использовать для чтения, статуса, аудита, объяснения, планирования или backlog capture."
+description: "Доставлять однозначно выбранный Task Manager scope до фактически проверенного результата. Использовать явно через $ship-tasks или неявно только при delivery intent с exact Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope; одного delivery-глагола недостаточно. Create-and-deliver разрешён для явной просьбы создать и сразу выполнить одну Task. Bare invocation определяет mode по live inventory; Goal нужен только для implementation/rework минимум двух Tasks. Не использовать для чтения, статуса, аудита, объяснения, planning/backlog capture или обычной работы с кодом без Task Manager anchor."
 ---
 
 # Ship Tasks
@@ -27,7 +27,8 @@ Project, Release, current scope, несколько Tasks и bare `$ship-tasks` 
 [project memory](references/project-memory.md). Prompt selector имеет приоритет,
 но не обновляет memory. Через Task Manager adapter разреши полный exact scope и
 перечитай live Task state, acceptance, relations и materially relevant comments.
-Memory не заменяет live state.
+Memory не заменяет live state. В первом содержательном update назови unresolved
+acceptance incidents выбранного scope.
 
 Создавай Goal только после подтверждения `batch-implementation` минимум двух
 Tasks и до первой implementation mutation. `single` и `release` работают без
@@ -51,6 +52,10 @@ Progress`, `In Review → Done`, reopen из terminal status, новым
 также требует comment, даже если status не меняется. Ответ в Codex не заменяет
 Task comment; `description` и другие fields не являются fallback.
 
+Native comment create/list/read — гарантированная часть current Task Manager
+adapter. Всегда создай и перечитай обязательный comment. Неизвестный write
+outcome сначала разреши через native read-back; не повторяй write вслепую.
+
 Комментарий простым языком объясняет, что установлено, почему статус меняется
 или сохраняется, что это значит для пользователя, чем подтверждён вывод и что
 произойдёт дальше. Пиши на языке пользователя; внутренние reason codes, смесь
@@ -72,6 +77,26 @@ failure не удаётся, это `verification-blocked`: назови гра�
 Обязательный Task comment — требуемый результат, а не предписанный tool flow.
 Существенный transition завершён только когда comment действительно существует
 в Task и перечитан; как обеспечить это, решает агент.
+
+### Не скрывай приёмочный инцидент
+
+`verified-failure`, `verification-blocked` и `task-contract-conflict`, найденные
+при проверке exact candidate или release scope, — material acceptance incidents.
+Только `verified-failure` называй bug.
+
+До repair, status write или blocking handoff немедленно сообщи в Codex chat:
+exact Task/criterion, expected result, observed failure либо границу знания,
+impact, установленный outcome и следующий шаг. Затем опубликуй и перечитай
+opening Task comment. Для proven defect comment предшествует началу rework.
+
+Не стирай opening после repair. При material state change сообщай progress в
+chat; после исправления свяжи resolution/completion comment с тем же criterion,
+cause/confidence, fix/result identity и retest evidence. Пока incident unresolved
+и active run продолжается без material change, напоминай о нём в chat примерно
+каждые 10 минут. Таймерные updates не дублируй в Task comments.
+
+Ожидаемая red/green iteration, отказ одного способа проверки и batch failure без
+task-level attribution не являются incident конкретной Task.
 
 ### Сохраняй authority boundary
 
@@ -95,29 +120,34 @@ authority.
 `In Progress → In Review`. Сразу проведи приёмку: `In Review` не является
 ожиданием человека.
 
-## 4. Разбери `In Review` по текущим фактам
+## 4. Разбери приёмку по текущим фактам
 
 История изменений acceptance и количество прошлых попыток сами по себе ничего
-не доказывают.
+не доказывают. Те же outcomes применяй при release verification; lifecycle
+effects выполняй только для точно attributed Tasks.
 
 - `task-contract-conflict`: current mandatory requirements противоречат друг
-  другу или не определяют observable result. Однозначное исправление по accepted
-  source выполни и перечитай; иначе оставь понятный comment и сохрани
-  `In Review`.
+  другу или не определяют observable result. Сначала chat update и opening
+  comment. Однозначное исправление по accepted source выполни и перечитай;
+  иначе сохрани `In Review` и назови recommended decision.
 - `verified-failure`: exact candidate в совместимой среде прямо нарушает current
-  acceptance. Сначала comment с observed failure, impact и причиной возврата,
-  затем `In Review → In Progress`; перечитай Task и продолжай rework в этом же
-  run.
+  acceptance. Сначала chat update и opening comment с expected/observed,
+  evidence, impact и причиной возврата, затем `In Review → In Progress`;
+  перечитай Task и продолжай rework в этом же run.
 - `verification-blocked`: выбранные агентом разумные способы не позволяют
   доказать ни success, ни failure в текущем scope и полномочиях. Comment
-  объясняет границу знания и 2–4 способа приёмки с предпосылками, доказательной
-  силой, trade-off, рекомендацией и success signal; Task остаётся `In Review`.
+  объясняет границу знания и recommended feasible способ получить evidence с
+  prerequisites и success signal. Сравни альтернативы только при material
+  выборе; Task остаётся `In Review`.
 - `verified-success`: acceptance, checks, result identity и required effects
   доказаны. Сначала понятный completion comment и read-back, затем
-  `In Review → Done` и Task read-back.
+  `In Review → Done` и Task read-back. Если incident был открыт в этом run,
+  comment явно закрывает его либо называет remaining risk.
 
 Падение общего batch gate без task-level attribution не доказывает defect каждой
-Task. Сначала получи separating evidence; не возвращай весь batch в rework.
+Task. Сначала получи separating evidence; до attribution сообщай scope-level
+finding только в chat/final report и не возвращай весь batch в rework. Defect в
+terminal Task сначала получает opening comment, затем exact Task reopen.
 
 ## 5. Используй Strategic Explainer для человеческих объяснений
 
@@ -143,7 +173,13 @@ active, пока implementation scope не завершён фактически
 
 Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
 Goal и external effects. Затем дай outcome-first `SHIPTASK RUN REPORT`: result и
-state, что доказано/не проверено, причина gap и точное условие продолжения. Не
-заменяй Task comments этим ответом. Goal `batch-implementation` заверши только
-после повторной проверки, что в scope нет незавершённой in-scope работы.
-Release-only run Goal не создаёт и не финализирует.
+state, что доказано/не проверено, причина gap и точное условие продолжения.
+Всегда добавь compact incident ledger: Task/criterion, найденное, cause/
+confidence, fix, retest evidence и final state — включая defects, найденные и
+исправленные в том же run. Unresolved incident не совместим с clean success для
+affected Task. Не заменяй Task comments этим ответом. Подробности:
+[run report](references/run-report.md).
+
+Goal `batch-implementation` заверши только после повторной проверки, что в scope
+нет незавершённой in-scope работы. Release-only run Goal не создаёт и не
+финализирует.

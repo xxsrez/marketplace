@@ -76,4 +76,6 @@ Tasks. Уже активный Goal допустим только если он 
 
 После нового evidence, authority или внешнего state перечитай Task, comments,
 result identity и affected environment. Не считать старый handoff текущим
-доказательством. Возобнови с первого безопасного действия, указанного в comment.
+доказательством. В первом содержательном chat update назови unresolved acceptance
+incidents выбранного scope и возобнови с первого безопасного действия,
+указанного в comment.
