@@ -1,6 +1,6 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.6+codex.20260822091354",
+  "version": "0.1.6+codex.20260822115714",
   "description": "Deliver selected Task Manager work with durable acceptance reporting and problem-first strategic explanations.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Ship Tasks",
     "shortDescription": "Deliver work with visible acceptance incidents.",
-    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Its requirements act as a constitution: sufficient evidence, truthful state, readable native comments, visible acceptance incidents, and authority boundaries are mandatory while planning, tools, delegation, context shape, diagnostics, and acceptance methods remain agent choices. Native comments are part of the Task Manager adapter contract. Strategic Explainer turns established facts into a grounded problem-first human explanation without taking status, authority, or execution decisions and without requiring a specific agent topology or prompt envelope.",
+    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Its requirements act as a constitution: sufficient evidence, truthful state, readable native comments, visible acceptance incidents, and authority boundaries are mandatory while planning, tools, diagnostics, and acceptance methods remain agent choices. An ordinary To Do to In Progress transition creates no comment. Every comment Ship Tasks publishes first passes a separate independent Strategic Explainer; the main agent verifies the facts but cannot substitute its own rewrite. Strategic Explainer does not take status, authority, or execution decisions.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [

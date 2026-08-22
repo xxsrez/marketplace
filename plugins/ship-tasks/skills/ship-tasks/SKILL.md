@@ -43,8 +43,8 @@ scope/shared state/authority → `TASK CONTEXT ALARM` до небезопасн�
 ### Правдивый статус и обязательный комментарий
 
 Перед любым существенным status transition опубликуй понятный native Task
-Manager comment и перечитай его. Затем измени status и перечитай Task.
-Исключение — очевидный старт `To Do → In Progress`.
+Manager comment и перечитай его. Затем измени status и перечитай Task. Обычный
+старт `To Do → In Progress` комментария не создаёт.
 
 Комментарий обязателен перед `In Progress → In Review`, `In Review → In
 Progress`, `In Review → Done`, reopen из terminal status, новым
@@ -55,6 +55,12 @@ Task comment; `description` и другие fields не являются fallbac
 Native comment create/list/read — гарантированная часть current Task Manager
 adapter. Всегда создай и перечитай обязательный comment. Неизвестный write
 outcome сначала разреши через native read-back; не повторяй write вслепую.
+
+Каждый комментарий, который ShipTask собирается создать по любой причине,
+сначала передай отдельному независимому субагенту с
+`$ship-tasks:strategic-explainer`. Основной агент не может заменить этот проход
+собственной редактурой. Обычный `To Do → In Progress` не запускает Explainer,
+потому что комментария для этого перехода нет.
 
 Комментарий простым языком объясняет, что установлено, почему статус меняется
 или сохраняется, что это значит для пользователя, чем подтверждён вывод и что
@@ -151,16 +157,30 @@ terminal Task сначала получает opening comment, затем exact 
 
 ## 5. Обеспечь человеческое объяснение
 
-Каждый обязательный lifecycle/blocker comment и final report должны связывать
-решаемую проблему, current facts, пользовательский смысл, evidence/unknown и
-следующий state. ShipTask сам устанавливает facts, outcome, status, authority и
-next action.
+Каждый Task Manager comment ShipTask обязательно проходит отдельного
+Strategic Explainer. ShipTask сам устанавливает факты, итог, статус, полномочия
+и следующий шаг, но не проверяет собственный текст вместо независимого
+субагента.
 
-`$ship-tasks:strategic-explainer` доступен для independent adaptation или bounded
-read-only discovery, когда это materially улучшает explanation. Сам решай,
-вызвать skill напрямую, делегировать работу или применить его quality contract
-в основном workflow. Обязателен понятный grounded result, а не конкретная agent
-topology, context envelope или invocation.
+Перед публикацией запусти отдельного субагента без унаследованного диалога и
+журнала инструментов и попроси применить
+`$ship-tasks:strategic-explainer`. Передай самодостаточно: решаемую проблему,
+пользователя результата, exact Task, текущие факты и evidence, влияние,
+известное и неизвестное, ограничения и уже разрешённый следующий шаг.
+Explainer остаётся read-only и не выбирает status, scope, authority или repair.
+
+Субагент возвращает готовый пользовательский текст на языке пользователя и
+короткий source basis. Внутренние сущности сначала объясняются обычными
+словами; точные технические названия остаются только там, где помогают
+проверить результат или выполнить действие. Не переносить в текст process
+diary, смесь жаргона или перечень инструментов.
+
+Проверь готовый текст по исходным фактам. Если обнаружена ошибка или потерян
+существенный факт, исправь вход и повтори независимую адаптацию; не переписывай
+текст самостоятельно и не считай такой черновик прошедшим Explainer. Если
+отдельный субагент недоступен или не вернул пригодный текст, не публикуй
+comment и не выполняй зависящий от него status transition. Немедленный
+outcome-first update в Codex при приёмочном инциденте всё равно обязателен.
 
 Quality contract: [reference](references/strategic-explainer.md). Требования к
 comment: [delivery report](references/delivery-report.md).
