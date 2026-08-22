@@ -213,6 +213,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("taxonomy не расширяй", skill)
         self.assertIn("не строй последовательную цепочку", normalized_skill)
         self.assertIn("bounded duplicate search", skill)
+        self.assertIn("Type/classification выражай native Label", skill)
+        self.assertIn("`BUG:`, `EPIC:`, `[Bug]`, `Epic —`, `Feature:`", skill)
+        self.assertIn(
+            "Legacy-prefixed и clean outcome title считай одним duplicate candidate",
+            skill,
+        )
+        self.assertIn("не дублирует type/classification label", normalized_skill)
         self.assertIn("не повторяй create вслепую", normalized_skill)
         self.assertIn("не реализуй", skill.lower())
         self.assertIn('display_name: "Task Composer"', metadata)

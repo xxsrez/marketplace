@@ -48,6 +48,10 @@ parent-child hierarchy, labels и relation graph всего candidate scope.
 сохраняй их отдельными Tasks/Epics и связывай только при реальной relation.
 Title кратко называет ожидаемый результат и объект изменения: Epic — strategic
 outcome, subtask — конкретный deliverable, без расплывчатой процессной формулы.
+Type/classification выражай native Label и hierarchy, не title: не добавляй
+`BUG:`, `EPIC:`, `[Bug]`, `Epic —`, `Feature:` или их эквиваленты. Missing Label
+не заменяй textual prefix; исключение — exact verbatim title пользователя.
+Legacy-prefixed и clean outcome title считай одним duplicate candidate.
 
 Оставь одну Task, когда есть один independently deliverable outcome. Она
 содержит problem, observable outcome, exact scope, material constraints,
@@ -80,7 +84,7 @@ Epic и отражается в каждой применимой подзада
 Выбирай Labels только из live active catalog отдельно для каждой Task. Не
 предполагай inheritance от Epic и не ставь нерелевантный label ради заполнения
 поля. Если подходящего Label нет, создай Task без него и явно перечисли label
-gap; taxonomy не расширяй.
+gap; taxonomy не расширяй и не дублируй classification в title.
 
 Создавай native parent-child hierarchy. Не дублируй её `related` relation.
 Добавляй relation только при реальном смысле: `blocks` для обязательной
@@ -107,7 +111,8 @@ confirmed и not-created элементы и точное условие без�
 
 Read-back должен подтвердить canonical identities, `Backlog`, Release либо его
 честное отсутствие, hierarchy, labels/label gaps, relation type/direction и
-intended strategic/technical split в descriptions.
+intended strategic/technical split в descriptions. Проверь, что title не
+дублирует type/classification Label, кроме exact verbatim user title.
 
 Финальный ответ перечисляет созданный scope, duplicate disposition, Project,
 Release, status, hierarchy, labels/label gaps, relations и любой unreconciled
