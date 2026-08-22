@@ -31,6 +31,10 @@ Project, Release, current scope, несколько Tasks и bare `$ship-tasks` 
 Memory не заменяет live state. В первом содержательном update назови unresolved
 acceptance incidents выбранного scope.
 
+Если это может быть первый user turn новой Codex task, полностью прочитай
+[title contract](references/thread-title.md): доказанный catalog placeholder
+обязан получить `ShipTask · ...` после live scope resolution без риска для соседней task.
+
 Создавай Goal только после подтверждения `batch-implementation` минимум двух
 Tasks и до первой implementation mutation. `single` и `release` работают без
 Goal. Release-only не создаёт, не переиспользует, не ретаргетит и не завершает

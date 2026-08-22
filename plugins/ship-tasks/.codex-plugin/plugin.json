@@ -1,6 +1,6 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.6+codex.20260822162813",
+  "version": "0.1.6+codex.20260822164309",
   "description": "Compose backlog scope and deliver selected Task Manager work with strategic explanations and verified outcomes.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "Ship Tasks",
     "shortDescription": "Compose backlog scope and deliver verified work.",
-    "longDescription": "Includes three sibling skills. Task Composer formulates drafts and, on explicit planning intent, creates one Backlog Task or a problem-first Epic with concrete subtasks, existing Labels, native hierarchy, and semantic relations. It never implements the work, never guesses an unknown current Release, and does not expand Label taxonomy. Ship Tasks delivers selected Task Manager scope to verified outcomes with truthful lifecycle state, readable native comments, visible acceptance incidents, and authority boundaries. It adaptively uses subagents for independent safe work, routes only genuinely simple predictable packets to Luna Max, hands Luna uncertainty back to the current model profile, and honors explicit no-subagent or model-profile overrides. A delivery verb alone does not activate Ship Tasks. Strategic Explainer provides bounded read-only problem-first meaning without taking status, authority, or execution decisions.",
+    "longDescription": "Includes three sibling skills. Task Composer formulates drafts and, on explicit planning intent, creates one Backlog Task or a problem-first Epic with concrete subtasks, existing Labels, native hierarchy, and semantic relations. It never implements the work, never guesses an unknown current Release, and does not expand Label taxonomy. Ship Tasks delivers selected Task Manager scope to verified outcomes with truthful lifecycle state, readable native comments, visible acceptance incidents, and authority boundaries. It adaptively uses subagents for independent safe work, routes only genuinely simple predictable packets to Luna Max, hands Luna uncertainty back to the current model profile, and honors explicit no-subagent or model-profile overrides. On a proven first Codex task with a catalog placeholder, it assigns one concise scope-based title without overwriting meaningful titles. A delivery verb alone does not activate Ship Tasks. Strategic Explainer provides bounded read-only problem-first meaning without taking status, authority, or execution decisions.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [

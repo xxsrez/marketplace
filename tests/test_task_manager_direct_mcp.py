@@ -379,6 +379,25 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Сам решай", skill)
         self.assertNotIn("сначала восстанови", skill)
 
+    def test_ship_tasks_titles_only_a_proven_fresh_codex_task(self) -> None:
+        root = SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks"
+        skill = (root / "SKILL.md").read_text(encoding="utf-8")
+        title_contract = (root / "references" / "thread-title.md").read_text(
+            encoding="utf-8"
+        )
+        normalized_contract = " ".join(title_contract.lower().split())
+
+        self.assertIn("[title contract](references/thread-title.md)", skill)
+        self.assertIn("ровно одного кандидата calling task", title_contract)
+        self.assertIn("не выбирай просто самый свежий task", normalized_contract)
+        self.assertIn("history не paginated", title_contract)
+        self.assertIn("до первой Task Manager mutation", title_contract)
+        self.assertIn("без `threadId`", title_contract)
+        self.assertIn("не передавай discovery candidate id", title_contract)
+        self.assertIn("task-title=renamed", title_contract)
+        self.assertIn("task-title=preserved", title_contract)
+        self.assertIn("task-title=not-available", title_contract)
+
 
 if __name__ == "__main__":
     unittest.main()
