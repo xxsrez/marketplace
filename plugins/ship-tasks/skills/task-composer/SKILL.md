@@ -1,6 +1,6 @@
 ---
 name: task-composer
-description: "Формулировать и по явному planning intent создавать Task Manager Tasks: оставлять один independently deliverable outcome одной Task, а составную работу превращать в Epic с problem-first описанием через Strategic Explainer, конкретными подзадачами, live labels, hierarchy и реальными relations. Использовать явно через $task-composer и неявно для постановки, декомпозиции или backlog capture в Task Manager. Не использовать для implementation, delivery, release, status/audit-only запросов или изменения Label taxonomy."
+description: "Формулировать и по явному planning intent создавать Task Manager Tasks: оставлять один independently deliverable outcome одной Task, а составную работу превращать в Epic с problem-first описанием через Strategic Explainer, конкретными подзадачами, live labels, hierarchy и реальными relations. Использовать явно через $ship-tasks:task-composer и неявно для постановки, декомпозиции или backlog capture в Task Manager. Не использовать для implementation, delivery, release, status/audit-only запросов или изменения Label taxonomy."
 ---
 
 # Task Composer
