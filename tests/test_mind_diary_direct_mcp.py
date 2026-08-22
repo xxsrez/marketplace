@@ -57,6 +57,26 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             },
         )
 
+    def test_skill_requires_authoritative_bindings_and_explicit_rebind(self) -> None:
+        skill = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+
+        binding_read = skill.index("Call `get_mind_bindings` before every content")
+        content_read = skill.index("## Read workflow")
+        self.assertLess(binding_read, content_read)
+        self.assertIn("`list_minds` is discovery only", skill)
+        self.assertIn("never rebind\nautomatically", skill)
+        self.assertIn("Other attached Minds remain read-only", skill)
+        self.assertRegex(
+            skill,
+            re.compile(
+                r"Call `commit_changeset`[\s\S]+unchanged active "
+                r"`write_binding_id`[\s\S]+`expected_revision`"
+            ),
+        )
+        self.assertIn("principal, token, grant, email\nor internal Mind IDs", skill)
+
 
 if __name__ == "__main__":
     unittest.main()
