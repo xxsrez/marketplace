@@ -23,18 +23,26 @@ description: "Доставлять однозначно выбранный Task 
 Project, Release, current scope, несколько Tasks и bare `$ship-tasks` — selectors,
 а не modes. Определи фактическую работу после live inventory. Чтение, проверка,
 приёмка или lifecycle reconciliation нескольких Tasks не создают Goal.
-
 Для bare invocation прочитай
 [project memory](references/project-memory.md). Prompt selector имеет приоритет,
 но не обновляет memory. Через Task Manager adapter разреши полный exact scope и
 перечитай live Task state, acceptance, relations и materially relevant comments.
 Memory не заменяет live state. В первом содержательном update назови unresolved
 acceptance incidents выбранного scope.
-
+После смены session и до новой implementation surface найди task-owned Git state. Если exact
+unfinished worktree/branch существует, прежний writer остановлен и ownership
+exclusive, прими тот же artifact и продолжай в нём вместо нового checkout или
+повтора работы. Заново проверь scope, acceptance, diff/commits и partial effects;
+active/unknown ownership не перехватывай и artifact не очищай.
+Canonical `Backlog` не входит в delivery inventory и не переводится в работу без
+отдельного явного решения пользователя. В одной safe lane сначала reconciliate
+незавершённые `In Progress` и готовые к completion `In Review`, затем начинай
+новые `To Do`; независимые lanes могут идти параллельно. `Duplicate` отдельно не
+исполняй, но прочитай outgoing canonical relation и incoming duplicates как
+контекст проблемы и acceptance.
 Если это может быть первый user turn новой Codex task, полностью прочитай
 [title contract](references/thread-title.md): доказанный catalog placeholder
 обязан получить `ShipTask · ...` после live scope resolution без риска для соседней task.
-
 Создавай Goal только после подтверждения `batch-implementation` минимум двух
 Tasks и до первой implementation mutation. `single` и `release` работают без
 Goal. Release-only не создаёт, не переиспользует, не ретаргетит и не завершает
@@ -42,21 +50,29 @@ Goal только ради release. Release может продолжить уж
 только если был его исходным done criterion; сам release новый Goal не создаёт.
 Goal не определяет Task outcome, число попыток или status. Неразрешимый конфликт
 scope/shared state/authority → `TASK CONTEXT ALARM` до небезопасных writes.
-
 ## 2. Соблюдай обязательные требования
 
-### Адаптивно используй субагентов
-
-Default — `subagents=auto`. После live inventory выдели bounded work packets и
-заполни safe useful width несколькими субагентами: минимум два независимых
-conflict-free packets при доступной capacity должны идти одновременно, а не
-поглощаться основным агентом последовательно. Active target равен минимуму ready
-dependencies, disjoint ownership/isolation, runtime capacity и integration/
-verification/review capacity; снижать его можно только с concrete observable
-limiter. Основной агент — единственный integration owner и владелец Goal и Task
-Manager comments/status/version writes. Пересекающиеся writes не параллель; при
-одной write lane делегируй только полезные read-only scouts/reviewers.
-
+### Исполняй topology rule пользователя, иначе выбирай автоматически
+Сначала выведи effective topology rule из natural-language указаний пользователя.
+Сохраняй их смысл и scope: exact/relative число, роли, общий/узкий opt-out,
+условие по длительности, сложности или другому названному признаку. Совместимые
+rules комбинируй; позднее более конкретное заменяет прежнее того же scope. Root
+не входит в явно названное число субагентов. Exact count — обязательное число,
+не ceiling; «побольше» materially увеличивает полезную delegation, а condition
+проверяется по названной пользователем метрике.
+Только без применимого rule сам решай, где delegation полезна и сколько
+субагентов использовать. Параллельны лишь независимые packets. Safety,
+authority, useful ownership, worktree isolation и проверяемый fan-in сильнее
+topology preference. Не создавай фиктивные packets ради quota. Невыполнимое
+rule не подменяй молча: назови exact конфликт, topology и влияние на result.
+Основной агент — единственный integration owner и владелец Goal, Task Manager
+comments/status/version writes, общего candidate и Task attribution. Каждый
+одновременно пишущий implementation subagent до первой writable mutation
+получает собственную feature branch и собственный Git worktree для своей exact
+Task. Один writable worktree принадлежит одному writer: не пиши в integration
+target, чужую branch или чужой worktree. Read-only scouts, reviewers и comment
+Explainer отдельного worktree не требуют. Только integration owner делает fan-in
+и проверяет exact объединённый result.
 Явный user model/effort для subagents имеет приоритет. Без него только genuinely
 simple packet запускай на `gpt-5.6-luna`/`max`: bounded self-contained scope,
 ясные acceptance/evidence, disjoint ownership, без material creative/product/
@@ -72,14 +88,11 @@ Luna и broader context не снимает uncertainty, сообщи
 compatible bounded context. Genuine unavailable auto Luna → current profile;
 явный unavailable user profile не подменяй и считай role capacity недоступной.
 
-Общее явное «не используй субагентов»/«без субагентов»/`no subagents` или
-однозначный эквивалент включает
-`subagents=off` для всего run, включая comment Explainer; узкий запрет отключает
-только названную роль и сообщается как `subagents=auto; <role>=off`. Goal,
-lifecycle и authority не меняются. После inventory сообщи topology, ready width,
-active target, profile allocation и concrete limiter; различай
-`workers=not-available` и `comment-explainer=not-available`. В final назови peak
-width, реально использованные profiles и Luna-to-current escalations.
+Общий no-subagent rule означает ноль субагентов во всём run, включая Explainer;
+role-scoped rule меняет только названную роль. Goal/lifecycle/authority не
+меняются. При user rule сообщай его смысл и соблюдение либо material deviation;
+внутренняя target/width accounting не требуется. Profile/handoff называй только
+когда это помогает понять результат.
 
 ### Правдивый статус и обязательный комментарий
 
@@ -97,11 +110,12 @@ Native comment create/list/read — гарантированная часть cu
 adapter. Всегда создай и перечитай обязательный comment. Неизвестный write
 outcome сначала разреши через native read-back; не повторяй write вслепую.
 
-При `subagents=auto` каждый комментарий ShipTask сначала передай отдельному
-независимому субагенту с `$ship-tasks:strategic-explainer`; основной агент не
-заменяет этот проход собственной редактурой. При общем `subagents=off` примени
-тот же quality contract напрямую и не заявляй о независимой проверке. Обычный
-`To Do → In Progress` не запускает Explainer: комментария для старта нет.
+Если effective topology rule не отключает comment Explainer, каждый комментарий
+ShipTask сначала передай отдельному независимому субагенту с
+`$ship-tasks:strategic-explainer`; основной агент не заменяет этот проход
+собственной редактурой. Если rule отключает Explainer, примени тот же quality
+contract напрямую и не заявляй о независимой проверке. Обычный `To Do → In
+Progress` не запускает Explainer: комментария для старта нет.
 
 Комментарий простым языком объясняет, что установлено, почему статус меняется
 или сохраняется, что это значит для пользователя, чем подтверждён вывод и что
@@ -147,7 +161,9 @@ task-level attribution не являются incident конкретной Task.
 
 ### Сохраняй authority boundary
 
-Не расширяй scope. Production, destructive durable-data changes, secrets,
+Не расширяй scope и сохраняй unrelated пользовательские изменения, Tasks и
+внешнее состояние; не используй blind rollback или destructive cleanup для
+скрытия partial/unknown effect. Production, destructive durable-data changes, secrets,
 privacy/access-policy changes, external recipients и unbounded cost требуют
 явной authority. Обычные необходимые local/dev/test/QA/UAT/staging/preview/
 sandbox effects разрешены после надёжного определения non-production target.
@@ -198,17 +214,17 @@ terminal Task сначала получает opening comment, затем exact 
 
 ## 5. Обеспечь человеческое объяснение
 
-При `subagents=auto` каждый Task Manager comment проходит отдельного read-only
-Strategic Explainer. Передай ему без process diary: проблему, пользователя
-результата, exact Task, facts/evidence, impact, known/unknown, ограничения и
-разрешённый следующий шаг. Он не выбирает status, scope, authority или repair и
+Пока effective rule сохраняет Explainer, каждый Task Manager comment проходит
+отдельного read-only Strategic Explainer. Передай без process diary проблему,
+пользователя результата, exact Task, evidence, impact, known/unknown,
+ограничения и следующий шаг. Он не выбирает status/scope/authority/repair и
 возвращает готовый текст на языке пользователя с коротким source basis.
 
 Проверь факты. При ошибке исправь вход и повтори независимую адаптацию; не
 переписывай текст самостоятельно. Если Explainer недоступен или текст непригоден,
-не публикуй comment и не выполняй зависящий transition. При общем
-`subagents=off` сам примени тот же problem-first quality contract и не выдавай
-текст за independently reviewed. Immediate incident update всё равно обязателен.
+не публикуй comment и не выполняй зависящий transition. Если effective rule
+отключает Explainer, сам примени тот же problem-first quality contract без claim
+independence. Immediate incident update всё равно обязателен.
 
 Quality contract: [reference](references/strategic-explainer.md). Требования к
 comment: [delivery report](references/delivery-report.md).
@@ -221,15 +237,14 @@ Task-local blocker не останавливает независимую runnab
 active, пока implementation scope не завершён фактически.
 
 Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
-Goal и external effects. Затем дай outcome-first `SHIPTASK RUN REPORT`: result и
-state, что доказано/не проверено, причина gap и точное условие продолжения.
-Всегда добавь compact incident ledger: Task/criterion, найденное, cause/
+Goal и external effects. Дай outcome-first `SHIPTASK RUN REPORT`: result/state,
+proof/gaps, cause и resume condition. Добавь incident ledger: Task/criterion,
 confidence, fix, retest evidence и final state — включая defects, найденные и
-исправленные в том же run. Назови `auto`/`off`, фактическую peak width либо
-причину coordinator-only. Unresolved incident не совместим с clean success для
+исправленные в том же run. При user topology rule назови его смысл и
+соблюдение/deviation; без rule — только material delegation/profile handoff.
+Unresolved incident не совместим с clean success для
 affected Task. Не заменяй Task comments этим ответом. Подробности:
 [run report](references/run-report.md).
-
 Goal `batch-implementation` заверши только после повторной проверки, что в scope
 нет незавершённой in-scope работы. Release-only run Goal не создаёт и не
 финализирует.

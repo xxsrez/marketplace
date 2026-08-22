@@ -57,15 +57,20 @@ Ship Tasks is a separate plugin with three coordinated skills:
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
   report content, and terminal status policy. It adaptively fills independent
-  safe lanes with subagents, routes only genuinely simple predictable packets
-  to Luna Max, and leaves other packets on the current model profile. Luna
-  uncertainty is handed back to the current integration owner without a cheap
-  retry, and an explicit no-subagent instruction disables every child. The
-  agent remains free to choose planning, tools, implementation, diagnostics,
-  bounded context, and acceptance methods while requiring sufficient evidence,
-  a native comment before every meaningful lifecycle transition, and factual
-  separation of Task conflicts, proven defects, genuine verification blockers,
-  and proven success;
+  safe lanes with subagents only when no user topology rule applies. Natural-
+  language rules for exact or relative counts, roles, opt-outs, and conditions
+  such as duration or complexity keep their meaning; the root agent is not
+  counted as a named subagent. Concurrent implementation writers receive
+  separate feature branches and Git worktrees. After interruption or a new
+  session, the skill resumes an existing unfinished task-owned worktree or
+  branch when prior ownership is safely inactive and exclusive, then rechecks
+  the checkpoint instead of restarting the work. Only genuinely simple,
+  predictable packets use Luna Max; uncertainty is handed back to the current
+  integration owner without a cheap retry. The agent remains free to choose
+  planning, tools, implementation, diagnostics, bounded context, and acceptance
+  methods while requiring sufficient evidence, a native comment before every
+  meaningful lifecycle transition, and factual separation of Task conflicts,
+  proven defects, genuine verification blockers, and proven success;
 - `strategic-explainer` is a generic sibling skill that requires an explicit
   problem, finds bounded strategic context through read-only sources when
   materially useful, and returns a problem-first explanation without making

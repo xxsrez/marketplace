@@ -20,27 +20,37 @@ Global `TASK CONTEXT ALARM` нужен только при конфликте ex
 Goal, shared integration state или общей authority, из-за которого любые
 оставшиеся writes небезопасны.
 
-## Адаптивная execution topology
+## Execution topology
 
-Default — `subagents=auto`. После live inventory раздели scope на bounded work
-packets; active target равен наименьшей доступной ширине:
+Сначала разреши применимые natural-language rules пользователя. Они могут
+задавать exact или relative число субагентов, роли, общий либо role-scoped
+opt-out, а также condition по длительности, сложности или другому названному
+признаку. Root/coordinator не входит в явно названное число субагентов.
+Совместимые constraints объединяются; позднее более конкретное rule заменяет
+прежнее того же scope. Exact count является обязательным, «побольше» сдвигает
+решение к большей полезной delegation относительно automatic baseline, а
+condition проверяется по указанной пользователем метрике.
 
-- dependency-ready независимая работа;
-- conflict-free writable ownership или надёжная изоляция;
-- доступная runtime capacity;
-- способность одного integration owner принять, проверить и review-ить result.
+Только без применимого rule после live inventory сам раздели scope на bounded
+packets и реши, где delegation реально ускоряет или усиливает результат.
+Учитывай dependency-ready работу, writable ownership, доступную изоляцию,
+runtime capacity и стоимость fan-in, но не превращай это в обязательную
+публичную scheduler формулу.
 
-При двух и более безопасных полезных lanes используй несколько субагентов
-одновременно и пополняй frontier после завершения, blocker или открытия
-dependency. Не создавай фиктивные subtasks ради fan-out. Если безопасный writer
-только один, сохрани single-writer и делегируй независимые read-only discovery,
-test или review packets только когда они реально ускоряют или усиливают evidence.
+Несколько безопасных полезных lanes могут идти одновременно. Safety, authority,
+useful ownership, worktree isolation и проверяемый fan-in сильнее topology
+preference. Не создавай фиктивные subtasks ради quota. Если обязательное rule
+конфликтует с этими границами или capacity, не подменяй его молча: сообщи exact
+конфликт, фактическую topology и влияние на result.
 
 Основной агент является единственным integration owner и владельцем Goal, Task
 Manager comments/status/version writes, целостного candidate и Task attribution.
-Каждый implementation writer получает exact ownership и не меняет пересекающийся
-shared surface. Свободный slot сам по себе не является безопасной lane. Target
-ниже рассчитанного допустим только с названным observable limiting factor.
+Каждый одновременно пишущий implementation subagent до первой mutation получает
+собственные feature branch и Git worktree для exact Task. Writable worktree
+принадлежит одному writer; writer не меняет integration target, чужую branch,
+чужой worktree или пересекающийся shared surface. Read-only роли отдельного
+worktree не требуют. Только integration owner делает fan-in и проверяет exact
+объединённый candidate.
 
 Пользовательский profile override для субагентов имеет приоритет. Без него
 `gpt-5.6-luna`/`max` получает только genuinely simple packet: bounded,
@@ -65,14 +75,15 @@ coordinator форма context не создаёт unavailability. Genuine unava
 Luna Max допускает current-profile fallback. Явный unavailable user profile не
 подменяется и уменьшает соответствующую role/capacity.
 
-Общее «не используй субагентов»/«без субагентов» включает `subagents=off` на весь
-run, включая research, implementation, review и comment Explainer. Узкий запрет
-отключает только названную роль и отражается как, например,
-`subagents=auto; implementation=off`. При общем opt-out обязательный comment получает
-тот же Strategic Explainer quality contract напрямую от основного агента без
-заявления о независимой проверке. Недоступный worker уменьшает target и
-сообщается как `workers=not-available`; недоступный Explainer — как
-`comment-explainer=not-available` и блокирует только comment-dependent effects.
+Общее «не используй субагентов»/«без субагентов» отключает всех субагентов на
+весь run, включая research, implementation, review и comment Explainer.
+Role-scoped rule меняет только названную роль: например, запрет implementation
+workers не отключает Explainer. Если Explainer отключён user rule, обязательный
+comment получает тот же quality contract напрямую от основного агента без claim
+независимой проверки. Если effective rule сохраняет Explainer, его
+недоступность блокирует только comment-dependent effects. Material capacity gap
+или deviation от user rule сообщается явно; внутренняя target/width accounting
+не требуется.
 
 ## Свобода способа и качество evidence
 
@@ -128,8 +139,22 @@ Tasks. Уже активный Goal допустим только если он 
 
 ## Resume
 
-После нового evidence, authority или внешнего state перечитай Task, comments,
-result identity и affected environment. Не считать старый handoff текущим
-доказательством. В первом содержательном chat update назови unresolved acceptance
-incidents выбранного scope и возобнови с первого безопасного действия,
-указанного в comment.
+После ошибки, interrupted run, смены агента/сессии, нового evidence, authority
+или внешнего state сначала восстанови current checkpoint. Перечитай Task,
+comments, status/version, acceptance, result identity и affected environment;
+старый handoff является указателем, а не current evidence.
+
+До новой implementation surface проверь релевантные Git worktrees, branches,
+commits, staged/unstaged/untracked changes и partial effects. Если exact
+task-owned worktree содержит unfinished candidate, прежний writer доказанно
+остановлен и concurrent owner отсутствует, прими exclusive ownership этого же
+worktree и продолжай в нём. Не создавай replacement checkout и не повторяй
+готовую работу только из-за новой Codex-сессии. Если осталась только branch, по
+возможности восстанови worktree из неё.
+
+Не делай takeover при живом writer, неизвестном ownership, недоказанной связи с
+Task или unsafe state. Не очищай и не откатывай такой artifact; reconciliate или
+продолжай другую safe работу. В первом содержательном chat update назови
+unresolved acceptance incidents и material resume boundary. После adoption
+перепроверь existing candidate по current acceptance и доведи обычный lifecycle
+до terminal result.

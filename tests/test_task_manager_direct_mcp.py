@@ -174,6 +174,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertRegex(manifest["version"], r"^0\.1\.6\+codex\.\d{14}$")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
+        self.assertIn("preserves natural-language subagent rules", manifest["interface"]["longDescription"])
+        self.assertIn("resumes unfinished task-owned Git work", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
                 prompt.startswith("Create exactly one Task in Task Manager")
@@ -283,12 +285,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("communication remainder", report)
         self.assertIn("Инвариант effects", report)
         self.assertIn("До связанного существенного status transition", report)
-        self.assertIn(
-            "При `subagents=auto` каждый комментарий, который создаёт ShipTask",
-            handoff,
-        )
+        self.assertIn("Пока effective topology rule не отключает comment Explainer", handoff)
         self.assertIn("отдельного субагента", " ".join(handoff.split()))
-        self.assertIn("`subagents=off` основной агент применяет тот же contract", handoff)
+        self.assertIn("Если rule отключает Explainer", handoff)
         self.assertIn(
             "Обычный `To Do → In Progress` не запускает Explainer",
             " ".join(skill.split()),
@@ -340,7 +339,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
 
-    def test_ship_tasks_uses_adaptive_subagents_and_honors_global_opt_out(self) -> None:
+    def test_ship_tasks_honors_natural_language_topology_and_resume(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -356,34 +355,34 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         self.assertIn("$ship-tasks:strategic-explainer", skill)
         self.assertIn("$ship-tasks:strategic-explainer", handoff)
-        self.assertIn("Default — `subagents=auto`", skill)
-        self.assertIn("Active target равен минимуму", skill)
+        self.assertIn("Сначала выведи effective topology rule", skill)
+        self.assertIn("Exact count — обязательное число", skill)
+        self.assertIn("Root не входит в явно названное число субагентов", normalized_skill)
+        self.assertIn("условие по длительности, сложности", skill)
+        self.assertIn("Только без применимого rule сам решай", skill)
         self.assertIn("единственный integration owner", skill)
         self.assertIn("Task Manager comments/status/version writes", normalized_skill)
-        self.assertIn("`subagents=off` для всего run, включая comment Explainer", normalized_skill)
-        self.assertIn("`subagents=auto; <role>=off`", skill)
-        self.assertIn("workers=not-available", skill)
-        self.assertIn("comment-explainer=not-available", skill)
-        self.assertIn("При `subagents=auto` каждый комментарий ShipTask", skill)
+        self.assertIn("собственную feature branch и собственный Git worktree", normalized_skill)
+        self.assertIn("Один writable worktree принадлежит одному writer", skill)
+        self.assertIn("Общий no-subagent rule означает ноль субагентов", normalized_skill)
+        self.assertIn("Если effective topology rule не отключает comment Explainer", skill)
         self.assertIn("отдельному независимому субагенту", normalized_skill)
         self.assertIn("не переписывай текст самостоятельно", normalized_skill)
+        self.assertIn("exact unfinished worktree/branch существует", normalized_skill)
+        self.assertIn("active/unknown ownership не перехватывай", normalized_skill)
         self.assertIn(
             "Обычный `To Do → In Progress` не запускает Explainer",
             normalized_skill,
         )
-        self.assertIn(
-            "При `subagents=auto` каждый комментарий, который создаёт ShipTask",
-            handoff,
-        )
+        self.assertIn("Пока effective topology rule не отключает comment Explainer", handoff)
         self.assertIn("обязательная независимая проверка", normalized_handoff)
         self.assertIn("комментарий не публикуется", normalized_handoff)
-        self.assertIn("При явном общем `subagents=off`", normalized_handoff)
+        self.assertIn("Если rule отключает Explainer", normalized_handoff)
         self.assertIn("не заявляет о независимой проверке", normalized_handoff)
         self.assertIn("bounded/read-only", handoff)
         self.assertNotIn('fork_turns="none"', skill)
         self.assertNotIn('fork_turns="none"', handoff)
         self.assertNotIn("не вызывать отдельно", handoff)
-        self.assertNotIn("Сам решай", skill)
         self.assertNotIn("сначала восстанови", skill)
 
     def test_ship_tasks_titles_only_a_proven_fresh_codex_task(self) -> None:
