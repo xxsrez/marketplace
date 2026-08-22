@@ -244,8 +244,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("communication remainder", report)
         self.assertIn("Инвариант effects", report)
         self.assertIn("До связанного существенного status transition", report)
-        self.assertIn("Обязательный результат — понятный grounded comment", handoff)
-        self.assertIn("agent topology", handoff)
+        self.assertIn("Каждый комментарий, который создаёт ShipTask", handoff)
+        self.assertIn("отдельного\nсубагента", handoff)
+        self.assertIn("Обычный `To Do → In Progress` не запускает Explainer", skill)
         self.assertNotIn("2–4 способа", handoff)
         self.assertIn("found and resolved", run_report)
         self.assertIn("не совместим с clean success", run_report)
@@ -279,6 +280,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("source basis", skill)
         self.assertIn("не придумывай варианты ради квоты", skill)
         self.assertIn("decision-relevant факт не потерян", skill)
+        self.assertIn("готовый пользовательский текст", skill)
+        self.assertIn("Пиши на языке пользователя", skill)
+        self.assertIn("пригодный для публикации", skill)
         self.assertNotIn("PROBLEM_CONTEXT_ERROR", skill)
         self.assertNotIn("CONTEXT_INTEGRITY_ERROR", skill)
         self.assertNotIn('fork_turns="none"', skill)
@@ -290,7 +294,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
 
-    def test_ship_tasks_requires_explanation_quality_without_prescribing_invocation(self) -> None:
+    def test_ship_tasks_requires_independent_explainer_for_every_comment(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -305,15 +309,18 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         self.assertIn("$ship-tasks:strategic-explainer", skill)
         self.assertIn("$ship-tasks:strategic-explainer", handoff)
-        self.assertIn("Обязателен понятный grounded result", skill)
-        self.assertIn("Сам решай", skill)
-        self.assertIn("можно вызвать напрямую", handoff)
-        self.assertIn("не вызывать отдельно", handoff)
-        self.assertIn("Конституция не задаёт agent topology", normalized_handoff)
+        self.assertIn("Каждый комментарий, который ShipTask собирается создать", skill)
+        self.assertIn("отдельному независимому субагенту", skill)
+        self.assertIn("не переписывай\nтекст самостоятельно", skill)
+        self.assertIn("Обычный `To Do → In Progress` не запускает Explainer", skill)
+        self.assertIn("Каждый комментарий, который создаёт ShipTask", handoff)
+        self.assertIn("обязательная независимая проверка", normalized_handoff)
+        self.assertIn("комментарий не публикуется", normalized_handoff)
         self.assertIn("bounded/read-only", handoff)
         self.assertNotIn('fork_turns="none"', skill)
         self.assertNotIn('fork_turns="none"', handoff)
-        self.assertNotIn("обязательное требование — применить Strategic Explainer", skill)
+        self.assertNotIn("не вызывать отдельно", handoff)
+        self.assertNotIn("Сам решай", skill)
         self.assertNotIn("сначала восстанови", skill)
 
 
