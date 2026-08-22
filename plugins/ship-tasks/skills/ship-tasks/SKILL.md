@@ -16,7 +16,8 @@ description: "Доставлять однозначно выбранный Task 
   `batch-implementation`, с Goal.
 - Commit/push/publish/deploy/smoke/rollback уже подготовленного candidate →
   `release`, без Goal, включая production release.
-- Чтение, аудит, объяснение, planning/backlog capture → не delivery.
+- Чтение, аудит и объяснение → не delivery; planning/backlog capture с Task
+  Manager intent принадлежит Task Composer.
 - Обычная просьба исправить код/продукт без Task Manager anchor → не ShipTask.
 
 Project, Release, current scope, несколько Tasks и bare `$ship-tasks` — selectors,

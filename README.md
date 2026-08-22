@@ -46,7 +46,14 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
   only in process memory after first use, and never sends the full path to Task
   Manager. The local bind tool performs the second staged Agent REST operation.
 
-Ship Tasks is a separate plugin:
+Ship Tasks is a separate plugin with three coordinated skills:
+
+- `task-composer` owns planning-only formulation and Task Manager backlog
+  capture. It preserves one independently deliverable outcome as one Task and
+  turns compound work into a problem-first Epic with concrete subtasks, live
+  existing Labels, native hierarchy and semantic relations. Unknown current
+  Release is omitted rather than guessed, and the skill never implements the
+  created work or expands Label taxonomy;
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
   report content, and terminal status policy. Its constitution leaves the agent
@@ -86,6 +93,8 @@ Repository layout:
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
 - `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
+- `plugins/ship-tasks/skills/task-composer/` — Task Manager planning and
+  backlog-composition workflow;
 - `plugins/ship-tasks/skills/strategic-explainer/` — generic problem-first
   strategic discovery skill used directly or in a fresh subagent;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
@@ -108,6 +117,8 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/ship-tasks/skills/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/ship-tasks/skills/task-composer
+python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/ship-tasks/skills/strategic-explainer
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/mind-diary/skills/mind-diary
@@ -127,6 +138,8 @@ jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/skills/task-manager
 diff -qr /Users/andrey/Projects/Home/ShipTask/ship-tasks \
   plugins/ship-tasks/skills/ship-tasks
+diff -qr /Users/andrey/Projects/Home/ShipTask/task-composer \
+  plugins/ship-tasks/skills/task-composer
 diff -qr /Users/andrey/Projects/Home/ShipTask/strategic-explainer \
   plugins/ship-tasks/skills/strategic-explainer
 git diff --check

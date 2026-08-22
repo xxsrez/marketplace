@@ -111,6 +111,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             (TASK_MANAGER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
         )
         self.assertFalse(
+            (TASK_MANAGER_PLUGIN_ROOT / "skills" / "task-composer").exists()
+        )
+        self.assertFalse(
             (TASK_MANAGER_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
         )
 
@@ -135,6 +138,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
                 SHIP_TASKS_PLUGIN_ROOT
                 / "skills"
                 / "ship-tasks"
+                / "SKILL.md"
+            ).is_file()
+        )
+        self.assertTrue(
+            (
+                SHIP_TASKS_PLUGIN_ROOT
+                / "skills"
+                / "task-composer"
                 / "SKILL.md"
             ).is_file()
         )
@@ -185,7 +196,28 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertIn("## 1. Выбери mode и exact scope", skill)
         self.assertIn("Обычная просьба исправить код/продукт", skill)
-        self.assertIn("Чтение, аудит, объяснение, planning/backlog capture", skill)
+        self.assertIn("planning/backlog capture с Task", skill)
+        self.assertIn("принадлежит Task Composer", skill)
+
+    def test_task_composer_plans_without_delivery_or_taxonomy_mutation(self) -> None:
+        root = SHIP_TASKS_PLUGIN_ROOT / "skills" / "task-composer"
+        skill = (root / "SKILL.md").read_text(encoding="utf-8")
+        metadata = (root / "agents" / "openai.yaml").read_text(encoding="utf-8")
+        normalized_skill = " ".join(skill.lower().split())
+
+        self.assertIn("name: task-composer", skill)
+        self.assertIn("canonical status `Backlog`", skill)
+        self.assertIn("current unreleased Release", skill)
+        self.assertIn("Не создавай Epic с одной формальной подзадачей", skill)
+        self.assertIn("$ship-tasks:strategic-explainer", skill)
+        self.assertIn("taxonomy не расширяй", skill)
+        self.assertIn("не строй последовательную цепочку", normalized_skill)
+        self.assertIn("bounded duplicate search", skill)
+        self.assertIn("не повторяй create вслепую", normalized_skill)
+        self.assertIn("не реализуй", skill.lower())
+        self.assertIn('display_name: "Task Composer"', metadata)
+        self.assertIn('value: "task-manager"', metadata)
+        self.assertIn("allow_implicit_invocation: true", metadata)
 
     def test_ship_tasks_classifies_review_outcomes_without_tool_choreography(self) -> None:
         skill = (

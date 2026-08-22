@@ -1,7 +1,7 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.6+codex.20260822120414",
-  "description": "Deliver selected Task Manager work with durable acceptance reporting and problem-first strategic explanations.",
+  "version": "0.1.6+codex.20260822140730",
+  "description": "Compose backlog scope and deliver selected Task Manager work with strategic explanations and verified outcomes.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -10,6 +10,8 @@
   "repository": "https://github.com/xxsrez/marketplace",
   "keywords": [
     "tasks",
+    "planning",
+    "decomposition",
     "delivery",
     "verification",
     "releases",
@@ -20,8 +22,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Ship Tasks",
-    "shortDescription": "Deliver work with visible acceptance incidents.",
-    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Its requirements act as a constitution: sufficient evidence, truthful state, readable native comments, visible acceptance incidents, and authority boundaries are mandatory while planning, tools, diagnostics, and acceptance methods remain agent choices. An ordinary To Do to In Progress transition creates no comment. Every comment Ship Tasks publishes first passes a separate independent Strategic Explainer; the main agent verifies the facts but cannot substitute its own rewrite. Strategic Explainer does not take status, authority, or execution decisions.",
+    "shortDescription": "Compose backlog scope and deliver verified work.",
+    "longDescription": "Includes three sibling skills. Task Composer formulates drafts and, on explicit planning intent, creates one Backlog Task or a problem-first Epic with concrete subtasks, existing Labels, native hierarchy, and semantic relations. It never implements the work, never guesses an unknown current Release, and does not expand Label taxonomy. Ship Tasks delivers selected Task Manager scope to verified outcomes with truthful lifecycle state, readable native comments, visible acceptance incidents, and authority boundaries while leaving implementation choices to the agent. A delivery verb alone does not activate Ship Tasks. Strategic Explainer provides bounded read-only problem-first meaning without taking status, authority, or execution decisions.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -30,6 +32,7 @@
     ],
     "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
+      "Use Task Composer to turn this requirement into one Backlog Task or a strategic Epic with concrete subtasks",
       "Deliver TM-123 to a verified terminal outcome",
       "Create exactly one Task in Task Manager and immediately start delivering it",
       "Use Strategic Explainer with an explicit problem to find strategic context and explain the current result"

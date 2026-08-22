@@ -1,0 +1,14 @@
+interface:
+  display_name: "Task Composer"
+  short_description: "Сформулировать и связать Task Manager задачи"
+  default_prompt: "Используй $task-composer: сохрани требования человека, выбери одну Task либо Epic с конкретными подзадачами, создай planning scope только при явном запросе, назначь live Labels и реальные relations, помести всё в Backlog и добавь однозначный current Release; если Release или подходящий Label неизвестен, не выдумывай его и честно сообщи пробел."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "task-manager"
+      description: "Task Manager Projects, Releases, Tasks, Labels и relations"
+      transport: "streamable_http"
+
+policy:
+  allow_implicit_invocation: true
