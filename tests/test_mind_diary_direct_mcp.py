@@ -77,6 +77,23 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertIn("principal, token, grant, email\nor internal Mind IDs", skill)
 
+    def test_skill_keeps_automatic_capture_narrow_and_policy_authoritative(self) -> None:
+        skill = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+
+        capture = skill.index("## Automatic capture workflow")
+        boundaries = skill.index("## Product boundaries")
+        self.assertLess(capture, boundaries)
+        self.assertIn("`automatic_capture.mode` is `routine_non_sensitive`", skill)
+        self.assertIn("The Sites control plane is the only place", skill)
+        self.assertIn("Never call `capture_knowledge` for credentials", skill)
+        self.assertIn("cross-Mind sources", skill)
+        self.assertIn("same writable Mind", skill)
+        self.assertIn("Treat `captured` as one new immutable revision", skill)
+        self.assertIn("`no_op` as successful\n   deduplication", skill)
+        self.assertIn("never move, replace, merge or retry the payload", skill)
+
 
 if __name__ == "__main__":
     unittest.main()
