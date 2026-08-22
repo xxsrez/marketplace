@@ -11,7 +11,9 @@ effects. Он сверяет обещанный результат с факти
 openings — с resolution comments и current Task state. Успешный repair не
 стирает найденный defect. Незавершённость можно передавать пользователю только
 когда в текущем scope и authority не осталось достаточного безопасного способа
-продолжить. Как собрать эти основания, решает агент.
+продолжить. Для live selector это требует fresh full inventory, включая Tasks,
+появившиеся или вышедшие из Backlog после старта. Как собрать остальные
+основания, решает агент.
 
 ## Содержание
 
@@ -31,6 +33,12 @@ openings — с resolution comments и current Task state. Успешный repa
 - user action или внешнее условие, без которого продолжение невозможно;
 - первый safe resume step.
 
+При доказанном product failure сначала назвать его, impact и доступную in-scope
+repair frontier. Browser/controller/OAuth/MFA logistics идут после этого и
+только если объясняют реальный proof gap. Смена браузера не называется repair,
+а альтернативный login — обязательным user action, пока безопасная работа с
+продуктом может продолжаться без него.
+
 Для каждого incident назвать exact Task/criterion, observed failure или границу
 знания, cause/confidence, fix, retest evidence и final state. `verified-failure`
 называется найденным defect; `verification-blocked` и contract conflict — нет.
@@ -42,7 +50,8 @@ Resolved incident остаётся видимым как `found and resolved`. U
 material outcomes, а не журнал каждой попытки. Если run успешен, объяснить
 полученный outcome, важное решение, проверку и реальные ограничения.
 
-Goal `batch-implementation` завершается только после fresh full inventory без
+Goal live selector хранит identity/predicate, не стартовый список/count. Он
+завершается только после fresh full current inventory без
 `To Do`, `In Progress`, `In Review`, rework, незавершённых effects и unresolved
 in-scope defects. Task-local blocker не переводит Goal в `blocked`
 автоматически. Release-only run Goal не создаёт и не финализирует.

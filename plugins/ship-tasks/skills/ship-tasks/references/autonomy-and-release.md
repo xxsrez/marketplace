@@ -8,8 +8,9 @@
   согласованный observable outcome.
 - Сам выбирай достаточный способ продвинуть Task и проверить результат.
 - Task-local blocker не останавливает независимые Tasks. В
-  `batch-implementation` перед ожиданием пользователя перечитай весь scope; при
-  наличии runnable work продолжай.
+  `batch-implementation` перед ожиданием пользователя перечитай полный current
+  inventory live selector, включая Tasks, появившиеся после старта; при наличии
+  runnable work продолжай без нового approval.
 - Не повторяй неизменившуюся операцию, проверку или poll. Повтор нужен после
   material change в result, tool, environment, access, authority или Task
   contract.
@@ -19,6 +20,12 @@
 Global `TASK CONTEXT ALARM` нужен только при конфликте exact scope, connector,
 Goal, shared integration state или общей authority, из-за которого любые
 оставшиеся writes небезопасны.
+
+Exact Task/явный список refs — closed selector. Project, Release и resolved
+current scope — live selectors: стартовый inventory не замораживает membership.
+Matching non-Backlog Task входит автоматически; `Backlog → To Do` является
+началом уже разрешённой in-scope работы, а не scope expansion. Goal хранит
+identity/predicate live selector, а не стартовый count или диапазон refs.
 
 ## Execution topology
 
@@ -90,6 +97,11 @@ comment получает тот же quality contract напрямую от ос
 Выбирай, меняй и сочетай инструменты по ситуации. Отказ одного средства не
 создаёт обязанности чинить именно его и не является готовым выводом о Task.
 Решение оценивается по тому, доказывает ли итоговый evidence current acceptance.
+
+Browser/controller/session switch допустим как диагностика, но не является
+repair продукта. Если exact candidate или server path уже доказал product
+failure, сбой другого browser login либо MFA не отменяет incident и не создаёт
+stop condition, пока остаётся безопасная in-scope работа с продуктом.
 
 Не объявляй разные способы равноценными без основания и не снижай требование
 ради удобного результата. Если достаточный способ не найден в текущем scope и

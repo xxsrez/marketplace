@@ -50,6 +50,13 @@ provider state.
 Prompt override действует только в текущем run и не переписывает memory.
 Никогда не объединять prompt scope и memory default молча.
 
+Exact Task и явный список `task_selectors` задают closed selector. `kind: project|release`
+и resolved current scope задают live selector: memory хранит его
+identity/hint, а не current membership. Стартовый inventory не становится
+замороженным списком, диапазоном refs или count cap. Новая current matching
+non-Backlog Task автоматически входит в delivery; изменение membership само по
+себе не является scope conflict и не требует нового approval.
+
 ## Логическая схема
 
 Физический формат memory может меняться; ShipTask опирается на следующие
@@ -119,7 +126,9 @@ Memory является selector/profile hint. Перед mutation:
 
 - разрешить remembered Project/Release/Task selector через current Task
   Manager adapter и заменить его live canonical refs;
-- перечитать Project/Release membership и полный Task detail;
+- перечитать полную paginated Project/Release membership и Task detail; для live
+  selector повторить это перед новой frontier, ожиданием, blocker/Goal status и
+  terminal report;
 - подтвердить repository path и project instructions в текущем workspace;
 - проверить environment class по current config/provider state;
 - проверить, что команды и policy sources ещё существуют;
@@ -139,6 +148,10 @@ Memory является selector/profile hint. Перед mutation:
 - remembered repository или Project/Release membership противоречит current
   evidence;
 - environment/authority неоднозначны так, что следующая mutation небезопасна.
+
+Появление новой matching Task или `Backlog → To Do` внутри уже разрешённого live
+selector не является alarm либо scope expansion. Alarm возможен только при
+неоднозначности identity/predicate selector или другом перечисленном конфликте.
 
 Alarm должен содержать известный scope, конфликтующие факты и источники,
 последний безопасный checkpoint и одно точное решение/исправление context.

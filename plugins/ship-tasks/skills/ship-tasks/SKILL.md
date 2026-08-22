@@ -5,9 +5,8 @@ description: "Доставлять однозначно выбранный Task 
 
 # Ship Tasks
 
-Доведи exact Task Manager scope до результата, который подтверждён фактами и
-правдиво отражён в Task. Сам выбирай инструменты, порядок работы, реализацию и
-проверки. Не заменяй пользовательский результат внутренней процедурой.
+Доведи exact Task Manager scope до результата, подтверждённого фактами и правдиво
+отражённого в Task. Сам выбирай реализацию и проверки, не подменяя outcome процедурой.
 
 ## 1. Выбери mode и exact scope
 
@@ -21,35 +20,35 @@ description: "Доставлять однозначно выбранный Task 
 - Обычная просьба исправить код/продукт без Task Manager anchor → не ShipTask.
 
 Project, Release, current scope, несколько Tasks и bare `$ship-tasks` — selectors,
-а не modes. Определи фактическую работу после live inventory. Чтение, проверка,
-приёмка или lifecycle reconciliation нескольких Tasks не создают Goal.
-Для bare invocation прочитай
-[project memory](references/project-memory.md). Prompt selector имеет приоритет,
-но не обновляет memory. Через Task Manager adapter разреши полный exact scope и
-перечитай live Task state, acceptance, relations и materially relevant comments.
-Memory не заменяет live state. В первом содержательном update назови unresolved
-acceptance incidents выбранного scope.
+не modes. Mode определяет live inventory; чтение/проверка/reconciliation нескольких Tasks не создают Goal.
+Exact Task и явно перечисленные refs — closed selectors; Project, Release и
+resolved current scope — live selectors. Стартовый inventory — audit snapshot, не frozen
+refs/count cap. Перед frontier, ожиданием, blocker, Goal status и finish перечитай full inventory.
+Для bare invocation прочитай [project memory](references/project-memory.md).
+Prompt selector имеет приоритет, но не обновляет memory. Через Task Manager adapter
+разреши полный exact scope и перечитай Task state, acceptance, relations и comments.
+Memory не заменяет live state. В первом update назови unresolved acceptance incidents.
 После смены session и до новой implementation surface найди task-owned Git state. Если exact
 unfinished worktree/branch существует, прежний writer остановлен и ownership
 exclusive, прими тот же artifact и продолжай в нём вместо нового checkout или
-повтора работы. Заново проверь scope, acceptance, diff/commits и partial effects;
-active/unknown ownership не перехватывай и artifact не очищай.
+повтора работы. Проверь scope, acceptance, diff/commits и partial effects; active/unknown ownership не перехватывай и artifact не очищай.
 Canonical `Backlog` не входит в delivery inventory и не переводится в работу без
-отдельного явного решения пользователя. В одной safe lane сначала reconciliate
-незавершённые `In Progress` и готовые к completion `In Review`, затем начинай
-новые `To Do`; независимые lanes могут идти параллельно. `Duplicate` отдельно не
-исполняй, но прочитай outgoing canonical relation и incoming duplicates как
-контекст проблемы и acceptance.
-Если это может быть первый user turn новой Codex task, полностью прочитай
-[title contract](references/thread-title.md): доказанный catalog placeholder
-обязан получить `ShipTask · ...` после live scope resolution без риска для соседней task.
-Создавай Goal только после подтверждения `batch-implementation` минимум двух
-Tasks и до первой implementation mutation. `single` и `release` работают без
-Goal. Release-only не создаёт, не переиспользует, не ретаргетит и не завершает
-Goal только ради release. Release может продолжить уже активный совместимый Goal,
-только если был его исходным done criterion; сам release новый Goal не создаёт.
-Goal не определяет Task outcome, число попыток или status. Неразрешимый конфликт
-scope/shared state/authority → `TASK CONTEXT ALARM` до небезопасных writes.
+отдельного явного решения пользователя. Любая current matching non-Backlog Task из live
+selector входит автоматически, включая появившуюся после старта или
+переведённую `Backlog → To Do`: это не scope expansion и не требует approval.
+Вышедшую из selector/ушедшую в Backlog больше не реализуй; partial effects reconciliate.
+В safe lane сначала `In Progress`/`In Review`, затем `To Do`;
+независимые lanes параллельны. `Duplicate` отдельно не
+исполняй, но прочитай outgoing canonical relation и incoming duplicates.
+Если это может быть первый turn новой Codex task, прочитай [title contract](references/thread-title.md):
+доказанный catalog placeholder получает `ShipTask · ...` без риска для соседней task.
+Создавай Goal после подтверждения `batch-implementation` минимум двух Tasks и до
+implementation mutation. `single`/`release` без Goal. Release-only run Goal не создаёт,
+не переиспользует, не ретаргетит и не завершает; compatible Goal
+продолжается лишь когда release был его исходным done criterion; сам release новый Goal не создаёт.
+Goal live selector хранит identity/predicate, не стартовые refs/count; новая matching
+Task сохраняет его active без approval. Goal не определяет Task outcome/попытки/status.
+Неразрешимый scope/shared-state/authority конфликт → `TASK CONTEXT ALARM` до writes.
 ## 2. Соблюдай обязательные требования
 
 ### Исполняй topology rule пользователя, иначе выбирай автоматически
@@ -117,10 +116,9 @@ ShipTask сначала передай отдельному независимо
 contract напрямую и не заявляй о независимой проверке. Обычный `To Do → In
 Progress` не запускает Explainer: комментария для старта нет.
 
-Комментарий простым языком объясняет, что установлено, почему статус меняется
-или сохраняется, что это значит для пользователя, чем подтверждён вывод и что
-произойдёт дальше. Пиши на языке пользователя; внутренние reason codes, смесь
-жаргона и отчёт о процессе не являются объяснением.
+Комментарий простым языком объясняет, что установлено, почему меняется/сохраняется
+статус, что это значит, чем подтверждён вывод и что дальше. Пиши на языке
+пользователя; reason codes, жаргон и process diary не являются объяснением.
 
 ### Доказательство важнее выбранного способа
 
@@ -129,15 +127,17 @@ Progress` не запускает Explainer: комментария для ст�
 сам по себе. Можно исправить инструмент, заменить его, объединить несколько
 источников evidence или перестроить проверку — в зависимости от ситуации.
 
-Нельзя снижать current acceptance или называть результат проверенным без
-достаточного evidence. Если в текущем scope и полномочиях доказать success или
-failure не удаётся, это `verification-blocked`: назови границу знания, влияние
-и условие, при котором приёмка станет возможной. Фиксированного числа попыток
-или обязательного порядка действий нет.
+Browser/controller/session switch — диагностика, не repair. Достаточное evidence
+exact candidate/server path остаётся product incident при сбое browser login/MFA. Пока
+доступна безопасная in-scope работа с продуктом, browser logistics не stop condition.
 
-Обязательный Task comment — требуемый результат, а не предписанный tool flow.
-Существенный transition завершён только когда comment действительно существует
-в Task и перечитан; как обеспечить это, решает агент.
+Нельзя снижать current acceptance или называть результат проверенным без evidence.
+Если в current scope/authority не доказать success или failure, это
+`verification-blocked`: назови границу знания, влияние и resume condition.
+Фиксированного числа попыток или обязательного порядка действий нет.
+
+Обязательный Task comment — результат, не tool flow. Transition завершён, только
+когда comment существует в Task и перечитан; как обеспечить это, решает агент.
 
 ### Не скрывай приёмочный инцидент
 
@@ -175,8 +175,9 @@ sandbox effects разрешены после надёжного определ�
 Реализуй целостный in-scope result и получи evidence, достаточный для current
 Task contract и обязательных runtime/external effects. Способ реализации,
 диагностики и проверки выбирай сам. Недоступное называй `not-available`, а не
-verified. Out-of-scope finding не исправляй и не превращай в новую Task без
-authority.
+verified. Сначала свежо сопоставь finding с selector: новая matching non-Backlog
+Task live selector уже in-scope и не требует approval. Только действительно
+unmatched finding не исправляй и не превращай в новую Task без authority.
 
 Когда candidate готов, сформулируй problem-first comment о результате и
 проведённой проверке, опубликуй и перечитай его, затем переведи
@@ -226,15 +227,14 @@ terminal Task сначала получает opening comment, затем exact 
 отключает Explainer, сам примени тот же problem-first quality contract без claim
 independence. Immediate incident update всё равно обязателен.
 
-Quality contract: [reference](references/strategic-explainer.md). Требования к
-comment: [delivery report](references/delivery-report.md).
+Quality contract: [reference](references/strategic-explainer.md); comment: [delivery report](references/delivery-report.md).
 
 ## 6. Продолжай автономно и финализируй
 
 Task-local blocker не останавливает независимую runnable работу. В
-`batch-implementation` перед ожиданием пользователя проверь весь scope; пока
-остаётся безопасная in-scope работа, продолжай её. Применимый Goal остаётся
-active, пока implementation scope не завершён фактически.
+`batch-implementation` перед ожиданием пользователя перечитай полный current
+inventory live selector, включая новые Tasks; пока остаётся безопасная in-scope
+работа, продолжай. Goal active до фактического завершения current membership.
 
 Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
 Goal и external effects. Дай outcome-first `SHIPTASK RUN REPORT`: result/state,
@@ -242,9 +242,9 @@ proof/gaps, cause и resume condition. Добавь incident ledger: Task/criter
 confidence, fix, retest evidence и final state — включая defects, найденные и
 исправленные в том же run. При user topology rule назови его смысл и
 соблюдение/deviation; без rule — только material delegation/profile handoff.
-Unresolved incident не совместим с clean success для
-affected Task. Не заменяй Task comments этим ответом. Подробности:
+Product failure и доступную repair frontier сообщи раньше browser/OAuth/MFA
+logistics; смену средства не называй repair или обязательным user action, пока
+есть безопасная работа с продуктом. Unresolved incident не совместим с clean
+success affected Task. Не заменяй Task comments этим ответом. Подробности:
 [run report](references/run-report.md).
-Goal `batch-implementation` заверши только после повторной проверки, что в scope
-нет незавершённой in-scope работы. Release-only run Goal не создаёт и не
-финализирует.
+Goal `batch-implementation` заверши после fresh full inventory без незавершённой current in-scope работы; release-only run его не финализирует.
