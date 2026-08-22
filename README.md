@@ -56,12 +56,16 @@ Ship Tasks is a separate plugin with three coordinated skills:
   created work or expands Label taxonomy;
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
-  report content, and terminal status policy. Its constitution leaves the agent
-  free to choose planning, tools, implementation, diagnostics, delegation,
-  context shape, and acceptance methods
-  while requiring sufficient evidence, a native comment before every meaningful
-  lifecycle transition, and factual separation of Task conflicts, proven
-  defects, genuine verification blockers, and proven success;
+  report content, and terminal status policy. It adaptively fills independent
+  safe lanes with subagents, routes only genuinely simple predictable packets
+  to Luna Max, and leaves other packets on the current model profile. Luna
+  uncertainty is handed back to the current integration owner without a cheap
+  retry, and an explicit no-subagent instruction disables every child. The
+  agent remains free to choose planning, tools, implementation, diagnostics,
+  bounded context, and acceptance methods while requiring sufficient evidence,
+  a native comment before every meaningful lifecycle transition, and factual
+  separation of Task conflicts, proven defects, genuine verification blockers,
+  and proven success;
 - `strategic-explainer` is a generic sibling skill that requires an explicit
   problem, finds bounded strategic context through read-only sources when
   materially useful, and returns a problem-first explanation without making

@@ -42,6 +42,29 @@ Manager comments/status/version writes, целостного candidate и Task a
 shared surface. Свободный slot сам по себе не является безопасной lane. Target
 ниже рассчитанного допустим только с названным observable limiting factor.
 
+Пользовательский profile override для субагентов имеет приоритет. Без него
+`gpt-5.6-luna`/`max` получает только genuinely simple packet: bounded,
+self-contained, с ясными acceptance/evidence и без material creative,
+architectural, authority/risk или environment uncertainty. Остальные packets и
+Strategic Explainer наследуют current model/effort.
+
+Luna не выполняет corrective recovery mutations. При ambiguity,
+context/contract conflict, unexpected environment/tool state, scope expansion
+или proof gap она прекращает packet, но bounded read-only inspection/read-back
+обязательно устанавливает exact completed work, effects, evidence и unknown.
+Integration owner reconciles state и сам продолжает тот же packet current
+profile; явное ограничение profile субагентов этому не мешает. Повторный cheap
+Luna loop запрещён. Если current primary сама Luna и broader context не снимает
+uncertainty, сообщи
+`luna-escalation=not-available` без скрытой подмены Sol. Ожидаемый результат
+проверки, включая намеренно воспроизводимый failure, сам по себе не является
+surprising environment.
+
+Для model override выбирай compatible self-contained bounded context; выбранная
+coordinator форма context не создаёт unavailability. Genuine unavailable auto
+Luna Max допускает current-profile fallback. Явный unavailable user profile не
+подменяется и уменьшает соответствующую role/capacity.
+
 Общее «не используй субагентов»/«без субагентов» включает `subagents=off` на весь
 run, включая research, implementation, review и comment Explainer. Узкий запрет
 отключает только названную роль и отражается как, например,

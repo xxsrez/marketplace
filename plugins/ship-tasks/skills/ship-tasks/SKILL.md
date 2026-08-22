@@ -53,12 +53,29 @@ limiter. Основной агент — единственный integration ow
 Manager comments/status/version writes. Пересекающиеся writes не параллель; при
 одной write lane делегируй только полезные read-only scouts/reviewers.
 
-Общее явное «не используй субагентов»/«без субагентов» включает
+Явный user model/effort для subagents имеет приоритет. Без него только genuinely
+simple packet запускай на `gpt-5.6-luna`/`max`: bounded self-contained scope,
+ясные acceptance/evidence, disjoint ownership, без material creative/product/
+architecture/authority/risk judgment и environment uncertainty. Остальные
+packets и Strategic Explainer наследуют current model/effort; маленький diff сам
+по себе не simple. При ambiguity, context/contract conflict, unexpected
+environment/tool state, scope expansion или proof gap Luna прекращает packet без
+corrective mutations, guess и ослабления acceptance; bounded read-only read-back
+partial effects обязателен. Верни exact effects/evidence/unknown integration
+owner на current profile без повторного cheap Luna loop. Если current primary —
+Luna и broader context не снимает uncertainty, сообщи
+`luna-escalation=not-available` без скрытой подмены Sol. Для override выбери
+compatible bounded context. Genuine unavailable auto Luna → current profile;
+явный unavailable user profile не подменяй и считай role capacity недоступной.
+
+Общее явное «не используй субагентов»/«без субагентов»/`no subagents` или
+однозначный эквивалент включает
 `subagents=off` для всего run, включая comment Explainer; узкий запрет отключает
-только названную роль и сообщается как `subagents=auto; <role>=off`. Goal, lifecycle и
-authority от topology не меняются. После inventory сообщи topology, ready width,
-active target и concrete limiter. Различай `workers=not-available` и
-`comment-explainer=not-available`.
+только названную роль и сообщается как `subagents=auto; <role>=off`. Goal,
+lifecycle и authority не меняются. После inventory сообщи topology, ready width,
+active target, profile allocation и concrete limiter; различай
+`workers=not-available` и `comment-explainer=not-available`. В final назови peak
+width, реально использованные profiles и Luna-to-current escalations.
 
 ### Правдивый статус и обязательный комментарий
 

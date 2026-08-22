@@ -20,6 +20,7 @@ openings — с resolution comments и current Task state. Успешный repa
 - что выполнено и текущий Task/Goal status;
 - выбранный `subagents=auto`/`off`, фактическую peak width либо точную причину
   coordinator-only исполнения;
+- фактически использованные profiles и Luna-to-current escalations;
 - что доказано и что осталось `not-available`;
 - compact ledger всех material acceptance incidents run, включая resolved;
 - primary cause незавершённости, отдельно от последствий;
