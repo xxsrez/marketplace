@@ -18,6 +18,8 @@ openings — с resolution comments и current Task state. Успешный repa
 Начать с результата. Затем кратко сообщить:
 
 - что выполнено и текущий Task/Goal status;
+- выбранный `subagents=auto`/`off`, фактическую peak width либо точную причину
+  coordinator-only исполнения;
 - что доказано и что осталось `not-available`;
 - compact ledger всех material acceptance incidents run, включая resolved;
 - primary cause незавершённости, отдельно от последствий;

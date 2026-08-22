@@ -276,9 +276,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("communication remainder", report)
         self.assertIn("Инвариант effects", report)
         self.assertIn("До связанного существенного status transition", report)
-        self.assertIn("Каждый комментарий, который создаёт ShipTask", handoff)
-        self.assertIn("отдельного\nсубагента", handoff)
-        self.assertIn("Обычный `To Do → In Progress` не запускает Explainer", skill)
+        self.assertIn(
+            "При `subagents=auto` каждый комментарий, который создаёт ShipTask",
+            handoff,
+        )
+        self.assertIn("отдельного субагента", " ".join(handoff.split()))
+        self.assertIn("`subagents=off` основной агент применяет тот же contract", handoff)
+        self.assertIn(
+            "Обычный `To Do → In Progress` не запускает Explainer",
+            " ".join(skill.split()),
+        )
         self.assertNotIn("2–4 способа", handoff)
         self.assertIn("found and resolved", run_report)
         self.assertIn("не совместим с clean success", run_report)
@@ -326,7 +333,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
 
-    def test_ship_tasks_requires_independent_explainer_for_every_comment(self) -> None:
+    def test_ship_tasks_uses_adaptive_subagents_and_honors_global_opt_out(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -337,17 +344,34 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "references"
             / "strategic-explainer.md"
         ).read_text(encoding="utf-8")
+        normalized_skill = " ".join(skill.split())
         normalized_handoff = " ".join(handoff.split())
 
         self.assertIn("$ship-tasks:strategic-explainer", skill)
         self.assertIn("$ship-tasks:strategic-explainer", handoff)
-        self.assertIn("Каждый комментарий, который ShipTask собирается создать", skill)
-        self.assertIn("отдельному независимому субагенту", skill)
-        self.assertIn("не переписывай\nтекст самостоятельно", skill)
-        self.assertIn("Обычный `To Do → In Progress` не запускает Explainer", skill)
-        self.assertIn("Каждый комментарий, который создаёт ShipTask", handoff)
+        self.assertIn("Default — `subagents=auto`", skill)
+        self.assertIn("Active target равен минимуму", skill)
+        self.assertIn("единственный integration owner", skill)
+        self.assertIn("Task Manager comments/status/version writes", normalized_skill)
+        self.assertIn("`subagents=off` для всего run, включая comment Explainer", normalized_skill)
+        self.assertIn("`subagents=auto; <role>=off`", skill)
+        self.assertIn("workers=not-available", skill)
+        self.assertIn("comment-explainer=not-available", skill)
+        self.assertIn("При `subagents=auto` каждый комментарий ShipTask", skill)
+        self.assertIn("отдельному независимому субагенту", normalized_skill)
+        self.assertIn("не переписывай текст самостоятельно", normalized_skill)
+        self.assertIn(
+            "Обычный `To Do → In Progress` не запускает Explainer",
+            normalized_skill,
+        )
+        self.assertIn(
+            "При `subagents=auto` каждый комментарий, который создаёт ShipTask",
+            handoff,
+        )
         self.assertIn("обязательная независимая проверка", normalized_handoff)
         self.assertIn("комментарий не публикуется", normalized_handoff)
+        self.assertIn("При явном общем `subagents=off`", normalized_handoff)
+        self.assertIn("не заявляет о независимой проверке", normalized_handoff)
         self.assertIn("bounded/read-only", handoff)
         self.assertNotIn('fork_turns="none"', skill)
         self.assertNotIn('fork_turns="none"', handoff)

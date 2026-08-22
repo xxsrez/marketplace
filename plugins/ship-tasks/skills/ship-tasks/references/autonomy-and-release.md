@@ -20,6 +20,37 @@ Global `TASK CONTEXT ALARM` нужен только при конфликте ex
 Goal, shared integration state или общей authority, из-за которого любые
 оставшиеся writes небезопасны.
 
+## Адаптивная execution topology
+
+Default — `subagents=auto`. После live inventory раздели scope на bounded work
+packets; active target равен наименьшей доступной ширине:
+
+- dependency-ready независимая работа;
+- conflict-free writable ownership или надёжная изоляция;
+- доступная runtime capacity;
+- способность одного integration owner принять, проверить и review-ить result.
+
+При двух и более безопасных полезных lanes используй несколько субагентов
+одновременно и пополняй frontier после завершения, blocker или открытия
+dependency. Не создавай фиктивные subtasks ради fan-out. Если безопасный writer
+только один, сохрани single-writer и делегируй независимые read-only discovery,
+test или review packets только когда они реально ускоряют или усиливают evidence.
+
+Основной агент является единственным integration owner и владельцем Goal, Task
+Manager comments/status/version writes, целостного candidate и Task attribution.
+Каждый implementation writer получает exact ownership и не меняет пересекающийся
+shared surface. Свободный slot сам по себе не является безопасной lane. Target
+ниже рассчитанного допустим только с названным observable limiting factor.
+
+Общее «не используй субагентов»/«без субагентов» включает `subagents=off` на весь
+run, включая research, implementation, review и comment Explainer. Узкий запрет
+отключает только названную роль и отражается как, например,
+`subagents=auto; implementation=off`. При общем opt-out обязательный comment получает
+тот же Strategic Explainer quality contract напрямую от основного агента без
+заявления о независимой проверке. Недоступный worker уменьшает target и
+сообщается как `workers=not-available`; недоступный Explainer — как
+`comment-explainer=not-available` и блокирует только comment-dependent effects.
+
 ## Свобода способа и качество evidence
 
 Выбирай, меняй и сочетай инструменты по ситуации. Отказ одного средства не

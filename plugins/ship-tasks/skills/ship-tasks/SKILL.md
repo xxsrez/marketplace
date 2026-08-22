@@ -41,6 +41,25 @@ scope/shared state/authority → `TASK CONTEXT ALARM` до небезопасн�
 
 ## 2. Соблюдай обязательные требования
 
+### Адаптивно используй субагентов
+
+Default — `subagents=auto`. После live inventory выдели bounded work packets и
+заполни safe useful width несколькими субагентами: минимум два независимых
+conflict-free packets при доступной capacity должны идти одновременно, а не
+поглощаться основным агентом последовательно. Active target равен минимуму ready
+dependencies, disjoint ownership/isolation, runtime capacity и integration/
+verification/review capacity; снижать его можно только с concrete observable
+limiter. Основной агент — единственный integration owner и владелец Goal и Task
+Manager comments/status/version writes. Пересекающиеся writes не параллель; при
+одной write lane делегируй только полезные read-only scouts/reviewers.
+
+Общее явное «не используй субагентов»/«без субагентов» включает
+`subagents=off` для всего run, включая comment Explainer; узкий запрет отключает
+только названную роль и сообщается как `subagents=auto; <role>=off`. Goal, lifecycle и
+authority от topology не меняются. После inventory сообщи topology, ready width,
+active target и concrete limiter. Различай `workers=not-available` и
+`comment-explainer=not-available`.
+
 ### Правдивый статус и обязательный комментарий
 
 Перед любым существенным status transition опубликуй понятный native Task
@@ -57,11 +76,11 @@ Native comment create/list/read — гарантированная часть cu
 adapter. Всегда создай и перечитай обязательный comment. Неизвестный write
 outcome сначала разреши через native read-back; не повторяй write вслепую.
 
-Каждый комментарий, который ShipTask собирается создать по любой причине,
-сначала передай отдельному независимому субагенту с
-`$ship-tasks:strategic-explainer`. Основной агент не может заменить этот проход
-собственной редактурой. Обычный `To Do → In Progress` не запускает Explainer,
-потому что комментария для этого перехода нет.
+При `subagents=auto` каждый комментарий ShipTask сначала передай отдельному
+независимому субагенту с `$ship-tasks:strategic-explainer`; основной агент не
+заменяет этот проход собственной редактурой. При общем `subagents=off` примени
+тот же quality contract напрямую и не заявляй о независимой проверке. Обычный
+`To Do → In Progress` не запускает Explainer: комментария для старта нет.
 
 Комментарий простым языком объясняет, что установлено, почему статус меняется
 или сохраняется, что это значит для пользователя, чем подтверждён вывод и что
@@ -158,30 +177,17 @@ terminal Task сначала получает opening comment, затем exact 
 
 ## 5. Обеспечь человеческое объяснение
 
-Каждый Task Manager comment ShipTask обязательно проходит отдельного
-Strategic Explainer. ShipTask сам устанавливает факты, итог, статус, полномочия
-и следующий шаг, но не проверяет собственный текст вместо независимого
-субагента.
+При `subagents=auto` каждый Task Manager comment проходит отдельного read-only
+Strategic Explainer. Передай ему без process diary: проблему, пользователя
+результата, exact Task, facts/evidence, impact, known/unknown, ограничения и
+разрешённый следующий шаг. Он не выбирает status, scope, authority или repair и
+возвращает готовый текст на языке пользователя с коротким source basis.
 
-Перед публикацией запусти отдельного субагента без унаследованного диалога и
-журнала инструментов и попроси применить
-`$ship-tasks:strategic-explainer`. Передай самодостаточно: решаемую проблему,
-пользователя результата, exact Task, текущие факты и evidence, влияние,
-известное и неизвестное, ограничения и уже разрешённый следующий шаг.
-Explainer остаётся read-only и не выбирает status, scope, authority или repair.
-
-Субагент возвращает готовый пользовательский текст на языке пользователя и
-короткий source basis. Внутренние сущности сначала объясняются обычными
-словами; точные технические названия остаются только там, где помогают
-проверить результат или выполнить действие. Не переносить в текст process
-diary, смесь жаргона или перечень инструментов.
-
-Проверь готовый текст по исходным фактам. Если обнаружена ошибка или потерян
-существенный факт, исправь вход и повтори независимую адаптацию; не переписывай
-текст самостоятельно и не считай такой черновик прошедшим Explainer. Если
-отдельный субагент недоступен или не вернул пригодный текст, не публикуй
-comment и не выполняй зависящий от него status transition. Немедленный
-outcome-first update в Codex при приёмочном инциденте всё равно обязателен.
+Проверь факты. При ошибке исправь вход и повтори независимую адаптацию; не
+переписывай текст самостоятельно. Если Explainer недоступен или текст непригоден,
+не публикуй comment и не выполняй зависящий transition. При общем
+`subagents=off` сам примени тот же problem-first quality contract и не выдавай
+текст за independently reviewed. Immediate incident update всё равно обязателен.
 
 Quality contract: [reference](references/strategic-explainer.md). Требования к
 comment: [delivery report](references/delivery-report.md).
@@ -198,7 +204,8 @@ Goal и external effects. Затем дай outcome-first `SHIPTASK RUN REPORT`:
 state, что доказано/не проверено, причина gap и точное условие продолжения.
 Всегда добавь compact incident ledger: Task/criterion, найденное, cause/
 confidence, fix, retest evidence и final state — включая defects, найденные и
-исправленные в том же run. Unresolved incident не совместим с clean success для
+исправленные в том же run. Назови `auto`/`off`, фактическую peak width либо
+причину coordinator-only. Unresolved incident не совместим с clean success для
 affected Task. Не заменяй Task comments этим ответом. Подробности:
 [run report](references/run-report.md).
 
