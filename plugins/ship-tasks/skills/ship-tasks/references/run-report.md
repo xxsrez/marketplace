@@ -3,17 +3,15 @@
 Финальный ответ сообщает человеку состояние всего выбранного run. Он не
 заменяет Task comments и не доказывает status write.
 
-## Перед ответом
+## Evidence для ответа
 
-- Перечитать affected Tasks, comments, statuses, versions и relations.
-- Перечитать Goal только в `batch-implementation` либо когда release продолжает
-  уже активный совместимый Goal массовой имплементации.
-- Проверить exact result identity и обязательные external effects.
-- Сопоставить обещанный результат с фактическим.
-- Сопоставить acceptance incident openings с resolution comments и текущим
-  Task state; не считать defect исчезнувшим только потому, что repair успешен.
-- Убедиться, что больше нет безопасного in-scope пути, который агент считает
-  достаточным для продолжения.
+Final report опирается на current affected Tasks/comments/statuses, применимый
+Goal массовой имплементации, exact result identity и обязательные external
+effects. Он сверяет обещанный результат с фактическим, а acceptance incident
+openings — с resolution comments и current Task state. Успешный repair не
+стирает найденный defect. Незавершённость можно передавать пользователю только
+когда в текущем scope и authority не осталось достаточного безопасного способа
+продолжить. Как собрать эти основания, решает агент.
 
 ## Содержание
 

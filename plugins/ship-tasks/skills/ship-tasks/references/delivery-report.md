@@ -19,17 +19,16 @@ create/list/read. ShipTask всегда создаёт и перечитывае
 Обычный старт `To Do → In Progress` комментария не требует. Внутренние red/green
 iterations также не создают noise.
 
-## Порядок effects
+## Инвариант effects
 
-1. Сформулировать comment с помощью Strategic Explainer contract.
-2. Проверить, что текст соответствует current facts и выбранному outcome.
-3. Найти equivalent comment, если outcome прошлого write неизвестен.
-4. Создать native comment со stable idempotency key logical write.
-5. Перечитать comment.
-6. Только затем выполнить status write и перечитать Task.
+До связанного существенного status transition понятный comment должен
+соответствовать current facts, фактически существовать в Task Manager и быть
+перечитан. После transition Task также перечитывается. Как агент формулирует
+text и организует create/reconciliation, конституция не предписывает.
 
-Не повторять create вслепую. Не использовать `description`, acceptance или
-другой Task field как fallback. Ответ в Codex не является durable Task comment.
+Unknown write outcome reconciles через native reads; create не повторяется
+вслепую. `description`, acceptance, другой Task field и ответ в Codex не
+являются durable Task comment.
 
 Если outcome write неизвестен, сначала reconciliate через native reads. Если
 обязательный comment не появился и не был перечитан, существенный status

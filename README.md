@@ -50,13 +50,16 @@ Ship Tasks is a separate plugin:
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
   report content, and terminal status policy. Its constitution leaves the agent
-  free to choose tools, implementation, diagnostics, and acceptance methods
+  free to choose planning, tools, implementation, diagnostics, delegation,
+  context shape, and acceptance methods
   while requiring sufficient evidence, a native comment before every meaningful
   lifecycle transition, and factual separation of Task conflicts, proven
   defects, genuine verification blockers, and proven success;
 - `strategic-explainer` is a generic sibling skill that requires an explicit
-  problem, finds bounded strategic context through read-only tools, and returns
-  a problem-first explanation without making decisions or mutations;
+  problem, finds bounded strategic context through read-only sources when
+  materially useful, and returns a problem-first explanation without making
+  decisions or mutations. It does not require a specific agent topology,
+  context envelope, retry scheme, or option count;
 - it depends on the separately installed Task Manager plugin for MCP tools and
   authentication, but does not bundle or duplicate that connector.
 

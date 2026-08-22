@@ -115,8 +115,8 @@ Task contract и обязательных runtime/external effects. Способ
 verified. Out-of-scope finding не исправляй и не превращай в новую Task без
 authority.
 
-Когда candidate готов, через Strategic Explainer сформулируй comment о результате
-и проведённой проверке, опубликуй и перечитай его, затем переведи
+Когда candidate готов, сформулируй problem-first comment о результате и
+проведённой проверке, опубликуй и перечитай его, затем переведи
 `In Progress → In Review`. Сразу проведи приёмку: `In Review` не является
 ожиданием человека.
 
@@ -149,19 +149,20 @@ Task. Сначала получи separating evidence; до attribution сооб
 finding только в chat/final report и не возвращай весь batch в rework. Defect в
 terminal Task сначала получает opening comment, затем exact Task reopen.
 
-## 5. Используй Strategic Explainer для человеческих объяснений
+## 5. Обеспечь человеческое объяснение
 
-Каждый обязательный lifecycle/blocker comment сформулируй с помощью
-`$ship-tasks:strategic-explainer`. ShipTask сначала сам устанавливает facts,
-outcome, status, authority и next action; Explainer этого не решает.
+Каждый обязательный lifecycle/blocker comment и final report должны связывать
+решаемую проблему, current facts, пользовательский смысл, evidence/unknown и
+следующий state. ShipTask сам устанавливает facts, outcome, status, authority и
+next action.
 
-Передай решаемую проблему, current facts, известное/неизвестное и влияние.
-Strategic discovery остаётся read-only и выполняется только по необходимости.
-Проверь ответ и сам напиши final comment без упоминания внутренней orchestration.
-Обязательное требование — применить Strategic Explainer и получить понятный
-comment; способ выполнения этого требования выбирает агент.
+`$ship-tasks:strategic-explainer` доступен для independent adaptation или bounded
+read-only discovery, когда это materially улучшает explanation. Сам решай,
+вызвать skill напрямую, делегировать работу или применить его quality contract
+в основном workflow. Обязателен понятный grounded result, а не конкретная agent
+topology, context envelope или invocation.
 
-Handoff contract: [reference](references/strategic-explainer.md). Требования к
+Quality contract: [reference](references/strategic-explainer.md). Требования к
 comment: [delivery report](references/delivery-report.md).
 
 ## 6. Продолжай автономно и финализируй

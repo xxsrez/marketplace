@@ -1,6 +1,6 @@
 {
   "name": "ship-tasks",
-  "version": "0.1.6+codex.20260822085222",
+  "version": "0.1.6+codex.20260822091354",
   "description": "Deliver selected Task Manager work with durable acceptance reporting and problem-first strategic explanations.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Ship Tasks",
     "shortDescription": "Deliver work with visible acceptance incidents.",
-    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Its constitution requires sufficient evidence, truthful state, and a readable native comment before every meaningful lifecycle transition while leaving tools, diagnostics, and acceptance methods to the agent. Native comments are part of the Task Manager adapter contract. A failed or blocked acceptance is reported immediately in chat, preserved in Task history before repair, and retained in the final report even when resolved in the same run. Failure of one verification method alone does not prove a defect. Strategic Explainer turns established facts into a problem-first human explanation without taking status, authority, or execution decisions.",
+    "longDescription": "Includes two sibling skills. Ship Tasks delivers work through explicit $ship-tasks or natural language that names an existing Task or selected Task Manager scope. A delivery verb alone does not activate it. Its requirements act as a constitution: sufficient evidence, truthful state, readable native comments, visible acceptance incidents, and authority boundaries are mandatory while planning, tools, delegation, context shape, diagnostics, and acceptance methods remain agent choices. Native comments are part of the Task Manager adapter contract. Strategic Explainer turns established facts into a grounded problem-first human explanation without taking status, authority, or execution decisions and without requiring a specific agent topology or prompt envelope.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [

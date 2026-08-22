@@ -242,9 +242,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("сначала восстанови", skill)
         self.assertNotIn("после material repair", skill)
         self.assertNotIn("communication remainder", report)
-        self.assertIn("Только затем выполнить status write", report)
-        self.assertIn("Decision support request", handoff)
-        self.assertIn("strongest feasible способ", handoff)
+        self.assertIn("Инвариант effects", report)
+        self.assertIn("До связанного существенного status transition", report)
+        self.assertIn("Обязательный результат — понятный grounded comment", handoff)
+        self.assertIn("agent topology", handoff)
         self.assertNotIn("2–4 способа", handoff)
         self.assertIn("found and resolved", run_report)
         self.assertIn("не совместим с clean success", run_report)
@@ -272,16 +273,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("name: strategic-explainer", skill)
-        self.assertIn("Strategic Handoff", skill)
-        self.assertIn("Problem to solve", skill)
-        self.assertIn("Current-State Brief", skill)
-        self.assertIn("PROBLEM_CONTEXT_ERROR", skill)
-        self.assertIn("bounded read-only tools", skill)
-        self.assertIn("source note", skill)
-        self.assertIn("свободное стратегическое объяснение", skill)
-        self.assertIn("CONTEXT_INTEGRITY_ERROR", skill)
-        self.assertIn('fork_turns="none"', skill)
-        self.assertIn("сформулирует окончательный user-facing текст", skill)
+        self.assertIn("problem-first модель", skill)
+        self.assertIn("Форма context свободна", skill)
+        self.assertIn("bounded read-only sources", skill)
+        self.assertIn("source basis", skill)
+        self.assertIn("не придумывай варианты ради квоты", skill)
+        self.assertIn("decision-relevant факт не потерян", skill)
+        self.assertNotIn("PROBLEM_CONTEXT_ERROR", skill)
+        self.assertNotIn("CONTEXT_INTEGRITY_ERROR", skill)
+        self.assertNotIn('fork_turns="none"', skill)
+        self.assertNotIn("2–4 реально", skill)
         self.assertNotIn("Technical Brief", skill)
         self.assertNotIn("User Brief", skill)
         self.assertNotIn("PARENT NOTES", skill)
@@ -289,7 +290,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
 
-    def test_ship_tasks_uses_explainer_without_prescribing_invocation(self) -> None:
+    def test_ship_tasks_requires_explanation_quality_without_prescribing_invocation(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
         ).read_text(encoding="utf-8")
@@ -300,16 +301,19 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "references"
             / "strategic-explainer.md"
         ).read_text(encoding="utf-8")
+        normalized_handoff = " ".join(handoff.split())
 
         self.assertIn("$ship-tasks:strategic-explainer", skill)
         self.assertIn("$ship-tasks:strategic-explainer", handoff)
-        self.assertIn("Problem to solve", handoff)
-        self.assertIn("способ выполнения этого требования выбирает агент", skill)
-        self.assertIn("не задаёт конкретный invocation или recovery flow", handoff)
-        self.assertIn("Strategic discovery остаётся read-only", skill)
+        self.assertIn("Обязателен понятный grounded result", skill)
+        self.assertIn("Сам решай", skill)
+        self.assertIn("можно вызвать напрямую", handoff)
+        self.assertIn("не вызывать отдельно", handoff)
+        self.assertIn("Конституция не задаёт agent topology", normalized_handoff)
         self.assertIn("bounded/read-only", handoff)
         self.assertNotIn('fork_turns="none"', skill)
         self.assertNotIn('fork_turns="none"', handoff)
+        self.assertNotIn("обязательное требование — применить Strategic Explainer", skill)
         self.assertNotIn("сначала восстанови", skill)
 
 

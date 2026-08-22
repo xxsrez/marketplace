@@ -99,16 +99,16 @@ shiptask_project_context:
 Memory maintenance начинается только по явной просьбе вроде «настрой ShipTask
 для проекта», «оформи project memory» или «обнови текущий release в памяти».
 
-1. Прочитать доступные project instructions, repository config и Task Manager
-   Project/Release metadata без mutations.
-2. Показать resolved facts, источники, неизвестные поля и предлагаемый
-   `current_scope`.
-3. Запросить только material значения, которые нельзя безопасно вывести и
-   которые меняют scope, environment class или authority.
-4. Записать memory через доступный memory mechanism только после explicit
-   request; не писать secrets и live task state.
-5. Перечитать сохранённую memory, проверить обязательные поля и сообщить, на
-   какой Codex surface она будет доступна.
+До изменения memory нужно установить доступные facts из project instructions,
+repository config и Task Manager Project/Release metadata, показать их source и
+отделить unresolved material values. Запрашиваются только значения, которые
+нельзя безопасно вывести и которые меняют scope, environment class или
+authority.
+
+Explicit request разрешает bounded memory write, но не secrets или live Task
+state. Изменение завершено только после read-back обязательных полей и честного
+объяснения, на какой Codex surface сохранённый context доступен. Конкретный
+memory mechanism и организация чтений остаются за агентом.
 
 Обычный `single`, `batch-implementation` или `release` delivery может сообщить
 полезное предложение по memory, но не должен менять её как побочный эффект.

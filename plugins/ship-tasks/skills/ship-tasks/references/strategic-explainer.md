@@ -1,41 +1,32 @@
-# Strategic Explainer handoff для ShipTask
+# Strategic Explainer quality contract для ShipTask
 
-Использовать для каждого обязательного lifecycle/blocker comment. Explainer
-помогает понять и выразить смысл; он не выбирает facts, status, scope, authority,
-repair или terminal outcome.
+Каждый обязательный lifecycle/blocker comment и final report должен выражать
+смысл на уровне проблемы, facts, impact, evidence/unknown и next state.
+Strategic Explainer помогает добиться этого качества, но не выбирает facts,
+status, scope, authority, repair или terminal outcome.
 
-## Что передать
+## Какие основания нужны
 
-`$ship-tasks:strategic-explainer` передаётся короткий handoff:
+Независимо от способа работы агенту нужны:
 
-```text
-Problem to solve
-- Для кого результат и какой наблюдаемый outcome нужен.
-- Exact Task scope.
+- для кого предназначен result, какой observable outcome нужен и какой exact
+  Task scope рассматривается;
+- какой outcome уже установлен ShipTask, что доказано/failed/unverified и на
+  каком evidence;
+- user impact, confidence, реальные constraints и исходная authority;
+- ближайшие relevant Project/Release/Epic/spec/design sources, если они меняют
+  смысл;
+- следующий state и подтверждённый action, если он нужен.
 
-Current-State Brief
-- Какой исход уже установлен ShipTask и на каких фактах.
-- Что работает, не работает, не проверено или не относится.
-- User impact, confidence и реальные ограничения.
-- Какой status/action уже разрешён исходной authority.
+Форма context свободна. Не подменять facts готовым желаемым выводом и не
+переносить полный tool transcript или process diary. Discovery остаётся
+bounded/read-only и прекращается, когда дополнительный source уже не меняет
+смысл.
 
-Strategic discovery anchors
-- Exact Task/ref и ближайшие Project/Release/Epic/spec/design sources.
+## Что должно получиться
 
-Decision support request
-- Объяснить результат человеческим языком.
-- Для verification blocker: рекомендовать strongest feasible способ получить
-  evidence; сравнить alternatives только при реальном material выборе.
-```
-
-Не передавать готовый желаемый вывод, полный tool transcript или process diary.
-Discovery только bounded/read-only и прекращается, когда дополнительный source
-уже не меняет смысл.
-
-## Что сделать с ответом
-
-ShipTask проверяет forward trace к current facts и reverse coverage всех
-decision-relevant входов. Затем сам пишет окончательный Task comment, сохраняя:
+ShipTask проверяет, что material claims имеют source basis, а
+decision-relevant facts не потеряны. Итоговый Task comment сохраняет:
 
 - проблему и outcome;
 - impact;
@@ -43,10 +34,11 @@ decision-relevant входов. Затем сам пишет окончател�
 - constraint;
 - next state/action.
 
-Source note остаётся внутренним основанием. В comment не упоминаются subagent,
-Strategic Explainer, handoff или orchestration.
+Внутренняя provenance остаётся основанием для проверки. В comment не
+перечисляется orchestration, если она не имеет пользовательского значения.
 
-Обязательный результат — применённый Strategic Explainer и понятный comment.
-Конституция не задаёт конкретный invocation или recovery flow. Если handoff не
-содержит содержательной проблемы либо противоречит current facts, красивый текст
-не компенсирует неверное состояние.
+Обязательный результат — понятный grounded comment. `$ship-tasks:strategic-explainer`
+можно вызвать напрямую, делегировать ему adaptation или не вызывать отдельно,
+если основной workflow уже удовлетворяет quality contract. Конституция не
+задаёт agent topology, invocation или recovery flow. Красивый текст не
+компенсирует missing problem, неверный state или потерянный факт.
