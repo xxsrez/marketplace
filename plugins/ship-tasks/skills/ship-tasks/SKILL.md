@@ -39,14 +39,14 @@ selector входит автоматически, включая появивш�
 В safe lane сначала `In Progress`/`In Review`, затем `To Do`;
 независимые lanes параллельны. `Duplicate` отдельно не
 исполняй, но прочитай outgoing canonical relation и incoming duplicates.
-Если это может быть первый turn новой Codex task, прочитай [title contract](references/thread-title.md):
-доказанный catalog placeholder получает `ShipTask · ...` без риска для соседней task.
+Если это может быть первый turn новой Codex task и host показывает title capability,
+прочитай [title contract](references/thread-title.md): доказанный catalog placeholder получает не более одной best-effort попытки `ShipTask · ...`;
+отсутствие/deferred/failure capability не блокируют workflow; meaningful title сохраняй.
 Создавай Goal после подтверждения `batch-implementation` минимум двух Tasks и до
-implementation mutation. `single`/`release` без Goal. Release-only run Goal не создаёт,
-не переиспользует, не ретаргетит и не завершает; compatible Goal
-продолжается лишь когда release был его исходным done criterion; сам release новый Goal не создаёт.
-Goal live selector хранит identity/predicate, не стартовые refs/count; новая matching
-Task сохраняет его active без approval. Goal не определяет Task outcome/попытки/status.
+implementation mutation; `single`/`release` без Goal. Release-only run Goal не создаёт,
+не переиспользует, не ретаргетит и не завершает; compatible Goal продолжается лишь
+при исходном release done criterion; сам release новый Goal не создаёт. Goal live
+selector хранит identity/predicate, не стартовые refs/count; новая matching Task сохраняет его active без approval. Goal не определяет Task outcome/попытки/status.
 Неразрешимый scope/shared-state/authority конфликт → `TASK CONTEXT ALARM` до writes.
 ## 2. Соблюдай обязательные требования
 
