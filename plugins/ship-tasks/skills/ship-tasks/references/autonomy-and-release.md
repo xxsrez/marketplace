@@ -149,6 +149,18 @@ Task-local blocker оставляет применимый Goal массовой
 publish, deploy/redeploy, smoke и bounded repair/rollback затронутого
 non-production surface.
 
+### Периодический UAT batch
+
+Если project context содержит UAT, ShipTask выполняет лёгкий targeted gate для
+каждой Task, но не деплоит каждую bug/Task по умолчанию. Совместимые ready
+candidates объединяются в разумный exact integrated batch; при cadence или
+trigger (`batch_target`/review WIP, wave/frontier, общий UAT effect,
+acceptance/Done, checkpoint/final flush) проводится один thorough review-batch
+gate и один deploy этого candidate в UAT. UAT deployment после проверки target
+не требует отдельного approval. High-risk/coupled Task, explicit singleton или
+final flush могут быть batch из одного member. Report должен содержать members,
+SHA, checks, UAT read-back и smoke; отсутствие receipt не считается verified.
+
 Это не разрешает permanent deletion, destructive durable-data reset без
 recovery, secrets/privacy/access-policy changes, external-recipient action,
 unbounded cost или unrelated cleanup.

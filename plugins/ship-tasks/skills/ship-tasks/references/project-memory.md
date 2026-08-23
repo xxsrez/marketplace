@@ -80,7 +80,7 @@ shiptask_project_context:
   verification:
     targeted_commands: [<commands or project-doc pointers>]
     batch_commands: [<commands or project-doc pointers>]
-    batch_triggers: <risk/WIP/final-flush policy>
+    batch_triggers: <risk/WIP/cadence/final-flush policy for review and UAT>
   delivery:
     provider: <provider or project-doc pointer>
     environments:
@@ -192,7 +192,7 @@ shiptask_project_context:
   verification:
     targeted_commands: ["npm test -- <affected suite>"]
     batch_commands: ["npm test", "npm run build"]
-    batch_triggers: final flush or shared release candidate
+    batch_triggers: periodic review/UAT cadence, shared release candidate or final flush
   delivery:
     provider: project runbook
     environments:

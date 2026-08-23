@@ -15,6 +15,13 @@ openings — с resolution comments и current Task state. Успешный repa
 появившиеся или вышедшие из Backlog после старта. Как собрать остальные
 основания, решает агент.
 
+Если project context содержит UAT и run достиг periodic batch trigger, report
+отдельно показывает batch manifest: member refs, exact source/integration SHA,
+targeted и thorough batch checks, UAT target, UAT receipt/read-back и
+smoke. Отсутствующий UAT receipt называется proof gap, а не verified release;
+обычный non-production UAT effect не описывается как ожидающий отдельного
+approval.
+
 ## Содержание
 
 Начать с результата. Затем кратко сообщить:

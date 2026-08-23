@@ -1,6 +1,6 @@
 ---
 name: ship-tasks
-description: "Доставлять однозначно выбранный Task Manager scope до фактически проверенного результата, автономно создавая доступные тестовые входы и выдавая причинный blocker-report, когда остаётся настоящий внешний блокер. Использовать явно через $ship-tasks или неявно только при delivery intent с exact Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope; одного delivery-глагола недостаточно. Create-and-deliver разрешён для явной просьбы создать и сразу выполнить одну Task. Bare invocation определяет mode по live inventory; Goal нужен только для implementation/rework минимум двух Tasks. Не использовать для чтения, статуса, аудита, объяснения, planning/backlog capture или обычной работы с кодом без Task Manager anchor."
+description: "Доставлять однозначно выбранный Task Manager scope до фактически проверенного результата, автономно создавая доступные тестовые входы и выдавая причинный blocker-report, когда остаётся настоящий внешний блокер. Для batch scope применять лёгкий per-Task gate и периодический review-batch с одним exact UAT release, а не деплоить каждую Task. Использовать явно через $ship-tasks или неявно только при delivery intent с exact Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope; одного delivery-глагола недостаточно. Create-and-deliver разрешён для явной просьбы создать и сразу выполнить одну Task. Bare invocation определяет mode по live inventory; Goal нужен только для implementation/rework минимум двух Tasks. Не использовать для чтения, статуса, аудита, объяснения, planning/backlog capture или обычной работы с кодом без Task Manager anchor."
 ---
 
 # Ship Tasks
@@ -131,18 +131,15 @@ exact candidate/server path остаётся product incident при сбое br
 `verified-failure`, `verification-blocked` и `task-contract-conflict`, найденные
 при проверке exact candidate или release scope, — material acceptance incidents.
 Только `verified-failure` называй bug.
-
 До repair, status write или blocking handoff немедленно сообщи в Codex chat:
 exact Task/criterion, expected result, observed failure либо границу знания,
 impact, установленный outcome и следующий шаг. Затем опубликуй и перечитай
 opening Task comment. Для proven defect comment предшествует началу rework.
-
 Не стирай opening после repair. При material state change сообщай progress в
 chat; после исправления свяжи resolution/completion comment с тем же criterion,
 cause/confidence, fix/result identity и retest evidence. Пока incident unresolved
 и active run продолжается без material change, напоминай о нём в chat примерно
 каждые 10 минут. Таймерные updates не дублируй в Task comments.
-
 Ожидаемая red/green iteration, отказ одного способа проверки и batch failure без
 task-level attribution не являются incident конкретной Task.
 
@@ -154,7 +151,6 @@ task-level attribution не являются incident конкретной Task.
 privacy/access-policy changes, external recipients и unbounded cost требуют
 явной authority. Обычные необходимые local/dev/test/QA/UAT/staging/preview/
 sandbox effects разрешены после надёжного определения non-production target.
-
 Подробности autonomy и release: [reference](references/autonomy-and-release.md).
 
 ## 3. Выполни и проверь result
@@ -173,18 +169,26 @@ User-provided файл не blocker, если input можно создать с
 principal/session, внешний account, provider evidence или access-policy effect —
 authority boundary после проверки synthetic/ephemeral substitute, без создания
 identity или ACL без authority.
-
 Когда candidate готов, сформулируй problem-first comment о результате и
 проведённой проверке, опубликуй и перечитай его, затем переведи
 `In Progress → In Review`. Сразу проведи приёмку: `In Review` не является
 ожиданием человека.
+### Периодический UAT batch release
 
+Перед review каждой Task выполняй лёгкий targeted gate. Совместимые ready
+candidates группируй в разумный exact integrated batch и периодически, по
+cadence/`batch_target`/review WIP, wave/frontier, общему UAT effect,
+acceptance/Done, checkpoint или final flush, проводи один thorough batch gate и
+деплой один exact candidate в verified UAT. Не деплой UAT после каждой bug/Task
+по умолчанию. UAT — разрешённый non-production effect без approval после проверки
+target; high-risk/coupled Task, explicit singleton или final flush могут быть
+batch из одной Task. В report фиксируй members, SHA, checks, UAT read-back/smoke;
+failure локализуй, а unaffected evidence не обнуляй без attribution.
 ## 4. Разбери приёмку по текущим фактам
 
 История изменений acceptance и количество прошлых попыток сами по себе ничего
 не доказывают. Те же outcomes применяй при release verification; lifecycle
 effects выполняй только для точно attributed Tasks.
-
 - `task-contract-conflict`: current mandatory requirements противоречат друг
   другу или не определяют observable result. Сначала chat update и opening
   comment. Однозначное исправление по accepted source выполни и перечитай;
@@ -203,7 +207,6 @@ effects выполняй только для точно attributed Tasks.
   доказаны. Сначала понятный completion comment и read-back, затем
   `In Review → Done` и Task read-back. Если incident был открыт в этом run,
   comment явно закрывает его либо называет remaining risk.
-
 Падение общего batch gate без task-level attribution не доказывает defect каждой
 Task. Сначала получи separating evidence; до attribution сообщай scope-level
 finding только в chat/final report и не возвращай весь batch в rework. Defect в
@@ -218,13 +221,11 @@ self-service frontier, fixtures/ingress, authority gap, paths, prerequisites и
 signals. Explainer не выполняет mutation или status/scope/authority/repair, но
 сравнивает grounded варианты и рекомендует feasible path; возвращает готовый
 текст с source basis на языке пользователя.
-
 Проверь факты. При ошибке исправь вход и повтори независимую адаптацию; не
 переписывай текст самостоятельно. Если Explainer недоступен или текст непригоден,
 не публикуй comment и не выполняй зависящий transition. Если effective rule
 отключает Explainer, сам примени тот же problem-first quality contract без claim
 independence. Immediate incident update всё равно обязателен.
-
 Quality contract: [reference](references/strategic-explainer.md); comment: [delivery report](references/delivery-report.md).
 
 ## 6. Продолжай автономно и финализируй
@@ -233,7 +234,6 @@ Task-local blocker не останавливает независимую runnab
 `batch-implementation` перед ожиданием пользователя перечитай полный current
 inventory live selector, включая новые Tasks; пока остаётся безопасная in-scope
 работа, продолжай. Goal active до фактического завершения current membership.
-
 Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
 Goal и external effects. Дай outcome-first `SHIPTASK RUN REPORT`: result/state,
 proof/gaps, cause и resume condition. Добавь incident ledger: Task/criterion,

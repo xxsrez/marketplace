@@ -51,8 +51,8 @@ create/read-back exact Task, потому что раньше canonical ref ещ
 branch, acceptance text и другие volatile details.
 
 Если eligibility доказана, вызови `codex_app__set_thread_title` не более одного
-раза **без `threadId`**. Omission адресует calling task; не передавай discovery
-candidate id в mutation. После ошибки не retry и не пробуй переименовать другой
+раза **без `threadId`**. Omission адресует calling task; не передавай discovery candidate id
+в mutation. После ошибки не retry и не пробуй переименовать другой
 task. Если tool result не подтверждает effect, сообщи
 `task-title=not-available` и продолжай delivery.
 
