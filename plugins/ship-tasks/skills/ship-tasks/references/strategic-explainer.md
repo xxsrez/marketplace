@@ -6,7 +6,9 @@
 рекомендация по стилю. Если rule отключает Explainer, основной агент применяет
 тот же contract напрямую и не заявляет о независимой проверке. Strategic Explainer переводит факты на понятный человеку
 язык, но не выбирает факты, статус, границы работы, полномочия, исправление или
-итог.
+итог. Для `verification-blocked` он также помогает сравнить уже grounded test
+paths и сформулировать рекомендацию, не превращая её в разрешение на mutation
+или status decision.
 
 По умолчанию этот user-facing judgment packet наследует current model/effort, а
 не Luna Max. Явно выбранный пользователем profile имеет приоритет.
@@ -24,6 +26,13 @@
   смысл;
 - следующий state и подтверждённый action, если он нужен.
 
+Для blocker decision report вход дополнительно должен содержать autonomous
+self-service frontier: какие fixtures/seed data агент создал сам, какие ingress
+и проверки уже выполнены, почему они не закрыли criterion, какой authority gap
+остаётся, и какие feasible test paths доступны. Запрос на внешний principal,
+вторую сессию или provider evidence должен быть показан как boundary authority,
+а не как голая просьба о недостающем объекте.
+
 При delegated use форма входа свободна, но субагент должен быть независим от хода
 реализации: ему не передаются прежний диалог, полный журнал инструментов или
 process diary.
@@ -34,8 +43,10 @@ bounded/read-only и прекращается, когда дополнитель
 ## Что должно получиться
 
 Strategic Explainer возвращает готовый пользовательский текст и короткий source
-basis. ShipTask проверяет факты, но не переписывает текст обратно на своём
-техническом языке. Итоговый Task comment сохраняет:
+basis. Для blocker report текст дополнительно сохраняет recommended test path,
+material alternatives/trade-offs, prerequisites/authority, observable success
+signal и exact resume condition. ShipTask проверяет факты, но не переписывает
+текст обратно на своём техническом языке. Итоговый Task comment сохраняет:
 
 - проблему и outcome;
 - impact;

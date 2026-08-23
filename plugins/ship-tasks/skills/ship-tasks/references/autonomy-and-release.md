@@ -98,6 +98,22 @@ comment получает тот же quality contract напрямую от ос
 создаёт обязанности чинить именно его и не является готовым выводом о Task.
 Решение оценивается по тому, доказывает ли итоговый evidence current acceptance.
 
+До `verification-blocked` пройди автономную self-test frontier: создай сам
+обычные synthetic fixtures (PDF, ZIP, PNG, изображения, Markdown), seed data и
+доступные temporary/mock state, затем проверь их через поддерживаемые ingress.
+Наличие user-provided файла не является blocker, если эквивалентный input можно
+сгенерировать и безопасно передать самому. Отдельно проверь, не требует ли
+criterion независимого principal, второй authenticated session, внешнего
+account, provider-side evidence или access-policy effect: это может быть
+настоящей authority boundary, если synthetic substitute в scope отсутствует.
+
+Такой blocker не завершается голым «нужен файл/principal». Перед defer подготовь
+через Strategic Explainer grounded decision report с self-service attempts,
+primary/cascade cause, recommended test path, material alternatives,
+prerequisites/authority, success signal, safe continuation и exact resume
+condition. Explainer не выполняет mutation и не принимает status/authority
+решение.
+
 Browser/controller/session switch допустим как диагностика, но не является
 repair продукта. Если exact candidate или server path уже доказал product
 failure, сбой другого browser login либо MFA не отменяет incident и не создаёт

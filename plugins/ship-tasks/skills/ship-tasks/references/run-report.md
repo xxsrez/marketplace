@@ -33,6 +33,14 @@ openings — с resolution comments и current Task state. Успешный repa
 - user action или внешнее условие, без которого продолжение невозможно;
 - первый safe resume step.
 
+Для каждого unresolved `verification-blocked` отдельно укажи, что агент
+самостоятельно создал и проверил (fixtures, seed data, ingress), primary cause
+и cascade symptoms, рекомендуемый следующий test path, material alternatives и
+trade-offs, prerequisites/authority, observable success signal, safe работу,
+которая продолжается без пользователя, и exact resume condition. Не своди такой
+report к «нужен PDF/ZIP/PNG» или «нужен principal»: стандартный fixture агент
+должен создать сам, а внешний principal/authority gap нужно причинно объяснить.
+
 При доказанном product failure сначала назвать его, impact и доступную in-scope
 repair frontier. Browser/controller/OAuth/MFA logistics идут после этого и
 только если объясняют реальный proof gap. Смена браузера не называется repair,

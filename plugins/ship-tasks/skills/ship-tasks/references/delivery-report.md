@@ -96,6 +96,18 @@ acceptance criterion с cause/confidence, fix или exact result identity,
 prerequisites и observable success signal. Несколько вариантов сравниваются
 только при реальном material выборе.
 
+До этого report должен показать автономную test frontier: какие synthetic
+fixtures/seed data агент создал сам, какие поддерживаемые ingress и проверки
+прошёл, и почему этого всё ещё недостаточно. Стандартный PDF, ZIP, PNG,
+изображение или Markdown, который агент может безопасно создать, не описывается
+как user blocker. Если остаётся genuine authority boundary (например,
+independent principal или вторая authenticated session), report отдельно
+называет primary/cascade cause, сравнивает grounded test paths, рекомендует
+лучший feasible путь, указывает prerequisites/authority, observable success
+signal, продолжаемую safe работу и exact resume condition. Этот текст проходит
+отдельного Strategic Explainer, пока effective rule его сохраняет; голое «нужен
+файл/principal» без причинной рекомендации недостаточно.
+
 ### Завершено
 
 Объяснить полученный outcome, его значение, ключевое evidence, exact result или
