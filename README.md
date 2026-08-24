@@ -108,7 +108,8 @@ Repository layout:
 - `plugins/ship-tasks/skills/task-composer/` — Task Manager planning and
   backlog-composition workflow;
 - `plugins/ship-tasks/skills/strategic-explainer/` — generic problem-first
-  strategic discovery skill used directly or in a fresh subagent;
+  strategic discovery and semantic-preserving editorial reconstruction skill
+  used directly or in a fresh subagent;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
 - `plugins/mind-diary/.mcp.json` — direct Mind Diary MCP and OAuth resource;
 - `plugins/mind-diary/assets/` — Mind Diary brand assets;
