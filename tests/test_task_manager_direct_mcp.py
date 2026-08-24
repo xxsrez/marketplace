@@ -298,22 +298,27 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("немедленно сообщи в Codex chat", skill)
         self.assertIn("opening Task comment", skill)
         self.assertIn("каждые 10 минут", skill)
-        self.assertIn("incident ledger", skill)
+        self.assertIn("краткий перечень существенных инцидентов", skill)
         self.assertNotIn("сначала восстанови", skill)
         self.assertNotIn("после material repair", skill)
         self.assertNotIn("communication remainder", report)
         self.assertIn("Инвариант effects", report)
         self.assertIn("До связанного существенного status transition", report)
-        self.assertIn("Пока effective topology rule не отключает comment Explainer", handoff)
+        self.assertIn(
+            "Пока действующее правило пользователя о субагентах не отключает Explainer",
+            handoff,
+        )
         self.assertIn("отдельного субагента", " ".join(handoff.split()))
-        self.assertIn("Если rule отключает Explainer", handoff)
+        self.assertIn("Если правило отключает Explainer", handoff)
         self.assertIn(
             "Обычный `To Do → In Progress` не запускает Explainer",
             " ".join(skill.split()),
         )
         self.assertNotIn("2–4 способа", handoff)
-        self.assertIn("found and resolved", run_report)
-        self.assertIn("не совместим с clean success", run_report)
+        self.assertIn("найденный и устранённый", run_report)
+        self.assertIn("не совместим с формулировкой полного успеха", run_report)
+        self.assertIn("Первый смысловой слой прямо отвечает на исходный вопрос", run_report)
+        self.assertIn("видит только исходную цель и готовый ответ", " ".join(run_report.split()))
         for retired in (
             "строгого tool threshold",
             "строгого model-tool threshold",
@@ -338,15 +343,20 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("name: strategic-explainer", skill)
-        self.assertIn("problem-first модель", skill)
-        self.assertIn("Форма context свободна", skill)
-        self.assertIn("bounded read-only sources", skill)
-        self.assertIn("source basis", skill)
-        self.assertIn("не придумывай варианты ради квоты", skill)
-        self.assertIn("decision-relevant факт не потерян", skill)
+        self.assertIn("Удерживай исходный вопрос", skill)
+        self.assertIn("Не подменяй исходный вопрос технической задачей", skill)
+        self.assertIn(
+            "используй только доступные источники, которые можно читать",
+            skill,
+        )
+        self.assertIn("Отличай действующее от предложенного и исторического", skill)
+        self.assertIn("Первый смысловой слой прямо отвечает на исходный вопрос", skill)
+        self.assertIn("английские слова не должны нести основную мысль", skill)
+        self.assertIn("Проверь понимание отдельно от фактов", skill)
+        self.assertIn("Если для пересказа нужна внутренняя предметная область", skill)
+        self.assertIn("придумывай варианты ради количества", skill)
         self.assertIn("готовый пользовательский текст", skill)
-        self.assertIn("Пиши на языке пользователя", skill)
-        self.assertIn("пригодный для публикации", skill)
+        self.assertIn("все существенные факты сохранены", skill)
         self.assertNotIn("PROBLEM_CONTEXT_ERROR", skill)
         self.assertNotIn("CONTEXT_INTEGRITY_ERROR", skill)
         self.assertNotIn('fork_turns="none"', skill)
@@ -393,12 +403,17 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "Обычный `To Do → In Progress` не запускает Explainer",
             normalized_skill,
         )
-        self.assertIn("Пока effective topology rule не отключает comment Explainer", handoff)
+        self.assertIn(
+            "Пока действующее правило пользователя о субагентах не отключает Explainer",
+            handoff,
+        )
         self.assertIn("обязательная независимая проверка", normalized_handoff)
         self.assertIn("комментарий не публикуется", normalized_handoff)
-        self.assertIn("Если rule отключает Explainer", normalized_handoff)
+        self.assertIn("Если правило отключает Explainer", normalized_handoff)
         self.assertIn("не заявляет о независимой проверке", normalized_handoff)
-        self.assertIn("bounded/read-only", handoff)
+        self.assertIn("Дополнительный поиск использует только чтение", handoff)
+        self.assertIn("Уровень исходного вопроса", handoff)
+        self.assertIn("Проверка понимания", handoff)
         self.assertEqual(skill.count('fork_turns="none"'), 1)
         self.assertNotIn('fork_turns="none"', handoff)
         self.assertNotIn("не вызывать отдельно", handoff)

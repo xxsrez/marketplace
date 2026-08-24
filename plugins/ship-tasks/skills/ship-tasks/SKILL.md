@@ -238,26 +238,33 @@ signals. Explainer не выполняет mutation или status/scope/authorit
 переписывай текст самостоятельно. Если Explainer недоступен или текст непригоден,
 не публикуй comment и не выполняй зависящий transition. Если effective rule
 отключает Explainer, сам примени тот же problem-first quality contract без claim
-independence. Immediate incident update всё равно обязателен.
-Quality contract: [reference](references/strategic-explainer.md); comment: [delivery report](references/delivery-report.md).
+independence. Immediate incident update всё равно обязателен. Quality contract:
+[reference](references/strategic-explainer.md); comment: [delivery report](references/delivery-report.md).
+
+Финальный ответ тоже проходит отдельный scope-level Strategic Explainer. Передай ему исходный запрос пользователя и чистый набор установленных фактов всего run, а не склейку
+Task-комментариев и не технический журнал. Первый смысловой слой объясняет общий результат,
+основную причину, влияние и условие продолжения на уровне исходного вопроса. Для сложного сбоя,
+нескольких инцидентов или сводного результата, если effective rule допускает отдельного читателя,
+дай ему только исходную цель и готовый текст: он возвращает пересказ либо точный пробел понимания,
+но не редактирует факты. При провале повтори Explainer с исправленным входом. Не возвращай текст к
+внутреннему жаргону. Если независимый проход для final недоступен, всё равно сообщи состояние
+простым языком и явно назови отсутствие этой проверки.
 
 ## 6. Продолжай автономно и финализируй
 
-Task-local blocker не останавливает независимую runnable работу. В
-`batch-implementation` перед ожиданием пользователя перечитай полный current
-inventory live selector, включая новые Tasks; пока остаётся безопасная in-scope
-работа, продолжай. Goal active до фактического завершения current membership.
-Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
-Goal и external effects. Дай outcome-first `SHIPTASK RUN REPORT`: result/state,
-proof/gaps, cause и resume condition. Добавь incident ledger: Task/criterion,
-confidence, fix, retest evidence и final state — включая defects, найденные и
-исправленные в том же run. Для каждого unresolved blocker добавь self-service
-attempts, cause, recommended path, alternatives, prerequisites/authority,
-success signal и exact resume condition. При user topology rule назови его смысл
-соблюдение/deviation; без rule — только material delegation/profile handoff.
+Task-local blocker не останавливает независимую runnable работу. В `batch-implementation` перед
+ожиданием пользователя перечитай полный current inventory live selector, включая новые Tasks;
+пока остаётся безопасная in-scope работа, продолжай. Goal active до завершения current membership.
+Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый Goal и external
+effects. Подготовь фактическое основание и проведи ответ через раздел 5. В `SHIPTASK RUN REPORT`
+сначала прямо назови результат и состояние, затем доказанное и непроверенное, причину и условие
+продолжения. Добавь краткий перечень существенных инцидентов: Task/criterion, confidence, fix,
+retest evidence и final state — включая defects, найденные и исправленные в том же run. Для каждого
+unresolved blocker добавь self-service attempts, cause, recommended path, alternatives,
+prerequisites/authority, success signal и exact resume condition. При user topology rule назови его
+смысл и соблюдение/deviation; без rule — только material delegation/profile handoff.
 Product failure и доступную repair frontier сообщи раньше browser/OAuth/MFA
 logistics; смену средства не называй repair или обязательным user action, пока
 есть безопасная работа с продуктом. Unresolved incident не совместим с clean
-success affected Task. Не заменяй Task comments этим ответом. Подробности:
-[run report](references/run-report.md).
+success affected Task. Не заменяй Task comments этим ответом. Подробности: [run report](references/run-report.md).
 Goal `batch-implementation` заверши после fresh full inventory без незавершённой current in-scope работы; release-only run его не финализирует. В final отдельно назови Tasks, закрытые через `critical-codebase-accepted`, непроведённую functional check и residual risk.
