@@ -32,7 +32,10 @@ a production or public-directory release.
 The plugins connect to:
 
 - Task Manager: `https://task-manager.xxsrez-work.chatgpt.site/api/mcp`
-- Mind Diary: `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
+- Mind Diary Codex transport:
+  `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp/2025-11-25`
+  with canonical OAuth resource
+  `https://mind-diary.xxsrez-work.chatgpt.site/api/mcp`
 
 Task Manager is an adapter-only plugin with two coordinated MCP components:
 

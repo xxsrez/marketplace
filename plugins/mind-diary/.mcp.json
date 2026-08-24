@@ -2,7 +2,7 @@
   "mcpServers": {
     "mind-diary": {
       "type": "http",
-      "url": "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp",
+      "url": "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp/2025-11-25",
       "oauth_resource": "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp"
     }
   }
