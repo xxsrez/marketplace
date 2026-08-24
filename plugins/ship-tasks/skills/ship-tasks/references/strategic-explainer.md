@@ -33,6 +33,12 @@ self-service frontier: какие fixtures/seed data агент создал с�
 вторую сессию или provider evidence должен быть показан как boundary authority,
 а не как голая просьба о недостающем объекте.
 
+Для `critical-codebase-accepted` вход дополнительно содержит точную
+непроведённую functional check, причину и доказательство существенной роли
+human verifier вместо bounded unlocker, исчерпанные autonomous paths, exact
+candidate и criteria, проверенные code/tests, grounded verdict critic и residual
+risk. Explainer не вправе сгладить эту границу до обычного `verified-success`.
+
 При delegated use форма входа свободна, но субагент должен быть независим от хода
 реализации: ему не передаются прежний диалог, полный журнал инструментов или
 process diary.
@@ -53,6 +59,11 @@ signal и exact resume condition. ShipTask проверяет факты, но �
 - причинную границу и confidence;
 - constraint;
 - next state/action.
+
+Для критической приёмки текст явно говорит, что полноценная функциональная
+проверка не проводилась и Task закрывается по независимой критической проверке
+кодовой базы. Он простым языком объясняет причину, достаточность fallback
+evidence и остаточный риск; отсутствие этой оговорки делает comment непригодным.
 
 Внутренняя provenance остаётся основанием для проверки. В comment не
 перечисляется orchestration, если она не имеет пользовательского значения.

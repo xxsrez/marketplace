@@ -124,6 +124,13 @@ stop condition, пока остаётся безопасная in-scope рабо
 полномочиях, объясни границу знания, влияние и условие возобновления. Это итог
 приёмки, а не политика использования отдельного инструмента.
 
+Единственное явное ослабление —
+[critical-codebase acceptance](critical-codebase-review.md). Оно разрешено лишь
+после fresh full inventory без `To Do`/`In Progress`, когда каждая оставшаяся
+`In Review` Task исчерпала normal test frontier и требует существенного human
+verifier. Bounded unlock не подходит; approval даёт ровно один fresh-context
+critic, а непроведённая functional check и residual risk остаются видимыми.
+
 Native Task comment нельзя заменить полем description или ответом в Codex.
 Существенный lifecycle transition завершён только при фактическом comment и
 read-back, но выбор технического пути к этому результату остаётся за агентом.

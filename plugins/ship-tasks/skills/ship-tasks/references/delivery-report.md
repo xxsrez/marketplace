@@ -18,7 +18,7 @@ contract напрямую и не заявляет о независимой п�
 - доказанный defect перед `In Review → In Progress`;
 - opening любого `verification-blocked` или `task-contract-conflict`;
 - resolution доказанного defect после repair и повторной проверки;
-- доказанный success перед `In Review → Done`;
+- доказанный success либо `critical-codebase-accepted` перед `In Review → Done`;
 - reopen из terminal status;
 - новый `Canceled`/`Duplicate` и необычная lifecycle-корректировка;
 - material blocker, даже если status остаётся прежним.
@@ -113,6 +113,13 @@ signal, продолжаемую safe работу и exact resume condition. Э
 Объяснить полученный outcome, его значение, ключевое evidence, exact result или
 environment identity, если она нужна для проверки, и реальные ограничения. Если
 в этом run был acceptance incident, явно назвать его final state и retest.
+
+Для `critical-codebase-accepted` комментарий обязан прямо назвать
+непроведённую функциональную проверку, почему она требует существенного human
+verifier, а не bounded approval/unlock, исчерпанные autonomous paths, exact
+candidate, проверенные criteria/code/tests, grounded verdict независимого critic
+и residual risk. Человек должен без чтения сессии понять, что Task закрыта по
+критической проверке кодовой базы, а не по полноценной функциональной приёмке.
 
 ### Canceled, Duplicate или reopen
 

@@ -171,11 +171,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertRegex(manifest["version"], r"^0\.1\.6\+codex\.\d{14}$")
+        self.assertRegex(manifest["version"], r"^0\.1\.7\+codex\.\d{14}$")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertIn("preserves natural-language subagent rules", manifest["interface"]["longDescription"])
         self.assertIn("resumes unfinished task-owned Git work", manifest["interface"]["longDescription"])
+        self.assertIn("one fresh read-only critic", manifest["interface"]["longDescription"])
+        self.assertIn("stale or inconclusive reviews remain In Review", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
                 prompt.startswith("Create exactly one Task in Task Manager")
@@ -253,14 +255,31 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "references"
             / "run-report.md"
         ).read_text(encoding="utf-8")
+        critical_review = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "ship-tasks"
+            / "references"
+            / "critical-codebase-review.md"
+        ).read_text(encoding="utf-8")
 
         for outcome in (
             "task-contract-conflict",
             "verified-success",
             "verified-failure",
             "verification-blocked",
+            "critical-codebase-accepted",
         ):
             self.assertIn(outcome, skill)
+        self.assertIn("[critical codebase review](references/critical-codebase-review.md)", skill)
+        self.assertIn("`To Do == 0`, `In Progress == 0`, `In Review > 0`", critical_review)
+        self.assertIn("человека как содержательного verifier", critical_review)
+        self.assertIn("bounded unlocker", critical_review)
+        self.assertIn("ровно одного read-only subagent role `critic`", critical_review)
+        self.assertIn('`fork_turns="none"`', critical_review)
+        self.assertIn("Mere absence of findings", critical_review)
+        self.assertIn("stale", critical_review)
+        self.assertIn("residual", critical_review)
         self.assertIn("In Review → In Progress", skill)
         self.assertIn("batch-implementation`, с Goal", skill)
         self.assertIn("минимум двух", skill)
@@ -380,7 +399,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Если rule отключает Explainer", normalized_handoff)
         self.assertIn("не заявляет о независимой проверке", normalized_handoff)
         self.assertIn("bounded/read-only", handoff)
-        self.assertNotIn('fork_turns="none"', skill)
+        self.assertEqual(skill.count('fork_turns="none"'), 1)
         self.assertNotIn('fork_turns="none"', handoff)
         self.assertNotIn("не вызывать отдельно", handoff)
         self.assertNotIn("сначала восстанови", skill)

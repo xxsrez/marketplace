@@ -34,6 +34,8 @@ approval.
 - использованный profile или Luna-to-current handoff, если он materially
   повлиял на выполнение;
 - что доказано и что осталось `not-available`;
+- какие Tasks закрыты через `critical-codebase-accepted`, какая functional
+  check не выполнена, почему применился fallback и какой residual risk остался;
 - compact ledger всех material acceptance incidents run, включая resolved;
 - primary cause незавершённости, отдельно от последствий;
 - что уже сделано и почему этого недостаточно для завершения;
@@ -59,6 +61,8 @@ repair frontier. Browser/controller/OAuth/MFA logistics идут после эт
 называется найденным defect; `verification-blocked` и contract conflict — нет.
 Resolved incident остаётся видимым как `found and resolved`. Unresolved incident
 располагается рядом с общим result и не совместим с clean success affected Task.
+`critical-codebase-accepted` называется отдельно и не маскируется словом
+`verified-success`.
 
 Не писать process diary, полные URL/UUID/raw errors и внутренние названия
 оркестрации, если они не нужны пользователю. Incident ledger — audit trail

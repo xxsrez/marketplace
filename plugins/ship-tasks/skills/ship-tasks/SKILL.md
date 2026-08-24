@@ -1,6 +1,6 @@
 ---
 name: ship-tasks
-description: "Доставлять однозначно выбранный Task Manager scope до фактически проверенного результата, автономно создавая доступные тестовые входы и выдавая причинный blocker-report, когда остаётся настоящий внешний блокер. Для batch scope применять лёгкий per-Task gate и периодический review-batch с одним exact UAT release, а не деплоить каждую Task. Использовать явно через $ship-tasks или неявно только при delivery intent с exact Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope; одного delivery-глагола недостаточно. Create-and-deliver разрешён для явной просьбы создать и сразу выполнить одну Task. Bare invocation определяет mode по live inventory; Goal нужен только для implementation/rework минимум двух Tasks. Не использовать для чтения, статуса, аудита, объяснения, planning/backlog capture или обычной работы с кодом без Task Manager anchor."
+description: "Доставлять однозначно выбранный Task Manager scope до проверенного результата, автономно создавая тестовые входы, выдавая причинный blocker-report и применяя строгий critical-codebase fallback, когда active frontier исчерпан и все оставшиеся In Review требуют существенной человеческой приёмки. Для batch scope применять лёгкий per-Task gate и периодический review-batch с одним exact UAT release, а не деплоить каждую Task. Использовать явно через $ship-tasks или неявно только при delivery intent с exact Task вроде TM-123 либо уже выбранным Task Manager Project/Release/current scope; одного delivery-глагола недостаточно. Create-and-deliver разрешён для явной просьбы создать и сразу выполнить одну Task. Bare invocation определяет mode по live inventory; Goal нужен только для implementation/rework минимум двух Tasks. Не использовать для чтения, статуса, аудита, объяснения, planning/backlog capture или обычной работы с кодом без Task Manager anchor."
 ---
 
 # Ship Tasks
@@ -120,7 +120,8 @@ Progress` не запускает Explainer: комментария для ст�
 Browser/controller/session switch — диагностика, не repair. Достаточное evidence
 exact candidate/server path остаётся product incident при сбое browser login/MFA. Пока
 доступна безопасная in-scope работа с продуктом, browser logistics не stop condition.
-Нельзя снижать current acceptance или называть результат проверенным без evidence.
+Не снижай current acceptance ради удобства и не называй непроведённую проверку
+проведённой. Единственное ослабление — строгий `critical-codebase-accepted` ниже.
 Если в current scope/authority не доказать success или failure, это
 `verification-blocked`: назови границу знания, влияние и resume condition.
 Фиксированного числа попыток или обязательного порядка действий нет.
@@ -207,6 +208,18 @@ effects выполняй только для точно attributed Tasks.
   доказаны. Сначала понятный completion comment и read-back, затем
   `In Review → Done` и Task read-back. Если incident был открыт в этом run,
   comment явно закрывает его либо называет remaining risk.
+
+После обычной матрицы перечитай fresh full inventory. Если `Backlog`/terminal
+исключены, `To Do == 0`, `In Progress == 0`, `In Review > 0`, каждая оставшаяся
+Task `verification-blocked` только потому, что нужен существенный human verifier,
+и exact integrated candidate стабилен, примени
+[critical codebase review](references/critical-codebase-review.md). Bounded
+approval/MFA/invite/access unlock, доступный normal test path или tool inconvenience
+gate не открывают. Ровно один read-only `critic` с `fork_turns="none"` независимо
+проверяет current Tasks, code и tests. Grounded problem → обычный per-Task rework;
+grounded approval → обязательный отдельно объяснённый
+`critical-codebase-accepted` comment/read-back и `Done`; inconclusive → `In Review`.
+Любое изменение candidate/contract/inventory до writes требует fresh gate.
 Падение общего batch gate без task-level attribution не доказывает defect каждой
 Task. Сначала получи separating evidence; до attribution сообщай scope-level
 finding только в chat/final report и не возвращай весь batch в rework. Defect в
@@ -247,4 +260,4 @@ logistics; смену средства не называй repair или обя�
 есть безопасная работа с продуктом. Unresolved incident не совместим с clean
 success affected Task. Не заменяй Task comments этим ответом. Подробности:
 [run report](references/run-report.md).
-Goal `batch-implementation` заверши после fresh full inventory без незавершённой current in-scope работы; release-only run его не финализирует.
+Goal `batch-implementation` заверши после fresh full inventory без незавершённой current in-scope работы; release-only run его не финализирует. В final отдельно назови Tasks, закрытые через `critical-codebase-accepted`, непроведённую functional check и residual risk.
