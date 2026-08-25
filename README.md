@@ -89,10 +89,13 @@ scope. A delivery verb alone does not route ordinary code, product, repository,
 or plugin work into ShipTask. Create-and-deliver requires an explicit request
 to create exactly one Task in Task Manager and immediately start it.
 
-Mind Diary bundles one content skill. It selects one explicit Mind and revision,
-uses browse/search/fetch for bounded reads, and preserves immutable history,
-HEAD CAS and idempotency on explicit writes. It does not treat ChatGPT/Codex
-conversation memory as Mind Diary content.
+Mind Diary bundles one content skill and two coordinated MCP components. The
+hosted content server selects one explicit Mind and revision, while the bundled
+macOS `mind-diary-local` companion prepares one exact regular-file path and
+streams it through a one-use hosted intent without disclosing the path or
+buffering the full file. The workflow preserves immutable history, HEAD CAS and
+idempotency on explicit writes. It does not treat ChatGPT/Codex conversation
+memory as Mind Diary content.
 
 Repository layout:
 
@@ -112,6 +115,8 @@ Repository layout:
   used directly or in a fresh subagent;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
 - `plugins/mind-diary/.mcp.json` — direct Mind Diary MCP and OAuth resource;
+- `plugins/mind-diary/bin/` and `local-companion/` — bundled macOS exact-file
+  launcher, binaries, source and tests;
 - `plugins/mind-diary/assets/` — Mind Diary brand assets;
 - `plugins/mind-diary/skills/mind-diary/` — bounded content workflow guidance.
 
@@ -125,6 +130,7 @@ Validate plugin changes before publishing:
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py' -v
 (cd plugins/task-manager/local-companion && go test -race ./...)
+(cd plugins/mind-diary/local-companion && go test -race ./...)
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/task-manager/skills/task-manager
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \

@@ -1,7 +1,7 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260824091109",
-  "description": "Connect the Mind Diary UAT pilot and work with your private, revisioned knowledge spaces.",
+  "version": "0.1.0+codex.20260825235232",
+  "description": "Connect the Mind Diary UAT pilot and work with private, revisioned knowledge, including exact local files.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -18,8 +18,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Mind Diary UAT",
-    "shortDescription": "Browse and update Minds in the UAT pilot.",
-    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Attach explicit read-only Minds, choose one writable Mind, and browse, search, fetch, validate, export, safely commit Markdown Memories, or apply an already enabled routine automatic-capture policy. Every write preserves immutable history and uses binding plus revision concurrency.",
+    "shortDescription": "Browse and update Minds, including exact local files.",
+    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Attach explicit read-only Minds, choose one writable Mind, browse, search, fetch, validate, export and safely commit Markdown Memories or arbitrary regular BundleFiles. A bundled macOS companion keeps exact local paths inside one process, stream-hashes and uploads through a short-lived hosted intent without base64 or full-file buffering. Every write preserves immutable history and uses binding plus revision concurrency.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -30,7 +30,7 @@
     "defaultPrompt": [
       "Show the Minds I can access",
       "Search one Mind for a Memory",
-      "Add a Memory to my Personal Mind"
+      "Add one exact local file to my Personal Mind"
     ],
     "brandColor": "#6C4BB6",
     "composerIcon": "./assets/composer-icon.svg",

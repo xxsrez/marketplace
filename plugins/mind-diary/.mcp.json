@@ -4,6 +4,12 @@
       "type": "http",
       "url": "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp/2025-11-25",
       "oauth_resource": "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp"
+    },
+    "mind-diary-local": {
+      "command": "./bin/mind-diary-local-launcher",
+      "cwd": ".",
+      "startup_timeout_sec": 10,
+      "tool_timeout_sec": 900
     }
   }
 }
