@@ -27,6 +27,26 @@ Matching non-Backlog Task входит автоматически; `Backlog → 
 началом уже разрешённой in-scope работы, а не scope expansion. Goal хранит
 identity/predicate live selector, а не стартовый count или диапазон refs.
 
+## Dependency-ready работа
+
+`blocked by` — structural relation и provenance, а не требование дождаться
+`Done` blocking Task. Для scheduling dependent Task становится runnable после
+того, как integration owner подтвердил fan-in относящегося к dependency
+изменения в exact общий candidate, связь изменения с blocking Task и наличие
+контракта, который нужен dependent Task. Изменение только в writer
+branch/worktree, comment о готовности или status этого не доказывают.
+
+Pending verification/effect сохраняет blocking Task в правдивом `In Progress`
+или `In Review`, но не закрывает уже открытый dependency gate. Dependent Task
+реализуется, принимается и завершается по собственным критериям; relation
+сохраняется вместе с Task/candidate/contract attribution. Открытый gate не
+принимает upstream Task и не завершает Release/Goal.
+
+Если поздний attributed defect или upstream change нарушает используемый
+contract, повторно закрой только затронутые gates и перепроверь соответствующие
+downstream candidates/evidence. Non-terminal upstream status, непроведённая
+проверка или unattributed batch failure не являются таким основанием.
+
 ## Execution topology
 
 Сначала разреши применимые natural-language rules пользователя. Они могут

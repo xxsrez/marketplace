@@ -20,33 +20,30 @@ description: "Доставлять однозначно выбранный Task 
 - Обычная просьба исправить код/продукт без Task Manager anchor → не ShipTask.
 Project, Release, current scope, несколько Tasks и bare `$ship-tasks` — selectors,
 не modes. Mode определяет live inventory; чтение/проверка/reconciliation нескольких Tasks не создают Goal.
-Exact Task и явно перечисленные refs — closed selectors; Project, Release и
-resolved current scope — live selectors. Стартовый inventory — audit snapshot, не frozen
-refs/count cap. Перед frontier, ожиданием, blocker, Goal status и finish перечитай full inventory.
-Для bare invocation прочитай [project memory](references/project-memory.md).
-Prompt selector имеет приоритет, но не обновляет memory. Через Task Manager adapter
-разреши полный exact scope и перечитай Task state, acceptance, relations и comments.
+Exact Task и явно перечисленные refs — closed selectors; Project, Release и resolved
+current scope — live selectors. Стартовый inventory — audit snapshot, не frozen refs/count cap. Перед frontier, ожиданием, blocker, Goal status и finish перечитай full inventory.
+Для bare invocation прочитай [project memory](references/project-memory.md). Prompt selector
+имеет приоритет, но не обновляет memory. Через Task Manager adapter разреши полный exact scope и перечитай Task state, acceptance, relations и comments.
 Memory не заменяет live state. В первом update назови unresolved acceptance incidents.
 После смены session и до новой implementation surface найди task-owned Git state. Если exact
 unfinished worktree/branch существует, прежний writer остановлен и ownership
 exclusive, прими тот же artifact и продолжай в нём вместо нового checkout или
 повтора работы. Проверь scope, acceptance, diff/commits и partial effects; active/unknown ownership не перехватывай и artifact не очищай.
-Canonical `Backlog` не входит в delivery inventory и не переводится в работу без
-отдельного явного решения пользователя. Любая current matching non-Backlog Task из live
-selector входит автоматически, включая появившуюся после старта или
-переведённую `Backlog → To Do`: это не scope expansion и не требует approval.
+Canonical `Backlog` не входит в delivery inventory и не переводится в работу без отдельного
+явного решения пользователя. Любая current matching non-Backlog Task из live selector входит
+автоматически, включая появившуюся после старта или переведённую `Backlog → To Do`: это не scope expansion и не требует approval.
 Вышедшую из selector/ушедшую в Backlog больше не реализуй; partial effects reconciliate.
-В safe lane сначала `In Progress`/`In Review`, затем `To Do`;
-независимые lanes параллельны. `Duplicate` отдельно не
-исполняй, но прочитай outgoing canonical relation и incoming duplicates.
+В safe lane сначала `In Progress`/`In Review`, затем `To Do`; независимые lanes параллельны.
+`Duplicate` отдельно не исполняй, но прочитай outgoing canonical relation и incoming duplicates.
+`blocked by` открывает dependent implementation по readiness gate, а не связывает lifecycle statuses. Открой dependent
+Task после доказанного fan-in нужного blocking Task contract в exact integration candidate; `Done` не требуется, а isolated code/comment/status gate не открывают. Pending upstream verification/effect сохраняет её non-terminal, но dependent Task уже runnable и может получить собственный `Done`.
+Relation и Task/candidate/contract attribution сохраняй. Закрой gate повторно только при attributed upstream change/defect, который нарушает используемый contract; не инвалидируй независимые Tasks/evidence.
 Если это может быть первый turn новой Codex task и host показывает title capability,
 прочитай [title contract](references/thread-title.md): доказанный catalog placeholder получает не более одной best-effort попытки `ShipTask · ...`;
 отсутствие/deferred/failure capability не блокируют workflow; meaningful title сохраняй.
-Создавай Goal после подтверждения `batch-implementation` минимум двух Tasks и до
-implementation mutation; `single`/`release` без Goal. Release-only run Goal не создаёт,
-не переиспользует, не ретаргетит и не завершает; compatible Goal продолжается лишь
-при исходном release done criterion; сам release новый Goal не создаёт. Goal live
-selector хранит identity/predicate, не стартовые refs/count; новая matching Task сохраняет его active без approval. Goal не определяет Task outcome/попытки/status.
+Создавай Goal после подтверждения `batch-implementation` минимум двух Tasks и до implementation
+mutation; `single`/`release` без Goal. Release-only run Goal не создаёт, не переиспользует, не ретаргетит и не завершает; compatible Goal продолжается лишь при исходном release done criterion; сам release новый Goal не создаёт.
+Goal live selector хранит identity/predicate, не стартовые refs/count; новая matching Task сохраняет его active без approval. Goal не определяет Task outcome/попытки/status.
 Неразрешимый scope/shared-state/authority конфликт → `TASK CONTEXT ALARM` до writes.
 ## 2. Соблюдай обязательные требования
 
@@ -263,6 +260,7 @@ retest evidence и final state — включая defects, найденные и
 unresolved blocker добавь self-service attempts, cause, recommended path, alternatives,
 prerequisites/authority, success signal и exact resume condition. При user topology rule назови его
 смысл и соблюдение/deviation; без rule — только material delegation/profile handoff.
+Материальные `blocked by` gates отчитай отдельно от acceptance blocking Tasks: exact candidate/contract, downstream effect и attributed invalidation.
 Product failure и доступную repair frontier сообщи раньше browser/OAuth/MFA
 logistics; смену средства не называй repair или обязательным user action, пока
 есть безопасная работа с продуктом. Unresolved incident не совместим с clean
