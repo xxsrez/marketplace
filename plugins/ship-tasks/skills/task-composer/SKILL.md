@@ -44,6 +44,10 @@ material overlap изучи до решения. Не изменяй и не reu
 До первой mutation подготовь Project/Release/status, titles, descriptions,
 parent-child hierarchy, labels и relation graph всего candidate scope.
 
+Не превращай шаги исходного плана в Tasks механически. Строй outcome graph из
+independently verifiable results; порядок задавай только настоящими
+dependencies.
+
 Не объединяй независимые desired outcomes в искусственный umbrella Epic:
 сохраняй их отдельными Tasks/Epics и связывай только при реальной relation.
 Title кратко называет ожидаемый результат и объект изменения: Epic — strategic
@@ -74,10 +78,16 @@ invocation mechanism не задан; результат должен быть g
 которой Epic не нужен, от этого не блокируется.
 
 Каждая подзадача получает один конкретный результат, exact change boundary,
-material technical details, применимые parent requirements/dependencies,
-acceptance criteria и expected evidence. Cross-cutting requirement остаётся в
-Epic и отражается в каждой применимой подзадаче. Для secrets указывай только
-имя credential/secret store и target, никогда значение.
+свой вклад в desired outcome Epic, material technical details, применимые parent
+requirements/dependencies, acceptance criteria и expected evidence.
+Cross-cutting requirement остаётся в Epic и отражается в каждой применимой
+подзадаче. Native parent link ведёт к полному strategic context, но одной ссылки
+недостаточно: child description содержит компактную самодостаточную проекцию
+вклада, применимых constraints/non-goals и качеств, которыми нельзя пожертвовать
+ради локального упрощения. Исполнитель должен понять общий смысл, exact Task
+boundary и планку качества без догадки; Epic context не расширяет scope child.
+Material противоречие исправь до write. Для secrets указывай только имя
+credential/secret store и target, никогда значение.
 
 ## 4. Назначь metadata по смыслу
 

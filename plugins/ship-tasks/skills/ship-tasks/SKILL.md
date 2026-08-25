@@ -25,6 +25,8 @@ current scope — live selectors. Стартовый inventory — audit snapsho
 Для bare invocation прочитай [project memory](references/project-memory.md). Prompt selector
 имеет приоритет, но не обновляет memory. Через Task Manager adapter разреши полный exact scope и перечитай Task state, acceptance, relations и comments.
 Memory не заменяет live state. В первом update назови unresolved acceptance incidents.
+Если Task входит в parent-child hierarchy, до первой implementation/rework mutation прочитай current parent chain до ближайшего relevant Epic целиком; установи общий outcome, вклад Task, применимые parent requirements, constraints/non-goals, exact child boundary, acceptance и dependencies и передай bounded context любому implementation/review packet.
+Epic задаёт смысл и планку качества, но не расширяет selector/scope, не разрешает sibling work и не доказывает completion; material конфликт → `task-contract-conflict` до затронутой mutation, недоступный обязательный parent context → `TASK CONTEXT ALARM`, а независимую runnable работу продолжай.
 После смены session и до новой implementation surface найди task-owned Git state. Если exact
 unfinished worktree/branch существует, прежний writer остановлен и ownership
 exclusive, прими тот же artifact и продолжай в нём вместо нового checkout или

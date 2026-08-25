@@ -202,6 +202,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Обычная просьба исправить код/продукт", skill)
         self.assertIn("planning/backlog capture с Task", skill)
         self.assertIn("принадлежит Task Composer", skill)
+        self.assertIn("current parent chain до ближайшего relevant Epic", skill)
+        self.assertIn("bounded context любому implementation/review packet", skill)
+        self.assertIn("не расширяет selector/scope", skill)
 
     def test_task_composer_plans_without_delivery_or_taxonomy_mutation(self) -> None:
         root = SHIP_TASKS_PLUGIN_ROOT / "skills" / "task-composer"
@@ -214,6 +217,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("current unreleased Release", skill)
         self.assertIn("Не создавай Epic с одной формальной подзадачей", skill)
         self.assertIn("$ship-tasks:strategic-explainer", skill)
+        self.assertIn("Не превращай шаги исходного плана в Tasks механически", skill)
+        self.assertIn("самодостаточную проекцию", skill)
+        self.assertIn("Epic context не расширяет scope child", skill)
         self.assertIn("taxonomy не расширяй", skill)
         self.assertIn("не строй последовательную цепочку", normalized_skill)
         self.assertIn("bounded duplicate search", skill)
