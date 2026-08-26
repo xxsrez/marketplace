@@ -474,6 +474,52 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("The companion never deletes or modifies the source file", skill)
         self.assertIn("not directory/bulk/archive", skill)
 
+    def test_skill_routes_incremental_typed_okf_transfer_without_bulk_state(self) -> None:
+        skill = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        start = skill.index("## Incremental typed OKF transfer")
+        end = skill.index("## Local regular-file workflow", start)
+        transfer = skill[start:end]
+
+        self.assertLess(
+            transfer.index("ordinary\nlocal workspace read capability"),
+            transfer.index("`commit_changeset`"),
+        )
+        self.assertIn("`recorded_by`, `applies_to` and `sources`", transfer)
+        self.assertIn("Markdown stays Markdown", transfer)
+        self.assertRegex(transfer, re.compile(r"`/raw/`.*`/wiki/`.*`/output/`", re.S))
+        self.assertIn("`before → after`", transfer)
+
+        attachment_tools = [
+            "`prepare_local_file`",
+            "`create_file_upload_intent`",
+            "`upload_prepared_file`",
+        ]
+        positions = [transfer.index(tool) for tool in attachment_tools]
+        self.assertEqual(positions, sorted(positions))
+        for tool in (
+            "`replace_index`",
+            "`add_log_entry`",
+            "`reconcile_file_stage`",
+            "`reconcile_changeset`",
+            "`get_bundle_file_download`",
+            "`validate_mind`",
+        ):
+            self.assertIn(tool, transfer)
+
+        for excluded in (
+            "`AGENTS.md`",
+            "`.agents/`",
+            "`operations/events`",
+            "`operations/revisions`",
+            "`operations/config*`",
+            "multi-writer or Drive protocol state",
+        ):
+            self.assertIn(excluded, transfer)
+        self.assertIn("must not rewrite the first committed entry", transfer)
+        self.assertIn("Never create a migration database", transfer)
+
 
 if __name__ == "__main__":
     unittest.main()
