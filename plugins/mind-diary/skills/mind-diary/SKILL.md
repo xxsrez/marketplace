@@ -202,6 +202,17 @@ an old intent. Do not upload directories, globs, symlinks, device files,
 archives as a substitute for bulk import, or more than one path per prepared
 ref. The companion never deletes or modifies the source file.
 
+Interpret readable-path errors only from their observable code. A missing path
+is `file_ingress_source_unavailable` on the current Codex host; do not claim it
+is cross-host or an expired temporary file without separate provenance.
+`invalid_path` and `file_ingress_source_unsupported` mean the selected path or
+workspace authority cannot be admitted. Ask the user to choose or copy one
+regular file into an absolute path readable by this Codex host and prepare it
+again. For `local_companion_file_changed`, wait until the file is stable and
+prepare it again. For `local_companion_ref_expired` or an unavailable local
+ref, prepare again to create a fresh reference. Never include the private path,
+filename, bytes, URL or credential in the diagnostic or audit trail.
+
 ## Automatic capture workflow
 
 Automatic capture is a narrower opt-in path, not a shortcut around the write

@@ -36,6 +36,11 @@ uses `bundle_file_size_mismatch` and `bundle_file_digest_mismatch`; local refs
 use `local_companion_ref_not_found`, `local_companion_ref_expired` and
 `local_companion_ref_in_use`. Unknown internal adapter failures collapse to
 `file_ingress_transport_unavailable`, and messages remain path-free.
+Readable-path failures include a bounded, path-free remediation: choose or copy
+one regular file into an absolute path readable by the current Codex host and
+prepare it again. A changed snapshot asks the caller to wait for a stable file;
+an expired or unavailable local ref asks for a fresh prepare. The adapter never
+labels an ordinary missing path as proven cross-host or temporary-file expiry.
 
 The process uses no browser, OAuth flow, Keychain, daemon or proxy. The hosted
 Mind Diary MCP remains the authority for binding selection and for minting the

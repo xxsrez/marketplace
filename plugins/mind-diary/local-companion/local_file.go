@@ -21,9 +21,12 @@ import (
 )
 
 const (
-	maxLocalFileBytes = int64(256 * 1024 * 1024)
-	preparedFileTTL   = 10 * time.Minute
-	maxPreparedFiles  = 16
+	maxLocalFileBytes       = int64(256 * 1024 * 1024)
+	preparedFileTTL         = 10 * time.Minute
+	maxPreparedFiles        = 16
+	readablePathRemediation = "Choose or copy one regular file into an absolute path readable by this Codex host, then prepare it again."
+	changedFileRemediation  = "Wait until the file is stable, then prepare it again."
+	expiredRefRemediation   = "Prepare the file again to create a fresh local reference."
 )
 
 var (
@@ -99,9 +102,10 @@ type localFileHooks struct {
 }
 
 type localError struct {
-	Code      string
-	Message   string
-	Retryable bool
+	Code        string
+	Message     string
+	Remediation string
+	Retryable   bool
 }
 
 func (err *localError) Error() string { return err.Code + ": " + err.Message }
@@ -110,6 +114,17 @@ func newLocalError(code, message string, retryable ...bool) error {
 	return &localError{
 		Code: canonicalRuntimeErrorCode(code), Message: message,
 		Retryable: len(retryable) > 0 && retryable[0],
+	}
+}
+
+func newLocalErrorWithRemediation(
+	code, message, remediation string,
+	retryable ...bool,
+) error {
+	return &localError{
+		Code: canonicalRuntimeErrorCode(code), Message: message,
+		Remediation: remediation,
+		Retryable:   len(retryable) > 0 && retryable[0],
 	}
 }
 
@@ -151,9 +166,10 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 		)
 	}
 	if sourceKind == "workspace/generated_artifact" && len(store.workspaceRoots) == 0 {
-		return prepareLocalFileResult{}, newLocalError(
+		return prepareLocalFileResult{}, newLocalErrorWithRemediation(
 			"file_ingress_source_unsupported",
 			"workspace-generated files require an authorized workspace root",
+			readablePathRemediation,
 		)
 	}
 	if err := validateExactPath(input.Path); err != nil {
@@ -175,9 +191,10 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 		return prepareLocalFileResult{}, mapPathError(err)
 	}
 	if pathInfo.Mode()&os.ModeSymlink != 0 || !pathInfo.Mode().IsRegular() {
-		return prepareLocalFileResult{}, newLocalError(
+		return prepareLocalFileResult{}, newLocalErrorWithRemediation(
 			"file_ingress_source_unsupported",
 			"only one exact regular file is supported; directories, links and special files are rejected",
+			readablePathRemediation,
 		)
 	}
 	if pathInfo.Size() > maxLocalFileBytes {
@@ -197,23 +214,26 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 	}()
 	openedInfo, err := file.Stat()
 	if err != nil || !openedInfo.Mode().IsRegular() || !os.SameFile(pathInfo, openedInfo) {
-		return prepareLocalFileResult{}, newLocalError(
+		return prepareLocalFileResult{}, newLocalErrorWithRemediation(
 			"local_companion_file_changed", "the selected file changed while it was opened",
+			changedFileRemediation,
 		)
 	}
 	if sourceKind == "workspace/generated_artifact" {
 		canonicalPath, resolveErr := store.hooks.evalSymlinks(input.Path)
 		if resolveErr != nil || !filepath.IsAbs(canonicalPath) {
-			return prepareLocalFileResult{}, newLocalError(
-				"file_ingress_source_unavailable", "workspace authority could not be verified",
+			return prepareLocalFileResult{}, newLocalErrorWithRemediation(
+				"file_ingress_source_unsupported", "workspace authority could not be verified",
+				readablePathRemediation,
 			)
 		}
 		canonicalInfo, statErr := store.hooks.canonicalLstat(canonicalPath)
 		if statErr != nil || !canonicalInfo.Mode().IsRegular() ||
 			canonicalInfo.Mode()&os.ModeSymlink != 0 || !os.SameFile(openedInfo, canonicalInfo) ||
 			!withinWorkspaceRoots(canonicalPath, store.workspaceRoots) {
-			return prepareLocalFileResult{}, newLocalError(
+			return prepareLocalFileResult{}, newLocalErrorWithRemediation(
 				"file_ingress_source_unsupported", "the selected file is outside authorized workspace roots",
+				readablePathRemediation,
 			)
 		}
 	}
@@ -234,14 +254,16 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 
 	digest, prefix, readSize, err := digestOpenFile(file)
 	if err != nil {
-		return prepareLocalFileResult{}, newLocalError(
+		return prepareLocalFileResult{}, newLocalErrorWithRemediation(
 			"file_ingress_source_unavailable", "the selected file could not be read completely",
+			readablePathRemediation,
 		)
 	}
 	afterInfo, err := file.Stat()
 	if err != nil || readSize != openedInfo.Size() || !sameSnapshot(openedInfo, afterInfo) {
-		return prepareLocalFileResult{}, newLocalError(
+		return prepareLocalFileResult{}, newLocalErrorWithRemediation(
 			"local_companion_file_changed", "the selected file changed while its snapshot was verified",
+			changedFileRemediation,
 		)
 	}
 	if input.ExpectedSize != nil && readSize != *input.ExpectedSize {
@@ -259,8 +281,9 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 		mediaType = normalizeMediaType(http.DetectContentType(prefix))
 	}
 	if _, err := file.Seek(0, io.SeekStart); err != nil {
-		return prepareLocalFileResult{}, newLocalError(
+		return prepareLocalFileResult{}, newLocalErrorWithRemediation(
 			"file_ingress_source_unavailable", "the verified snapshot could not be retained",
+			readablePathRemediation,
 		)
 	}
 
@@ -298,7 +321,9 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 
 func (store *localFileStore) acquire(ref string) (*preparedFile, error) {
 	if !localFileRefPattern.MatchString(ref) {
-		return nil, newLocalError("local_companion_ref_not_found", "local_file_ref is unavailable")
+		return nil, newLocalErrorWithRemediation(
+			"local_companion_ref_not_found", "local_file_ref is unavailable", expiredRefRemediation,
+		)
 	}
 	store.mu.Lock()
 	defer store.mu.Unlock()
@@ -306,12 +331,16 @@ func (store *localFileStore) acquire(ref string) (*preparedFile, error) {
 	if prepared := store.files[ref]; prepared != nil && !now.Before(prepared.snapshot.expiresAt) {
 		_ = prepared.file.Close()
 		delete(store.files, ref)
-		return nil, newLocalError("local_companion_ref_expired", "the prepared local snapshot expired")
+		return nil, newLocalErrorWithRemediation(
+			"local_companion_ref_expired", "the prepared local snapshot expired", expiredRefRemediation,
+		)
 	}
 	store.removeExpiredLocked(now)
 	prepared := store.files[ref]
 	if prepared == nil {
-		return nil, newLocalError("local_companion_ref_not_found", "the prepared local snapshot is unavailable")
+		return nil, newLocalErrorWithRemediation(
+			"local_companion_ref_not_found", "the prepared local snapshot is unavailable", expiredRefRemediation,
+		)
 	}
 	if prepared.busy {
 		return nil, newLocalError("local_companion_ref_in_use", "the prepared snapshot is already uploading")
@@ -358,11 +387,15 @@ func (store *localFileStore) removeExpiredLocked(now time.Time) {
 
 func validateExactPath(path string) error {
 	if path == "" || len(path) > 16_384 || !filepath.IsAbs(path) || !utf8.ValidString(path) || containsControl(path) {
-		return newLocalError("invalid_path", "path must be one exact absolute local file path")
+		return newLocalErrorWithRemediation(
+			"invalid_path", "path must be one exact absolute local file path", readablePathRemediation,
+		)
 	}
 	for _, segment := range strings.FieldsFunc(path, func(r rune) bool { return r == '/' || r == '\\' }) {
 		if segment == ".." {
-			return newLocalError("invalid_path", "path traversal segments are not accepted")
+			return newLocalErrorWithRemediation(
+				"invalid_path", "path traversal segments are not accepted", readablePathRemediation,
+			)
 		}
 	}
 	return nil
@@ -427,9 +460,17 @@ func sameSnapshot(before, after os.FileInfo) bool {
 
 func mapPathError(err error) error {
 	if errors.Is(err, os.ErrNotExist) || errors.Is(err, os.ErrPermission) {
-		return newLocalError("file_ingress_source_unavailable", "the selected local file is unavailable")
+		return newLocalErrorWithRemediation(
+			"file_ingress_source_unavailable",
+			"the selected local file is unavailable on this Codex host",
+			readablePathRemediation,
+		)
 	}
-	return newLocalError("file_ingress_source_unsupported", "the selected local file cannot be opened safely")
+	return newLocalErrorWithRemediation(
+		"file_ingress_source_unsupported",
+		"the selected local file cannot be opened safely",
+		readablePathRemediation,
+	)
 }
 
 func newLocalFileRef() (string, error) {

@@ -314,7 +314,12 @@ func handleToolCall(
 	if err != nil {
 		var localErr *localError
 		if errors.As(err, &localErr) {
-			return toolError(localErr.Code, localErr.Message, localErr.Retryable), nil
+			return toolError(
+				localErr.Code,
+				localErr.Message,
+				localErr.Retryable,
+				localErr.Remediation,
+			), nil
 		}
 		return toolError("file_ingress_transport_unavailable", "the local file companion could not complete the request", false), nil
 	}
@@ -346,14 +351,28 @@ func decodeExactArguments(raw json.RawMessage, destination any, allowed []string
 	return json.Unmarshal(raw, destination)
 }
 
-func toolError(code, message string, retryable bool) map[string]any {
+func toolError(code, message string, retryable bool, remediation ...string) map[string]any {
 	code = canonicalRuntimeErrorCode(code)
+	remediationText := ""
+	if len(remediation) > 0 {
+		remediationText = remediation[0]
+	}
+	contentText := fmt.Sprintf("%s: %s", code, message)
+	if remediationText != "" {
+		contentText += " Next: " + remediationText
+	}
+	errorDetails := map[string]any{
+		"code": code, "message": message, "retryable": retryable,
+	}
+	if remediationText != "" {
+		errorDetails["remediation"] = remediationText
+	}
 	return map[string]any{
 		"content": []any{map[string]any{
-			"type": "text", "text": fmt.Sprintf("%s: %s", code, message),
+			"type": "text", "text": contentText,
 		}},
 		"structuredContent": map[string]any{
-			"error": map[string]any{"code": code, "retryable": retryable},
+			"error": errorDetails,
 		},
 		"isError": true,
 	}

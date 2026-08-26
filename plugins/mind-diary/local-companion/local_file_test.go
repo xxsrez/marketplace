@@ -89,6 +89,119 @@ func TestPrepareRejectsNonExactOrUnsupportedPaths(t *testing.T) {
 	}
 }
 
+func TestReadablePathErrorsExposeObservedCauseAndSafeRemediation(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("local companion is macOS-only")
+	}
+	assertSafe := func(
+		t *testing.T,
+		err error,
+		code, remediation string,
+		forbidden ...string,
+	) {
+		t.Helper()
+		var localErr *localError
+		if !errors.As(err, &localErr) {
+			t.Fatalf("unexpected error type: %v", err)
+		}
+		if localErr.Code != code || localErr.Remediation != remediation {
+			t.Fatalf("unexpected mapped error: %#v", localErr)
+		}
+		result := toolError(
+			localErr.Code,
+			localErr.Message,
+			localErr.Retryable,
+			localErr.Remediation,
+		)
+		serialized, marshalErr := json.Marshal(result)
+		if marshalErr != nil {
+			t.Fatal(marshalErr)
+		}
+		for _, value := range forbidden {
+			if value != "" && strings.Contains(string(serialized), value) {
+				t.Fatalf("private source data leaked in diagnostic: %s", serialized)
+			}
+		}
+		details := result["structuredContent"].(map[string]any)["error"].(map[string]any)
+		if details["message"] != localErr.Message || details["remediation"] != remediation {
+			t.Fatalf("structured remediation missing: %#v", details)
+		}
+	}
+
+	t.Run("missing path is only unavailable on this host", func(t *testing.T) {
+		store := newLocalFileStore()
+		t.Cleanup(func() { _ = store.Close() })
+		missing := filepath.Join(t.TempDir(), "private-missing-name.bin")
+		_, err := store.Prepare(prepareLocalFileInput{Path: missing})
+		assertSafe(
+			t,
+			err,
+			"file_ingress_source_unavailable",
+			readablePathRemediation,
+			missing,
+			filepath.Base(missing),
+		)
+	})
+
+	t.Run("unsupported authority remains distinct", func(t *testing.T) {
+		store := newLocalFileStore()
+		t.Cleanup(func() { _ = store.Close() })
+		path := writeFixture(t, "private-workspace-name.bin", []byte("fixture"))
+		_, err := store.Prepare(prepareLocalFileInput{
+			Path: path, SourceKind: "workspace/generated_artifact",
+		})
+		assertSafe(
+			t,
+			err,
+			"file_ingress_source_unsupported",
+			readablePathRemediation,
+			path,
+			filepath.Base(path),
+		)
+	})
+
+	t.Run("changed snapshot has stable-file remediation", func(t *testing.T) {
+		selected := writeFixture(t, "private-selected-name.bin", []byte("selected"))
+		replacement := writeFixture(t, "private-replacement-name.bin", []byte("replacement"))
+		store := newLocalFileStore()
+		t.Cleanup(func() { _ = store.Close() })
+		store.hooks.open = func(string) (*os.File, error) { return os.Open(replacement) }
+		_, err := store.Prepare(prepareLocalFileInput{Path: selected})
+		assertSafe(
+			t,
+			err,
+			"local_companion_file_changed",
+			changedFileRemediation,
+			selected,
+			replacement,
+			filepath.Base(selected),
+			filepath.Base(replacement),
+		)
+	})
+
+	t.Run("expired local ref asks for a fresh prepare", func(t *testing.T) {
+		store := newLocalFileStore()
+		t.Cleanup(func() { _ = store.Close() })
+		now := time.Date(2026, 8, 26, 0, 0, 0, 0, time.UTC)
+		store.now = func() time.Time { return now }
+		path := writeFixture(t, "private-expired-name.bin", []byte("fixture"))
+		prepared, err := store.Prepare(prepareLocalFileInput{Path: path})
+		if err != nil {
+			t.Fatal(err)
+		}
+		now = now.Add(preparedFileTTL + time.Second)
+		_, err = store.acquire(prepared.LocalFileRef)
+		assertSafe(
+			t,
+			err,
+			"local_companion_ref_expired",
+			expiredRefRemediation,
+			path,
+			filepath.Base(path),
+		)
+	})
+}
+
 func TestPrepareAllowsLiteralGlobCharactersInExistingFilename(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("local companion is macOS-only")
