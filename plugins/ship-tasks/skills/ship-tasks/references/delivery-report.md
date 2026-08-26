@@ -7,7 +7,7 @@ create/list/read. ShipTask всегда создаёт и перечитывае
 
 Пока effective topology rule не отключает comment Explainer, каждый комментарий,
 который ShipTask собирается создать, до публикации проходит отдельного независимого
-`$ship-tasks:strategic-explainer`. Это относится не только к обязательным
+`$strategic-explainer:strategic-explainer`. Это относится не только к обязательным
 переходам: самостоятельная редактура основного агента не заменяет Explainer.
 Когда user rule отключает Explainer, основной агент сообщает обязательные
 lifecycle facts по собственному truth contract и не читает, не применяет и не

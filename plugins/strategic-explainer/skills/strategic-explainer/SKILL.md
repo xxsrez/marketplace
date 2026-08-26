@@ -18,7 +18,7 @@ tool calls или собственные рассуждения. В этом р�
    применить внутренний метод Strategic Explainer самостоятельно.
 2. Создай нового built-in `default` subagent с `fork_turns="none"`.
 3. Передай ему ровно одну короткую user-facing задачу, exact scope и разрешимые
-   read-only source anchors. Назови `$ship-tasks:strategic-explainer`, чтобы новый
+   read-only source anchors. Назови `$strategic-explainer:strategic-explainer`, чтобы новый
    subagent загрузил этот router.
 4. Не передавай inherited turns, tool transcript, process diary, свои выводы,
    strategic summary, требования к форме ответа или прежний candidate.

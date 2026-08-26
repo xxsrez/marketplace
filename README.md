@@ -1,7 +1,7 @@
 # Srez Marketplace
 
 This is Andrey's extensible Codex plugin marketplace. It contains independent
-Task Manager, Ship Tasks, and Mind Diary plugins under
+Task Manager, Ship Tasks, Strategic Explainer, and Mind Diary plugins under
 `plugins/`.
 
 Add the marketplace once:
@@ -12,12 +12,14 @@ codex plugin marketplace add xxsrez/marketplace
 
 Then install the plugins you need:
 
-1. Open **Plugins → Task Manager**, **Plugins → Ship Tasks**, or
-   **Plugins → Mind Diary UAT** and click **Install**.
+1. Open **Plugins → Task Manager**, **Plugins → Ship Tasks**,
+   **Plugins → Strategic Explainer**, or **Plugins → Mind Diary UAT** and click
+   **Install**.
 2. For Task Manager, complete the native OAuth **Connect** step during install
    or upgrade. Mind Diary authenticates when Codex first connects to its MCP
-   server. Ship Tasks has no connector of its own and requires Task Manager to
-   be installed separately.
+   server. Ship Tasks has no connector of its own and requires both Task Manager
+   and Strategic Explainer to be installed separately. Strategic Explainer has
+   no connector or authentication of its own.
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
@@ -49,7 +51,7 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
   only in process memory after first use, and never sends the full path to Task
   Manager. The local bind tool performs the second staged Agent REST operation.
 
-Ship Tasks is a separate plugin with three coordinated skills:
+Ship Tasks is a separate plugin with two coordinated Task Manager skills:
 
 - `task-composer` owns planning-only formulation and Task Manager backlog
   capture. It preserves one independently deliverable outcome as one Task and
@@ -74,18 +76,27 @@ Ship Tasks is a separate plugin with three coordinated skills:
   methods while requiring sufficient evidence, a native comment before every
   meaningful lifecycle transition, and factual separation of Task conflicts,
   proven defects, genuine verification blockers, and proven success;
-- `strategic-explainer` is a generic fresh stateless API for one real
-  user-facing publication unit. A new default subagent with `fork_turns="none"`
-  receives one short task, exact scope and resolvable source anchors without
-  inherited process context, caller analysis or candidate text. The caller sees
-  only this opaque protocol, accepts ready text/source basis or refusal and never
-  reads or applies the provider method. Invalid invocations and factual
-  corrections use a new instance. Before a terminal blocker claim, Ship
-  Tasks reads its result as reflection input, verifies any newly visible safe
-  path against primary evidence, and continues rather than publishing a stale
-  blocker. Strategic Explainer still makes no decisions or mutations;
-- it depends on the separately installed Task Manager plugin for MCP tools and
-  authentication, but does not bundle or duplicate that connector.
+- both skills depend on the separately installed Task Manager plugin for MCP
+  tools and authentication, but do not bundle or duplicate that connector;
+- both skills use the qualified `$strategic-explainer:strategic-explainer`
+  skill for mandatory explanations. Codex manifests do not currently provide a
+  plugin-to-plugin dependency field, so this is a fail-closed logical dependency:
+  install `strategic-explainer@srez-marketplace` separately. If it is absent,
+  Ship Tasks and Task Composer do not imitate the provider or publish mandatory
+  explanations through a degraded fallback.
+
+Strategic Explainer is a standalone generic communication plugin. It exposes a
+fresh stateless API for one real user-facing comment, report, decision or state
+explanation, blocker report, final, or explicit editing request. A new default
+subagent with `fork_turns="none"` receives one short task, exact scope, and
+resolvable read-only source anchors without inherited process context, caller
+analysis, or candidate text. The caller sees only this opaque protocol, accepts
+ready text and a separate source basis or an operational refusal, and never
+reads or applies the provider method. Invalid invocations and factual
+corrections use a new instance. The provider reconstructs the reader's actual
+question from evidence, preserves material facts and uncertainty, removes
+implementation noise and mixed-language jargon, and makes no status, scope,
+authority, or mutation decisions.
 
 Mentioning `$task-manager` alone still authorizes only the requested adapter
 operation. Use `$ship-tasks` or an unambiguous natural-language delivery request
@@ -115,8 +126,10 @@ Repository layout:
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/task-composer/` — Task Manager planning and
   backlog-composition workflow;
-- `plugins/ship-tasks/skills/strategic-explainer/` — router plus admission-gated
-  provider contract used only by a fresh subagent;
+- `plugins/strategic-explainer/.codex-plugin/plugin.json` — standalone
+  Strategic Explainer plugin manifest;
+- `plugins/strategic-explainer/skills/strategic-explainer/` — router plus
+  admission-gated provider contract used only by a fresh subagent;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
 - `plugins/mind-diary/.mcp.json` — direct Mind Diary MCP and OAuth resource;
 - `plugins/mind-diary/bin/` and `local-companion/` — bundled macOS exact-file
@@ -126,8 +139,9 @@ Repository layout:
 
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
-`task-manager@srez-marketplace`; Ship Tasks is independently installable as
-`ship-tasks@srez-marketplace`.
+`task-manager@srez-marketplace`; Ship Tasks and Strategic Explainer are
+independently installable as `ship-tasks@srez-marketplace` and
+`strategic-explainer@srez-marketplace`.
 
 Validate plugin changes before publishing:
 
@@ -142,7 +156,7 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/ship-tasks/skills/task-composer
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
-  plugins/ship-tasks/skills/strategic-explainer
+  plugins/strategic-explainer/skills/strategic-explainer
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/mind-diary/skills/mind-diary
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
@@ -150,10 +164,13 @@ python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plug
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
+  plugins/strategic-explainer
+python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/mind-diary
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.mcp.json \
   plugins/ship-tasks/.codex-plugin/plugin.json \
+  plugins/strategic-explainer/.codex-plugin/plugin.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
   plugins/mind-diary/.mcp.json \
   .agents/plugins/marketplace.json
@@ -164,6 +181,6 @@ diff -qr /Users/andrey/Projects/Home/ShipTask/ship-tasks \
 diff -qr /Users/andrey/Projects/Home/ShipTask/task-composer \
   plugins/ship-tasks/skills/task-composer
 diff -qr /Users/andrey/Projects/Home/ShipTask/strategic-explainer \
-  plugins/ship-tasks/skills/strategic-explainer
+  plugins/strategic-explainer/skills/strategic-explainer
 git diff --check
 ```

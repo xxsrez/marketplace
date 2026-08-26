@@ -1,7 +1,0 @@
-interface:
-  display_name: "Strategic Explainer"
-  short_description: "Передать объяснение отдельному чистому субагенту"
-  default_prompt: "Используй $strategic-explainer как router: создай новый default subagent с fork_turns=none и передай ему одну короткую user-facing задачу, exact scope и resolvable read-only anchors без inherited context или своего candidate."
-
-policy:
-  allow_implicit_invocation: true

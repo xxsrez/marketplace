@@ -7,6 +7,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 TASK_MANAGER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager"
 SHIP_TASKS_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "ship-tasks"
+STRATEGIC_EXPLAINER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "strategic-explainer"
 PRODUCTION_MCP_URL = "https://task-manager.xxsrez-work.chatgpt.site/api/mcp"
 
 
@@ -124,6 +125,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         names = [plugin["name"] for plugin in marketplace["plugins"]]
         self.assertEqual(names.count("task-manager"), 1)
         self.assertEqual(names.count("ship-tasks"), 1)
+        self.assertEqual(names.count("strategic-explainer"), 1)
 
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
@@ -149,13 +151,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
                 / "SKILL.md"
             ).is_file()
         )
-        self.assertTrue(
-            (
-                SHIP_TASKS_PLUGIN_ROOT
-                / "skills"
-                / "strategic-explainer"
-                / "SKILL.md"
-            ).is_file()
+        self.assertFalse(
+            (SHIP_TASKS_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
         )
 
         metadata = (
@@ -179,8 +176,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("one fresh read-only critic", manifest["interface"]["longDescription"])
         self.assertIn("stale or inconclusive reviews remain In Review", manifest["interface"]["longDescription"])
         self.assertIn("fresh Strategic Explainer result as reflection input", manifest["interface"]["longDescription"])
-        self.assertIn("isolated read-only provider behind an opaque router", manifest["interface"]["longDescription"])
-        self.assertIn("caller never receives or applies the provider method", manifest["interface"]["longDescription"])
+        self.assertIn("qualified `$strategic-explainer:strategic-explainer`", manifest["interface"]["longDescription"])
+        self.assertIn("fail-closed logical dependency", manifest["interface"]["longDescription"])
+        self.assertIn("must be installed separately", manifest["interface"]["longDescription"])
+        self.assertIn("do not imitate its private method", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
                 prompt.startswith("Create exactly one Task in Task Manager")
@@ -219,7 +218,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("canonical status `Backlog`", skill)
         self.assertIn("current unreleased Release", skill)
         self.assertIn("Не создавай Epic с одной формальной подзадачей", skill)
-        self.assertIn("$ship-tasks:strategic-explainer", skill)
+        self.assertIn("$strategic-explainer:strategic-explainer", skill)
         self.assertIn("Не превращай шаги исходного плана в Tasks механически", skill)
         self.assertIn("самодостаточную проекцию", skill)
         self.assertIn("Epic context не расширяет scope child", skill)
@@ -333,28 +332,49 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         ):
             self.assertNotIn(retired, skill)
 
-    def test_strategic_explainer_is_a_generic_sibling_skill(self) -> None:
+    def test_strategic_explainer_is_a_standalone_generic_plugin(self) -> None:
+        marketplace = read_json(
+            REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json"
+        )
+        entry = next(
+            plugin
+            for plugin in marketplace["plugins"]
+            if plugin["name"] == "strategic-explainer"
+        )
+        manifest = read_json(
+            STRATEGIC_EXPLAINER_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        )
         skill = (
-            SHIP_TASKS_PLUGIN_ROOT
+            STRATEGIC_EXPLAINER_PLUGIN_ROOT
             / "skills"
             / "strategic-explainer"
             / "SKILL.md"
         ).read_text(encoding="utf-8")
         metadata = (
-            SHIP_TASKS_PLUGIN_ROOT
+            STRATEGIC_EXPLAINER_PLUGIN_ROOT
             / "skills"
             / "strategic-explainer"
             / "agents"
             / "openai.yaml"
         ).read_text(encoding="utf-8")
         provider = (
-            SHIP_TASKS_PLUGIN_ROOT
+            STRATEGIC_EXPLAINER_PLUGIN_ROOT
             / "skills"
             / "strategic-explainer"
             / "references"
             / "provider-contract.md"
         ).read_text(encoding="utf-8")
 
+        self.assertEqual(
+            entry["source"],
+            {"source": "local", "path": "./plugins/strategic-explainer"},
+        )
+        self.assertEqual(manifest["name"], "strategic-explainer")
+        self.assertEqual(manifest["skills"], "./skills/")
+        self.assertRegex(manifest["version"], r"^0\.1\.0\+codex\.\d{14}$")
+        self.assertNotIn("mcpServers", manifest)
+        self.assertNotIn("apps", manifest)
+        self.assertFalse((STRATEGIC_EXPLAINER_PLUGIN_ROOT / ".mcp.json").exists())
         self.assertIn("name: strategic-explainer", skill)
         self.assertIn("routing skill к изолированному provider-subagent", skill)
         self.assertIn("Если ты caller", skill)
@@ -397,8 +417,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         normalized_skill = " ".join(skill.split())
         normalized_handoff = " ".join(handoff.split())
 
-        self.assertIn("$ship-tasks:strategic-explainer", skill)
-        self.assertIn("$ship-tasks:strategic-explainer", handoff)
+        self.assertIn("$strategic-explainer:strategic-explainer", skill)
+        self.assertIn("$strategic-explainer:strategic-explainer", handoff)
         self.assertIn("Сначала выведи effective topology rule", skill)
         self.assertIn("Exact count — обязательное число", skill)
         self.assertIn("Root не входит в явно названное число субагентов", normalized_skill)

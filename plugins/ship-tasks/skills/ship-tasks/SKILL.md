@@ -103,7 +103,7 @@ adapter. Всегда создай и перечитай обязательны�
 outcome сначала разреши через native read-back; не повторяй write вслепую.
 Если effective topology rule не отключает comment Explainer, каждый комментарий
 ShipTask сначала передай отдельному независимому субагенту с
-`$ship-tasks:strategic-explainer`; основной агент не заменяет этот проход
+`$strategic-explainer:strategic-explainer`; основной агент не заменяет этот проход
 собственной редактурой. Если rule отключает Explainer, сообщай только
 обязательные lifecycle facts по собственному truth contract ShipTask: не читай,
 не применяй и не имитируй внутреннюю методику Explainer и не заявляй

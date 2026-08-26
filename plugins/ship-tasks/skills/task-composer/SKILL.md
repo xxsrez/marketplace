@@ -69,7 +69,7 @@ deliverable частей, разных проверяемых результат
 Epic сохраняет problem, beneficiary, desired outcome, strategic intent, exact
 scope, human requirements, cross-cutting acceptance/non-goals и целостный вклад
 подзадач. Перед его созданием примени sibling
-`$ship-tasks:strategic-explainer` как отдельный publication unit: новый built-in
+`$strategic-explainer:strategic-explainer` как отдельный publication unit: новый built-in
 `default` subagent с `fork_turns="none"`, одна compact task, exact planning scope
 и resolvable read-only anchors без inherited turns/tool transcript/process
 diary, твоего analysis/strategic view, требований к форме ответа или прежнего

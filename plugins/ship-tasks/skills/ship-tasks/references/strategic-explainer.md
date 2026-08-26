@@ -1,7 +1,7 @@
 # Opaque client protocol Strategic Explainer
 
-Этот reference описывает только вызов sibling
-`$ship-tasks:strategic-explainer`. Внутренняя expertise принадлежит
+Этот reference описывает только вызов отдельно установленного
+`$strategic-explainer:strategic-explainer`. Внутренняя expertise принадлежит
 provider-subagent и не является знанием ShipTask.
 
 ## Когда вызывать
@@ -20,7 +20,7 @@ publication unit. Routine chat, progress update и внутренний draft Ex
 - exact scope;
 - разрешимые read-only anchors к current Task/relations, evidence/candidate,
   bounded session state и project/repository sources;
-- идентификатор `$ship-tasks:strategic-explainer`, чтобы subagent загрузил
+- идентификатор `$strategic-explainer:strategic-explainer`, чтобы subagent загрузил
   provider router.
 
 Не передавай inherited conversation, tool transcript, process diary, caller
