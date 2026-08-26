@@ -226,28 +226,14 @@ terminal Task сначала получает opening comment, затем exact 
 
 ## 5. Обеспечь человеческое объяснение
 
-Пока effective rule сохраняет Explainer, каждый Task Manager comment проходит
-отдельного read-only Strategic Explainer. Передай без process diary проблему,
-Task, evidence, impact, known/unknown, constraints и next step; для blocker —
-self-service frontier, fixtures/ingress, authority gap, paths, prerequisites и
-signals. Explainer не выполняет mutation или status/scope/authority/repair, но
-сравнивает grounded варианты и рекомендует feasible path; возвращает готовый
-текст с source basis на языке пользователя.
-Проверь факты. При ошибке исправь вход и повтори независимую адаптацию; не
-переписывай текст самостоятельно. Если Explainer недоступен или текст непригоден,
-не публикуй comment и не выполняй зависящий transition. Если effective rule
-отключает Explainer, сам примени тот же problem-first quality contract без claim
-independence. Immediate incident update всё равно обязателен. Quality contract:
-[reference](references/strategic-explainer.md); comment: [delivery report](references/delivery-report.md).
+Пока effective rule сохраняет Explainer, каждый Task Manager comment, отдельный Task/scope report, blocker explanation и final получает нового built-in `default` read-only Strategic Explainer с `fork_turns="none"`. Routine chat/progress его не запускает.
+Передай одну compact task, exact scope и resolvable read-only anchors к current Task/relations/evidence/session/docs/candidate; не передавай inherited turns, tool transcript, process diary, собственный strategic view или прежний candidate. Explainer сам собирает facts и поднимается через applicable Epic/Release/Project к исходной цели.
+Если Explainer отклонил invocation, исправь названную причину и автоматически создай новый clean subagent; старый не продолжай. Повторный structural failure после correction — orchestration failure, а не право на bypass. При factual/comprehension error обнови source/task и тоже вызови новый экземпляр; текст самостоятельно не переписывай.
+Explainer не выполняет mutation или status/scope/authority/repair, но возвращает одну главную причинную мысль, только material detail и source basis. Проверь факты. Если mandatory Explainer недоступен/непригоден, не публикуй comment и не выполняй зависящий transition; при effective opt-out сам примени quality contract без claim independence. Immediate incident update всё равно обязателен. [Reference](references/strategic-explainer.md); [comment](references/delivery-report.md).
 
-Финальный ответ тоже проходит отдельный scope-level Strategic Explainer. Передай ему исходный запрос пользователя и чистый набор установленных фактов всего run, а не склейку
-Task-комментариев и не технический журнал. Первый смысловой слой объясняет общий результат,
-основную причину, влияние и условие продолжения на уровне исходного вопроса. Для сложного сбоя,
-нескольких инцидентов или сводного результата, если effective rule допускает отдельного читателя,
-дай ему только исходную цель и готовый текст: он возвращает пересказ либо точный пробел понимания,
-но не редактирует факты. При провале повтори Explainer с исправленным входом. Не возвращай текст к
-внутреннему жаргону. Если независимый проход для final недоступен, всё равно сообщи состояние
-простым языком и явно назови отсутствие этой проверки.
+До окончательного blocker claim прочитай fresh candidate explanation/source basis как independent reflection input и заново проверь исходную цель, primary/cascade cause, applicable context и всю safe in-scope frontier. Любой найденный путь проверь current sources/acceptance: достаточный путь отменяет stale blocker и работа продолжается; иначе создай fresh final blocker unit. Wording не является evidence/authority; unchanged blocker state получает один pass, повтор — только после material change или invalid-call correction. Срочный proven incident публикуй отдельным fresh nonterminal unit без преждевременного release-wide blocker claim.
+
+Финальный ответ — новый scope-level invocation с исходным вопросом, exact scope и anchors всего run, не склейка Task comments или прежний draft. Для complex/multi-incident result, если rule допускает reader, дай ему только исходную цель и готовый текст: он возвращает пересказ/gap, не меняя facts. При gap создай новый Explainer. Если final pass недоступен, всё равно честно сообщи состояние простым языком и отсутствие independent check.
 
 ## 6. Продолжай автономно и финализируй
 

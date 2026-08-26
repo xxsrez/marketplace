@@ -69,13 +69,14 @@ deliverable частей, разных проверяемых результат
 Epic сохраняет problem, beneficiary, desired outcome, strategic intent, exact
 scope, human requirements, cross-cutting acceptance/non-goals и целостный вклад
 подзадач. Перед его созданием примени sibling
-`$ship-tasks:strategic-explainer` к установленным фактам и требованиям.
-Explainer помогает сформулировать problem-first описание, но не выбирает
-decomposition, Project, status, labels, relations или write authority. Точный
-invocation mechanism не задан; результат должен быть grounded, легко читаться
-и объяснять концепцию без tactical process diary. Если Explainer недоступен
-или не может подготовить grounded description, не создавай Epic; single Task,
-которой Epic не нужен, от этого не блокируется.
+`$ship-tasks:strategic-explainer` как отдельный publication unit: новый built-in
+`default` subagent с `fork_turns="none"`, одна compact task, exact planning scope
+и resolvable read-only anchors без inherited turns/tool transcript/process
+diary, твоего strategic view или прежнего candidate. Explainer сам собирает
+facts/context, но не выбирает decomposition, Project, status, labels, relations
+или write authority. Invalid invocation исправь и повтори новым clean subagent,
+старый не продолжай. Если grounded description недоступно, не создавай Epic;
+single Task, которой Epic не нужен, от этого не блокируется.
 
 Каждая подзадача получает один конкретный результат, exact change boundary,
 свой вклад в desired outcome Epic, material technical details, применимые parent

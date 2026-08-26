@@ -178,6 +178,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("resumes unfinished task-owned Git work", manifest["interface"]["longDescription"])
         self.assertIn("one fresh read-only critic", manifest["interface"]["longDescription"])
         self.assertIn("stale or inconclusive reviews remain In Review", manifest["interface"]["longDescription"])
+        self.assertIn("fresh Strategic Explainer result as reflection input", manifest["interface"]["longDescription"])
+        self.assertIn("fresh stateless read-only API", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
                 prompt.startswith("Create exactly one Task in Task Manager")
@@ -356,7 +358,12 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             skill,
         )
         self.assertIn("Отличай действующее от предложенного и исторического", skill)
-        self.assertIn("Первый смысловой слой прямо отвечает на исходный вопрос", skill)
+        self.assertIn("Проверь fresh invocation", skill)
+        self.assertIn('fork_turns="none"', skill)
+        self.assertIn("один реальный user-facing result", skill)
+        self.assertIn("самостоятельно поднимись через применимые relations", skill)
+        self.assertIn("одну главную причинную мысль", skill)
+        self.assertIn("Routine", skill)
         self.assertIn("английские слова не должны нести основную мысль", skill)
         self.assertIn("Проверь понимание отдельно от фактов", skill)
         self.assertIn("Если для пересказа нужна внутренняя предметная область", skill)
@@ -365,7 +372,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("все существенные факты сохранены", skill)
         self.assertNotIn("PROBLEM_CONTEXT_ERROR", skill)
         self.assertNotIn("CONTEXT_INTEGRITY_ERROR", skill)
-        self.assertNotIn('fork_turns="none"', skill)
         self.assertNotIn("2–4 реально", skill)
         self.assertNotIn("Technical Brief", skill)
         self.assertNotIn("User Brief", skill)
@@ -402,7 +408,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Общий no-subagent rule означает ноль субагентов", normalized_skill)
         self.assertIn("Если effective topology rule не отключает comment Explainer", skill)
         self.assertIn("отдельному независимому субагенту", normalized_skill)
-        self.assertIn("не переписывай текст самостоятельно", normalized_skill)
+        self.assertIn("текст самостоятельно не переписывай", normalized_skill)
         self.assertIn("exact unfinished worktree/branch существует", normalized_skill)
         self.assertIn("active/unknown ownership не перехватывай", normalized_skill)
         self.assertIn(
@@ -414,14 +420,15 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             handoff,
         )
         self.assertIn("обязательная независимая проверка", normalized_handoff)
-        self.assertIn("комментарий не публикуется", normalized_handoff)
+        self.assertIn("comment не публикуется", normalized_handoff)
         self.assertIn("Если правило отключает Explainer", normalized_handoff)
         self.assertIn("не заявляет о независимой проверке", normalized_handoff)
         self.assertIn("Дополнительный поиск использует только чтение", handoff)
         self.assertIn("Уровень исходного вопроса", handoff)
         self.assertIn("Проверка понимания", handoff)
-        self.assertEqual(skill.count('fork_turns="none"'), 1)
-        self.assertNotIn('fork_turns="none"', handoff)
+        self.assertEqual(skill.count('fork_turns="none"'), 2)
+        self.assertEqual(handoff.count('fork_turns="none"'), 1)
+        self.assertIn("independent reflection input", handoff)
         self.assertNotIn("не вызывать отдельно", handoff)
         self.assertNotIn("сначала восстанови", skill)
 

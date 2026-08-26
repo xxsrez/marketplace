@@ -74,11 +74,15 @@ Ship Tasks is a separate plugin with three coordinated skills:
   methods while requiring sufficient evidence, a native comment before every
   meaningful lifecycle transition, and factual separation of Task conflicts,
   proven defects, genuine verification blockers, and proven success;
-- `strategic-explainer` is a generic sibling skill that requires an explicit
-  problem, finds bounded strategic context through read-only sources when
-  materially useful, and returns a problem-first explanation without making
-  decisions or mutations. It does not require a specific agent topology,
-  context envelope, retry scheme, or option count;
+- `strategic-explainer` is a generic fresh stateless API for one real
+  user-facing publication unit. A new default subagent with `fork_turns="none"`
+  receives one compact task and resolvable source anchors without inherited
+  process context, gathers current facts and strategic meaning read-only, and
+  returns one main causal thought plus only material detail. Invalid invocations
+  are corrected with a new instance. Before a terminal blocker claim, Ship
+  Tasks reads its result as reflection input, verifies any newly visible safe
+  path against primary evidence, and continues rather than publishing a stale
+  blocker. Strategic Explainer still makes no decisions or mutations;
 - it depends on the separately installed Task Manager plugin for MCP tools and
   authentication, but does not bundle or duplicate that connector.
 
