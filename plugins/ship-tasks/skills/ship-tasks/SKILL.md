@@ -231,8 +231,8 @@ task, exact scope и resolvable read-only anchors к current Task/relations/evid
 tool transcript, process diary, собственный analysis/strategic view, инструкции
 о том, как строить объяснение, или прежний candidate. Не читай и не применяй
 provider-internal contract Strategic Explainer.
-Ответ — готовый пользовательский текст и короткий source basis либо operational
-refusal. Проверь только material facts по authoritative sources; текст самостоятельно не улучшай и не
+Ответ — готовый пользовательский текст и отдельно обозначенный source basis либо
+operational refusal. Публикуй только текст; basis к нему не дописывай. Проверь только material facts по authoritative sources; текст самостоятельно не улучшай и не
 оценивай по внутренней методике provider. Invalid invocation исправь новым
 clean subagent, старый не продолжай. Factual conflict исправь в source/anchor и
 также вызови новый экземпляр; candidate самостоятельно не переписывай.

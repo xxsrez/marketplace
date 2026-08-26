@@ -32,9 +32,9 @@ Explainer.
 
 Допустимы три результата:
 
-1. Готовый пользовательский текст и короткий source basis. ShipTask проверяет
-   material factual claims по authoritative sources и публикует текст без
-   самостоятельного editorial improvement.
+1. Готовый пользовательский текст и отдельно обозначенный короткий source basis.
+   ShipTask проверяет material factual claims по authoritative sources и
+   публикует только текст без basis и самостоятельного editorial improvement.
 2. Operational refusal из-за invalid invocation. Исправь названный structural
    defect и создай новый clean subagent; follow-up старому запрещён.
 3. Capability/source failure. Mandatory comment и зависящий lifecycle effect

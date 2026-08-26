@@ -22,8 +22,9 @@ tool calls или собственные рассуждения. В этом р�
    subagent загрузил этот router.
 4. Не передавай inherited turns, tool transcript, process diary, свои выводы,
    strategic summary, требования к форме ответа или прежний candidate.
-5. Прими только готовый пользовательский текст с кратким source basis либо
-   operational refusal. Не улучшай текст по внутренним критериям провайдера.
+5. Прими только готовый пользовательский текст и отдельно обозначенный краткий
+   source basis либо operational refusal. Публикуй только текст: не сливай basis
+   с сообщением и не улучшай текст по внутренним критериям провайдера.
 
 Если invocation отклонён, исправь названный structural defect и создай ещё один
 новый subagent с `fork_turns="none"`; follow-up прежнему экземпляру запрещён.

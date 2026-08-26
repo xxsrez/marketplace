@@ -75,8 +75,9 @@ scope, human requirements, cross-cutting acceptance/non-goals и целостн�
 diary, твоего analysis/strategic view, требований к форме ответа или прежнего
 candidate. Не читай provider-internal contract, не составляй explanation draft
 и не применяй методику Explainer самостоятельно. Прими готовый description и
-source basis либо refusal. Material facts проверь по authoritative planning
-sources; factual/structural correction всегда передавай новому clean subagent,
+отдельно обозначенный source basis либо refusal; в Epic записывай только
+description. Material facts проверь по authoritative planning sources;
+factual/structural correction всегда передавай новому clean subagent,
 старый не продолжай и текст самостоятельно не улучшай. Explainer не выбирает
 decomposition, Project, status, labels, relations или write authority. Если
 готовый grounded description недоступен, не создавай Epic; single Task, которой

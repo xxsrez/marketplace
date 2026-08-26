@@ -52,9 +52,10 @@ transition не завершён. Это failure обязательной operat
 короткую user-facing задачу, exact Task scope и resolvable anchors к current
 facts, evidence, knowledge/authority boundary и next lifecycle state. Это не
 готовый brief, explanation draft или требования к структуре текста. Explainer
-возвращает готовый text и source basis. Основной агент проверяет только material
-factual conflict; исправление facts/anchors требует нового clean invocation, а
-не самостоятельной стилистической переработки.
+возвращает готовый text и отдельно обозначенный source basis. Основной агент
+публикует только text, а basis использует для проверки material factual conflict;
+исправление facts/anchors требует нового clean invocation, а не самостоятельной
+стилистической переработки.
 
 Если effective rule сохраняет Explainer, но отдельный агент недоступен или не
 дал пригодный текст, комментарий не публикуется. Связанный существенный переход
