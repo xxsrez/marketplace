@@ -88,6 +88,22 @@ func TestPrepareRejectsNonExactOrUnsupportedPaths(t *testing.T) {
 	}
 }
 
+func TestPrepareAllowsLiteralGlobCharactersInExistingFilename(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("local companion is macOS-only")
+	}
+	store := newLocalFileStore()
+	t.Cleanup(func() { _ = store.Close() })
+	path := writeFixture(t, "report[final].bin", []byte("fixture"))
+	result, err := store.Prepare(prepareLocalFileInput{Path: path})
+	if err != nil {
+		t.Fatalf("expected exact filename with literal glob characters to pass: %v", err)
+	}
+	if result.DisplayFilename != "report[final].bin" {
+		t.Fatalf("unexpected display filename: %#v", result)
+	}
+}
+
 func TestPrepareEnforcesExpectedMetadataAndInclusiveLimit(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("local companion is macOS-only")

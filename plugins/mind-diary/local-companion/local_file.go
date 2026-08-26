@@ -29,7 +29,6 @@ const (
 var (
 	sha256Pattern = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
 	mimePattern   = regexp.MustCompile("^[!#$%&'*+.^_`|~0-9a-z-]+/[!#$%&'*+.^_`|~0-9a-z-]+$")
-	globPattern   = regexp.MustCompile(`[*?\[\]{}]`)
 )
 
 type prepareLocalFileInput struct {
@@ -298,8 +297,8 @@ func (store *localFileStore) removeExpiredLocked(now time.Time) {
 }
 
 func validateExactPath(path string) error {
-	if path == "" || len(path) > 16_384 || !filepath.IsAbs(path) || !utf8.ValidString(path) || containsControl(path) || globPattern.MatchString(path) {
-		return newLocalError("invalid_path", "path must be one exact absolute local file path without glob syntax")
+	if path == "" || len(path) > 16_384 || !filepath.IsAbs(path) || !utf8.ValidString(path) || containsControl(path) {
+		return newLocalError("invalid_path", "path must be one exact absolute local file path")
 	}
 	for _, segment := range strings.FieldsFunc(path, func(r rune) bool { return r == '/' || r == '\\' }) {
 		if segment == ".." {
