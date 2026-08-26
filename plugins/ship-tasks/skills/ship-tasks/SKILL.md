@@ -104,12 +104,11 @@ outcome сначала разреши через native read-back; не повт
 Если effective topology rule не отключает comment Explainer, каждый комментарий
 ShipTask сначала передай отдельному независимому субагенту с
 `$ship-tasks:strategic-explainer`; основной агент не заменяет этот проход
-собственной редактурой. Если rule отключает Explainer, примени тот же quality
-contract напрямую и не заявляй о независимой проверке. Обычный `To Do → In
-Progress` не запускает Explainer: комментария для старта нет.
-Комментарий простым языком объясняет, что установлено, почему меняется/сохраняется
-статус, что это значит, чем подтверждён вывод и что дальше. Пиши на языке
-пользователя; reason codes, жаргон и process diary не являются объяснением.
+собственной редактурой. Если rule отключает Explainer, сообщай только
+обязательные lifecycle facts по собственному truth contract ShipTask: не читай,
+не применяй и не имитируй внутреннюю методику Explainer и не заявляй
+эквивалентное качество. Обычный `To Do → In Progress` не запускает Explainer:
+комментария для старта нет.
 ### Доказательство важнее выбранного способа
 
 Сам выбирай инструменты, способы диагностики и приёмки. Сбой одного выбранного
@@ -227,27 +226,42 @@ terminal Task сначала получает opening comment, затем exact 
 ## 5. Обеспечь человеческое объяснение
 
 Пока effective rule сохраняет Explainer, каждый Task Manager comment, отдельный Task/scope report, blocker explanation и final получает нового built-in `default` read-only Strategic Explainer с `fork_turns="none"`. Routine chat/progress его не запускает.
-Передай одну compact task, exact scope и resolvable read-only anchors к current Task/relations/evidence/session/docs/candidate; не передавай inherited turns, tool transcript, process diary, собственный strategic view или прежний candidate. Explainer сам собирает facts и поднимается через applicable Epic/Release/Project к исходной цели.
-Если Explainer отклонил invocation, исправь названную причину и автоматически создай новый clean subagent; старый не продолжай. Повторный structural failure после correction — orchestration failure, а не право на bypass. При factual/comprehension error обнови source/task и тоже вызови новый экземпляр; текст самостоятельно не переписывай.
-Explainer не выполняет mutation или status/scope/authority/repair, но возвращает одну главную причинную мысль, только material detail и source basis. Проверь факты. Если mandatory Explainer недоступен/непригоден, не публикуй comment и не выполняй зависящий transition; при effective opt-out сам примени quality contract без claim independence. Immediate incident update всё равно обязателен. [Reference](references/strategic-explainer.md); [comment](references/delivery-report.md).
+Используй только opaque client protocol из [reference](references/strategic-explainer.md): передай одну compact user-facing
+task, exact scope и resolvable read-only anchors к current Task/relations/evidence/session/docs/candidate. Не передавай inherited turns,
+tool transcript, process diary, собственный analysis/strategic view, инструкции
+о том, как строить объяснение, или прежний candidate. Не читай и не применяй
+provider-internal contract Strategic Explainer.
+Ответ — готовый пользовательский текст и короткий source basis либо operational
+refusal. Проверь только material facts по authoritative sources; текст самостоятельно не улучшай и не
+оценивай по внутренней методике provider. Invalid invocation исправь новым
+clean subagent, старый не продолжай. Factual conflict исправь в source/anchor и
+также вызови новый экземпляр; candidate самостоятельно не переписывай.
+
+Explainer не выполняет mutation или status/scope/authority/repair. Если mandatory Explainer недоступен/непригоден, не публикуй comment и не выполняй
+зависящий transition. При effective opt-out либо недоступном final сообщай
+обязательные установленные facts по собственному truth/lifecycle contract
+ShipTask, явно называй capability gap и не имитируй Explainer. Immediate
+incident update всё равно обязателен. [Comment](references/delivery-report.md).
 
 До окончательного blocker claim прочитай fresh candidate explanation/source basis как independent reflection input и заново проверь исходную цель, primary/cascade cause, applicable context и всю safe in-scope frontier. Любой найденный путь проверь current sources/acceptance: достаточный путь отменяет stale blocker и работа продолжается; иначе создай fresh final blocker unit. Wording не является evidence/authority; unchanged blocker state получает один pass, повтор — только после material change или invalid-call correction. Срочный proven incident публикуй отдельным fresh nonterminal unit без преждевременного release-wide blocker claim.
 
-Финальный ответ — новый scope-level invocation с исходным вопросом, exact scope и anchors всего run, не склейка Task comments или прежний draft. Для complex/multi-incident result, если rule допускает reader, дай ему только исходную цель и готовый текст: он возвращает пересказ/gap, не меняя facts. При gap создай новый Explainer. Если final pass недоступен, всё равно честно сообщи состояние простым языком и отсутствие independent check.
+Финальный ответ — новый scope-level invocation с исходным вопросом, exact scope
+и anchors всего run, не склейка Task comments или прежний draft. Если provider
+вернул refusal/error, исправление получает новый clean invocation. Если final
+pass недоступен, всё равно честно сообщи установленные facts и отсутствие
+provider result, не воспроизводя его внутренний метод.
 
 ## 6. Продолжай автономно и финализируй
 
 Task-local blocker не останавливает независимую runnable работу. В `batch-implementation` перед
 ожиданием пользователя перечитай полный current inventory live selector, включая новые Tasks;
 пока остаётся безопасная in-scope работа, продолжай. Goal active до завершения current membership.
-Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый Goal и external
-effects. Подготовь фактическое основание и проведи ответ через раздел 5. В `SHIPTASK RUN REPORT`
-сначала прямо назови результат и состояние, затем доказанное и непроверенное, причину и условие
-продолжения. Добавь краткий перечень существенных инцидентов: Task/criterion, confidence, fix,
-retest evidence и final state — включая defects, найденные и исправленные в том же run. Для каждого
-unresolved blocker добавь self-service attempts, cause, recommended path, alternatives,
-prerequisites/authority, success signal и exact resume condition. При user topology rule назови его
-смысл и соблюдение/deviation; без rule — только material delegation/profile handoff.
+Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
+Goal и external effects. Собери authoritative anchors, обязательные factual
+fields и краткий перечень существенных инцидентов по [run report](references/run-report.md), затем проведи publication unit
+через раздел 5. Не составляй explanation candidate и не переносись в provider
+method. При user topology rule сохрани факт его соблюдения/deviation; без rule —
+только material delegation/profile handoff.
 Материальные `blocked by` gates отчитай отдельно от acceptance blocking Tasks: exact candidate/contract, downstream effect и attributed invalidation.
 Product failure и доступную repair frontier сообщи раньше browser/OAuth/MFA
 logistics; смену средства не называй repair или обязательным user action, пока

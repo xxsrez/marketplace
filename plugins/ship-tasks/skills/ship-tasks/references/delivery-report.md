@@ -9,8 +9,9 @@ create/list/read. ShipTask всегда создаёт и перечитывае
 который ShipTask собирается создать, до публикации проходит отдельного независимого
 `$ship-tasks:strategic-explainer`. Это относится не только к обязательным
 переходам: самостоятельная редактура основного агента не заменяет Explainer.
-Когда user rule отключает Explainer, основной агент применяет тот же quality
-contract напрямую и не заявляет о независимой проверке.
+Когда user rule отключает Explainer, основной агент сообщает обязательные
+lifecycle facts по собственному truth contract и не читает, не применяет и не
+имитирует provider method.
 
 ## Когда комментарий обязателен
 
@@ -45,38 +46,28 @@ transition не завершён. Это failure обязательной operat
 предписывает конкретный tool flow, но требует фактический durable result и
 запрещает подменять его `description` либо ответом в Codex.
 
-## Содержание
+## Factual packet и publication
 
-Пока effective rule сохраняет Explainer, до публикации основной агент передаёт
-отдельному Strategic Explainer точные факты, evidence, границу знания,
-пользовательское влияние и следующий шаг. Explainer возвращает готовый текст на языке пользователя.
-Основной агент проверяет фактическую точность; исправление фактов требует
-повторной адаптации, а не самостоятельной стилистической переработки.
+Пока effective rule сохраняет Explainer, основной агент передаёт ему одну
+короткую user-facing задачу, exact Task scope и resolvable anchors к current
+facts, evidence, knowledge/authority boundary и next lifecycle state. Это не
+готовый brief, explanation draft или требования к структуре текста. Explainer
+возвращает готовый text и source basis. Основной агент проверяет только material
+factual conflict; исправление facts/anchors требует нового clean invocation, а
+не самостоятельной стилистической переработки.
 
 Если effective rule сохраняет Explainer, но отдельный агент недоступен или не
 дал пригодный текст, комментарий не публикуется. Связанный существенный переход
 остаётся незавершённым. Это capability failure, а не opt-out. Если user rule
-отключает Explainer, основной агент формирует grounded problem-first comment напрямую. Ответ в Codex
-может немедленно показать incident, но не заменяет durable comment.
+отключает Explainer, основной агент публикует только необходимые grounded
+lifecycle facts без provider methodology и без claim эквивалентного качества.
+Ответ в Codex может немедленно показать incident, но не заменяет durable comment.
 
-Формального шаблона нет. В большинстве случаев достаточно пяти смыслов:
+### Factual anchors: готово к review
 
-- результат или точная граница знания;
-- значение для пользователя;
-- основание вывода;
-- причина status change либо blocker;
-- следующий шаг или условие возобновления.
+Exact result, observable evidence и проведённая проверка.
 
-Текст начинается с результата. Он не содержит process diary, tool inventory,
-reason-code dump, raw logs или внутреннюю orchestration, если они не нужны для
-понимания. Technical detail получает человеческую роль: что именно он
-доказывает и почему это важно.
-
-### Готово к review
-
-Объяснить, что реализовано, как это наблюдается и какая проверка пройдена.
-
-### Нужна доработка
+### Factual anchors: нужна доработка
 
 До repair немедленно сообщить incident в Codex chat. Opening Task comment
 объясняет expected result, воспроизводимое нарушение current acceptance,
@@ -88,7 +79,7 @@ acceptance criterion с cause/confidence, fix или exact result identity,
 повторной проверкой, final state и remaining risk. Opening comment не
 редактируется и не исчезает после успешного завершения.
 
-### Приёмка заблокирована
+### Factual anchors: Приёмка заблокирована
 
 Немедленно сообщить в chat, что приёмка не завершена и наличие product bug не
 установлено. Task comment объясняет, что нельзя установить и почему, что уже
@@ -108,7 +99,7 @@ signal, продолжаемую safe работу и exact resume condition. Э
 отдельного Strategic Explainer, пока effective rule его сохраняет; голое «нужен
 файл/principal» без причинной рекомендации недостаточно.
 
-### Завершено
+### Factual anchors: завершено
 
 Объяснить полученный outcome, его значение, ключевое evidence, exact result или
 environment identity, если она нужна для проверки, и реальные ограничения. Если
@@ -121,7 +112,7 @@ candidate, проверенные criteria/code/tests, grounded verdict неза
 и residual risk. Человек должен без чтения сессии понять, что Task закрыта по
 критической проверке кодовой базы, а не по полноценной функциональной приёмке.
 
-### Canceled, Duplicate или reopen
+### Factual anchors: Canceled, Duplicate или reopen
 
 Объяснить material причину и связь с пользовательским результатом. Не создавать
 новый terminal status или reopen без comment/read-back.

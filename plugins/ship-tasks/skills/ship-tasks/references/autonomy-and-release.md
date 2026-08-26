@@ -106,8 +106,10 @@ Luna Max допускает current-profile fallback. Явный unavailable use
 весь run, включая research, implementation, review и comment Explainer.
 Role-scoped rule меняет только названную роль: например, запрет implementation
 workers не отключает Explainer. Если Explainer отключён user rule, обязательный
-comment получает тот же quality contract напрямую от основного агента без claim
-независимой проверки. Если effective rule сохраняет Explainer, его
+comment содержит только необходимые lifecycle facts по собственному truth
+contract ShipTask; основной агент не читает, не применяет и не имитирует
+provider method и не заявляет эквивалентное качество. Если effective rule
+сохраняет Explainer, его
 недоступность блокирует только comment-dependent effects. Material capacity gap
 или deviation от user rule сообщается явно; внутренняя target/width accounting
 не требуется.

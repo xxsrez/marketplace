@@ -46,10 +46,11 @@ rationale, прежний verdict или process diary. Critic самостоя�
 - Изменение candidate, Task contract или active inventory делает review stale;
   перечитай gate до lifecycle writes.
 
-## Обязательный completion comment
+## Обязательный factual packet для completion comment
 
-Перед `Done` отдельный Strategic Explainer превращает grounded packet в простой
-человекопонятный comment. Он обязан сохранить:
+Перед `Done` отдельный Strategic Explainer получает opaque invocation с anchors
+на grounded packet. ShipTask не составляет explanation draft и не читает
+provider method. Factual anchors обязаны включать:
 
 - точную непроведённую функциональную проверку;
 - причину и объяснение, почему нужен существенный human verifier, а не approval

@@ -1,7 +1,7 @@
 interface:
   display_name: "Strategic Explainer"
-  short_description: "Объяснить смысл или переписать сложный текст без потерь"
-  default_prompt: "Примени $strategic-explainer как fresh stateless API: новый default subagent с fork_turns=none получает одну compact user-facing задачу и source anchors без inherited context. Проверь invocation, сам собери read-only facts и strategic meaning, сначала дай одну главную причинную мысль, затем только material detail. По явной редактуре перестрой target text без потери требований, фактов, исключений и границ."
+  short_description: "Передать объяснение отдельному чистому субагенту"
+  default_prompt: "Используй $strategic-explainer как router: создай новый default subagent с fork_turns=none и передай ему одну короткую user-facing задачу, exact scope и resolvable read-only anchors без inherited context или своего candidate."
 
 policy:
   allow_implicit_invocation: true

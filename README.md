@@ -76,10 +76,11 @@ Ship Tasks is a separate plugin with three coordinated skills:
   proven defects, genuine verification blockers, and proven success;
 - `strategic-explainer` is a generic fresh stateless API for one real
   user-facing publication unit. A new default subagent with `fork_turns="none"`
-  receives one compact task and resolvable source anchors without inherited
-  process context, gathers current facts and strategic meaning read-only, and
-  returns one main causal thought plus only material detail. Invalid invocations
-  are corrected with a new instance. Before a terminal blocker claim, Ship
+  receives one short task, exact scope and resolvable source anchors without
+  inherited process context, caller analysis or candidate text. The caller sees
+  only this opaque protocol, accepts ready text/source basis or refusal and never
+  reads or applies the provider method. Invalid invocations and factual
+  corrections use a new instance. Before a terminal blocker claim, Ship
   Tasks reads its result as reflection input, verifies any newly visible safe
   path against primary evidence, and continues rather than publishing a stale
   blocker. Strategic Explainer still makes no decisions or mutations;
@@ -114,9 +115,8 @@ Repository layout:
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/task-composer/` — Task Manager planning and
   backlog-composition workflow;
-- `plugins/ship-tasks/skills/strategic-explainer/` — generic problem-first
-  strategic discovery and semantic-preserving editorial reconstruction skill
-  used directly or in a fresh subagent;
+- `plugins/ship-tasks/skills/strategic-explainer/` — router plus admission-gated
+  provider contract used only by a fresh subagent;
 - `plugins/mind-diary/.codex-plugin/plugin.json` — Mind Diary plugin manifest;
 - `plugins/mind-diary/.mcp.json` — direct Mind Diary MCP and OAuth resource;
 - `plugins/mind-diary/bin/` and `local-companion/` — bundled macOS exact-file

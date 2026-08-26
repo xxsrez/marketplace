@@ -179,7 +179,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("one fresh read-only critic", manifest["interface"]["longDescription"])
         self.assertIn("stale or inconclusive reviews remain In Review", manifest["interface"]["longDescription"])
         self.assertIn("fresh Strategic Explainer result as reflection input", manifest["interface"]["longDescription"])
-        self.assertIn("fresh stateless read-only API", manifest["interface"]["longDescription"])
+        self.assertIn("isolated read-only provider behind an opaque router", manifest["interface"]["longDescription"])
+        self.assertIn("caller never receives or applies the provider method", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
                 prompt.startswith("Create exactly one Task in Task Manager")
@@ -312,12 +313,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("communication remainder", report)
         self.assertIn("Инвариант effects", report)
         self.assertIn("До связанного существенного status transition", report)
-        self.assertIn(
-            "Пока действующее правило пользователя о субагентах не отключает Explainer",
-            handoff,
-        )
-        self.assertIn("отдельного субагента", " ".join(handoff.split()))
-        self.assertIn("Если правило отключает Explainer", handoff)
+        self.assertIn("Opaque client protocol Strategic Explainer", handoff)
+        self.assertIn("нового built-in `default` read-only subagent", handoff)
+        self.assertIn("Не читай provider-internal reference", handoff)
         self.assertIn(
             "Обычный `To Do → In Progress` не запускает Explainer",
             " ".join(skill.split()),
@@ -325,8 +323,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("2–4 способа", handoff)
         self.assertIn("найденный и устранённый", run_report)
         self.assertIn("не совместим с формулировкой полного успеха", run_report)
-        self.assertIn("Первый смысловой слой прямо отвечает на исходный вопрос", run_report)
-        self.assertIn("видит только исходную цель и готовый ответ", " ".join(run_report.split()))
+        self.assertIn("authoritative source anchors и factual inventory", run_report)
+        self.assertIn("не применяет внутреннюю методику provider", run_report)
         for retired in (
             "строгого tool threshold",
             "строгого model-tool threshold",
@@ -349,27 +347,32 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "agents"
             / "openai.yaml"
         ).read_text(encoding="utf-8")
+        provider = (
+            SHIP_TASKS_PLUGIN_ROOT
+            / "skills"
+            / "strategic-explainer"
+            / "references"
+            / "provider-contract.md"
+        ).read_text(encoding="utf-8")
 
         self.assertIn("name: strategic-explainer", skill)
-        self.assertIn("Удерживай исходный вопрос", skill)
-        self.assertIn("Не подменяй исходный вопрос технической задачей", skill)
-        self.assertIn(
-            "используй только доступные источники, которые можно читать",
-            skill,
-        )
-        self.assertIn("Отличай действующее от предложенного и исторического", skill)
-        self.assertIn("Проверь fresh invocation", skill)
+        self.assertIn("routing skill к изолированному provider-subagent", skill)
+        self.assertIn("Если ты caller", skill)
+        self.assertIn("Не читай `references/provider-contract.md`", skill)
         self.assertIn('fork_turns="none"', skill)
-        self.assertIn("один реальный user-facing result", skill)
-        self.assertIn("самостоятельно поднимись через применимые relations", skill)
-        self.assertIn("одну главную причинную мысль", skill)
+        self.assertIn("одну короткую user-facing задачу", skill)
+        self.assertIn("Только после успешного admission полностью прочитай", skill)
         self.assertIn("Routine", skill)
-        self.assertIn("английские слова не должны нести основную мысль", skill)
-        self.assertIn("Проверь понимание отдельно от фактов", skill)
-        self.assertIn("Если для пересказа нужна внутренняя предметная область", skill)
-        self.assertIn("придумывай варианты ради количества", skill)
         self.assertIn("готовый пользовательский текст", skill)
-        self.assertIn("все существенные факты сохранены", skill)
+        self.assertNotIn("одну главную причинную мысль", skill)
+        self.assertNotIn("первый смысловой слой", skill)
+        self.assertNotIn("неизменяемое смысловое ядро", skill)
+        self.assertIn("Установи исходный вопрос и факты", provider)
+        self.assertIn("Собери strategic context снизу вверх", provider)
+        self.assertIn("одну главную причинную мысль", provider)
+        self.assertIn("Проверь понимание", provider)
+        self.assertIn("Редакторская реконструкция", provider)
+        self.assertIn("неизменяемое ядро", provider)
         self.assertNotIn("PROBLEM_CONTEXT_ERROR", skill)
         self.assertNotIn("CONTEXT_INTEGRITY_ERROR", skill)
         self.assertNotIn("2–4 реально", skill)
@@ -408,27 +411,22 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Общий no-subagent rule означает ноль субагентов", normalized_skill)
         self.assertIn("Если effective topology rule не отключает comment Explainer", skill)
         self.assertIn("отдельному независимому субагенту", normalized_skill)
-        self.assertIn("текст самостоятельно не переписывай", normalized_skill)
+        self.assertIn("текст самостоятельно не улучшай", normalized_skill)
         self.assertIn("exact unfinished worktree/branch существует", normalized_skill)
         self.assertIn("active/unknown ownership не перехватывай", normalized_skill)
         self.assertIn(
             "Обычный `To Do → In Progress` не запускает Explainer",
             normalized_skill,
         )
-        self.assertIn(
-            "Пока действующее правило пользователя о субагентах не отключает Explainer",
-            handoff,
-        )
-        self.assertIn("обязательная независимая проверка", normalized_handoff)
-        self.assertIn("comment не публикуется", normalized_handoff)
-        self.assertIn("Если правило отключает Explainer", normalized_handoff)
-        self.assertIn("не заявляет о независимой проверке", normalized_handoff)
-        self.assertIn("Дополнительный поиск использует только чтение", handoff)
-        self.assertIn("Уровень исходного вопроса", handoff)
-        self.assertIn("Проверка понимания", handoff)
+        self.assertIn("Opaque client protocol Strategic Explainer", handoff)
+        self.assertIn("не является знанием ShipTask", normalized_handoff)
+        self.assertIn("Capability/source failure", normalized_handoff)
+        self.assertIn("user opt-out также не переносит provider method", normalized_handoff)
+        self.assertNotIn("одну главную причинную мысль", handoff)
+        self.assertNotIn("Проверка понимания", handoff)
         self.assertEqual(skill.count('fork_turns="none"'), 2)
         self.assertEqual(handoff.count('fork_turns="none"'), 1)
-        self.assertIn("independent reflection input", handoff)
+        self.assertIn("independent reflection input", normalized_handoff)
         self.assertNotIn("не вызывать отдельно", handoff)
         self.assertNotIn("сначала восстанови", skill)
 

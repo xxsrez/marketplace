@@ -72,11 +72,15 @@ scope, human requirements, cross-cutting acceptance/non-goals и целостн�
 `$ship-tasks:strategic-explainer` как отдельный publication unit: новый built-in
 `default` subagent с `fork_turns="none"`, одна compact task, exact planning scope
 и resolvable read-only anchors без inherited turns/tool transcript/process
-diary, твоего strategic view или прежнего candidate. Explainer сам собирает
-facts/context, но не выбирает decomposition, Project, status, labels, relations
-или write authority. Invalid invocation исправь и повтори новым clean subagent,
-старый не продолжай. Если grounded description недоступно, не создавай Epic;
-single Task, которой Epic не нужен, от этого не блокируется.
+diary, твоего analysis/strategic view, требований к форме ответа или прежнего
+candidate. Не читай provider-internal contract, не составляй explanation draft
+и не применяй методику Explainer самостоятельно. Прими готовый description и
+source basis либо refusal. Material facts проверь по authoritative planning
+sources; factual/structural correction всегда передавай новому clean subagent,
+старый не продолжай и текст самостоятельно не улучшай. Explainer не выбирает
+decomposition, Project, status, labels, relations или write authority. Если
+готовый grounded description недоступен, не создавай Epic; single Task, которой
+Epic не нужен, от этого не блокируется.
 
 Каждая подзадача получает один конкретный результат, exact change boundary,
 свой вклад в desired outcome Epic, material technical details, применимые parent
