@@ -30,6 +30,25 @@ def sha256_file(path: Path) -> str:
 
 
 class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
+    def test_skill_uses_get_mind_info_for_personal_mind_and_head(self) -> None:
+        skill = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            "Read the selected Mind and its current HEAD with `get_mind_info`.",
+            skill,
+        )
+        self.assertIn(
+            "Use `resolve_mind` only to discover one exact canonical handle before binding.",
+            skill,
+        )
+        self.assertIn("Never pass `/me` to `resolve_mind`", skill)
+        self.assertNotIn(
+            "Resolve its route or Personal Mind with `resolve_mind`.",
+            skill,
+        )
+
     def test_marketplace_installs_before_authentication(self) -> None:
         marketplace = read_json(
             REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json"
