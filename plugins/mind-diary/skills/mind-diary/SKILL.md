@@ -100,12 +100,15 @@ different Mind.
 
 ## Incremental typed OKF transfer
 
-Use this workflow only when the user explicitly selects one typed OKF Markdown
-entry, or a small explicitly related set, from a local Brain and asks to copy it
-into the current writable Mind. The source remains read-only: use ordinary
-local workspace read capability, never edit or reorganize it, and never inspect
-the user's real Brain for testing. Preserve each selected canonical path,
-frontmatter, body and unknown producer fields exactly, including
+Use this workflow only when the user explicitly selects either one typed OKF
+Markdown entry or explicitly enumerates every entry in a small related set from
+a local Brain and asks to copy it into the current writable Mind. Never infer,
+discover or add a related Markdown entry from links, proximity, tags, index
+membership or content; every transferred entry must be selected by the user.
+The source remains read-only: use ordinary local workspace read capability,
+never edit or reorganize it, and never inspect the user's real Brain for
+testing. Preserve each selected canonical path, frontmatter, body and unknown
+producer fields exactly, including
 `recorded_by`, `applies_to` and `sources`, except for link edits shown in the
 preview. Markdown stays Markdown in `commit_changeset`; never pass it through
 `prepare_local_file` or store it as an opaque BundleFile.
@@ -130,8 +133,9 @@ with exact `/raw/`, `/wiki/` or `/output/`:
 Build one ordinary changeset from a fresh binding and HEAD. It may create or
 replace the selected Markdown and explicitly referenced BundleFiles, then must
 update only target `index.md` with `replace_index` and target semantic `log.md`
-with `add_log_entry`. Apply the existing confirmation rules; after confirmation
-reread bindings and HEAD and call `commit_changeset` once with the unchanged
+with `add_log_entry`. Apply the existing confirmation rules. After confirmation,
+reread current bindings with `get_mind_bindings`, then resolve and reread the
+exact current HEAD, and only then call `commit_changeset` once with the unchanged
 write generation and exact payload/key. Never create a migration database or
 copy source project state.
 

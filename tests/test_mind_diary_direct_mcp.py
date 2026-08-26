@@ -483,13 +483,28 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         transfer = skill[start:end]
 
         self.assertLess(
-            transfer.index("ordinary\nlocal workspace read capability"),
+            transfer.index("ordinary local workspace read capability"),
             transfer.index("`commit_changeset`"),
         )
+        self.assertIn("explicitly enumerates every entry", transfer)
+        self.assertIn(
+            "Never infer,\ndiscover or add a related Markdown entry",
+            transfer,
+        )
+        self.assertIn("every transferred entry must be selected by the user", transfer)
+        self.assertNotIn("or a small explicitly related set", transfer)
         self.assertIn("`recorded_by`, `applies_to` and `sources`", transfer)
         self.assertIn("Markdown stays Markdown", transfer)
         self.assertRegex(transfer, re.compile(r"`/raw/`.*`/wiki/`.*`/output/`", re.S))
         self.assertIn("`before → after`", transfer)
+
+        confirmation = transfer.index("Apply the existing confirmation rules")
+        fresh_bindings = transfer.index("`get_mind_bindings`", confirmation)
+        fresh_head = transfer.index("exact current HEAD", fresh_bindings)
+        commit = transfer.index("`commit_changeset`", fresh_head)
+        self.assertLess(confirmation, fresh_bindings)
+        self.assertLess(fresh_bindings, fresh_head)
+        self.assertLess(fresh_head, commit)
 
         attachment_tools = [
             "`prepare_local_file`",
