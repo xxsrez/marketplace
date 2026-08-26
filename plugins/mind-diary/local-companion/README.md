@@ -47,8 +47,13 @@ Build and test from this directory:
 ```bash
 gofmt -w *.go
 go test -race ./...
-CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath \
-  -ldflags='-s -w' -o ../bin/mind-diary-local-darwin-arm64 .
-CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -trimpath \
-  -ldflags='-s -w' -o ../bin/mind-diary-local-darwin-amd64 .
+./build-release.sh 0.1.0+codex.YYYYMMDDhhmmss ../bin
 ```
+
+`build-release.sh` is the only release build entrypoint. It builds both macOS
+architectures with `-trimpath -buildvcs=false`, so a dirty checkout cannot
+stamp a stale Git revision into either artifact. The required immutable plugin
+version is supplied explicitly outside Go VCS metadata and embedded in MCP
+`serverInfo.version`. Marketplace provenance tests rebuild the exact checked-in
+source with this script and require byte-for-byte equality with both packaged
+binaries.

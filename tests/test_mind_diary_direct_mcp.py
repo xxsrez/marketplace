@@ -1,8 +1,11 @@
+import hashlib
 import json
 import os
 import platform
 import re
+import shutil
 import subprocess
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -16,6 +19,14 @@ UAT_CODEX_MCP_URL = f"{UAT_OAUTH_RESOURCE}/2025-11-25"
 
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
@@ -147,6 +158,13 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         responses = [json.loads(line) for line in completed.stdout.splitlines()]
         self.assertEqual(responses[0]["result"]["protocolVersion"], "2025-11-25")
+        manifest = read_json(
+            MIND_DIARY_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        )
+        self.assertEqual(
+            responses[0]["result"]["serverInfo"]["version"],
+            manifest["version"],
+        )
         tools = responses[1]["result"]["tools"]
         self.assertEqual(
             [tool["name"] for tool in tools],
@@ -161,6 +179,74 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("path", upload["inputSchema"]["properties"])
         self.assertNotIn("upload_url", upload["outputSchema"]["properties"])
         self.assertNotIn("local_file_ref", upload["outputSchema"]["properties"])
+
+    def test_packaged_binaries_reproduce_from_exact_head_without_vcs_metadata(self) -> None:
+        go = shutil.which("go")
+        self.assertIsNotNone(go, "Go is required to verify packaged binary provenance")
+        binary_names = (
+            "mind-diary-local-darwin-arm64",
+            "mind-diary-local-darwin-amd64",
+        )
+        for name in binary_names:
+            packaged = MIND_DIARY_PLUGIN_ROOT / "bin" / name
+            build_info = subprocess.run(
+                [go, "version", "-m", str(packaged)],
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=10,
+            )
+            self.assertEqual(build_info.returncode, 0, build_info.stderr)
+            self.assertNotIn("\tbuild\tvcs", build_info.stdout, name)
+
+        with tempfile.TemporaryDirectory() as directory:
+            clean_tree = Path(directory) / "tree"
+            clean_tree.mkdir()
+            archive = Path(directory) / "source.tar"
+            with archive.open("wb") as output:
+                archived = subprocess.run(
+                    [
+                        "git",
+                        "archive",
+                        "--format=tar",
+                        "HEAD",
+                        "plugins/mind-diary/local-companion",
+                        "plugins/mind-diary/.codex-plugin/plugin.json",
+                    ],
+                    cwd=REPOSITORY_ROOT,
+                    stdout=output,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                    timeout=10,
+                )
+            self.assertEqual(archived.returncode, 0, archived.stderr.decode())
+            with tarfile.open(archive) as source:
+                source.extractall(clean_tree, filter="data")
+
+            clean_plugin = clean_tree / "plugins" / "mind-diary"
+            clean_manifest = read_json(
+                clean_plugin / ".codex-plugin" / "plugin.json"
+            )
+            rebuilt = Path(directory) / "rebuilt"
+            build = subprocess.run(
+                [
+                    str(clean_plugin / "local-companion" / "build-release.sh"),
+                    clean_manifest["version"],
+                    str(rebuilt),
+                ],
+                cwd=clean_plugin / "local-companion",
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=120,
+            )
+            self.assertEqual(build.returncode, 0, build.stderr)
+            for name in binary_names:
+                self.assertEqual(
+                    sha256_file(rebuilt / name),
+                    sha256_file(MIND_DIARY_PLUGIN_ROOT / "bin" / name),
+                    f"{name} does not reproduce from the exact HEAD source",
+                )
 
     def test_packaged_launcher_enforces_trusted_workspace_process_config(self) -> None:
         if platform.system() != "Darwin":

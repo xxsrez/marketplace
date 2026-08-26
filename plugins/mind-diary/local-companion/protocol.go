@@ -12,6 +12,10 @@ import (
 
 const mcpProtocolVersion = "2026-07-28"
 
+// buildVersion is set to the immutable plugin version by build-release.sh.
+// Development binaries deliberately identify themselves as unpackageable.
+var buildVersion = "0.1.0+dev"
+
 type localFileService interface {
 	PrepareLocalFile(context.Context, prepareLocalFileInput) (prepareLocalFileResult, error)
 	UploadPreparedFile(context.Context, uploadPreparedFileInput) (stagedFileReceipt, error)
@@ -151,7 +155,7 @@ func handleMCPRequest(
 			"protocolVersion": protocolVersion,
 			"capabilities":    map[string]any{"tools": map[string]any{"listChanged": false}},
 			"serverInfo": map[string]any{
-				"name": "mind-diary-local", "title": "Mind Diary Local Files", "version": "0.1.0",
+				"name": "mind-diary-local", "title": "Mind Diary Local Files", "version": buildVersion,
 			},
 		}, nil
 	case "notifications/initialized", "notifications/cancelled":
