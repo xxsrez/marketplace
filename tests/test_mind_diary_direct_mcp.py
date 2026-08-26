@@ -3,6 +3,7 @@ import os
 import platform
 import re
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -69,6 +70,7 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             {
                 "command": "./bin/mind-diary-local-launcher",
                 "cwd": ".",
+                "env_vars": ["MIND_DIARY_WORKSPACE_ROOTS"],
                 "startup_timeout_sec": 10,
                 "tool_timeout_sec": 900,
             },
@@ -101,6 +103,8 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         for name in (
             "go.mod",
             "main.go",
+            "config.go",
+            "contract.go",
             "protocol.go",
             "local_file.go",
             "upload.go",
@@ -157,6 +161,99 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("path", upload["inputSchema"]["properties"])
         self.assertNotIn("upload_url", upload["outputSchema"]["properties"])
         self.assertNotIn("local_file_ref", upload["outputSchema"]["properties"])
+
+    def test_packaged_launcher_enforces_trusted_workspace_process_config(self) -> None:
+        if platform.system() != "Darwin":
+            self.skipTest("packaged local companion currently supports macOS only")
+        launcher = MIND_DIARY_PLUGIN_ROOT / "bin" / "mind-diary-local-launcher"
+        with tempfile.TemporaryDirectory() as workspace, tempfile.TemporaryDirectory() as outside:
+            workspace_path = Path(workspace)
+            outside_path = Path(outside)
+            inside_file = workspace_path / "inside.bin"
+            outside_file = outside_path / "outside.bin"
+            inside_file.write_bytes(b"inside")
+            outside_file.write_bytes(b"outside")
+            requests = "\n".join(
+                json.dumps(request)
+                for request in (
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 1,
+                        "method": "initialize",
+                        "params": {"protocolVersion": "2025-11-25"},
+                    },
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 2,
+                        "method": "tools/call",
+                        "params": {
+                            "name": "prepare_local_file",
+                            "arguments": {
+                                "path": str(inside_file),
+                                "source_kind": "workspace/generated_artifact",
+                            },
+                        },
+                    },
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 3,
+                        "method": "tools/call",
+                        "params": {
+                            "name": "prepare_local_file",
+                            "arguments": {
+                                "path": str(outside_file),
+                                "source_kind": "workspace/generated_artifact",
+                            },
+                        },
+                    },
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 4,
+                        "method": "tools/call",
+                        "params": {
+                            "name": "prepare_local_file",
+                            "arguments": {
+                                "path": str(outside_file),
+                                "source_kind": "local_path",
+                            },
+                        },
+                    },
+                )
+            ) + "\n"
+            environment = os.environ.copy()
+            environment["MIND_DIARY_WORKSPACE_ROOTS"] = workspace
+            completed = subprocess.run(
+                [str(launcher)],
+                input=requests,
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=10,
+                env=environment,
+            )
+
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        responses = {response["id"]: response for response in map(
+            json.loads, completed.stdout.splitlines()
+        )}
+        inside = responses[2]["result"]
+        self.assertFalse(inside["isError"])
+        self.assertEqual(
+            inside["structuredContent"]["source_kind"],
+            "workspace/generated_artifact",
+        )
+        rejected = responses[3]["result"]
+        self.assertTrue(rejected["isError"])
+        self.assertEqual(
+            rejected["structuredContent"]["error"]["code"],
+            "file_ingress_source_unsupported",
+        )
+        local = responses[4]["result"]
+        self.assertFalse(local["isError"])
+        self.assertEqual(local["structuredContent"]["source_kind"], "local_path")
+        serialized = json.dumps(responses)
+        self.assertNotIn(str(inside_file), serialized)
+        self.assertNotIn(str(outside_file), serialized)
 
     def test_skill_requires_authoritative_bindings_and_explicit_rebind(self) -> None:
         skill = (

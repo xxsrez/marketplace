@@ -8,6 +8,7 @@
     "mind-diary-local": {
       "command": "./bin/mind-diary-local-launcher",
       "cwd": ".",
+      "env_vars": ["MIND_DIARY_WORKSPACE_ROOTS"],
       "startup_timeout_sec": 10,
       "tool_timeout_sec": 900
     }

@@ -157,7 +157,7 @@ func TestUploadPreparedFileStreamsCredentiallessAndConsumesRef(t *testing.T) {
 		LocalFileRef: prepared.LocalFileRef,
 		UploadURL:    server.URL + uploadIntentRoutePrefix + testCapability,
 	})
-	assertLocalCode(t, err, "local_file_ref_unavailable")
+	assertLocalCode(t, err, "local_companion_ref_not_found")
 }
 
 func TestUploadPreparedFileReconcilesUnknownPut(t *testing.T) {
@@ -275,6 +275,6 @@ func TestUploadPreparedFileRetainsOnlyRetryableRejectedSnapshot(t *testing.T) {
 		_, err = service.UploadPreparedFile(context.Background(), uploadPreparedFileInput{
 			LocalFileRef: prepared.LocalFileRef, UploadURL: uploadURL,
 		})
-		assertLocalCode(t, err, "local_file_ref_unavailable")
+		assertLocalCode(t, err, "local_companion_ref_not_found")
 	})
 }

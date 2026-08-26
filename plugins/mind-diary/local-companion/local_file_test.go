@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -113,12 +114,12 @@ func TestPrepareEnforcesExpectedMetadataAndInclusiveLimit(t *testing.T) {
 	path := writeFixture(t, "fixture.bin", []byte("fixture"))
 	wrongSize := int64(1)
 	_, err := store.Prepare(prepareLocalFileInput{Path: path, ExpectedSize: &wrongSize})
-	assertLocalCode(t, err, "expected_size_mismatch")
+	assertLocalCode(t, err, "bundle_file_size_mismatch")
 	_, err = store.Prepare(prepareLocalFileInput{
 		Path:           path,
 		ExpectedSHA256: "sha256:" + strings.Repeat("0", 64),
 	})
-	assertLocalCode(t, err, "expected_sha256_mismatch")
+	assertLocalCode(t, err, "bundle_file_digest_mismatch")
 	oversize := filepath.Join(t.TempDir(), "oversize.bin")
 	file, err := os.Create(oversize)
 	if err != nil {
@@ -132,6 +133,183 @@ func TestPrepareEnforcesExpectedMetadataAndInclusiveLimit(t *testing.T) {
 	}
 	_, err = store.Prepare(prepareLocalFileInput{Path: oversize})
 	assertLocalCode(t, err, "bundle_file_size_limit_exceeded")
+}
+
+func TestWorkspaceSourceRequiresTrustedCanonicalRoot(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("local companion is macOS-only")
+	}
+	workspace := t.TempDir()
+	outside := t.TempDir()
+	insidePath := filepath.Join(workspace, "inside.bin")
+	outsidePath := filepath.Join(outside, "outside.bin")
+	if err := os.WriteFile(insidePath, []byte("inside"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(outsidePath, []byte("outside"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	canonicalRoots, err := canonicalWorkspaceRoots([]string{workspace})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store := newLocalFileStoreWithWorkspaceRoots(canonicalRoots)
+	t.Cleanup(func() { _ = store.Close() })
+	prepared, err := store.Prepare(prepareLocalFileInput{
+		Path: insidePath, SourceKind: "workspace/generated_artifact",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if prepared.SourceKind != "workspace/generated_artifact" {
+		t.Fatalf("wrong provenance: %#v", prepared)
+	}
+	_, err = store.Prepare(prepareLocalFileInput{
+		Path: outsidePath, SourceKind: "workspace/generated_artifact",
+	})
+	assertLocalCode(t, err, "file_ingress_source_unsupported")
+	if _, err := store.Prepare(prepareLocalFileInput{
+		Path: outsidePath, SourceKind: "local_path",
+	}); err != nil {
+		t.Fatalf("local_path should remain an explicit one-file authority: %v", err)
+	}
+	withoutRoots := newLocalFileStore()
+	t.Cleanup(func() { _ = withoutRoots.Close() })
+	_, err = withoutRoots.Prepare(prepareLocalFileInput{
+		Path: insidePath, SourceKind: "workspace/generated_artifact",
+	})
+	assertLocalCode(t, err, "file_ingress_source_unsupported")
+}
+
+func TestWorkspaceAuthorityRejectsCanonicalSymlinkEscape(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("local companion is macOS-only")
+	}
+	workspace := t.TempDir()
+	outside := t.TempDir()
+	outsidePath := filepath.Join(outside, "outside.bin")
+	if err := os.WriteFile(outsidePath, []byte("outside"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(workspace, "escape")
+	if err := os.Symlink(outside, link); err != nil {
+		t.Fatal(err)
+	}
+	canonicalRoots, err := canonicalWorkspaceRoots([]string{workspace})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store := newLocalFileStoreWithWorkspaceRoots(canonicalRoots)
+	t.Cleanup(func() { _ = store.Close() })
+	_, err = store.Prepare(prepareLocalFileInput{
+		Path:       filepath.Join(link, "outside.bin"),
+		SourceKind: "workspace/generated_artifact",
+	})
+	assertLocalCode(t, err, "file_ingress_source_unsupported")
+}
+
+func TestWorkspaceAuthorityBindsCanonicalEvidenceToOpenedDescriptor(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("local companion is macOS-only")
+	}
+	workspace := t.TempDir()
+	outside := t.TempDir()
+	for _, directory := range []string{workspace, outside} {
+		if err := os.WriteFile(filepath.Join(directory, "artifact.bin"), []byte(directory), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	selectorRoot := t.TempDir()
+	selector := filepath.Join(selectorRoot, "selected")
+	if err := os.Symlink(outside, selector); err != nil {
+		t.Fatal(err)
+	}
+	canonicalRoots, err := canonicalWorkspaceRoots([]string{workspace})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store := newLocalFileStoreWithWorkspaceRoots(canonicalRoots)
+	t.Cleanup(func() { _ = store.Close() })
+	realEval := store.hooks.evalSymlinks
+	store.hooks.evalSymlinks = func(path string) (string, error) {
+		if err := os.Remove(selector); err != nil {
+			return "", err
+		}
+		if err := os.Symlink(workspace, selector); err != nil {
+			return "", err
+		}
+		return realEval(path)
+	}
+	_, err = store.Prepare(prepareLocalFileInput{
+		Path:       filepath.Join(selector, "artifact.bin"),
+		SourceKind: "workspace/generated_artifact",
+	})
+	assertLocalCode(t, err, "file_ingress_source_unsupported")
+}
+
+func TestCanonicalRuntimeErrorContractParity(t *testing.T) {
+	expected := []string{
+		"bundle_file_digest_mismatch",
+		"bundle_file_size_limit_exceeded",
+		"bundle_file_size_mismatch",
+		"capacity_accounting_untrusted",
+		"capacity_fairness_limit",
+		"capacity_hard_limit",
+		"capacity_soft_limit",
+		"file_ingress_intent_conflict",
+		"file_ingress_intent_expired",
+		"file_ingress_source_unavailable",
+		"file_ingress_source_unsupported",
+		"file_ingress_transport_unavailable",
+		"invalid_bundle_file_name",
+		"invalid_path",
+		"invalid_request",
+		"invalid_upload_url",
+		"local_companion_cancelled",
+		"local_companion_concurrency_limit",
+		"local_companion_file_changed",
+		"local_companion_invalid_source_kind",
+		"local_companion_ref_expired",
+		"local_companion_ref_in_use",
+		"local_companion_ref_not_found",
+		"staging_quota_exceeded",
+	}
+	actual := make([]string, 0, len(canonicalRuntimeErrorCodes))
+	for code := range canonicalRuntimeErrorCodes {
+		actual = append(actual, code)
+	}
+	slices.Sort(actual)
+	if !slices.Equal(actual, expected) {
+		t.Fatalf("Go/runtime error contract diverged:\nactual=%v\nexpected=%v", actual, expected)
+	}
+	for _, retired := range []string{
+		"invalid_expected_metadata", "expected_size_mismatch", "expected_sha256_mismatch",
+		"invalid_local_file_ref", "local_file_ref_unavailable", "invalid_arguments", "internal_error",
+	} {
+		if _, exists := canonicalRuntimeErrorCodes[retired]; exists {
+			t.Fatalf("retired adapter-only code remains canonical: %s", retired)
+		}
+	}
+}
+
+func TestWorkspaceRootsComeOnlyFromValidatedProcessConfiguration(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("local companion is macOS-only")
+	}
+	first := t.TempDir()
+	second := t.TempDir()
+	t.Setenv(workspaceRootsEnvironment, strings.Join([]string{first, second}, string(filepath.ListSeparator)))
+	roots, err := configuredWorkspaceRoots()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(roots) != 2 || !withinWorkspaceRoots(filepath.Join(roots[0], "file.bin"), roots) {
+		t.Fatalf("trusted roots were not canonicalized: %#v", roots)
+	}
+	t.Setenv(workspaceRootsEnvironment, "relative-root")
+	if _, err := configuredWorkspaceRoots(); err == nil {
+		t.Fatal("relative process configuration was accepted")
+	}
 }
 
 func TestPreparedRefExpiresAndBusyCleanupDoesNotCloseActiveDescriptor(t *testing.T) {
@@ -169,6 +347,34 @@ func TestPreparedRefExpiresAndBusyCleanupDoesNotCloseActiveDescriptor(t *testing
 	if retained {
 		t.Fatal("expired descriptor survived release")
 	}
+}
+
+func TestPreparedRefUsesCanonicalNotFoundExpiredAndInUseCodes(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("local companion is macOS-only")
+	}
+	store := newLocalFileStore()
+	t.Cleanup(func() { _ = store.Close() })
+	now := time.Date(2026, 8, 26, 0, 0, 0, 0, time.UTC)
+	store.now = func() time.Time { return now }
+	path := writeFixture(t, "fixture.bin", []byte("fixture"))
+	prepared, err := store.Prepare(prepareLocalFileInput{Path: path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.acquire(prepared.LocalFileRef); err != nil {
+		t.Fatal(err)
+	}
+	_, err = store.acquire(prepared.LocalFileRef)
+	assertLocalCode(t, err, "local_companion_ref_in_use")
+	store.release(prepared.LocalFileRef, false)
+	now = now.Add(preparedFileTTL + time.Second)
+	_, err = store.acquire(prepared.LocalFileRef)
+	assertLocalCode(t, err, "local_companion_ref_expired")
+	_, err = store.acquire(prepared.LocalFileRef)
+	assertLocalCode(t, err, "local_companion_ref_not_found")
+	_, err = store.acquire("invalid")
+	assertLocalCode(t, err, "local_companion_ref_not_found")
 }
 
 func TestProtocolListsExactTwoStepTools(t *testing.T) {

@@ -182,7 +182,7 @@ func prepareLocalFileTool() map[string]any {
 				},
 				"source_kind": map[string]any{
 					"type": "string", "enum": []string{"local_path", "workspace/generated_artifact"},
-					"description": "Explicit provenance class; defaults to local_path.",
+					"description": "Explicit provenance class; defaults to local_path. workspace/generated_artifact requires a canonical path inside trusted process-configured workspace roots.",
 				},
 				"display_filename": map[string]any{
 					"type": "string", "minLength": 1, "maxLength": 255,
@@ -217,7 +217,7 @@ func uploadPreparedFileTool() map[string]any {
 			"required": []string{"local_file_ref", "upload_url"},
 			"properties": map[string]any{
 				"local_file_ref": map[string]any{
-					"type": "string", "pattern": "^mdlocal_v1_[A-Za-z0-9_-]{43}$",
+					"type": "string", "pattern": "^mdlocal_v1_[A-Za-z0-9_-]{16,256}$",
 				},
 				"upload_url": map[string]any{
 					"type": "string", "format": "uri", "maxLength": 4096,
@@ -241,7 +241,7 @@ func prepareLocalFileOutputSchema() map[string]any {
 			"expected_size", "expected_sha256", "expires_at",
 		},
 		"properties": map[string]any{
-			"local_file_ref":     map[string]any{"type": "string", "pattern": "^mdlocal_v1_[A-Za-z0-9_-]{43}$"},
+			"local_file_ref":     map[string]any{"type": "string", "pattern": "^mdlocal_v1_[A-Za-z0-9_-]{16,256}$"},
 			"source_kind":        map[string]any{"type": "string", "enum": []string{"local_path", "workspace/generated_artifact"}},
 			"display_filename":   map[string]any{"type": "string", "minLength": 1, "maxLength": 255},
 			"claimed_media_type": map[string]any{"type": "string", "minLength": 3, "maxLength": 127},
@@ -293,7 +293,7 @@ func handleToolCall(
 		if err := decodeExactArguments(params.Arguments, &input, []string{
 			"path", "source_kind", "display_filename", "claimed_media_type", "expected_size", "expected_sha256",
 		}); err != nil {
-			return toolError("invalid_arguments", "tool arguments are invalid", false), nil
+			return toolError("invalid_request", "tool arguments are invalid", false), nil
 		}
 		result, err = service.PrepareLocalFile(ctx, input)
 	case "upload_prepared_file":
@@ -301,7 +301,7 @@ func handleToolCall(
 		if err := decodeExactArguments(params.Arguments, &input, []string{
 			"local_file_ref", "upload_url",
 		}); err != nil {
-			return toolError("invalid_arguments", "tool arguments are invalid", false), nil
+			return toolError("invalid_request", "tool arguments are invalid", false), nil
 		}
 		result, err = service.UploadPreparedFile(ctx, input)
 	default:
@@ -312,7 +312,7 @@ func handleToolCall(
 		if errors.As(err, &localErr) {
 			return toolError(localErr.Code, localErr.Message, localErr.Retryable), nil
 		}
-		return toolError("internal_error", "the local file companion could not complete the request", false), nil
+		return toolError("file_ingress_transport_unavailable", "the local file companion could not complete the request", false), nil
 	}
 	textBytes, _ := json.Marshal(result)
 	return map[string]any{
@@ -343,6 +343,7 @@ func decodeExactArguments(raw json.RawMessage, destination any, allowed []string
 }
 
 func toolError(code, message string, retryable bool) map[string]any {
+	code = canonicalRuntimeErrorCode(code)
 	return map[string]any{
 		"content": []any{map[string]any{
 			"type": "text", "text": fmt.Sprintf("%s: %s", code, message),

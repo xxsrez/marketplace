@@ -20,6 +20,23 @@ consumes the local ref. A retryable or unknown transport result keeps the exact
 snapshot only until its original expiry; changed, expired or definitively
 rejected snapshots are closed.
 
+`source_kind: workspace/generated_artifact` is accepted only when the opened
+descriptor is the same file as a canonical path inside one of the trusted
+process-configured roots in `MIND_DIARY_WORKSPACE_ROOTS`. The value is a macOS
+path list supplied to the Codex process/launcher and forwarded explicitly by
+the packaged `.mcp.json`; it is never accepted as a tool argument. Missing,
+relative, nonexistent or non-directory roots fail closed for workspace
+provenance. `source_kind: local_path` remains an explicit one-file authority.
+Canonical path evidence is rebound to the exact opened descriptor before the
+root check, so a parent-symlink swap cannot relabel an outside file as a
+workspace artifact.
+
+The adapter emits only the shared runtime error vocabulary. Expected metadata
+uses `bundle_file_size_mismatch` and `bundle_file_digest_mismatch`; local refs
+use `local_companion_ref_not_found`, `local_companion_ref_expired` and
+`local_companion_ref_in_use`. Unknown internal adapter failures collapse to
+`file_ingress_transport_unavailable`, and messages remain path-free.
+
 The process uses no browser, OAuth flow, Keychain, daemon or proxy. The hosted
 Mind Diary MCP remains the authority for binding selection and for minting the
 one-use intent. This binary is pinned to the Mind Diary UAT origin and has no

@@ -23,7 +23,12 @@ func main() {
 			return errors.New("redirects are not accepted")
 		},
 	}
-	service, err := newLocalFileService(client, mindDiaryUATOrigin)
+	workspaceRoots, err := configuredWorkspaceRoots()
+	if err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, "Mind Diary local companion could not start: workspace authority is invalid.")
+		os.Exit(1)
+	}
+	service, err := newLocalFileService(client, mindDiaryUATOrigin, workspaceRoots...)
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Mind Diary local companion could not start.")
 		os.Exit(1)

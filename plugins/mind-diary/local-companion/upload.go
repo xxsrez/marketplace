@@ -19,7 +19,7 @@ const (
 	maxHostedResponseBytes  = int64(64 * 1024)
 )
 
-var localFileRefPattern = regexp.MustCompile(`^mdlocal_v1_[A-Za-z0-9_-]{43}$`)
+var localFileRefPattern = regexp.MustCompile(`^mdlocal_v1_[A-Za-z0-9_-]{16,256}$`)
 var uploadCapabilityPattern = regexp.MustCompile(`^mdupload_v1_[A-Za-z0-9_-]+$`)
 
 type hostedIntentStatus struct {
@@ -35,7 +35,7 @@ type localFileServiceImpl struct {
 	publicOrigin string
 }
 
-func newLocalFileService(client *http.Client, origin string) (*localFileServiceImpl, error) {
+func newLocalFileService(client *http.Client, origin string, workspaceRoots ...string) (*localFileServiceImpl, error) {
 	if client == nil {
 		return nil, errors.New("http client is required")
 	}
@@ -49,8 +49,13 @@ func newLocalFileService(client *http.Client, origin string) (*localFileServiceI
 	ownedClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
 		return errors.New("redirects are not accepted")
 	}
+	canonicalRoots, err := canonicalWorkspaceRoots(workspaceRoots)
+	if err != nil {
+		return nil, err
+	}
 	return &localFileServiceImpl{
-		store: newLocalFileStore(), httpClient: &ownedClient, publicOrigin: parsed.Scheme + "://" + parsed.Host,
+		store:      newLocalFileStoreWithWorkspaceRoots(canonicalRoots),
+		httpClient: &ownedClient, publicOrigin: parsed.Scheme + "://" + parsed.Host,
 	}, nil
 }
 
@@ -326,6 +331,7 @@ func hostedRejection(code string) error {
 		"capacity_fairness_limit",
 		"capacity_accounting_untrusted",
 		"file_ingress_transport_unavailable",
+		"invalid_request",
 	} {
 		if code == supported {
 			return newLocalError(code, "the hosted upload request was rejected", retryable)

@@ -108,8 +108,11 @@ and HEAD rules as other commits.
 1. Read fresh bindings and resolve the exact writable Mind and HEAD. Use
    `source_kind: local_path` for an ordinary selected path. Use
    `workspace/generated_artifact` only for one explicitly selected artifact in
-   the current authorized workspace; never infer workspace authority from its
-   filename or content.
+   a canonical root supplied by trusted Codex process configuration through
+   `MIND_DIARY_WORKSPACE_ROOTS`; never send a root as tool input or infer
+   workspace authority from filename or content. If that trusted configuration
+   is absent or rejects the path, use `local_path` only when the user explicitly
+   selected that exact file; do not relabel it as a workspace artifact.
 2. Call local `prepare_local_file` with the exact absolute path and optional
    safe display filename or expected metadata. It accepts one file only and
    returns a short-lived process-local `local_file_ref`, normalized advisory

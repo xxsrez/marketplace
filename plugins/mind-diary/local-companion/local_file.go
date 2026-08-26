@@ -84,9 +84,18 @@ type preparedFile struct {
 }
 
 type localFileStore struct {
-	mu    sync.Mutex
-	files map[string]*preparedFile
-	now   func() time.Time
+	mu             sync.Mutex
+	files          map[string]*preparedFile
+	now            func() time.Time
+	workspaceRoots []string
+	hooks          localFileHooks
+}
+
+type localFileHooks struct {
+	lstat          func(string) (os.FileInfo, error)
+	open           func(string) (*os.File, error)
+	evalSymlinks   func(string) (string, error)
+	canonicalLstat func(string) (os.FileInfo, error)
 }
 
 type localError struct {
@@ -99,13 +108,24 @@ func (err *localError) Error() string { return err.Code + ": " + err.Message }
 
 func newLocalError(code, message string, retryable ...bool) error {
 	return &localError{
-		Code: code, Message: message,
+		Code: canonicalRuntimeErrorCode(code), Message: message,
 		Retryable: len(retryable) > 0 && retryable[0],
 	}
 }
 
 func newLocalFileStore() *localFileStore {
-	return &localFileStore{files: make(map[string]*preparedFile), now: time.Now}
+	return newLocalFileStoreWithWorkspaceRoots(nil)
+}
+
+func newLocalFileStoreWithWorkspaceRoots(workspaceRoots []string) *localFileStore {
+	return &localFileStore{
+		files: make(map[string]*preparedFile), now: time.Now,
+		workspaceRoots: append([]string(nil), workspaceRoots...),
+		hooks: localFileHooks{
+			lstat: os.Lstat, open: openRegularFileNoFollow,
+			evalSymlinks: filepath.EvalSymlinks, canonicalLstat: os.Lstat,
+		},
+	}
 }
 
 func (store *localFileStore) Close() error {
@@ -130,21 +150,27 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 			"source_kind must select one supported local file source",
 		)
 	}
+	if sourceKind == "workspace/generated_artifact" && len(store.workspaceRoots) == 0 {
+		return prepareLocalFileResult{}, newLocalError(
+			"file_ingress_source_unsupported",
+			"workspace-generated files require an authorized workspace root",
+		)
+	}
 	if err := validateExactPath(input.Path); err != nil {
 		return prepareLocalFileResult{}, err
 	}
 	if input.ExpectedSize != nil && (*input.ExpectedSize < 0 || *input.ExpectedSize > maxLocalFileBytes) {
 		return prepareLocalFileResult{}, newLocalError(
-			"invalid_expected_metadata", "expected_size is outside the supported range",
+			"bundle_file_size_mismatch", "expected_size is outside the supported range",
 		)
 	}
 	if input.ExpectedSHA256 != "" && !sha256Pattern.MatchString(input.ExpectedSHA256) {
 		return prepareLocalFileResult{}, newLocalError(
-			"invalid_expected_metadata", "expected_sha256 must be a canonical sha256 digest",
+			"bundle_file_digest_mismatch", "expected_sha256 must be a canonical sha256 digest",
 		)
 	}
 
-	pathInfo, err := os.Lstat(input.Path)
+	pathInfo, err := store.hooks.lstat(input.Path)
 	if err != nil {
 		return prepareLocalFileResult{}, mapPathError(err)
 	}
@@ -159,7 +185,7 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 			"bundle_file_size_limit_exceeded", "file exceeds the inclusive 256 MiB limit",
 		)
 	}
-	file, err := openRegularFileNoFollow(input.Path)
+	file, err := store.hooks.open(input.Path)
 	if err != nil {
 		return prepareLocalFileResult{}, mapPathError(err)
 	}
@@ -174,6 +200,22 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 		return prepareLocalFileResult{}, newLocalError(
 			"local_companion_file_changed", "the selected file changed while it was opened",
 		)
+	}
+	if sourceKind == "workspace/generated_artifact" {
+		canonicalPath, resolveErr := store.hooks.evalSymlinks(input.Path)
+		if resolveErr != nil || !filepath.IsAbs(canonicalPath) {
+			return prepareLocalFileResult{}, newLocalError(
+				"file_ingress_source_unavailable", "workspace authority could not be verified",
+			)
+		}
+		canonicalInfo, statErr := store.hooks.canonicalLstat(canonicalPath)
+		if statErr != nil || !canonicalInfo.Mode().IsRegular() ||
+			canonicalInfo.Mode()&os.ModeSymlink != 0 || !os.SameFile(openedInfo, canonicalInfo) ||
+			!withinWorkspaceRoots(canonicalPath, store.workspaceRoots) {
+			return prepareLocalFileResult{}, newLocalError(
+				"file_ingress_source_unsupported", "the selected file is outside authorized workspace roots",
+			)
+		}
 	}
 	if openedInfo.Size() > maxLocalFileBytes {
 		return prepareLocalFileResult{}, newLocalError(
@@ -204,12 +246,12 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 	}
 	if input.ExpectedSize != nil && readSize != *input.ExpectedSize {
 		return prepareLocalFileResult{}, newLocalError(
-			"expected_size_mismatch", "the verified byte size does not match expected_size",
+			"bundle_file_size_mismatch", "the verified byte size does not match expected_size",
 		)
 	}
 	if input.ExpectedSHA256 != "" && digest != input.ExpectedSHA256 {
 		return prepareLocalFileResult{}, newLocalError(
-			"expected_sha256_mismatch", "the verified digest does not match expected_sha256",
+			"bundle_file_digest_mismatch", "the verified digest does not match expected_sha256",
 		)
 	}
 	mediaType := normalizeMediaType(input.ClaimedMediaType)
@@ -226,7 +268,7 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 	ref, err := newLocalFileRef()
 	if err != nil {
 		return prepareLocalFileResult{}, newLocalError(
-			"local_companion_unavailable", "a local snapshot reference could not be created",
+			"file_ingress_transport_unavailable", "a local snapshot reference could not be created",
 		)
 	}
 	prepared := &preparedFile{file: file, snapshot: fileSnapshot{
@@ -256,20 +298,38 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 
 func (store *localFileStore) acquire(ref string) (*preparedFile, error) {
 	if !localFileRefPattern.MatchString(ref) {
-		return nil, newLocalError("invalid_local_file_ref", "local_file_ref is invalid")
+		return nil, newLocalError("local_companion_ref_not_found", "local_file_ref is unavailable")
 	}
 	store.mu.Lock()
 	defer store.mu.Unlock()
-	store.removeExpiredLocked(store.now())
+	now := store.now()
+	if prepared := store.files[ref]; prepared != nil && !now.Before(prepared.snapshot.expiresAt) {
+		_ = prepared.file.Close()
+		delete(store.files, ref)
+		return nil, newLocalError("local_companion_ref_expired", "the prepared local snapshot expired")
+	}
+	store.removeExpiredLocked(now)
 	prepared := store.files[ref]
 	if prepared == nil {
-		return nil, newLocalError("local_file_ref_unavailable", "the prepared local snapshot is unavailable")
+		return nil, newLocalError("local_companion_ref_not_found", "the prepared local snapshot is unavailable")
 	}
 	if prepared.busy {
-		return nil, newLocalError("local_companion_concurrency_limit", "the prepared snapshot is already uploading", true)
+		return nil, newLocalError("local_companion_ref_in_use", "the prepared snapshot is already uploading")
 	}
 	prepared.busy = true
 	return prepared, nil
+}
+
+func withinWorkspaceRoots(candidate string, roots []string) bool {
+	for _, root := range roots {
+		relative, err := filepath.Rel(root, candidate)
+		if err == nil && relative != ".." &&
+			!strings.HasPrefix(relative, ".."+string(filepath.Separator)) &&
+			!filepath.IsAbs(relative) {
+			return true
+		}
+	}
+	return false
 }
 
 func (store *localFileStore) release(ref string, consume bool) {
