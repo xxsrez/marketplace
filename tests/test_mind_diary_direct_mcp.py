@@ -255,6 +255,86 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn(str(inside_file), serialized)
         self.assertNotIn(str(outside_file), serialized)
 
+    def test_packaged_launcher_consumes_ref_after_invalid_upload_url(self) -> None:
+        if platform.system() != "Darwin":
+            self.skipTest("packaged local companion currently supports macOS only")
+        launcher = MIND_DIARY_PLUGIN_ROOT / "bin" / "mind-diary-local-launcher"
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.bin"
+            source.write_bytes(b"definitive invalid URL fixture")
+            process = subprocess.Popen(
+                [str(launcher)],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            self.assertIsNotNone(process.stdin)
+            self.assertIsNotNone(process.stdout)
+            self.assertIsNotNone(process.stderr)
+
+            def request(payload: dict) -> dict:
+                process.stdin.write(json.dumps(payload) + "\n")
+                process.stdin.flush()
+                line = process.stdout.readline()
+                self.assertNotEqual(
+                    line,
+                    "",
+                    "packaged launcher closed stdout before returning a response",
+                )
+                return json.loads(line)
+
+            try:
+                request({
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "initialize",
+                    "params": {"protocolVersion": "2025-11-25"},
+                })
+                prepared = request({
+                    "jsonrpc": "2.0",
+                    "id": 2,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "prepare_local_file",
+                        "arguments": {"path": str(source)},
+                    },
+                })
+                local_file_ref = prepared["result"]["structuredContent"]["local_file_ref"]
+                invalid_upload = {
+                    "jsonrpc": "2.0",
+                    "id": 3,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "upload_prepared_file",
+                        "arguments": {
+                            "local_file_ref": local_file_ref,
+                            "upload_url": "https://example.com/not-a-mind-diary-intent",
+                        },
+                    },
+                }
+                first = request(invalid_upload)
+                invalid_upload["id"] = 4
+                second = request(invalid_upload)
+            finally:
+                process.stdin.close()
+                process.wait(timeout=10)
+                stderr_output = process.stderr.read()
+                process.stdout.close()
+                process.stderr.close()
+
+        self.assertEqual(process.returncode, 0, stderr_output)
+        self.assertEqual(
+            first["result"]["structuredContent"]["error"]["code"],
+            "invalid_upload_url",
+        )
+        self.assertEqual(
+            second["result"]["structuredContent"]["error"]["code"],
+            "local_companion_ref_not_found",
+        )
+        serialized = json.dumps((first, second))
+        self.assertNotIn(str(source), serialized)
+
     def test_skill_requires_authoritative_bindings_and_explicit_rebind(self) -> None:
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"

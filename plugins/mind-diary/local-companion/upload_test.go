@@ -217,7 +217,6 @@ func TestUploadPreparedFileRejectsForeignOrNonExactURLWithoutNetwork(t *testing.
 	}
 	fixture := &intentFixture{}
 	service, server := testUploadService(t, fixture)
-	prepared := prepareUploadFixture(t, service, fixture, []byte("fixture"))
 	for name, uploadURL := range map[string]string{
 		"foreign":          "https://example.com" + uploadIntentRoutePrefix + testCapability,
 		"query":            server.URL + uploadIntentRoutePrefix + testCapability + "?leak=1",
@@ -225,10 +224,16 @@ func TestUploadPreparedFileRejectsForeignOrNonExactURLWithoutNetwork(t *testing.
 		"short capability": server.URL + uploadIntentRoutePrefix + "mdupload_v1_short",
 	} {
 		t.Run(name, func(t *testing.T) {
+			prepared := prepareUploadFixture(t, service, fixture, []byte("fixture "+name))
 			_, err := service.UploadPreparedFile(context.Background(), uploadPreparedFileInput{
 				LocalFileRef: prepared.LocalFileRef, UploadURL: uploadURL,
 			})
 			assertLocalCode(t, err, "invalid_upload_url")
+			_, err = service.UploadPreparedFile(context.Background(), uploadPreparedFileInput{
+				LocalFileRef: prepared.LocalFileRef,
+				UploadURL:    server.URL + uploadIntentRoutePrefix + testCapability,
+			})
+			assertLocalCode(t, err, "local_companion_ref_not_found")
 		})
 	}
 	fixture.mu.Lock()

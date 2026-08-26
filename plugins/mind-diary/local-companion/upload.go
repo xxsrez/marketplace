@@ -80,6 +80,7 @@ func (service *localFileServiceImpl) UploadPreparedFile(
 	defer func() { service.store.release(input.LocalFileRef, consume) }()
 	uploadURL, err := service.exactUploadURL(input.UploadURL)
 	if err != nil {
+		consume = true
 		return stagedFileReceipt{}, err
 	}
 
