@@ -82,8 +82,9 @@ worktree не требуют. Только integration owner делает fan-in
 Пользовательский profile override для субагентов имеет приоритет. Без него
 `gpt-5.6-luna`/`max` получает только genuinely simple packet: bounded,
 self-contained, с ясными acceptance/evidence и без material creative,
-architectural, authority/risk или environment uncertainty. Остальные packets и
-Strategic Explainer наследуют current model/effort.
+architectural, authority/risk или environment uncertainty. Остальные рабочие
+packets наследуют current model/effort. Ordinary Strategic Explainer является
+отдельным exact Luna Max lane по client protocol и current profile не наследует.
 
 Luna не выполняет corrective recovery mutations. При ambiguity,
 context/contract conflict, unexpected environment/tool state, scope expansion

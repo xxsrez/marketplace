@@ -74,11 +74,13 @@ Explainer отдельного worktree не требуют. Только integr
 simple packet запускай на `gpt-5.6-luna`/`max`: bounded self-contained scope,
 ясные acceptance/evidence, disjoint ownership, без material creative/product/
 architecture/authority/risk judgment и environment uncertainty. Остальные
-packets и Strategic Explainer наследуют current model/effort; маленький diff сам
-по себе не simple. При ambiguity, context/contract conflict, unexpected
-environment/tool state, scope expansion или proof gap Luna прекращает packet без
-corrective mutations, guess и ослабления acceptance; bounded read-only read-back
-partial effects обязателен. Верни exact effects/evidence/unknown integration
+packets наследуют current model/effort; маленький diff сам по себе не simple.
+Ordinary Strategic Explainer использует отдельный exact Luna Max contract из
+раздела 5 и current profile не наследует. При ambiguity, context/contract
+conflict, unexpected environment/tool state, scope expansion или proof gap Luna
+прекращает packet без corrective mutations, guess и ослабления acceptance;
+bounded read-only read-back partial effects обязателен. Верни exact
+effects/evidence/unknown integration
 owner на current profile без повторного cheap Luna loop. Если current primary —
 Luna и broader context не снимает uncertainty, сообщи
 `luna-escalation=not-available` без скрытой подмены Sol. Для override выбери
@@ -235,9 +237,12 @@ Task/scope report, blocker explanation и final — отдельная publicati
 routine chat/progress unit не создают.
 
 Следуй [client protocol](references/strategic-explainer.md). Ordinary provider
-вызывай новым `default` read-only subagent с `fork_turns="none"`, exact terminal
-role lock, одной compact user-facing task, exact scope, resolvable read-only
-anchors и opaque clean envelope; не читай provider-internal contract.
+вызывай новым `default` read-only subagent с `fork_turns="none"`,
+`model="gpt-5.6-luna"`, `reasoning_effort="max"`, exact terminal role lock,
+одной compact user-facing task, exact scope, resolvable read-only anchors и
+opaque clean envelope; не читай provider-internal contract и не наследуй current
+profile. Недоступный exact Luna Max считай provider failure и переходи в native
+без скрытой подмены Sol или другим profile.
 
 Provider result — готовый пользовательский text и отдельно обозначенный source
 basis либо operational refusal. Публикуй только text; basis к нему не дописывай.

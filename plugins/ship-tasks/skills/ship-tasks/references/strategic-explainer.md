@@ -38,7 +38,9 @@ Opt-out не разрешает применять внутренний мето
 ## Ordinary path
 
 Для каждой publication unit создай нового built-in `default` read-only subagent
-с `fork_turns="none"`. Compact task содержит:
+с `fork_turns="none"`, `model="gpt-5.6-luna"` и
+`reasoning_effort="max"`. Не наследуй current model/effort. Compact task
+содержит:
 
 - отдельную точную строку `STRATEGIC_EXPLAINER_PROVIDER_V1`;
 - identifier `$strategic-explainer:strategic-explainer`;
@@ -51,6 +53,9 @@ Opt-out не разрешает применять внутренний мето
 analysis/rationale, strategic summary, format rules и прежний candidate. Не
 читай ordinary provider-only entrypoint или internal contract и не составляй
 текст за provider-а.
+
+Если exact Luna Max profile недоступен, не заменяй его скрыто на Sol или другой
+profile: считай ordinary provider недоступным и переводи run в native mode.
 
 `STRATEGIC_EXPLAINER_INVOCATION_ERROR` из-за structural defect исправь одним
 новым clean subagent; follow-up старому запрещён. Повторный structural refusal

@@ -70,11 +70,13 @@ deliverable частей, разных проверяемых результат
 Epic сохраняет problem, beneficiary, desired outcome, strategic intent, exact
 scope, human requirements, cross-cutting acceptance/non-goals и целостный вклад
 подзадач. Перед его созданием примени sibling
-`$strategic-explainer:strategic-explainer` как отдельный publication unit: новый built-in
-`default` subagent с `fork_turns="none"`, одна compact task, exact planning scope
-и resolvable read-only anchors без inherited turns/tool transcript/process
+`$strategic-explainer:strategic-explainer` как отдельный publication unit: новый
+built-in `default` subagent с `fork_turns="none"`, `model="gpt-5.6-luna"` и
+`reasoning_effort="max"`, одна compact task, exact planning scope и resolvable
+read-only anchors без inherited turns/tool transcript/process
 diary, твоего analysis/strategic view, требований к форме ответа или прежнего
-candidate. Не читай provider-internal contract, не составляй explanation draft
+candidate. Не наследуй current model/effort и не подменяй недоступную Luna на
+Sol. Не читай provider-internal contract, не составляй explanation draft
 и не применяй методику Explainer самостоятельно. Прими готовый description и
 отдельно обозначенный source basis либо refusal; в Epic записывай только
 description. Material facts проверь по authoritative planning sources;

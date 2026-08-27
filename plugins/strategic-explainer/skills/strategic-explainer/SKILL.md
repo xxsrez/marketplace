@@ -30,7 +30,8 @@ Role lock не выводится из истории диалога, tool calls
 Direct user request и вызов из другого workflow используют один API:
 
 1. Не готовь explanation candidate и не применяй внутренний метод provider-а.
-2. Создай нового built-in `default` subagent с `fork_turns="none"`.
+2. Создай нового built-in `default` subagent с `fork_turns="none"`,
+   `model="gpt-5.6-luna"` и `reasoning_effort="max"`.
 3. Передай ему ровно одну compact task со следующими частями:
    - отдельная точная строка `STRATEGIC_EXPLAINER_PROVIDER_V1`;
    - указание применить `$strategic-explainer:strategic-explainer`;
@@ -41,6 +42,10 @@ Direct user request и вызов из другого workflow использу�
 5. Прими только publication-ready text с отдельно обозначенным коротким source
    basis либо `STRATEGIC_EXPLAINER_INVOCATION_ERROR`. Публикуй только текст: не
    сливай basis с сообщением и не переписывай provider result.
+
+Не наследуй current model/effort и не подменяй недоступную Luna на SOL или
+другой profile. Недоступность exact Luna Max provider-а обрабатывается как
+provider unavailability по contract вызывающего workflow.
 
 Если provider вернул invocation error, исправь названный structural defect и
 создай один новый clean subagent с тем же role lock; follow-up прежнему

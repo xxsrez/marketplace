@@ -41,9 +41,10 @@ anchors и не анализируй предметную область. Вер
 
 Затем кратко укажи точный defect, объясни, что этот provider предназначен только
 для одной user-facing formulation/editing task, и дай caller-у исправимый
-рецепт: создать новый built-in `default` subagent с `fork_turns="none"`, exact
-role lock `STRATEGIC_EXPLAINER_PROVIDER_V1`, одной publication task, exact scope
-и resolvable read-only anchors. После отказа остановись. Не исправляй собственный
+рецепт: создать новый built-in `default` subagent с `fork_turns="none"`,
+`model="gpt-5.6-luna"`, `reasoning_effort="max"`, exact role lock
+`STRATEGIC_EXPLAINER_PROVIDER_V1`, одной publication task, exact scope и
+resolvable read-only anchors. После отказа остановись. Не исправляй собственный
 вызов и не запускай замену.
 
 Если fork metadata не виден, проверяй только наблюдаемые признаки и не утверждай,
