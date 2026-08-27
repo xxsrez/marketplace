@@ -70,18 +70,17 @@ deliverable частей, разных проверяемых результат
 Epic сохраняет problem, beneficiary, desired outcome, strategic intent, exact
 scope, human requirements, cross-cutting acceptance/non-goals и целостный вклад
 подзадач. Перед его созданием примени sibling
-`$strategic-explainer:strategic-explainer` как отдельный publication unit: новый
-built-in `default` subagent с `fork_turns="none"`, `model="gpt-5.6-luna"` и
-`reasoning_effort="max"`, одна compact task, exact planning scope и resolvable
-read-only anchors без inherited turns/tool transcript/process
-diary, твоего analysis/strategic view, требований к форме ответа или прежнего
-candidate. Не наследуй current model/effort и не подменяй недоступную Luna на
-Sol. Не читай provider-internal contract, не составляй explanation draft
-и не применяй методику Explainer самостоятельно. Прими готовый description и
-отдельно обозначенный source basis либо refusal; в Epic записывай только
-description. Material facts проверь по authoritative planning sources;
-factual/structural correction всегда передавай новому clean subagent,
-старый не продолжай и текст самостоятельно не улучшай. Explainer не выбирает
+`$strategic-explainer:strategic-explainer` как semantic facade отдельной
+publication unit. Передай только назначение description, исходный вопрос, exact
+planning scope, язык, material constraints и resolvable read-only anchors. Не
+выбирай и не передавай никакие другие invocation parameters или provider
+instructions: внутренним исполнением полностью владеет facade.
+Не читай provider-internal contract, не составляй explanation draft и не
+применяй методику Explainer самостоятельно. Прими готовый description и
+отдельно обозначенный source basis либо operational unavailability; в Epic
+записывай только description. Material facts проверь по authoritative planning
+sources; factual correction передавай новым semantic call, а текст
+самостоятельно не улучшай. Explainer не выбирает
 decomposition, Project, status, labels, relations или write authority. Если
 готовый grounded description недоступен, не создавай Epic; single Task, которой
 Epic не нужен, от этого не блокируется.

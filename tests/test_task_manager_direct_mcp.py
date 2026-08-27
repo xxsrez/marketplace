@@ -180,11 +180,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("one fresh read-only critic", manifest["interface"]["longDescription"])
         self.assertIn("stale or inconclusive reviews remain In Review", manifest["interface"]["longDescription"])
         self.assertIn("selected provider result as reflection input", manifest["interface"]["longDescription"])
-        self.assertIn("uses ordinary `$strategic-explainer:strategic-explainer`", manifest["interface"]["longDescription"])
-        self.assertIn("gpt-5.6-luna at max reasoning effort", manifest["interface"]["longDescription"])
-        self.assertIn("otherwise the main agent writes natively", manifest["interface"]["longDescription"])
+        self.assertIn("ordinary `$strategic-explainer:strategic-explainer` is installed", manifest["interface"]["longDescription"])
+        self.assertIn("pass it only the purpose, bounded scope", manifest["interface"]["longDescription"])
+        self.assertIn("facade owns all internal execution and editing behavior", manifest["interface"]["longDescription"])
         self.assertIn("independent optional installation", manifest["interface"]["longDescription"])
-        self.assertIn("without imitating provider methods", manifest["interface"]["longDescription"])
+        self.assertIn("clients neither receive nor reproduce those instructions", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
                 prompt.startswith("Create exactly one Task in Task Manager")
@@ -224,9 +224,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("current unreleased Release", skill)
         self.assertIn("Не создавай Epic с одной формальной подзадачей", skill)
         self.assertIn("$strategic-explainer:strategic-explainer", skill)
-        self.assertIn('model="gpt-5.6-luna"', skill)
-        self.assertIn('reasoning_effort="max"', skill)
-        self.assertIn("Не наследуй current model/effort", skill)
+        self.assertIn("как semantic facade отдельной", skill)
+        self.assertIn("назначение description", skill)
+        self.assertNotIn('model="gpt-5.6-luna"', skill)
+        self.assertNotIn('reasoning_effort="max"', skill)
+        self.assertNotIn("STRATEGIC_EXPLAINER_PROVIDER_V1", skill)
         self.assertIn("Не превращай шаги исходного плана в Tasks механически", skill)
         self.assertIn("самодостаточную проекцию", skill)
         self.assertIn("Epic context не расширяет scope child", skill)
@@ -333,8 +335,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Инвариант effects", report)
         self.assertIn("До связанного существенного status transition", report)
         self.assertIn("Client protocol выбора Strategic Explainer", handoff)
-        self.assertIn("нового built-in `default` read-only subagent", handoff)
-        self.assertIn("ordinary provider-only entrypoint или internal contract", handoff)
+        self.assertIn("Для каждой publication unit сделай один semantic call", handoff)
+        self.assertIn(
+            "внутренним исполнением полностью владеет facade Strategic Explainer",
+            " ".join(handoff.split()),
+        )
         self.assertIn(
             "Обычный `To Do → In Progress` не запускает publication unit",
             " ".join(skill.split()),
@@ -401,18 +406,29 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertRegex(manifest["version"], r"^0\.1\.0\+codex\.\d{14}$")
         self.assertNotIn("mcpServers", manifest)
         self.assertNotIn("apps", manifest)
+        public_manifest = json.dumps(manifest["interface"], ensure_ascii=False)
+        for internal_marker in (
+            "fork_turns",
+            "STRATEGIC_EXPLAINER_PROVIDER_V1",
+            "reasoning_effort",
+            "главную причинную мысль",
+            "Проверь понимание",
+            "Редакторская реконструкция",
+        ):
+            self.assertNotIn(internal_marker, public_manifest)
         self.assertFalse((STRATEGIC_EXPLAINER_PLUGIN_ROOT / ".mcp.json").exists())
         self.assertIn("name: strategic-explainer", skill)
-        self.assertIn("routing skill к изолированному provider-subagent", skill)
-        self.assertIn("Во всех остальных случаях текущий агент является caller", skill)
+        self.assertIn("семантический facade к изолированному provider-subagent", skill)
+        self.assertIn("текущий агент исполняет facade router", skill)
         self.assertIn("references/provider-entrypoint.md", skill)
         self.assertIn("references/provider-contract.md", skill)
         self.assertIn('fork_turns="none"', skill)
         self.assertIn('model="gpt-5.6-luna"', skill)
         self.assertIn('reasoning_effort="max"', skill)
         self.assertIn("Не наследуй current model/effort", skill)
-        self.assertIn("gpt-5.6-luna", metadata)
-        self.assertIn("reasoning_effort=max", metadata)
+        self.assertNotIn("gpt-5.6-luna", metadata)
+        self.assertNotIn("reasoning_effort", metadata)
+        self.assertNotIn("STRATEGIC_EXPLAINER_PROVIDER_V1", metadata)
         self.assertIn("одна реальная user-facing formulation", skill)
         self.assertIn("Сразу полностью прочитай", skill)
         self.assertIn("Routine", skill)
@@ -477,16 +493,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             normalized_skill,
         )
         self.assertIn("Client protocol выбора Strategic Explainer", handoff)
-        self.assertIn('model="gpt-5.6-luna"', handoff)
-        self.assertIn('reasoning_effort="max"', handoff)
-        self.assertIn("Не наследуй current model/effort", handoff)
-        self.assertIn("не заменяй его скрыто на Sol", handoff)
+        self.assertNotIn('model="gpt-5.6-luna"', handoff)
+        self.assertNotIn('reasoning_effort="max"', handoff)
+        self.assertNotIn("STRATEGIC_EXPLAINER_PROVIDER_V1", handoff)
+        self.assertIn("semantic call", handoff)
         self.assertIn("Матрица выбора", normalized_handoff)
         self.assertIn("Opt-out", normalized_handoff)
         self.assertNotIn("одну главную причинную мысль", handoff)
         self.assertNotIn("Проверка понимания", handoff)
-        self.assertEqual(skill.count('fork_turns="none"'), 2)
-        self.assertEqual(handoff.count('fork_turns="none"'), 1)
+        self.assertEqual(skill.count('fork_turns="none"'), 1)
+        self.assertEqual(handoff.count('fork_turns="none"'), 0)
         self.assertIn("reflection input", normalized_handoff)
         self.assertNotIn("не вызывать отдельно", handoff)
         self.assertNotIn("сначала восстанови", skill)

@@ -40,7 +40,7 @@ anchors и не анализируй предметную область. Вер
 `STRATEGIC_EXPLAINER_INVOCATION_ERROR`
 
 Затем кратко укажи точный defect, объясни, что этот provider предназначен только
-для одной user-facing formulation/editing task, и дай caller-у исправимый
+для одной user-facing formulation/editing task, и дай facade router исправимый
 рецепт: создать новый built-in `default` subagent с `fork_turns="none"`,
 `model="gpt-5.6-luna"`, `reasoning_effort="max"`, exact role lock
 `STRATEGIC_EXPLAINER_PROVIDER_V1`, одной publication task, exact scope и

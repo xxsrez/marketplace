@@ -95,21 +95,15 @@ Ship Tasks is a separate plugin with two coordinated Task Manager skills:
   contract. Codex manifests do not provide a plugin-to-plugin dependency field,
   so Strategic Explainer remains a separate optional installation for Ship Tasks.
 
-Strategic Explainer is a standalone generic communication plugin. It exposes a
-fresh stateless API for one real user-facing comment, report, decision or state
-explanation, blocker report, final, or explicit editing request. A new default
-subagent with `fork_turns="none"` receives an exact terminal provider role lock,
-one short task, exact scope, and resolvable read-only source anchors without
-inherited process context, caller analysis, or candidate text. The caller sees
-only this opaque protocol, accepts ready text and a separate source basis or an
-operational refusal, and never reads or applies the provider method. The
-provider never becomes a caller, router, coordinator, or evaluator and never
-invokes Strategic Explainer or creates another agent. Off-role planning,
-implementation, mutation, lifecycle, authority, and orchestration requests
-return a precise invocation error and clean-call recipe. An admitted provider
-reconstructs the reader's actual question from evidence, preserves material
-facts and uncertainty, removes implementation noise and mixed-language jargon,
-and makes no status, scope, authority, or mutation decisions.
+Strategic Explainer is a standalone generic communication plugin with a
+semantic facade for one real user-facing comment, report, decision or state
+explanation, blocker report, final, or explicit editing request. A client sends
+only the purpose, bounded scope, language and material constraints, plus
+resolvable read-only source anchors. The facade owns all internal invocation,
+isolation, profile, validation, retry, and editing behavior; clients neither
+receive nor reproduce that information. It returns publication-ready text with
+a separate source basis or operational unavailability and makes no status,
+scope, authority, or mutation decisions.
 
 Mentioning `$task-manager` alone still authorizes only the requested adapter
 operation. Use `$ship-tasks` or an unambiguous natural-language delivery request

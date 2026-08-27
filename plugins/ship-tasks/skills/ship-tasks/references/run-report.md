@@ -8,10 +8,10 @@
 Сначала основной агент перечитывает затронутые Tasks, комментарии, статусы,
 применимый Goal и обязательные внешние действия. Он формирует не explanation
 draft, а authoritative source anchors и factual inventory ниже. В ordinary mode
-provider получает одну короткую задачу, exact run scope и эти resolvable anchors
-через opaque clean invocation с terminal role lock. Source packet исключает
-журнал инструментов, caller analysis, format rules, прежнюю формулировку и
-склейку комментариев.
+основной агент передаёт semantic facade одну короткую задачу, exact run scope и
+эти resolvable anchors. Никакие другие invocation parameters или provider
+instructions не передаются. Source packet исключает журнал инструментов, caller
+analysis, format rules, прежнюю формулировку и склейку комментариев.
 
 Готовый text проверяется только на material factual conflict с authoritative
 state. При конфликте исправляются sources/anchors и выполняется новый pass того

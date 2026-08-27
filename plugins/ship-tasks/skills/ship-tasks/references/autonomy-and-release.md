@@ -83,8 +83,8 @@ worktree не требуют. Только integration owner делает fan-in
 `gpt-5.6-luna`/`max` получает только genuinely simple packet: bounded,
 self-contained, с ясными acceptance/evidence и без material creative,
 architectural, authority/risk или environment uncertainty. Остальные рабочие
-packets наследуют current model/effort. Ordinary Strategic Explainer является
-отдельным exact Luna Max lane по client protocol и current profile не наследует.
+packets наследуют current model/effort. Strategic Explainer не относится к этой
+классификации: communication path вызывает только его semantic facade.
 
 Luna не выполняет corrective recovery mutations. При ambiguity,
 context/contract conflict, unexpected environment/tool state, scope expansion

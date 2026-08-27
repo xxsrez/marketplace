@@ -37,31 +37,25 @@ Opt-out не разрешает применять внутренний мето
 
 ## Ordinary path
 
-Для каждой publication unit создай нового built-in `default` read-only subagent
-с `fork_turns="none"`, `model="gpt-5.6-luna"` и
-`reasoning_effort="max"`. Не наследуй current model/effort. Compact task
-содержит:
+Для каждой publication unit сделай один semantic call
+`$strategic-explainer:strategic-explainer`. Передай только:
 
-- отдельную точную строку `STRATEGIC_EXPLAINER_PROVIDER_V1`;
-- identifier `$strategic-explainer:strategic-explainer`;
-- одну короткую user-facing formulation task;
-- exact scope;
-- resolvable read-only anchors к current Task/relations, evidence/candidate,
-  bounded session state и project/repository sources.
+- назначение и исходный пользовательский вопрос;
+- одну реальную formulation либо explicit editing task;
+- exact scope и язык;
+- material constraints;
+- resolvable read-only anchors к current Task/relations, evidence, bounded
+  session state и project/repository sources.
 
-Не передавай inherited conversation, tool transcript, process diary, caller
-analysis/rationale, strategic summary, format rules и прежний candidate. Не
-читай ordinary provider-only entrypoint или internal contract и не составляй
-текст за provider-а.
+Не передавай explanation candidate, caller analysis/rationale, strategic
+summary, format rules или методику улучшения текста. Не выбирай и не упоминай
+никакие другие invocation parameters или provider instructions: внутренним
+исполнением полностью владеет facade Strategic Explainer.
 
-Если exact Luna Max profile недоступен, не заменяй его скрыто на Sol или другой
-profile: считай ordinary provider недоступным и переводи run в native mode.
-
-`STRATEGIC_EXPLAINER_INVOCATION_ERROR` из-за structural defect исправь одним
-новым clean subagent; follow-up старому запрещён. Повторный structural refusal
-или другой provider failure переводит mode в native. Factual conflict получает
-corrected source/anchor и новый clean invocation того же ordinary provider, пока
-он остаётся исправимым factual conflict, а не provider failure.
+Facade возвращает готовый text и отдельно обозначенный source basis либо
+operational unavailability. Final failure переводит run в native. Factual
+conflict получает corrected source/anchor и новый semantic call того же ordinary
+provider, пока он остаётся исправимым factual conflict, а не provider failure.
 
 ## Native path
 
