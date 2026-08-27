@@ -1,6 +1,6 @@
 {
   "name": "strategic-explainer",
-  "version": "0.1.0+codex.20260826212936",
+  "version": "0.1.0+codex.20260827143938",
   "description": "Turn source-grounded technical results into concise, human-readable explanations without losing meaning, uncertainty, or next actions.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "Strategic Explainer",
     "shortDescription": "Explain technical results clearly without losing the point.",
-    "longDescription": "Strategic Explainer is a standalone read-only communication skill for one real user-facing comment, report, decision explanation, blocker report, final, or explicit editing request. Its router sends the publication unit to a fresh stateless subagent with exact scope and resolvable read-only sources, keeping inherited process history and caller drafts out of the explanation. The provider reconstructs the reader's core question from evidence, preserves material facts, uncertainty, impact, and the next action, and removes implementation noise, internal identifiers, mixed-language jargon, and redundant verification narration. It returns publication-ready text plus a separate source basis. It does not choose scope or status, make authority decisions, mutate systems, or bundle connectors.",
+    "longDescription": "Strategic Explainer is a standalone read-only communication skill for one real user-facing comment, report, decision explanation, blocker report, final, or explicit editing request. Its router sends the publication unit to a fresh stateless subagent with an exact terminal provider role lock, exact scope, and resolvable read-only sources, keeping inherited process history and caller drafts out of the explanation. The provider has one role: formulate that publication unit. It never becomes a caller, router, coordinator, or evaluator; never invokes Strategic Explainer or creates another agent; and rejects planning, implementation, mutations, lifecycle decisions, authority decisions, or orchestration with a precise invocation error and corrected clean-call recipe. An admitted provider reconstructs the reader's core question from evidence, preserves material facts, uncertainty, impact, and the next action, and removes implementation noise, internal identifiers, mixed-language jargon, and redundant verification narration. It returns publication-ready text plus a separate source basis. It does not choose scope or status, make authority decisions, mutate systems, or bundle connectors.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [

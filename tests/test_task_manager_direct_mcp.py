@@ -185,11 +185,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("resumes unfinished task-owned Git work", manifest["interface"]["longDescription"])
         self.assertIn("one fresh read-only critic", manifest["interface"]["longDescription"])
         self.assertIn("stale or inconclusive reviews remain In Review", manifest["interface"]["longDescription"])
-        self.assertIn("new selected Strategic Explainer result as reflection input", manifest["interface"]["longDescription"])
+        self.assertIn("selected provider result as reflection input", manifest["interface"]["longDescription"])
         self.assertIn("$strategic-explainer-fast:strategic-explainer-fast", manifest["interface"]["longDescription"])
-        self.assertIn("otherwise calls ordinary `$strategic-explainer:strategic-explainer`", manifest["interface"]["longDescription"])
-        self.assertIn("selected Explainer plugin must be installed separately", manifest["interface"]["longDescription"])
-        self.assertIn("do not imitate a provider method", manifest["interface"]["longDescription"])
+        self.assertIn("prefers ordinary `$strategic-explainer:strategic-explainer`", manifest["interface"]["longDescription"])
+        self.assertIn("independent optional installations", manifest["interface"]["longDescription"])
+        self.assertIn("without imitating provider methods", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
                 prompt.startswith("Create exactly one Task in Task Manager")
@@ -337,9 +337,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Client protocol выбора Strategic Explainer", handoff)
         self.assertIn("$strategic-explainer-fast:strategic-explainer-fast", handoff)
         self.assertIn("нового built-in `default` read-only subagent", handoff)
-        self.assertIn("ordinary provider-internal reference", handoff)
+        self.assertIn("ordinary provider-only entrypoint или internal contract", handoff)
         self.assertIn(
-            "Обычный `To Do → In Progress` не запускает Explainer",
+            "Обычный `To Do → In Progress` не запускает publication unit",
             " ".join(skill.split()),
         )
         self.assertNotIn("2–4 способа", handoff)
@@ -387,6 +387,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             / "references"
             / "provider-contract.md"
         ).read_text(encoding="utf-8")
+        entrypoint = (
+            STRATEGIC_EXPLAINER_PLUGIN_ROOT
+            / "skills"
+            / "strategic-explainer"
+            / "references"
+            / "provider-entrypoint.md"
+        ).read_text(encoding="utf-8")
 
         self.assertEqual(
             entry["source"],
@@ -400,13 +407,18 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertFalse((STRATEGIC_EXPLAINER_PLUGIN_ROOT / ".mcp.json").exists())
         self.assertIn("name: strategic-explainer", skill)
         self.assertIn("routing skill к изолированному provider-subagent", skill)
-        self.assertIn("Если ты caller", skill)
-        self.assertIn("Не читай `references/provider-contract.md`", skill)
+        self.assertIn("Во всех остальных случаях текущий агент является caller", skill)
+        self.assertIn("references/provider-entrypoint.md", skill)
+        self.assertIn("references/provider-contract.md", skill)
         self.assertIn('fork_turns="none"', skill)
-        self.assertIn("одну короткую user-facing задачу", skill)
-        self.assertIn("Только после успешного admission полностью прочитай", skill)
+        self.assertIn("одна реальная user-facing formulation", skill)
+        self.assertIn("Сразу полностью прочитай", skill)
         self.assertIn("Routine", skill)
-        self.assertIn("готовый пользовательский текст", skill)
+        self.assertIn("publication-ready text", skill)
+        self.assertIn("STRATEGIC_EXPLAINER_PROVIDER_V1", skill)
+        self.assertIn("Никогда не вызывай Strategic Explainer", entrypoint)
+        self.assertIn("STRATEGIC_EXPLAINER_INVOCATION_ERROR", entrypoint)
+        self.assertIn("не читай `provider-contract.md`", entrypoint)
         self.assertNotIn("одну главную причинную мысль", skill)
         self.assertNotIn("первый смысловой слой", skill)
         self.assertNotIn("неизменяемое смысловое ядро", skill)
@@ -499,20 +511,20 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("собственную feature branch и собственный Git worktree", normalized_skill)
         self.assertIn("Один writable worktree принадлежит одному writer", skill)
         self.assertIn("Общий no-subagent rule означает ноль субагентов", normalized_skill)
-        self.assertIn("Если effective rule не отключает comment Explainer", skill)
-        self.assertIn("availability-based provider", normalized_skill)
+        self.assertIn("В начале run выбери communication mode", skill)
+        self.assertIn("При установленных обоих приоритет у ordinary", normalized_skill)
         self.assertIn("без subagent", normalized_skill)
         self.assertIn("не делай второй editorial rewrite", normalized_skill)
         self.assertIn("exact unfinished worktree/branch существует", normalized_skill)
         self.assertIn("active/unknown ownership не перехватывай", normalized_skill)
         self.assertIn(
-            "Обычный `To Do → In Progress` не запускает Explainer",
+            "Обычный `To Do → In Progress` не запускает publication unit",
             normalized_skill,
         )
         self.assertIn("Client protocol выбора Strategic Explainer", handoff)
-        self.assertIn("availability-based routing", normalized_handoff)
-        self.assertIn("capability failure", normalized_handoff)
-        self.assertIn("Явный полный opt-out", handoff)
+        self.assertIn("Матрица выбора", normalized_handoff)
+        self.assertIn("provider failure", normalized_handoff)
+        self.assertIn("Explicit full opt-out", normalized_handoff)
         self.assertNotIn("одну главную причинную мысль", handoff)
         self.assertNotIn("Проверка понимания", handoff)
         self.assertEqual(skill.count('fork_turns="none"'), 2)

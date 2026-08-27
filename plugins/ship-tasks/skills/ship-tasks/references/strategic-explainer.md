@@ -1,36 +1,68 @@
 # Client protocol выбора Strategic Explainer
 
-Этот reference описывает availability-based routing между двумя отдельно
-установленными generic providers. ShipTask не содержит их runtime и не выбирает
-provider по файлам, памяти или предпочтению автора текста.
+Этот reference описывает один communication mode ShipTask для двух отдельно
+установленных generic providers и безопасного native writing. ShipTask не
+содержит runtime providers и не выбирает их по файлам, памяти или качеству
+предыдущего текста.
 
-## Когда вызывать
+## Когда выбирать и вызывать
 
-Пока effective user rule не отключает Explainer для exact publication unit,
-каждый Task Manager comment, отдельный Task/scope report, blocker explanation и
-final получает один provider pass. Routine chat, progress update и внутренний
-draft Explainer не запускают.
+В начале run прочитай live skill catalog и effective user rule. Зафиксируй mode
+для следующих publication units; перечитай выбор только после явного изменения
+правила или failure выбранного provider-а.
 
-## Как выбрать provider
+Каждый Task Manager comment, отдельный Task/scope report, blocker explanation и
+final является самостоятельной publication unit. Routine chat, progress update
+и внутренний draft provider не запускают.
 
-Перед каждой publication unit прочитай live skill catalog:
+## Матрица выбора
 
-1. Если доступен `$strategic-explainer-fast:strategic-explainer-fast`, выбери
-   Fast.
-2. Иначе, если доступен `$strategic-explainer:strategic-explainer`, выбери
-   ordinary.
-3. Иначе зафиксируй capability failure.
+Выбирай первый доступный и разрешённый mode:
 
-Выбор действует для всей publication unit. Не вызывай оба provider и не
-переходи с уже выбранного Fast на ordinary после factual, comprehension,
-source или execution error: ordinary является availability fallback, а не
-скрытым quality retry.
+1. ordinary `$strategic-explainer:strategic-explainer`;
+2. Fast `$strategic-explainer-fast:strategic-explainer-fast`;
+3. native ShipTask writing.
 
-Пользователь может отключить оба provider, только Fast, только ordinary
-fallback или Explainer для узкой группы publications. Общий запрет создавать
-subagents не отключает Fast; при отсутствии Fast он делает ordinary provider
-недоступным. Явный полный opt-out не разрешает ShipTask применять методы
-отключённых providers.
+| Ordinary | Fast | Mode |
+| --- | --- | --- |
+| доступен | доступен | ordinary |
+| доступен | отсутствует | ordinary |
+| отсутствует | доступен | Fast |
+| отсутствует | отсутствует | native |
+
+Availability fallback применяется только при выборе mode. Для одной publication
+unit вызывай не более одного provider. Ошибка уже выбранного ordinary не
+запускает Fast; ошибка выбранного Fast не запускает ordinary. В обоих случаях
+перейди в native mode для этой и следующих units текущего run.
+
+Пользователь может отключить оба providers, только ordinary, только Fast или
+Explainer для выбранных publications. Общий запрет создавать subagents исключает
+ordinary: выбери Fast, если он разрешён и доступен, иначе native. Explicit full
+opt-out выбирает native. Opt-out не разрешает применять внутренний метод
+отключённого provider-а.
+
+## Ordinary path
+
+Для каждой publication unit создай нового built-in `default` read-only subagent
+с `fork_turns="none"`. Compact task содержит:
+
+- отдельную точную строку `STRATEGIC_EXPLAINER_PROVIDER_V1`;
+- identifier `$strategic-explainer:strategic-explainer`;
+- одну короткую user-facing formulation task;
+- exact scope;
+- resolvable read-only anchors к current Task/relations, evidence/candidate,
+  bounded session state и project/repository sources.
+
+Не передавай inherited conversation, tool transcript, process diary, caller
+analysis/rationale, strategic summary, format rules и прежний candidate. Не
+читай ordinary provider-only entrypoint или internal contract и не составляй
+текст за provider-а.
+
+`STRATEGIC_EXPLAINER_INVOCATION_ERROR` из-за structural defect исправь одним
+новым clean subagent; follow-up старому запрещён. Повторный structural refusal
+или другой provider failure переводит mode в native. Factual conflict получает
+corrected source/anchor и новый clean invocation того же ordinary provider, пока
+он остаётся исправимым factual conflict, а не provider failure.
 
 ## Fast path
 
@@ -46,52 +78,36 @@ publication text и отдельно обозначенный source basis. Ship
 material factual conflict и публикует только text без второго rewrite. Не
 заявляй независимость, statelessness или clean-context guarantee.
 
-Changed facts, scope или anchors получают новый focused Fast pass. Если Fast не
-может выполнить обязательную publication unit, она остаётся незавершённой;
-ordinary provider автоматически не вызывается.
+Changed facts, scope или anchors получают новый focused Fast pass. Execution,
+admission или unusable-result failure переводит mode в native без ordinary retry.
 
-## Ordinary path
+## Native path
 
-Для каждой publication unit создай нового built-in `default` read-only subagent
-с `fork_turns="none"`. Передай:
+ShipTask сам формулирует publication unit по собственным current
+truth/lifecycle/reporting requirements и authoritative facts. Он не читает,
+загружает, применяет или имитирует provider-only method ordinary или Fast и не
+заявляет эквивалентное качество.
 
-- одну короткую user-facing задачу;
-- exact scope;
-- resolvable read-only anchors к current Task/relations, evidence/candidate,
-  bounded session state и project/repository sources;
-- идентификатор `$strategic-explainer:strategic-explainer`.
-
-Не передавай inherited conversation, tool transcript, process diary, caller
-analysis/rationale, strategic summary, format rules и прежний candidate. Не
-читай ordinary provider-internal reference и не составляй текст за него.
-
-Operational refusal из-за invalid invocation исправь новым clean subagent;
-follow-up старому запрещён. Повторный structural refusal после исправления —
-orchestration failure. Factual conflict получает corrected anchors и новый
-clean invocation.
+Native является нормальным mode, а не degraded capability incident. Не добавляй
+в comment или final предупреждение только из-за отсутствия, opt-out или failure
+Explainer. Обязательный comment всё равно публикуется и перечитывается; после
+этого разрешённый lifecycle transition продолжается.
 
 ## Общая обработка результата
 
-ShipTask принимает готовый text и отдельно обозначенный source basis либо
-явный refusal/failure. Material claims сверяются по authoritative sources;
-publication не переписывается caller-ом. Missing provider или непригодный
-result оставляет mandatory comment и зависящий lifecycle effect
-незавершёнными; независимая безопасная работа продолжается.
-
-При explicit opt-out ShipTask сообщает только обязательные lifecycle facts по
-собственному truth contract и не заявляет эквивалентное provider quality.
-Финальный ответ при capability failure всё равно честно показывает фактическое
-состояние и сам gap.
+В provider mode ShipTask принимает готовый text и отдельно обозначенный source
+basis либо явный refusal/failure. Material claims сверяются по authoritative
+sources; publication не переписывается caller-ом. В native mode ShipTask
+формулирует text сразу по собственному contract.
 
 ## Reflection до blocker
 
-Готовый candidate blocker и source basis ShipTask читает как reflection input.
-Он заново проверяет current primary sources, исходную цель, primary/cascade
-cause и всю safe in-scope diagnostic/repair/verification/reconciliation
-frontier. Provider result не является evidence, authority, scope или status
-decision.
+Готовый provider candidate и source basis ShipTask читает как reflection input.
+Он заново проверяет current primary sources, исходную цель, primary/cascade cause
+и всю safe in-scope diagnostic/repair/verification/reconciliation frontier.
+Provider result не является evidence, authority, scope или status decision.
 
-Достаточный найденный путь отменяет stale blocker и работа продолжается. Если
-blocker остаётся, current publication формируется новым pass выбранного provider.
-Неизменившийся blocker получает один reflection pass; повтор нужен только после
-material change или исправления invalid ordinary invocation.
+В native mode ShipTask выполняет тот же frontier review непосредственно по
+primary facts перед публикацией blocker-а. Достаточный найденный путь отменяет
+stale blocker и работа продолжается. Changed facts аннулируют прежнюю
+publication unit; unchanged state не создаёт retry loop.

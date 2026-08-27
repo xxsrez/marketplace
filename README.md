@@ -18,10 +18,11 @@ Then install the plugins you need:
    **Install**.
 2. For Task Manager, complete the native OAuth **Connect** step during install
    or upgrade. Mind Diary authenticates when Codex first connects to its MCP
-   server. Ship Tasks has no connector of its own and requires both Task Manager
-   and one Strategic Explainer to be installed separately. Ship Tasks prefers
-   Fast when it is installed and otherwise uses ordinary Strategic Explainer;
-   Task Composer continues to require ordinary Strategic Explainer. Both
+   server. Ship Tasks has no connector of its own and requires Task Manager to
+   be installed separately. Strategic Explainer plugins are optional for Ship
+   Tasks: it prefers ordinary, then Fast, and otherwise writes natively without
+   blocking comments or lifecycle transitions. Task Composer continues to
+   require ordinary Strategic Explainer for its Explainer-backed path. Both
    Explainer plugins have no connector or authentication of their own.
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
@@ -85,26 +86,31 @@ Ship Tasks is a separate plugin with two coordinated Task Manager skills:
   proven defects, genuine verification blockers, and proven success;
 - both skills depend on the separately installed Task Manager plugin for MCP
   tools and authentication, but do not bundle or duplicate that connector;
-- Ship Tasks prefers
-  `$strategic-explainer-fast:strategic-explainer-fast` for mandatory
-  explanations and falls back to `$strategic-explainer:strategic-explainer`
-  only when Fast is absent. It never calls both for one publication unit. Task
-  Composer continues to use ordinary Strategic Explainer. Codex manifests do
-  not provide a plugin-to-plugin dependency field, so the selected provider is
-  installed separately; missing providers remain fail-closed.
+- Ship Tasks prefers `$strategic-explainer:strategic-explainer`, then
+  `$strategic-explainer-fast:strategic-explainer-fast`, and otherwise uses
+  native writing. It never calls both for one publication unit; a selected
+  provider failure switches to native without trying the other provider.
+  Native mode keeps mandatory comments and lifecycle transitions working while
+  neither imitating provider methods nor claiming equivalent quality. Task
+  Composer continues to use ordinary Strategic Explainer under its own
+  contract. Codex manifests do not provide a plugin-to-plugin dependency field,
+  so providers remain separate optional installations for Ship Tasks.
 
 Strategic Explainer is a standalone generic communication plugin. It exposes a
 fresh stateless API for one real user-facing comment, report, decision or state
 explanation, blocker report, final, or explicit editing request. A new default
-subagent with `fork_turns="none"` receives one short task, exact scope, and
-resolvable read-only source anchors without inherited process context, caller
-analysis, or candidate text. The caller sees only this opaque protocol, accepts
-ready text and a separate source basis or an operational refusal, and never
-reads or applies the provider method. Invalid invocations and factual
-corrections use a new instance. The provider reconstructs the reader's actual
-question from evidence, preserves material facts and uncertainty, removes
-implementation noise and mixed-language jargon, and makes no status, scope,
-authority, or mutation decisions.
+subagent with `fork_turns="none"` receives an exact terminal provider role lock,
+one short task, exact scope, and resolvable read-only source anchors without
+inherited process context, caller analysis, or candidate text. The caller sees
+only this opaque protocol, accepts ready text and a separate source basis or an
+operational refusal, and never reads or applies the provider method. The
+provider never becomes a caller, router, coordinator, or evaluator and never
+invokes Strategic Explainer or creates another agent. Off-role planning,
+implementation, mutation, lifecycle, authority, and orchestration requests
+return a precise invocation error and clean-call recipe. An admitted provider
+reconstructs the reader's actual question from evidence, preserves material
+facts and uncertainty, removes implementation noise and mixed-language jargon,
+and makes no status, scope, authority, or mutation decisions.
 
 Strategic Explainer Fast is a separate standalone generic communication plugin.
 It carries the same human-facing outcome, truth, language and authority
@@ -145,8 +151,9 @@ Repository layout:
   backlog-composition workflow;
 - `plugins/strategic-explainer/.codex-plugin/plugin.json` — standalone
   Strategic Explainer plugin manifest;
-- `plugins/strategic-explainer/skills/strategic-explainer/` — router plus
-  admission-gated provider contract used only by a fresh subagent;
+- `plugins/strategic-explainer/skills/strategic-explainer/` — deterministic role
+  resolver, provider-only admission, and internal contract used only by an
+  admitted fresh terminal provider;
 - `plugins/strategic-explainer-fast/.codex-plugin/plugin.json` — standalone Fast
   plugin manifest;
 - `plugins/strategic-explainer-fast/skills/strategic-explainer-fast/` —
