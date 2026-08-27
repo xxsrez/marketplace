@@ -7,16 +7,17 @@
 
 Сначала основной агент перечитывает затронутые Tasks, комментарии, статусы,
 применимый Goal и обязательные внешние действия. Он формирует не explanation
-draft, а authoritative source anchors и factual inventory ниже. Затем отдельный
-Strategic Explainer получает одну короткую задачу, exact run scope и эти
-resolvable anchors по opaque client protocol. Ему не передаются журнал
-инструментов, caller analysis, требования к форме ответа, прежняя формулировка
-или склейка комментариев.
+draft, а authoritative source anchors и factual inventory ниже. Затем выбранный
+по live catalog Strategic Explainer получает одну короткую задачу, exact run
+scope и эти resolvable anchors. Fast выполняется текущим agent без subagent и
+сам отделяет process history от sources; ordinary provider получает opaque
+clean invocation без журнала инструментов, caller analysis, format rules,
+прежней формулировки или склейки комментариев.
 
 Готовый text проверяется только на material factual conflict с authoritative
-state. При конфликте исправляются sources/anchors и создаётся новый clean
-invocation; основной агент не применяет внутреннюю методику provider и не
-переписывает text. Если final provider недоступен, итоговый ответ всё равно
+state. При конфликте исправляются sources/anchors и выполняется новый pass того
+же выбранного provider; основной агент не делает второй editorial rewrite. Если
+final provider недоступен, итоговый ответ всё равно
 честно перечисляет установленные facts и capability gap по собственному truth
 contract ShipTask, не имитируя Strategic Explainer.
 

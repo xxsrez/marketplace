@@ -5,10 +5,11 @@ material blocker. Current Task Manager adapter гарантирует native com
 create/list/read. ShipTask всегда создаёт и перечитывает обязательный comment.
 Он предназначен человеку, а не внутреннему workflow.
 
-Пока effective topology rule не отключает comment Explainer, каждый комментарий,
-который ShipTask собирается создать, до публикации проходит отдельного независимого
-`$strategic-explainer:strategic-explainer`. Это относится не только к обязательным
-переходам: самостоятельная редактура основного агента не заменяет Explainer.
+Пока effective rule не отключает comment Explainer, каждый комментарий до
+публикации проходит один provider по
+[availability protocol](strategic-explainer.md). Доступный Fast выполняется
+текущим агентом без subagent; ordinary provider используется только когда Fast
+отсутствует. Это относится не только к обязательным переходам.
 Когда user rule отключает Explainer, основной агент сообщает обязательные
 lifecycle facts по собственному truth contract и не читает, не применяет и не
 имитирует provider method.
@@ -48,16 +49,16 @@ transition не завершён. Это failure обязательной operat
 
 ## Factual packet и publication
 
-Пока effective rule сохраняет Explainer, основной агент передаёт ему одну
+Пока effective rule сохраняет Explainer, основной агент устанавливает одну
 короткую user-facing задачу, exact Task scope и resolvable anchors к current
 facts, evidence, knowledge/authority boundary и next lifecycle state. Это не
-готовый brief, explanation draft или требования к структуре текста. Explainer
-возвращает готовый text и отдельно обозначенный source basis. Основной агент
+готовый brief, explanation draft или требования к структуре текста. Выбранный
+provider возвращает готовый text и отдельно обозначенный source basis. ShipTask
 публикует только text, а basis использует для проверки material factual conflict;
-исправление facts/anchors требует нового clean invocation, а не самостоятельной
-стилистической переработки.
+исправление facts/anchors требует нового pass того же provider, а не второго
+самостоятельного rewrite.
 
-Если effective rule сохраняет Explainer, но отдельный агент недоступен или не
+Если effective rule сохраняет Explainer, но выбранный provider недоступен или не
 дал пригодный текст, комментарий не публикуется. Связанный существенный переход
 остаётся незавершённым. Это capability failure, а не opt-out. Если user rule
 отключает Explainer, основной агент публикует только необходимые grounded

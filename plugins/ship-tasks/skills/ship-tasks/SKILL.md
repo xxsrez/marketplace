@@ -84,8 +84,10 @@ Luna и broader context не снимает uncertainty, сообщи
 `luna-escalation=not-available` без скрытой подмены Sol. Для override выбери
 compatible bounded context. Genuine unavailable auto Luna → current profile;
 явный unavailable user profile не подменяй и считай role capacity недоступной.
-Общий no-subagent rule означает ноль субагентов во всём run, включая Explainer;
-role-scoped rule меняет только названную роль. Goal/lifecycle/authority не
+Общий no-subagent rule означает ноль субагентов во всём run. Он не отключает
+доступный Strategic Explainer Fast, потому что Fast работает текущим агентом;
+при отсутствии Fast ordinary Explainer недоступен. Role-scoped rule меняет
+только названную роль. Goal/lifecycle/authority не
 меняются. При user rule сообщай его смысл и соблюдение либо material deviation;
 внутренняя target/width accounting не требуется. Profile/handoff называй только
 когда это помогает понять результат.
@@ -101,10 +103,12 @@ Task comment; `description` и другие fields не являются fallbac
 Native comment create/list/read — гарантированная часть current Task Manager
 adapter. Всегда создай и перечитай обязательный comment. Неизвестный write
 outcome сначала разреши через native read-back; не повторяй write вслепую.
-Если effective topology rule не отключает comment Explainer, каждый комментарий
-ShipTask сначала передай отдельному независимому субагенту с
-`$strategic-explainer:strategic-explainer`; основной агент не заменяет этот проход
-собственной редактурой. Если rule отключает Explainer, сообщай только
+Если effective rule не отключает comment Explainer, каждый комментарий ShipTask
+проведи через availability-based provider из
+[reference](references/strategic-explainer.md): доступный
+`$strategic-explainer-fast:strategic-explainer-fast` выполняется текущим агентом
+без subagent, иначе ordinary `$strategic-explainer:strategic-explainer`
+получает отдельного clean subagent. Если rule отключает Explainer, сообщай только
 обязательные lifecycle facts по собственному truth contract ShipTask: не читай,
 не применяй и не имитируй внутреннюю методику Explainer и не заявляй
 эквивалентное качество. Обычный `To Do → In Progress` не запускает Explainer:
@@ -225,17 +229,27 @@ terminal Task сначала получает opening comment, затем exact 
 
 ## 5. Обеспечь человеческое объяснение
 
-Пока effective rule сохраняет Explainer, каждый Task Manager comment, отдельный Task/scope report, blocker explanation и final получает нового built-in `default` read-only Strategic Explainer с `fork_turns="none"`. Routine chat/progress его не запускает.
-Используй только opaque client protocol из [reference](references/strategic-explainer.md): передай одну compact user-facing
-task, exact scope и resolvable read-only anchors к current Task/relations/evidence/session/docs/candidate. Не передавай inherited turns,
-tool transcript, process diary, собственный analysis/strategic view, инструкции
-о том, как строить объяснение, или прежний candidate. Не читай и не применяй
-provider-internal contract Strategic Explainer.
-Ответ — готовый пользовательский текст и отдельно обозначенный source basis либо
-operational refusal. Публикуй только текст; basis к нему не дописывай. Проверь только material facts по authoritative sources; текст самостоятельно не улучшай и не
-оценивай по внутренней методике provider. Invalid invocation исправь новым
-clean subagent, старый не продолжай. Factual conflict исправь в source/anchor и
-также вызови новый экземпляр; candidate самостоятельно не переписывай.
+Пока effective rule сохраняет Explainer, каждый Task Manager comment, отдельный
+Task/scope report, blocker explanation и final получает один provider pass.
+Routine chat/progress его не запускает. Перед unit проверь live skill catalog:
+доступный `$strategic-explainer-fast:strategic-explainer-fast` имеет приоритет;
+если Fast отсутствует, используй `$strategic-explainer:strategic-explainer`.
+Для одной unit не вызывай оба и не используй ordinary как quality retry уже
+выбранного Fast.
+
+Следуй [client protocol](references/strategic-explainer.md). Fast выполняй
+текущим агентом без subagent: установи одну compact user-facing task, exact
+scope и resolvable read-only anchors, затем загрузи Fast skill и его reference.
+Inherited history не является evidence. Ordinary provider вызывай новым
+`default` read-only subagent с `fork_turns="none"` и opaque clean envelope; не
+читай его provider-internal contract.
+
+Ответ — готовый пользовательский текст и отдельно обозначенный source basis
+либо operational refusal. Публикуй только текст; basis к нему не дописывай.
+Проверь material facts по authoritative sources и не делай второй editorial
+rewrite. Changed facts/scope/anchors получают новый pass того же выбранного
+provider. Invalid ordinary invocation исправь новым clean subagent; старый не
+продолжай. Не заявляй для Fast независимость или stateless isolation.
 
 Explainer не выполняет mutation или status/scope/authority/repair. Если mandatory Explainer недоступен/непригоден, не публикуй comment и не выполняй
 зависящий transition. При effective opt-out либо недоступном final сообщай
@@ -243,11 +257,11 @@ Explainer не выполняет mutation или status/scope/authority/repair.
 ShipTask, явно называй capability gap и не имитируй Explainer. Immediate
 incident update всё равно обязателен. [Comment](references/delivery-report.md).
 
-До окончательного blocker claim прочитай fresh candidate explanation/source basis как independent reflection input и заново проверь исходную цель, primary/cascade cause, applicable context и всю safe in-scope frontier. Любой найденный путь проверь current sources/acceptance: достаточный путь отменяет stale blocker и работа продолжается; иначе создай fresh final blocker unit. Wording не является evidence/authority; unchanged blocker state получает один pass, повтор — только после material change или invalid-call correction. Срочный proven incident публикуй отдельным fresh nonterminal unit без преждевременного release-wide blocker claim.
+До окончательного blocker claim прочитай новый candidate explanation/source basis как reflection input и заново проверь исходную цель, primary/cascade cause, applicable context и всю safe in-scope frontier. Любой найденный путь проверь current sources/acceptance: достаточный путь отменяет stale blocker и работа продолжается; иначе создай новый final blocker unit. Wording не является evidence/authority; unchanged blocker state получает один pass, повтор — только после material change или invalid ordinary-call correction. Срочный proven incident публикуй отдельным nonterminal unit без преждевременного release-wide blocker claim.
 
-Финальный ответ — новый scope-level invocation с исходным вопросом, exact scope
-и anchors всего run, не склейка Task comments или прежний draft. Если provider
-вернул refusal/error, исправление получает новый clean invocation. Если final
+Финальный ответ — новый scope-level pass с исходным вопросом, exact scope и
+anchors всего run, не склейка Task comments или прежний draft. Если provider
+вернул refusal/error, исправление получает новый pass выбранного provider. Если final
 pass недоступен, всё равно честно сообщи установленные facts и отсутствие
 provider result, не воспроизводя его внутренний метод.
 
@@ -259,8 +273,8 @@ Task-local blocker не останавливает независимую runnab
 Перед финальным ответом перечитай affected Tasks, comments, statuses, применимый
 Goal и external effects. Собери authoritative anchors, обязательные factual
 fields и краткий перечень существенных инцидентов по [run report](references/run-report.md), затем проведи publication unit
-через раздел 5. Не составляй explanation candidate и не переносись в provider
-method. При user topology rule сохрани факт его соблюдения/deviation; без rule —
+через раздел 5. Не составляй второй explanation candidate после provider
+result. При user topology rule сохрани факт его соблюдения/deviation; без rule —
 только material delegation/profile handoff.
 Материальные `blocked by` gates отчитай отдельно от acceptance blocking Tasks: exact candidate/contract, downstream effect и attributed invalidation.
 Product failure и доступную repair frontier сообщи раньше browser/OAuth/MFA

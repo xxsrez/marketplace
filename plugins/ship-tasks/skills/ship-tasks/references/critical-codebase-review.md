@@ -48,9 +48,10 @@ rationale, прежний verdict или process diary. Critic самостоя�
 
 ## Обязательный factual packet для completion comment
 
-Перед `Done` отдельный Strategic Explainer получает opaque invocation с anchors
-на grounded packet. ShipTask не составляет explanation draft и не читает
-provider method. Factual anchors обязаны включать:
+Перед `Done` availability-selected Strategic Explainer получает pass с anchors
+на grounded packet. ShipTask не составляет второй explanation draft: ordinary
+provider method остаётся opaque, Fast выполняет свой in-context contract.
+Factual anchors обязаны включать:
 
 - точную непроведённую функциональную проверку;
 - причину и объяснение, почему нужен существенный human verifier, а не approval
