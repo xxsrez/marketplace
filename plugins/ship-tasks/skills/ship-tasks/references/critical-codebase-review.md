@@ -50,7 +50,8 @@ rationale, прежний verdict или process diary. Critic самостоя�
 
 Перед `Done` availability-selected Strategic Explainer получает pass с anchors
 на grounded packet. ShipTask не составляет второй explanation draft: ordinary
-provider method остаётся opaque, Fast выполняет свой in-context contract.
+provider method остаётся opaque. При отсутствии или opt-out provider-а ShipTask
+формулирует comment в native mode.
 Factual anchors обязаны включать:
 
 - точную непроведённую функциональную проверку;

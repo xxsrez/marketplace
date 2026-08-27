@@ -6,8 +6,8 @@ create/list/read. ShipTask всегда создаёт и перечитывае
 Он предназначен человеку, а не внутреннему workflow.
 
 Каждый комментарий формулируется в выбранном mode по
-[availability protocol](strategic-explainer.md): ordinary, иначе Fast, иначе
-native. Это относится не только к обязательным переходам. В native mode основной
+[availability protocol](strategic-explainer.md): ordinary, если он доступен и
+разрешён, иначе native. Это относится не только к обязательным переходам. В native mode основной
 агент сообщает обязательные lifecycle facts по собственному truth contract и не
 читает, не применяет и не имитирует provider method.
 

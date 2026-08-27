@@ -1,8 +1,8 @@
 # Client protocol выбора Strategic Explainer
 
-Этот reference описывает один communication mode ShipTask для двух отдельно
-установленных generic providers и безопасного native writing. ShipTask не
-содержит runtime providers и не выбирает их по файлам, памяти или качеству
+Этот reference описывает communication mode ShipTask для одного отдельно
+установленного generic provider и безопасного native writing. ShipTask не
+содержит runtime provider и не выбирает его по файлам, памяти или качеству
 предыдущего текста.
 
 ## Когда выбирать и вызывать
@@ -20,26 +20,20 @@ final является самостоятельной publication unit. Routine 
 Выбирай первый доступный и разрешённый mode:
 
 1. ordinary `$strategic-explainer:strategic-explainer`;
-2. Fast `$strategic-explainer-fast:strategic-explainer-fast`;
-3. native ShipTask writing.
+2. native ShipTask writing.
 
-| Ordinary | Fast | Mode |
-| --- | --- | --- |
-| доступен | доступен | ordinary |
-| доступен | отсутствует | ordinary |
-| отсутствует | доступен | Fast |
-| отсутствует | отсутствует | native |
+| Ordinary | Mode |
+| --- | --- |
+| доступен и разрешён | ordinary |
+| отсутствует или отключён | native |
 
 Availability fallback применяется только при выборе mode. Для одной publication
-unit вызывай не более одного provider. Ошибка уже выбранного ordinary не
-запускает Fast; ошибка выбранного Fast не запускает ordinary. В обоих случаях
-перейди в native mode для этой и следующих units текущего run.
+unit вызывай не более одного provider. Ошибка уже выбранного ordinary переводит
+run в native mode для этой и следующих units.
 
-Пользователь может отключить оба providers, только ordinary, только Fast или
-Explainer для выбранных publications. Общий запрет создавать subagents исключает
-ordinary: выбери Fast, если он разрешён и доступен, иначе native. Explicit full
-opt-out выбирает native. Opt-out не разрешает применять внутренний метод
-отключённого provider-а.
+Пользователь может отключить ordinary полностью или для выбранных publications.
+Общий запрет создавать subagents также исключает ordinary и выбирает native.
+Opt-out не разрешает применять внутренний метод отключённого provider-а.
 
 ## Ordinary path
 
@@ -64,29 +58,12 @@ analysis/rationale, strategic summary, format rules и прежний candidate.
 corrected source/anchor и новый clean invocation того же ordinary provider, пока
 он остаётся исправимым factual conflict, а не provider failure.
 
-## Fast path
-
-Текущий ShipTask agent загружает
-`$strategic-explainer-fast:strategic-explainer-fast` для одной user-facing task,
-exact scope и resolvable read-only anchors. Skill выполняется in-context и сам
-читает собственный provider reference. Не создавай для него subagent.
-
-Inherited conversation и tool history физически остаются доступны, но не
-считаются evidence. Fast самостоятельно отделяет authoritative sources от
-process diary, прежнего candidate, caller summary и гипотез. Результат — готовый
-publication text и отдельно обозначенный source basis. ShipTask проверяет
-material factual conflict и публикует только text без второго rewrite. Не
-заявляй независимость, statelessness или clean-context guarantee.
-
-Changed facts, scope или anchors получают новый focused Fast pass. Execution,
-admission или unusable-result failure переводит mode в native без ordinary retry.
-
 ## Native path
 
 ShipTask сам формулирует publication unit по собственным current
 truth/lifecycle/reporting requirements и authoritative facts. Он не читает,
-загружает, применяет или имитирует provider-only method ordinary или Fast и не
-заявляет эквивалентное качество.
+загружает, применяет или имитирует provider-only method ordinary и не заявляет
+эквивалентное качество.
 
 Native является нормальным mode, а не degraded capability incident. Не добавляй
 в comment или final предупреждение только из-за отсутствия, opt-out или failure

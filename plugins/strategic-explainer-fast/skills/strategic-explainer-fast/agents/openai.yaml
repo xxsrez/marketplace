@@ -1,7 +1,0 @@
-interface:
-  display_name: "Strategic Explainer Fast"
-  short_description: "Понятное объяснение без отдельного субагента"
-  default_prompt: "Используй $strategic-explainer-fast:strategic-explainer-fast для одного готового пользовательского текста: установи exact scope и read-only anchors, выполни in-context discovery без subagent и верни publication text отдельно от source basis."
-
-policy:
-  allow_implicit_invocation: true

@@ -8,9 +8,6 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 TASK_MANAGER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager"
 SHIP_TASKS_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "ship-tasks"
 STRATEGIC_EXPLAINER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "strategic-explainer"
-STRATEGIC_EXPLAINER_FAST_PLUGIN_ROOT = (
-    REPOSITORY_ROOT / "plugins" / "strategic-explainer-fast"
-)
 PRODUCTION_MCP_URL = "https://task-manager.xxsrez-work.chatgpt.site/api/mcp"
 
 
@@ -91,6 +88,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json"
         )
         names = [plugin["name"] for plugin in marketplace["plugins"]]
+        self.assertEqual(
+            names,
+            ["task-manager", "mind-diary", "ship-tasks", "strategic-explainer"],
+        )
         self.assertEqual(names.count("task-manager"), 1)
         self.assertNotIn("task-manager-uat", names)
         self.assertFalse((REPOSITORY_ROOT / "plugins" / "task-manager-uat").exists())
@@ -120,9 +121,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertFalse(
             (TASK_MANAGER_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
         )
-        self.assertFalse(
-            (TASK_MANAGER_PLUGIN_ROOT / "skills" / "strategic-explainer-fast").exists()
-        )
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(
@@ -132,7 +130,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertEqual(names.count("task-manager"), 1)
         self.assertEqual(names.count("ship-tasks"), 1)
         self.assertEqual(names.count("strategic-explainer"), 1)
-        self.assertEqual(names.count("strategic-explainer-fast"), 1)
 
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
@@ -161,9 +158,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertFalse(
             (SHIP_TASKS_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
         )
-        self.assertFalse(
-            (SHIP_TASKS_PLUGIN_ROOT / "skills" / "strategic-explainer-fast").exists()
-        )
 
         metadata = (
             SHIP_TASKS_PLUGIN_ROOT
@@ -186,9 +180,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("one fresh read-only critic", manifest["interface"]["longDescription"])
         self.assertIn("stale or inconclusive reviews remain In Review", manifest["interface"]["longDescription"])
         self.assertIn("selected provider result as reflection input", manifest["interface"]["longDescription"])
-        self.assertIn("$strategic-explainer-fast:strategic-explainer-fast", manifest["interface"]["longDescription"])
-        self.assertIn("prefers ordinary `$strategic-explainer:strategic-explainer`", manifest["interface"]["longDescription"])
-        self.assertIn("independent optional installations", manifest["interface"]["longDescription"])
+        self.assertIn("uses ordinary `$strategic-explainer:strategic-explainer`", manifest["interface"]["longDescription"])
+        self.assertIn("independent optional installation", manifest["interface"]["longDescription"])
         self.assertIn("without imitating provider methods", manifest["interface"]["longDescription"])
         self.assertTrue(
             any(
@@ -335,7 +328,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Инвариант effects", report)
         self.assertIn("До связанного существенного status transition", report)
         self.assertIn("Client protocol выбора Strategic Explainer", handoff)
-        self.assertIn("$strategic-explainer-fast:strategic-explainer-fast", handoff)
         self.assertIn("нового built-in `default` read-only subagent", handoff)
         self.assertIn("ordinary provider-only entrypoint или internal contract", handoff)
         self.assertIn(
@@ -438,51 +430,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertNotIn("Task Manager", skill)
         self.assertIn('display_name: "Strategic Explainer"', metadata)
 
-    def test_strategic_explainer_fast_is_a_standalone_generic_plugin(self) -> None:
-        marketplace = read_json(
-            REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json"
-        )
-        entry = next(
-            plugin
-            for plugin in marketplace["plugins"]
-            if plugin["name"] == "strategic-explainer-fast"
-        )
-        manifest = read_json(
-            STRATEGIC_EXPLAINER_FAST_PLUGIN_ROOT
-            / ".codex-plugin"
-            / "plugin.json"
-        )
-        root = (
-            STRATEGIC_EXPLAINER_FAST_PLUGIN_ROOT
-            / "skills"
-            / "strategic-explainer-fast"
-        )
-        skill = (root / "SKILL.md").read_text(encoding="utf-8")
-        provider = (root / "references" / "in-context-contract.md").read_text(
-            encoding="utf-8"
-        )
-        metadata = (root / "agents" / "openai.yaml").read_text(encoding="utf-8")
-
-        self.assertEqual(
-            entry["source"],
-            {"source": "local", "path": "./plugins/strategic-explainer-fast"},
-        )
-        self.assertEqual(manifest["name"], "strategic-explainer-fast")
-        self.assertEqual(manifest["skills"], "./skills/")
-        self.assertRegex(manifest["version"], r"^0\.1\.0\+codex\.\d{14}$")
-        self.assertNotIn("mcpServers", manifest)
-        self.assertNotIn("apps", manifest)
-        self.assertIn("name: strategic-explainer-fast", skill)
-        self.assertIn("Не создавай subagent", skill)
-        self.assertIn("references/in-context-contract.md", skill)
-        self.assertNotIn("fork_turns", skill + provider)
-        self.assertNotIn("spawn_agent", skill + provider)
-        self.assertIn("Строй публикацию из reader model", provider)
-        self.assertIn("in-context comprehension pass", provider)
-        self.assertNotIn("Task Manager", skill)
-        self.assertNotIn("ShipTask", skill)
-        self.assertIn('display_name: "Strategic Explainer Fast"', metadata)
-
     def test_ship_tasks_honors_natural_language_topology_and_resume(self) -> None:
         skill = (
             SHIP_TASKS_PLUGIN_ROOT / "skills" / "ship-tasks" / "SKILL.md"
@@ -499,8 +446,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         self.assertIn("$strategic-explainer:strategic-explainer", skill)
         self.assertIn("$strategic-explainer:strategic-explainer", handoff)
-        self.assertIn("$strategic-explainer-fast:strategic-explainer-fast", skill)
-        self.assertIn("$strategic-explainer-fast:strategic-explainer-fast", handoff)
         self.assertIn("Сначала выведи effective topology rule", skill)
         self.assertIn("Exact count — обязательное число", skill)
         self.assertIn("Root не входит в явно названное число субагентов", normalized_skill)
@@ -512,8 +457,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Один writable worktree принадлежит одному writer", skill)
         self.assertIn("Общий no-subagent rule означает ноль субагентов", normalized_skill)
         self.assertIn("В начале run выбери communication mode", skill)
-        self.assertIn("При установленных обоих приоритет у ordinary", normalized_skill)
-        self.assertIn("без subagent", normalized_skill)
+        self.assertIn("разрешён, иначе native", normalized_skill)
+        self.assertIn("communication mode становится native", normalized_skill)
         self.assertIn("не делай второй editorial rewrite", normalized_skill)
         self.assertIn("exact unfinished worktree/branch существует", normalized_skill)
         self.assertIn("active/unknown ownership не перехватывай", normalized_skill)
@@ -523,8 +468,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertIn("Client protocol выбора Strategic Explainer", handoff)
         self.assertIn("Матрица выбора", normalized_handoff)
-        self.assertIn("provider failure", normalized_handoff)
-        self.assertIn("Explicit full opt-out", normalized_handoff)
+        self.assertIn("Opt-out", normalized_handoff)
         self.assertNotIn("одну главную причинную мысль", handoff)
         self.assertNotIn("Проверка понимания", handoff)
         self.assertEqual(skill.count('fork_turns="none"'), 2)

@@ -84,10 +84,8 @@ Luna и broader context не снимает uncertainty, сообщи
 `luna-escalation=not-available` без скрытой подмены Sol. Для override выбери
 compatible bounded context. Genuine unavailable auto Luna → current profile;
 явный unavailable user profile не подменяй и считай role capacity недоступной.
-Общий no-subagent rule означает ноль субагентов во всём run. Он не отключает
-доступный Strategic Explainer Fast, потому что Fast работает текущим агентом;
-ordinary Explainer при этом недоступен, поэтому без Fast communication mode
-становится native. Role-scoped rule меняет
+Общий no-subagent rule означает ноль субагентов во всём run. Он исключает
+ordinary Explainer, поэтому communication mode становится native. Role-scoped rule меняет
 только названную роль. Goal/lifecycle/authority не
 меняются. При user rule сообщай его смысл и соблюдение либо material deviation;
 внутренняя target/width accounting не требуется. Profile/handoff называй только
@@ -105,8 +103,8 @@ Native comment create/list/read — гарантированная часть cu
 adapter. Всегда создай и перечитай обязательный comment. Неизвестный write
 outcome сначала разреши через native read-back; не повторяй write вслепую.
 Каждый комментарий сформулируй в выбранном communication mode из
-[reference](references/strategic-explainer.md): ordinary provider имеет
-приоритет, затем доступный Fast, иначе native ShipTask writing. Opt-out также
+[reference](references/strategic-explainer.md): доступный и разрешённый ordinary
+provider, иначе native ShipTask writing. Opt-out также
 выбирает native. Native mode сообщает обязательные lifecycle facts по
 собственному truth contract ShipTask: не читает, не применяет и не имитирует
 внутреннюю методику Explainer и не заявляет эквивалентное качество. Отсутствие
@@ -230,19 +228,16 @@ terminal Task сначала получает opening comment, затем exact 
 ## 5. Обеспечь человеческое объяснение
 
 В начале run выбери communication mode по live skill catalog и effective user
-rule: ordinary `$strategic-explainer:strategic-explainer`, иначе Fast
-`$strategic-explainer-fast:strategic-explainer-fast`, иначе native. При
-установленных обоих приоритет у ordinary. Сохраняй mode до explicit rule change
-или failure выбранного provider-а. Каждый Task Manager comment, отдельный
+rule: ordinary `$strategic-explainer:strategic-explainer`, если он доступен и
+разрешён, иначе native. Сохраняй mode до explicit rule change или failure
+выбранного provider-а. Каждый Task Manager comment, отдельный
 Task/scope report, blocker explanation и final — отдельная publication unit;
 routine chat/progress unit не создают.
 
 Следуй [client protocol](references/strategic-explainer.md). Ordinary provider
 вызывай новым `default` read-only subagent с `fork_turns="none"`, exact terminal
-role lock и opaque clean envelope; не читай provider-internal contract. Fast
-выполняй текущим агентом без subagent: установи одну compact user-facing task,
-exact scope и resolvable read-only anchors, затем загрузи Fast skill и его
-reference. Inherited history не является evidence.
+role lock, одной compact user-facing task, exact scope, resolvable read-only
+anchors и opaque clean envelope; не читай provider-internal contract.
 
 Provider result — готовый пользовательский text и отдельно обозначенный source
 basis либо operational refusal. Публикуй только text; basis к нему не дописывай.
@@ -250,8 +245,7 @@ basis либо operational refusal. Публикуй только text; basis к
 rewrite. Changed facts/scope/anchors получают новый pass того же provider.
 Invalid ordinary invocation исправь одним новым clean subagent; старый не
 продолжай. Повторный refusal или любая другая ошибка выбранного provider-а
-переводит mode в native без вызова второго provider. Не заявляй для Fast
-независимость или stateless isolation.
+переводит mode в native.
 
 В native mode самостоятельно сформулируй unit только по собственному
 truth/lifecycle/reporting contract ShipTask. Не загружай и не имитируй внутренний
