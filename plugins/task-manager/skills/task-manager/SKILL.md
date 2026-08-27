@@ -82,23 +82,29 @@ Task Manager discussion.
   `get_task_attachment` for metadata and protected preview/original URLs, and
   `download_task_attachment` when the client needs the protected original as a
   resource link.
-- Route the source before upload:
-  - a native OpenAI file object can go to `upload_file`; retain its verified
+- Prefer the connector-first route whenever callable `upload_file` or
+  `upload_task_attachment` exposes the special `file` parameter:
+  - a compatible Codex tool wrapper may represent native OpenAI file input as a
+    host-facing absolute path. When the user supplied or explicitly authorized
+    that exact file, pass the path to the tool as its `file` argument. Codex
+    converts it to native OpenAI file input before the hosted call; the remote
+    MCP never receives or reads that path;
+  - for an existing Task, use `upload_task_attachment` when no staged workflow
+    is needed. For staged composition, call `upload_file`, verify the returned
     `fileRef`, then call `attach_file_to_task` after the target Task exists;
-  - an exact user-authorized absolute filesystem path can go only to the local
-    `upload_local_file` companion. Pass a stable upload key and, when known,
-    expected byte size/SHA-256. Verify its returned metadata, then pass only the
-    resulting `fileRef` to local `attach_local_file_to_task` with an independent
-    bind key;
-  - when the target Task already exists and no staged workflow is needed,
-    `upload_task_attachment` remains the one-call compatibility wrapper;
+  - use the local `upload_local_file` companion only when the hosted file bridge
+    is not callable for the exact authorized source. Pass a stable upload key
+    and, when known, expected byte size/SHA-256. Verify its returned metadata,
+    then pass only the resulting `fileRef` to local
+    `attach_local_file_to_task` with an independent bind key;
   - an existing `fileRef` goes only to `get_file`, `delete_file`, or
     `attach_file_to_task`; it is not a durable body reference;
   - an existing `attachmentRef` goes to Task attachment/comment tools, not back
     through upload;
-  - never pass a local path, base64 payload, DOM URL, or arbitrary remote URL to
-    hosted MCP. Local paths enter only through `upload_local_file`; otherwise
-    report that the source has not entered native upload.
+  - never construct a raw MCP file object from a local path, base64 payload, DOM
+    URL, or arbitrary remote URL. A host-facing path accepted by Codex's special
+    `file` parameter is client ingress, not a path sent to hosted MCP;
+  - do not switch to browser UI while the connector-first route is callable.
 - `upload_local_file` and `attach_local_file_to_task` are separate local stdio
   tools, not hosted Task Manager tools. Upload requires one absolute path and
   still obeys the Codex host sandbox and
@@ -129,8 +135,10 @@ Task Manager discussion.
 - File-first example: `upload_file(file, uploadKey)` → verify
   filename/MIME/byteSize/SHA-256/state → create or resolve Task →
   `attach_file_to_task(taskRef, fileRef, bindKey)` → use the returned
-  `attachmentRef` in a comment or description → read back both Task attachment
-  metadata and the comment/thread.
+  `attachmentRef` in the Task description or native Comment body → read back
+  both Task attachment metadata and the description/comment thread. In a Codex
+  wrapper whose `file` parameter requests an absolute path, the path is the
+  host-facing selector described above, not the remote MCP payload.
 - Local file-first example: `upload_local_file(path, uploadKey,
   expectedByteSize, expectedSha256)` → verify the local/server metadata and
   `sourceVerified=true` → create or resolve Task →

@@ -1,7 +1,7 @@
 {
   "name": "task-manager",
-  "version": "0.7.5+codex.20260821203934",
-  "description": "Connect Task Manager to inspect and safely mutate work, including staged upload from native or exact local files.",
+  "version": "0.7.6+codex.20260827141835",
+  "description": "Connect Task Manager to inspect and safely mutate work, with connector-first native file upload and an exact-local-file companion fallback.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Task Manager",
     "shortDescription": "Manage tasks, comments, and staged files safely.",
-    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical references and current versions, mutate task metadata, labels, hierarchy and relations, and use native comments and private attachments. A bundled macOS companion exposes upload_local_file and attach_local_file_to_task, reads one exact host-authorized path without sending it, and authorizes in memory only when a local operation is called. Delivery workflows such as ShipTask are installed separately.",
+    "longDescription": "Connect Codex to Task Manager with OAuth, resolve canonical references and current versions, mutate task metadata, labels, hierarchy and relations, and use native comments and private attachments. Hosted upload tools use Codex native file bridging for chat attachments and authorized file parameters. A bundled macOS companion exposes upload_local_file and attach_local_file_to_task only as an exact-local-file fallback, reads one host-authorized path without sending it, and authorizes in memory only when a local operation is called. Delivery workflows such as ShipTask are installed separately.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -29,6 +29,7 @@
     "defaultPrompt": [
       "List tasks for a project or release and help me choose what to do next",
       "Relate two tasks using their current canonical references",
+      "Attach the screenshot provided in this chat to TM-123 and embed it in its description or a native comment",
       "Upload an exact local file to TM-123 and add it to a native comment"
     ],
     "brandColor": "#6D5CE7",
