@@ -42,7 +42,8 @@ material overlap изучи до решения. Не изменяй и не reu
 ## 3. Скомпонуй целую модель
 
 До первой mutation подготовь Project/Release/status, titles, descriptions,
-parent-child hierarchy, labels и relation graph всего candidate scope.
+attachment mapping, parent-child hierarchy, labels и relation graph всего
+candidate scope.
 
 Не превращай шаги исходного плана в Tasks механически. Строй outcome graph из
 independently verifiable results; порядок задавай только настоящими
@@ -95,6 +96,15 @@ boundary и планку качества без догадки; Epic context н
 Material противоречие исправь до write. Для secrets указывай только имя
 credential/secret store и target, никогда значение.
 
+Если пользователь создаёт Task по bug report и передал attachment, который
+помогает увидеть, воспроизвести, локализовать или проверить проблему, сохрани
+его как native attachment самой конкретной создаваемой Task, для которой это
+evidence. Скриншот с проявлением бага считай осмысленным по умолчанию; остальные
+attachments оценивай по связи с проблемой, а не по формату. Не заменяй
+обязательный attachment пересказом, local path, base64 либо временной или
+protected URL и не пропускай его молча. Явно нерелевантный, избыточный или
+нарушающий secret-safe boundary материал не добавляй и сообщи его disposition.
+
 ## 4. Назначь metadata по смыслу
 
 Выбирай Labels только из live active catalog отдельно для каждой Task. Не
@@ -118,6 +128,14 @@ subtask operation с current parent version. После каждой mutation п
 authoritative Task state. Relations создавай только после read-back обоих
 endpoints со stable idempotency key.
 
+Для каждого обязательного attachment до create подтверди доступный native source
+route. После существования target Task свяжи с ней verified file identity со
+stable independent bind key и перечитай attachment metadata. Не начинай create,
+если native transport заведомо недоступен. Если bind остановился после создания
+Task, сохрани это как partial result с exact missing attachment и безопасным
+условием продолжения, а не как success; unknown upload/bind сначала reconcile
+через reads и не повторяй с новой identity.
+
 Unknown write outcome сначала reconciles через reads и duplicate search; не
 повторяй create вслепую. Если multi-Task create остановился частично, не скрывай
 результат и не выполняй destructive cleanup без authority: перечисли created,
@@ -127,10 +145,11 @@ confirmed и not-created элементы и точное условие без�
 
 Read-back должен подтвердить canonical identities, `Backlog`, Release либо его
 честное отсутствие, hierarchy, labels/label gaps, relation type/direction и
-intended strategic/technical split в descriptions. Проверь, что title не
-дублирует type/classification Label, кроме exact verbatim user title.
+intended strategic/technical split в descriptions, а также каждый обязательный
+attachment на сопоставленной Task. Проверь, что title не дублирует
+type/classification Label, кроме exact verbatim user title.
 
 Финальный ответ перечисляет созданный scope, duplicate disposition, Project,
-Release, status, hierarchy, labels/label gaps, relations и любой unreconciled
-outcome. Не представляй Task Manager planning projection как implementation
-или delivery evidence.
+Release, status, hierarchy, labels/label gaps, relations, attachment disposition
+и любой unreconciled outcome. Не представляй Task Manager planning projection
+как implementation или delivery evidence.

@@ -243,6 +243,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertIn("не дублирует type/classification label", normalized_skill)
         self.assertIn("не повторяй create вслепую", normalized_skill)
+        self.assertIn(
+            "Скриншот с проявлением бага считай осмысленным по умолчанию",
+            skill,
+        )
+        self.assertIn("native attachment самой конкретной создаваемой Task", skill)
+        self.assertIn("attachment disposition", skill)
+        self.assertIn("каждый обязательный attachment", normalized_skill)
         self.assertIn("не реализуй", skill.lower())
         self.assertIn('display_name: "Task Composer"', metadata)
         self.assertIn('value: "task-manager"', metadata)
