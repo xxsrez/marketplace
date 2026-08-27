@@ -244,9 +244,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("не дублирует type/classification label", normalized_skill)
         self.assertIn("не повторяй create вслепую", normalized_skill)
         self.assertIn(
-            "Скриншот с проявлением бага считай осмысленным по умолчанию",
+            "формат сам по себе не создаёт презумпцию уместности",
             skill,
         )
+        self.assertIn(
+            "один критерий к screenshot, документу, логу, записи",
+            normalized_skill,
+        )
+        self.assertNotIn("считай осмысленным по умолчанию", skill)
         self.assertIn("native attachment самой конкретной создаваемой Task", skill)
         self.assertIn("attachment disposition", skill)
         self.assertIn("каждый обязательный attachment", normalized_skill)

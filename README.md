@@ -60,10 +60,11 @@ Ship Tasks is a separate plugin with two coordinated Task Manager skills:
   capture. It preserves one independently deliverable outcome as one Task and
   turns compound work into a problem-first Epic with concrete subtasks, live
   existing Labels, native hierarchy and semantic relations. Unknown current
-  Release is omitted rather than guessed. Meaningful user-provided bug-report
-  attachments are preserved as native attachments on the applicable Task;
-  screenshots showing the reported bug are relevant by default, and failed
-  attachment binding remains an explicit partial result. The skill never
+  Release is omitted rather than guessed. User-provided bug-report attachments
+  are preserved as native attachments on the applicable Task when their content
+  is relevant to that Task and useful to its executor; screenshots and other
+  file types receive no relevance presumption. Failed attachment binding
+  remains an explicit partial result. The skill never
   implements the created work or expands Label taxonomy;
 
 - `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
