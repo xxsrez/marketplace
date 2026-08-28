@@ -13,14 +13,25 @@ draft, а authoritative source anchors и factual inventory ниже. В ordinar
 instructions не передаются. Source packet исключает журнал инструментов, caller
 analysis, format rules, прежнюю формулировку и склейку комментариев.
 
-Готовый text проверяется только на material factual conflict с authoritative
-state. При конфликте исправляются sources/anchors и выполняется новый pass того
-же выбранного provider; основной агент не делает второй editorial rewrite. В
-native mode итоговый ответ сразу сообщает установленные facts по собственному
-truth contract ShipTask без имитации provider и без служебного capability
-warning.
+Готовый text проверяется на material factual conflict с authoritative state.
+Для незавершённого selector дополнительно действует terminal handoff gate:
+source basis откладывается, а по одному publication body основной агент должен
+восстановить для каждой materially distinct blocker-группы exact Task/criterion,
+current attempt/result, primary cause, owner, minimum next action и observable
+resume signal. Группы объединяются только при одинаковых cause/owner/resume
+path. Basis не компенсирует отсутствующий в пользовательском тексте смысл.
 
-Если Goal должен завершиться как `blocked`, report готовится до
+Если current inventory либо blocker ledger содержит доступную реализацию,
+repair, redeploy, reconciliation или другой self-service path, terminal report
+отменяется и run продолжается. Фактически верный, но расплывчатый ordinary text
+не публикуется и не разрешает stop/Goal write. Он получает одну fresh correction
+unit с current anchors и missing material constraints без caller rewrite;
+повторная непригодность/failure переводит run в native. Grounded native report
+проходит тот же gate. В native mode итоговый ответ сообщает установленные facts
+по собственному truth contract ShipTask без имитации provider и без служебного
+capability warning.
+
+Если Goal должен завершиться как `blocked`, принятый report готовится до
 `update_goal(status=blocked)` как новая scope-level publication unit после
 fresh full inventory. Он не переиспользует Task comment provider и не является
 склейкой предыдущих comments. Report обязан назвать первичную причину
@@ -28,6 +39,10 @@ fresh full inventory. Он не переиспользует Task comment provid
 user-controlled и environment-controlled prerequisites, первый безопасный шаг
 и наблюдаемый сигнал возобновления. После write основной агент перечитывает Goal
 и возвращает именно этот проверенный report.
+
+Если Goal не создан, тот же gate обязателен до остановки незавершённого Project,
+Release или другого live selector. Название mode и закрытый внутренний plan не
+являются обходом terminal handoff.
 
 ## Основание ответа
 

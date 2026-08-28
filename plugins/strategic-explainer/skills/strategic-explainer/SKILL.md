@@ -47,6 +47,14 @@ summary, format recipe либо правил улучшения текста. Е
 basis либо operational unavailability. Внешний workflow публикует только текст,
 проверяет material facts по basis и не переписывает результат.
 
+Для terminal blocker либо объяснения незавершённого scope publication text сам
+несёт materially distinct causal/action links; source basis не заменяет их.
+Сохраняй source-provided human-facing Task refs рядом с разными действиями и
+точный current attempt/result; обезличенный сценарий или общий класс попыток их
+не покрывает.
+Если current sources оставляют безопасный repair или self-service path,
+publication-ready result не утверждает, что автономная работа исчерпана.
+
 ## Внутреннее исполнение facade
 
 1. Не готовь explanation candidate, не читай provider references и не применяй

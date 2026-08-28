@@ -192,6 +192,30 @@ outcome — минимальная цепочка его существенны�
 результата. Полный source basis или поздний observable result не исправляют
 пропуск этих элементов в пользовательском объяснении.
 
+Для terminal blocker либо отчёта о незавершённом scope добавь в coverage map
+actionability projection каждой materially distinct blocker-группы: exact
+object/criterion, current attempt/result, primary cause, owner оставшегося
+условия, minimum next action и observable resume signal. Объединяй строки только
+при одинаковых criterion, cause, owner и resume path. Если человеку нужен Task
+ref или точное имя критерия, чтобы найти работу либо выполнить следующий шаг,
+оставь identifier в публикации как навигацию, а не audit detail.
+
+Если evidence содержит устойчивые human-facing Task refs для materially
+distinct строк, сохрани refs рядом с соответствующими cause/action даже когда
+сценарий можно пересказать словами. Не заменяй `MD-X`/`TASK-X` обезличенным
+«один сценарий» или «отдельная проверка». Сохрани и точный current
+attempt/result: например, доказанное повторное использование и проверка owner
+session не покрывается более широкой фразой о проверенных reconnect paths.
+
+После написания восстанови projection только из publication body и сравни с
+evidence map. Полный source basis не исправляет пропуск. Общая сводка о
+«не реализованных путях», «нескольких участниках», «ограниченных действиях» или
+«новых подтверждениях» не проходит completion gate без source-provided
+human-facing refs, exact attempt/result, cause, owner/action и resume signal.
+Если evidence map показывает runnable repair,
+redeploy или self-service path, не заявляй, что автономная работа исчерпана:
+прямо сообщи caller-у о доступном продолжении.
+
 ## Контрастные ориентиры
 
 Это не шаблоны и не обязательные слова; они показывают границу между evidence и
@@ -243,3 +267,8 @@ caller-а. Не смешивай source basis с publication text. Перед в
 отвергни audit-only command/path/test-list dump и неизменившийся повтор прежней
 publication; при их наличии result не проходит completion gate и строится
 заново.
+
+Terminal blocker или unfinished-scope result дополнительно готов только когда
+publication body сам покрывает actionability projection каждого существенно
+разного препятствия и не скрывает runnable path формулировкой об исчерпанной
+frontier. Source basis не компенсирует эту потерю.

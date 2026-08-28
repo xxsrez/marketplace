@@ -279,6 +279,25 @@ anchors всего run, не склейка Task comments или прежний 
 используй выбранный provider; в native mode сразу сообщи grounded result без
 служебного предупреждения об отсутствии provider.
 
+Если selector остаётся незавершённым, до любого final/stop независимо от mode и
+наличия Goal примени terminal handoff gate. По fresh full inventory собери для
+каждой materially distinct blocker-группы exact Task/criterion, current
+attempt/result, primary cause, owner оставшегося условия, minimum next action и
+observable resume signal; объединяй только одинаковые cause/owner/resume path.
+Незавершённая реализация, доступный repair/redeploy/reconciliation или иной
+self-service path означает runnable work: blocker candidate отменяется, работа
+продолжается.
+
+Проверь готовый publication body отдельно от source basis: человек должен по
+самому тексту восстановить каждую такую связь и понять, почему продолжение
+невозможно. Basis не компенсирует пропуск; общие категории про возможности,
+подтверждения, browser action или другого principal без exact causal/action
+связи не проходят gate. Непринятый ordinary result не публикуй, не используй для
+Goal write и не заменяй своим rewrite: создай одну fresh correction unit того же
+facade с current anchors и только missing material constraints. Повторный
+непригодный result/failure переводит mode в native; grounded native report
+обязан пройти тот же gate. До принятого report не останавливай run.
+
 ## 6. Продолжай автономно и финализируй
 
 Task-local blocker не останавливает независимую runnable работу. В `batch-implementation` перед
@@ -298,3 +317,6 @@ success affected Task. Не заменяй Task comments этим ответом
 Goal `batch-implementation` заверши после fresh full inventory без незавершённой current in-scope работы; release-only run его не финализирует. В final отдельно назови Tasks, закрытые через `critical-codebase-accepted`, непроведённую functional check и residual risk.
 Goal разрешено перевести в `blocked` только после tool-level threshold и fresh full inventory без независимой safe работы; до `update_goal(status=blocked)` получи новую scope-level publication unit.
 Она не переиспользует Task comment provider и называет первичную причину невозможности продолжать, исчерпанную frontier, влияние, user/environment prerequisites, первый safe шаг и наблюдаемый сигнал возобновления; после write перечитай Goal и верни именно этот report.
+Даже без Goal незавершённый Release/Project/scope получает тот же принятый
+terminal report до final/stop; название запуска `release`, reconciliation или
+bounded implementation не обходит этот effect.

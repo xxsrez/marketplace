@@ -65,6 +65,15 @@ operational unavailability. Final failure переводит run в native. Fact
 conflict получает corrected source/anchor и новый semantic call того же ordinary
 provider, пока он остаётся исправимым factual conflict, а не provider failure.
 
+Для незавершённого selector publication body также обязан пройти внешний
+terminal handoff gate ShipTask. Это не проверка provider method или style:
+основной агент откладывает basis и проверяет observable coverage exact
+Task/criterion, current attempt/result, primary cause, owner, next action и
+resume signal каждой materially distinct blocker-группы. Если этих связей нет,
+result не публикуется. Одна fresh correction unit получает только current
+anchors и missing material constraints; повторная непригодность считается
+failure ordinary и переводит run в native. Caller не переписывает provider text.
+
 Следующий lifecycle comment, scope-level blocker report и final всегда получают
 новую publication unit. Не продолжай и не переиспользуй Task comment provider;
 совпадающие facts доступны только как новые read-only anchors.
@@ -107,3 +116,7 @@ provider и называет первичную причину невозмож�
 prerequisites, первый безопасный шаг и наблюдаемый сигнал возобновления. Только
 после factual check report допустим Goal write; затем Goal перечитывается, а
 report возвращается человеку без замены перечнем симптомов.
+
+Тот же принятый report нужен до terminal stop незавершённого selector без Goal.
+Если reflection или coverage gate показывает runnable repair/self-service path,
+candidate отменяется и работа продолжается вместо улучшения формулировки.
