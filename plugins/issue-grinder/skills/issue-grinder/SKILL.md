@@ -55,7 +55,9 @@ outcome: какую общую проблему решает работа и ч�
 
 1. Перечитай live scope и восстанови task-owned implementation/checkpoints.
 2. Выбери dependency-ready frontier; при двух независимых полезных пакетах
-   примени [multi-agent execution](references/multi-agent-execution.md).
+   полностью прочитай и примени
+   [multi-agent execution](references/multi-agent-execution.md). Writer не
+   получает implementation до подтверждённого двухфазного worktree admission.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
 4. Реализуй outcome, интегрируй только task-owned изменения и проверь точную
