@@ -28,6 +28,13 @@ Scope — live predicate, не стартовый список: при заме�
 его и перестрой frontier. Перед первой mutation полностью прочитай
 [Task Manager flow](references/task-manager-flow.md).
 
+Если это может быть первый turn новой Codex task и host показывает title
+capability, после разрешения live canonical scope прочитай
+[title contract](references/thread-title.md). Только доказанный catalog
+placeholder получает не более одной best-effort попытки `Issue Grinder · ...`
+до первой Task Manager mutation; meaningful title сохраняй, а
+отсутствие/deferred/failure capability не блокируют delivery.
+
 Новый Goal создавай только когда run явно вызван и live scope содержит больше
 одного issue. Сначала прочитай current Goal: совместимый Goal продолжай только
 при доказанной continuity этого run; одного совпадения selector-а недостаточно.

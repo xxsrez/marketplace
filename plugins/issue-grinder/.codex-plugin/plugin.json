@@ -1,6 +1,6 @@
 {
   "name": "issue-grinder",
-  "version": "0.1.0+codex.20260828145949",
+  "version": "0.1.0+codex.20260828151939",
   "description": "Deliver selected Task Manager issues to verified outcomes with live scope, strategic Goals, autonomous UAT work, and blocker reflection that resumes whenever a safe path exists.",
   "author": {
     "name": "Andrey Myasnikov",

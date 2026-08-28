@@ -160,6 +160,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         issue_root = ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "issue-grinder"
         composer_root = ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "task-composer"
         self.assertTrue((issue_root / "SKILL.md").is_file())
+        self.assertTrue(
+            (issue_root / "references" / "thread-title.md").is_file()
+        )
         self.assertTrue((composer_root / "SKILL.md").is_file())
         self.assertFalse(
             (ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
@@ -169,6 +172,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         )
 
         skill = (issue_root / "SKILL.md").read_text(encoding="utf-8")
+        title_contract = (
+            issue_root / "references" / "thread-title.md"
+        ).read_text(encoding="utf-8")
         metadata = (issue_root / "agents" / "openai.yaml").read_text(
             encoding="utf-8"
         )
@@ -180,6 +186,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("update_goal(status=blocked)", skill)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичного UAT", skill)
+        self.assertIn("Issue Grinder · ...", skill)
+        self.assertIn(
+            "set_thread_title` не более одного раза без", title_contract
+        )
+        self.assertIn("Meaningful title", title_contract)
         self.assertIn("финальный комментарий только пользователю в чате", normalized)
         self.assertIn('value: "task-manager"', metadata)
         self.assertIn("allow_implicit_invocation: true", metadata)
