@@ -53,7 +53,10 @@ outcome: какую общую проблему решает работа и ч�
 
 Каждая итерация:
 
-1. Перечитай live scope и восстанови task-owned implementation/checkpoints.
+1. Перечитай live scope и до любой новой implementation выполни
+   [startup recovery](references/multi-agent-execution.md#startup-recovery--before-new-work):
+   найди относящиеся к scope worktree, branches, commits и локальные изменения;
+   proven checkpoint продолжай вместо создания replacement.
 2. Выбери dependency-ready frontier; при двух независимых полезных пакетах
    полностью прочитай и примени
    [multi-agent execution](references/multi-agent-execution.md). Writer не

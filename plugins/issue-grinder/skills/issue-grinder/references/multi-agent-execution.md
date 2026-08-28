@@ -17,6 +17,31 @@ schemas, generated artifacts и shared state. Пересекающиеся ли�
 packets не выполняй параллельно. Каждый packet получает exact scope, owned
 surfaces, source facts, constraints, expected outcome и verification.
 
+## Startup recovery — before new work
+
+До новой implementation, branch, worktree или dispatch прочитай весь текущий
+Git inventory repository, а не только `cwd`: `git worktree list --porcelain -z`,
+локальные branches/commits и их integration reachability, status каждого
+доступного checkout со staged/unstaged/untracked files и известные worker/run
+checkpoints. Сопоставляй candidate с live scope по нескольким evidence; похожее
+имя branch само по себе ownership не доказывает.
+
+- Уже интегрированный exact result переиспользуй и проверь без повторной
+  реализации.
+- Quiescent exact-scope worktree продолжай на месте. Для существующей branch без
+  worktree вызови bundled guard `resume`, создав linked checkout той же branch;
+  не создавай новую replacement branch. Dirty task-owned checkpoint сохраняй и
+  допускай только явным `--allow-dirty` после проверки owner/quiescence.
+- Active owner не перехватывай: продолжай через него либо дождись доказанной
+  остановки. Ambiguous/unrelated changes не очищай, не присваивай и не вливай.
+- Task-owned dirty root checkout основной агент может продолжить только как
+  serial exclusive lane. Его нельзя выдавать subagent-у или использовать как
+  integration checkout параллельной wave.
+
+Startup recovery предшествует `prepare`. Отсутствие Goal, receipt прошлой
+сессии или уже созданного worktree не позволяет проигнорировать однозначно
+связанные со scope branch, commit либо локальные изменения.
+
 ## Writer admission — hard gate
 
 Каждый одновременно пишущий subagent до первой записи получает собственные
@@ -63,11 +88,12 @@ scope change или готовой dependency пересчитай frontier.
 ## Checkpoints и профили
 
 Task-owned unfinished branch/worktree сохраняется. Перед takeover докажи, что
-прежний writer остановлен и ownership quiescent; затем передай тот же checkpoint
-новому exclusive writer через тот же admission. Для доказанно task-owned dirty
-checkpoint `admit --allow-dirty` допустим только с exact expected branch/HEAD и
-после quiescence. Active/unknown ownership не перехватывай, parallel replacement
-не создавай и чужие изменения не очищай.
+прежний writer остановлен и ownership quiescent; затем выполни `resume` exact
+checkpoint и передай его новому exclusive writer через тот же admission. Для
+доказанно task-owned dirty checkpoint `resume --allow-dirty` и
+`admit --allow-dirty` допустимы только с exact expected branch/HEAD и после
+quiescence. Active/unknown ownership не перехватывай, parallel replacement не
+создавай и чужие изменения не очищай.
 
 Без user profile override `gpt-5.6-luna` с `max` получает только пакет, который
 одновременно bounded, self-contained, disjoint, объективно проверяем, не требует

@@ -263,6 +263,133 @@ def prepare(arguments: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def resume(arguments: argparse.Namespace) -> dict[str, Any]:
+    repository = Path(arguments.repo).resolve()
+    target = Path(arguments.worktree).resolve()
+    assert_owner(arguments.owner)
+    repository_state = inspect_worktree(repository)
+    expected_branch = f"refs/heads/{arguments.branch}"
+
+    ref_check = run_git(
+        repository,
+        "check-ref-format",
+        "--branch",
+        arguments.branch,
+        check=False,
+    )
+    if ref_check.returncode != 0:
+        raise GuardError(f"invalid checkpoint branch: {arguments.branch}")
+    existing_branch = run_git(
+        repository,
+        "show-ref",
+        "--verify",
+        "--quiet",
+        expected_branch,
+        check=False,
+    )
+    if existing_branch.returncode != 0:
+        raise GuardError(f"checkpoint branch does not exist: {arguments.branch}")
+    head = git_text(repository, "rev-parse", f"{expected_branch}^{{commit}}")
+    if head != arguments.expect_head:
+        raise GuardError(
+            f"checkpoint branch HEAD mismatch: expected {arguments.expect_head}, observed {head}"
+        )
+
+    records = parse_worktrees(repository)
+    existing_worktrees = [
+        Path(str(record["worktree"]))
+        for record in records
+        if isinstance(record.get("worktree"), str)
+    ]
+    ensure_external_output(arguments.output, *existing_worktrees, target)
+    branch_records = [
+        record for record in records if record.get("branch") == expected_branch
+    ]
+    if len(branch_records) > 1:
+        raise GuardError(f"checkpoint branch has multiple worktrees: {arguments.branch}")
+
+    if branch_records:
+        existing_path = Path(str(branch_records[0]["worktree"])).resolve()
+        if existing_path != target:
+            raise GuardError(
+                "checkpoint branch is already checked out at "
+                f"{existing_path}; resume that exact worktree instead of creating {target}"
+            )
+    elif target.exists():
+        raise GuardError(
+            f"checkpoint worktree path exists but is not registered for the branch: {target}"
+        )
+    else:
+        for existing_value in existing_worktrees:
+            existing = existing_value.resolve()
+            if inside(target, existing) or inside(existing, target):
+                raise GuardError(
+                    f"checkpoint worktree path overlaps existing worktree: {existing}"
+                )
+        run_git(
+            repository,
+            "worktree",
+            "add",
+            "--lock",
+            "--reason",
+            f"issue-grinder:{arguments.owner}",
+            str(target),
+            arguments.branch,
+        )
+
+    state = inspect_worktree(target)
+    if not state["linked"]:
+        raise GuardError("checkpoint is the main worktree and cannot be assigned to a subagent")
+
+    failures = []
+    if state["common_dir"] != repository_state["common_dir"]:
+        failures.append("different common Git directory")
+    if state["branch"] != expected_branch:
+        failures.append("unexpected checkpoint branch")
+    if state["head"] != arguments.expect_head:
+        failures.append("checkpoint HEAD changed during resume")
+    if not arguments.allow_dirty and not state["clean"]:
+        failures.append("checkpoint worktree is dirty without --allow-dirty")
+    if failures:
+        raise GuardError("checkpoint resume rejected: " + ", ".join(failures))
+
+    if not state["locked"]:
+        run_git(
+            repository,
+            "worktree",
+            "lock",
+            "--reason",
+            f"issue-grinder:{arguments.owner}",
+            str(target),
+        )
+        state = inspect_worktree(target)
+
+    post_lock_failures = []
+    if state["common_dir"] != repository_state["common_dir"]:
+        post_lock_failures.append("different common Git directory after lock")
+    if not state["linked"]:
+        post_lock_failures.append("checkpoint became the main worktree")
+    if state["branch"] != expected_branch:
+        post_lock_failures.append("checkpoint branch changed during lock")
+    if state["head"] != arguments.expect_head:
+        post_lock_failures.append("checkpoint HEAD changed during lock")
+    if not state["locked"]:
+        post_lock_failures.append("checkpoint worktree is not locked")
+    if not arguments.allow_dirty and not state["clean"]:
+        post_lock_failures.append("checkpoint became dirty during lock")
+    if post_lock_failures:
+        raise GuardError(
+            "checkpoint resume rejected: " + ", ".join(post_lock_failures)
+        )
+
+    return {
+        "schema": WRITER_SCHEMA,
+        "operation": "resume",
+        "owner": arguments.owner,
+        **state,
+    }
+
+
 def admit(arguments: argparse.Namespace) -> dict[str, Any]:
     expected = Path(arguments.expect_worktree).resolve()
     current = Path.cwd().resolve()
@@ -358,6 +485,20 @@ def parser() -> argparse.ArgumentParser:
     prepare_parser.add_argument("--owner", required=True)
     output_argument(prepare_parser)
     prepare_parser.set_defaults(handler=prepare)
+
+    resume_parser = commands.add_parser("resume")
+    resume_parser.add_argument("--repo", required=True)
+    resume_parser.add_argument("--worktree", required=True)
+    resume_parser.add_argument("--branch", required=True)
+    resume_parser.add_argument("--expect-head", required=True)
+    resume_parser.add_argument("--owner", required=True)
+    resume_parser.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="Only for a proven quiescent unfinished task-owned checkpoint.",
+    )
+    output_argument(resume_parser)
+    resume_parser.set_defaults(handler=resume)
 
     admit_parser = commands.add_parser("admit")
     admit_parser.add_argument("--expect-worktree", required=True)

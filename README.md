@@ -72,7 +72,10 @@ Task Manager skills:
   non-production work; Production remains forbidden;
 - independent writers use separate feature branches and Git worktrees. Only
   genuinely simple bounded packets use Luna Max, and material uncertainty hands
-  the packet back to the current integration owner;
+  the packet back to the current integration owner. Before fresh work, a new
+  run inventories related worktrees, branches, commits and local changes, then
+  resumes a proven quiescent checkpoint instead of creating a parallel
+  replacement;
 - `task-composer` keeps the existing planning-only Backlog workflow. Both skills
   depend on the separately installed Task Manager adapter. Issue Grinder uses
   standalone Strategic Explainer when available and otherwise writes natively.
