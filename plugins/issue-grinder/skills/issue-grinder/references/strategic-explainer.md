@@ -50,7 +50,9 @@ follow-up.
 Terminal report связывает exact scope с попыткой, primary cause, checkpoint,
 unverified remainder, impact, нужным user action и observable resume condition.
 Reason code, raw error или tool diary этого не заменяют. Goal status `blocked`
-может следовать только после принятого отчёта и platform blocker audit.
+может следовать только после принятого отчёта и platform blocker audit. Сам
+принятый report показывается пользователю и завершает текущую попытку даже если
+audit ещё не разрешает Goal mutation; в таком случае Goal остаётся активным.
 
 Финальный Goal comment возвращается только пользователю в чате. Task Manager
 получает только issue-level comments, требуемые его lifecycle.

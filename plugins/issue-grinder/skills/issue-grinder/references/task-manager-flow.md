@@ -5,6 +5,9 @@
 
 ## Live scope
 
+- Перед первой mutation сверяй current Task Manager tool schemas. Не изобретай
+  operation names, поля, idempotency или conflict shape; отсутствующая
+  обязательная capability является точным blocker-ом соответствующего write.
 - Current prompt задаёт selector сильнее project context. Default current
   Release допустим только для явного `$issue-grinder` без selector-а.
 - Разрешай Project, Release, relations и statuses в canonical refs. Full
@@ -55,6 +58,9 @@ Comment описывает подтверждённые факты и причи
 failed` остаётся правдивым checkpoint. Reconcile live status и повтори только
 недостающий effect. При unknown comment outcome сначала прочитай thread; при
 unknown status outcome — issue. Blind retry и duplicate comment запрещены.
+Сохраняй returned comment ref/idempotency key, когда adapter их предоставляет;
+иначе сопоставляй bounded thread window по exact target и готовому text digest,
+не изобретая operation identity.
 
 После каждой terminal mutation fresh read определяет следующий scope. Run не
 завершён, пока active membership не пуст.
