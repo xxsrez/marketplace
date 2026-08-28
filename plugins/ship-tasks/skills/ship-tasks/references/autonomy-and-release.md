@@ -72,6 +72,11 @@ preference. Не создавай фиктивные subtasks ради quota. Е
 
 Основной агент является единственным integration owner и владельцем Goal, Task
 Manager comments/status/version writes, целостного candidate и Task attribution.
+Каждый worker/reviewer/scout packet прямо запрещает Task Manager
+comment/status/version writes и требует вернуть только facts, evidence, verdict
+и рекомендацию. Прямая запись субагента не удовлетворяет обязательную
+publication unit: integration owner перечитывает history и до связанного effect
+публикует корректирующий comment через текущий communication mode.
 Каждый одновременно пишущий implementation subagent до первой mutation получает
 собственные feature branch и Git worktree для exact Task. Writable worktree
 принадлежит одному writer; writer не меняет integration target, чужую branch,

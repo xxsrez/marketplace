@@ -20,6 +20,15 @@ native mode итоговый ответ сразу сообщает устано
 truth contract ShipTask без имитации provider и без служебного capability
 warning.
 
+Если Goal должен завершиться как `blocked`, report готовится до
+`update_goal(status=blocked)` как новая scope-level publication unit после
+fresh full inventory. Он не переиспользует Task comment provider и не является
+склейкой предыдущих comments. Report обязан назвать первичную причину
+невозможности продолжать, исчерпанную безопасную frontier, влияние,
+user-controlled и environment-controlled prerequisites, первый безопасный шаг
+и наблюдаемый сигнал возобновления. После write основной агент перечитывает Goal
+и возвращает именно этот проверенный report.
+
 ## Основание ответа
 
 Отчёт опирается на текущее состояние затронутых Tasks, комментариев и статусов,

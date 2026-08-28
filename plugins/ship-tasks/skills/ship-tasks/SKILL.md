@@ -93,6 +93,10 @@ ordinary Explainer, поэтому communication mode становится nativ
 внутренняя target/width accounting не требуется. Profile/handoff называй только
 когда это помогает понять результат.
 ### Правдивый статус и обязательный комментарий
+Только основной агент выполняет Task Manager comment/status/version write; Worker,
+reviewer, scout и любой другой subagent получают явный запрет на такой write и возвращают только facts и evidence, verdict и рекомендацию.
+Прямая запись субагента не считается выполнением обязательной publication unit:
+основной агент перечитывает history и до связанного transition публикует через текущий mode корректирующий comment, не скрывая effect.
 Перед любым существенным status transition опубликуй понятный native Task
 Manager comment и перечитай его. Затем измени status и перечитай Task. Обычный
 старт `To Do → In Progress` комментария не создаёт.
@@ -267,6 +271,8 @@ stale blocker; иначе создай новый blocker unit. Wording не я�
 evidence/authority. Срочный proven incident публикуй отдельным nonterminal unit
 без преждевременного release-wide blocker claim.
 
+Каждый следующий lifecycle comment, scope-level blocker report и final получает собственную свежую publication unit.
+Не переиспользуй provider предыдущего Task comment; общие facts передавай только через новые anchors.
 Финальный ответ — новая scope-level unit с исходным вопросом, exact scope и
 anchors всего run, не склейка Task comments или прежний draft. В provider mode
 используй выбранный provider; в native mode сразу сообщи grounded result без
@@ -289,3 +295,6 @@ logistics; смену средства не называй repair или обя�
 есть безопасная работа с продуктом. Unresolved incident не совместим с clean
 success affected Task. Не заменяй Task comments этим ответом. Подробности: [run report](references/run-report.md).
 Goal `batch-implementation` заверши после fresh full inventory без незавершённой current in-scope работы; release-only run его не финализирует. В final отдельно назови Tasks, закрытые через `critical-codebase-accepted`, непроведённую functional check и residual risk.
+Goal разрешено перевести в `blocked` только после tool-level threshold и fresh full inventory без независимой safe работы; до `update_goal(status=blocked)` получи новую scope-level publication unit.
+Она не переиспользует Task comment provider и называет первичную причину невозможности продолжать, исчерпанную frontier, влияние, user/environment prerequisites, первый safe шаг и наблюдаемый сигнал возобновления.
+После write перечитай Goal и верни человеку именно этот report.

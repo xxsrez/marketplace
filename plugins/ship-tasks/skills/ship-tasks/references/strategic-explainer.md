@@ -15,6 +15,14 @@
 final является самостоятельной publication unit. Routine chat, progress update
 и внутренний draft provider не запускают.
 
+Только основной агент выполняет Task Manager comment/status/version write.
+Worker, reviewer, scout и любой другой subagent получают явный запрет на такой
+write и возвращают только facts и evidence, verdict и рекомендацию. Прямая
+запись субагента не считается выполнением обязательной publication unit:
+основной агент перечитывает историю и перед следующим связанным effect
+публикует через выбранный mode корректирующий comment, не скрывая уже
+произошедшую запись.
+
 ## Матрица выбора
 
 Выбирай первый доступный и разрешённый mode:
@@ -57,6 +65,10 @@ operational unavailability. Final failure переводит run в native. Fact
 conflict получает corrected source/anchor и новый semantic call того же ordinary
 provider, пока он остаётся исправимым factual conflict, а не provider failure.
 
+Следующий lifecycle comment, scope-level blocker report и final всегда получают
+новую publication unit. Не продолжай и не переиспользуй Task comment provider;
+совпадающие facts доступны только как новые read-only anchors.
+
 ## Native path
 
 ShipTask сам формулирует publication unit по собственным current
@@ -87,3 +99,11 @@ Provider result не является evidence, authority, scope или status d
 primary facts перед публикацией blocker-а. Достаточный найденный путь отменяет
 stale blocker и работа продолжается. Changed facts аннулируют прежнюю
 publication unit; unchanged state не создаёт retry loop.
+
+Для blocked Goal до `update_goal(status=blocked)` после fresh full inventory
+создай новую scope-level publication unit. Она не переиспользует Task comment
+provider и называет первичную причину невозможности продолжать, исчерпанную
+безопасную frontier, влияние, отдельно user-controlled и environment-controlled
+prerequisites, первый безопасный шаг и наблюдаемый сигнал возобновления. Только
+после factual check report допустим Goal write; затем Goal перечитывается, а
+report возвращается человеку без замены перечнем симптомов.
