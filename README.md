@@ -1,7 +1,7 @@
 # Srez Marketplace
 
 This is Andrey's extensible Codex plugin marketplace. It contains independent
-Task Manager, Ship Tasks, Strategic Explainer, and Mind Diary plugins under
+Task Manager, Issue Grinder, legacy Ship Tasks, Strategic Explainer, and Mind Diary plugins under
 `plugins/`.
 
 Add the marketplace once:
@@ -12,18 +12,21 @@ codex plugin marketplace add xxsrez/marketplace
 
 Then install the plugins you need:
 
-1. Open **Plugins → Task Manager**, **Plugins → Ship Tasks**,
+1. Open **Plugins → Task Manager**, **Plugins → Issue Grinder**,
    **Plugins → Strategic Explainer**, or
    **Plugins → Mind Diary UAT** and click
    **Install**.
 2. For Task Manager, complete the native OAuth **Connect** step during install
    or upgrade. Mind Diary authenticates when Codex first connects to its MCP
-   server. Ship Tasks has no connector of its own and requires Task Manager to
-   be installed separately. Strategic Explainer is optional for Ship Tasks: it
-   uses ordinary when installed and allowed, and otherwise writes natively without
+   server. Issue Grinder has no connector of its own and requires Task Manager
+   to be installed separately. Strategic Explainer is optional for Issue
+   Grinder: it uses ordinary when installed and allowed, and otherwise writes
+   natively without
    blocking comments or lifecycle transitions. Task Composer continues to
-   require ordinary Strategic Explainer for its Explainer-backed path. The
-   Explainer plugin has no connector or authentication of its own.
+   require ordinary Strategic Explainer for its Explainer-backed path. Legacy
+   Ship Tasks remains available only as a rollback package and should not be
+   installed together with Issue Grinder. The Explainer plugin has no connector
+   or authentication of its own.
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
@@ -55,7 +58,27 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
   only in process memory after first use, and never sends the full path to Task
   Manager. The local bind tool performs the second staged Agent REST operation.
 
-Ship Tasks is a separate plugin with two coordinated Task Manager skills:
+Issue Grinder is the current skill-only delivery plugin with two independent
+Task Manager skills:
+
+- `issue-grinder` delivers selected issue, Release, Project, or current-Release
+  scope from `To Do`, `In Progress`, and `In Review` to verified terminal
+  outcomes. It keeps scope live, creates a strategic Goal only for an explicitly
+  invoked multi-issue run, comments every non-trivial lifecycle transition, and
+  treats `blocked by` as implementation readiness rather than a status lock;
+- before any terminal blocker, it turns the candidate into a causal explanation
+  and performs a fresh reflection over current primary sources. A verified safe
+  action cancels the blocker and resumes delivery. Public UAT is ordinary
+  non-production work; Production remains forbidden;
+- independent writers use separate feature branches and Git worktrees. Only
+  genuinely simple bounded packets use Luna Max, and material uncertainty hands
+  the packet back to the current integration owner;
+- `task-composer` keeps the existing planning-only Backlog workflow. Both skills
+  depend on the separately installed Task Manager adapter. Issue Grinder uses
+  standalone Strategic Explainer when available and otherwise writes natively.
+
+Ship Tasks is the preserved rollback plugin with two coordinated Task Manager
+skills:
 
 - `task-composer` owns planning-only formulation and Task Manager backlog
   capture. It preserves one independently deliverable outcome as one Task and
@@ -106,10 +129,11 @@ a separate source basis or operational unavailability and makes no status,
 scope, authority, or mutation decisions.
 
 Mentioning `$task-manager` alone still authorizes only the requested adapter
-operation. Use `$ship-tasks` or an unambiguous natural-language delivery request
+operation. Use `$issue-grinder` or an unambiguous natural-language delivery
+request
 that names an existing Task or selected Task Manager Project/Release/current
 scope. A delivery verb alone does not route ordinary code, product, repository,
-or plugin work into ShipTask. Create-and-deliver requires an explicit request
+or plugin work into Issue Grinder. Create-and-deliver requires an explicit request
 to create exactly one Task in Task Manager and immediately start it.
 
 Mind Diary bundles one content skill and two coordinated MCP components. The
@@ -133,6 +157,12 @@ Repository layout:
 - `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
 - `plugins/ship-tasks/skills/task-composer/` — Task Manager planning and
   backlog-composition workflow;
+- `plugins/issue-grinder/.codex-plugin/plugin.json` — current Issue Grinder
+  plugin manifest;
+- `plugins/issue-grinder/skills/issue-grinder/` — current Task Manager delivery
+  workflow;
+- `plugins/issue-grinder/skills/task-composer/` — canonical planning-only
+  Task Composer copy;
 - `plugins/strategic-explainer/.codex-plugin/plugin.json` — standalone
   Strategic Explainer plugin manifest;
 - `plugins/strategic-explainer/skills/strategic-explainer/` — deterministic role
@@ -147,8 +177,8 @@ Repository layout:
 
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
-`task-manager@srez-marketplace`; Ship Tasks and Strategic Explainer are
-independently installable as `ship-tasks@srez-marketplace`,
+`task-manager@srez-marketplace`; Issue Grinder and Strategic Explainer are
+independently installable as `issue-grinder@srez-marketplace`,
 `strategic-explainer@srez-marketplace`.
 
 Validate plugin changes before publishing:
@@ -160,6 +190,10 @@ python3 -m unittest discover -s tests -p 'test_*.py' -v
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/task-manager/skills/task-manager
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/issue-grinder/skills/issue-grinder
+python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/issue-grinder/skills/task-composer
+python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/ship-tasks/skills/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/ship-tasks/skills/task-composer
@@ -170,6 +204,8 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/task-manager
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
+  plugins/issue-grinder
+python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/strategic-explainer
@@ -177,6 +213,7 @@ python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plug
   plugins/mind-diary
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.mcp.json \
+  plugins/issue-grinder/.codex-plugin/plugin.json \
   plugins/ship-tasks/.codex-plugin/plugin.json \
   plugins/strategic-explainer/.codex-plugin/plugin.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
@@ -186,8 +223,10 @@ jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/skills/task-manager
 diff -qr /Users/andrey/Projects/Home/ShipTask/ship-tasks \
   plugins/ship-tasks/skills/ship-tasks
+diff -qr /Users/andrey/Projects/Home/ShipTask/issue-grinder \
+  plugins/issue-grinder/skills/issue-grinder
 diff -qr /Users/andrey/Projects/Home/ShipTask/task-composer \
-  plugins/ship-tasks/skills/task-composer
+  plugins/issue-grinder/skills/task-composer
 diff -qr /Users/andrey/Projects/Home/ShipTask/strategic-explainer \
   plugins/strategic-explainer/skills/strategic-explainer
 git diff --check

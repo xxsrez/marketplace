@@ -1,0 +1,40 @@
+{
+  "name": "issue-grinder",
+  "version": "0.1.0+codex.20260828140106",
+  "description": "Deliver selected Task Manager issues to verified outcomes with live scope, strategic Goals, autonomous UAT work, and blocker reflection that resumes whenever a safe path exists.",
+  "author": {
+    "name": "Andrey Myasnikov",
+    "url": "https://github.com/xxsrez"
+  },
+  "homepage": "https://github.com/xxsrez/ShipTask",
+  "repository": "https://github.com/xxsrez/marketplace",
+  "keywords": [
+    "issues",
+    "tasks",
+    "delivery",
+    "verification",
+    "releases",
+    "planning",
+    "autonomy",
+    "productivity"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Issue Grinder",
+    "shortDescription": "Grind selected Task Manager issues to verified outcomes.",
+    "longDescription": "Includes two independent Task Manager skills. Issue Grinder delivers an explicit issue, Release, Project, or current-Release scope through To Do, In Progress, and In Review until no active issue remains. It creates a strategic Goal only for an explicitly invoked multi-issue run, keeps live scope dynamic, treats blocked-by as an implementation-readiness gate, and requires human-readable comments for every non-trivial lifecycle transition. A candidate blocker must become a causal explanation and a fresh reflection over current primary sources; any verified safe in-scope action cancels the blocker and resumes work. Public UAT and other confirmed non-production environments do not need routine approval, while Production remains forbidden. Independent writers use separate feature branches and Git worktrees, and genuinely simple bounded packets may use Luna Max with immediate handoff on material uncertainty. Task Composer remains planning-only and creates Task Manager Backlog scope without implementing it. Both skills use the separately installed Task Manager adapter. Issue Grinder uses the standalone Strategic Explainer when available and otherwise writes natively; its absence does not block comments, status transitions, or final reporting.",
+    "developerName": "Andrey Myasnikov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://task-manager.xxsrez-work.chatgpt.site",
+    "defaultPrompt": [
+      "\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439 $issue-grinder, \u0447\u0442\u043e\u0431\u044b \u0434\u043e\u0432\u0435\u0441\u0442\u0438 \u0442\u0435\u043a\u0443\u0449\u0438\u0439 Release \u0432 Task Manager \u0434\u043e \u043f\u0440\u043e\u0432\u0435\u0440\u0435\u043d\u043d\u043e\u0433\u043e \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430",
+      "\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439 $issue-grinder, \u0447\u0442\u043e\u0431\u044b \u0434\u043e\u0432\u0435\u0441\u0442\u0438 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u043e\u0435 issue \u0434\u043e \u0432\u044b\u0445\u043e\u0434\u0430 \u0438\u0437 To Do, In Progress \u0438 In Review",
+      "\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439 $issue-grinder:task-composer, \u0447\u0442\u043e\u0431\u044b \u043e\u0444\u043e\u0440\u043c\u0438\u0442\u044c \u044d\u0442\u043e \u0442\u0440\u0435\u0431\u043e\u0432\u0430\u043d\u0438\u0435 \u0432 Task Manager Backlog"
+    ],
+    "brandColor": "#8A5438"
+  }
+}

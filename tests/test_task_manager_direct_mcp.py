@@ -7,6 +7,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 TASK_MANAGER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "task-manager"
 SHIP_TASKS_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "ship-tasks"
+ISSUE_GRINDER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "issue-grinder"
 STRATEGIC_EXPLAINER_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "strategic-explainer"
 PRODUCTION_MCP_URL = "https://task-manager.xxsrez-work.chatgpt.site/api/mcp"
 
@@ -90,7 +91,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         names = [plugin["name"] for plugin in marketplace["plugins"]]
         self.assertEqual(
             names,
-            ["task-manager", "mind-diary", "ship-tasks", "strategic-explainer"],
+            [
+                "task-manager",
+                "mind-diary",
+                "ship-tasks",
+                "strategic-explainer",
+                "issue-grinder",
+            ],
         )
         self.assertEqual(names.count("task-manager"), 1)
         self.assertNotIn("task-manager-uat", names)
@@ -121,6 +128,67 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertFalse(
             (TASK_MANAGER_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
         )
+        self.assertFalse(
+            (TASK_MANAGER_PLUGIN_ROOT / "skills" / "issue-grinder").exists()
+        )
+
+    def test_issue_grinder_is_a_separate_skill_only_plugin(self) -> None:
+        marketplace = read_json(
+            REPOSITORY_ROOT / ".agents" / "plugins" / "marketplace.json"
+        )
+        entry = next(
+            plugin
+            for plugin in marketplace["plugins"]
+            if plugin["name"] == "issue-grinder"
+        )
+        manifest = read_json(
+            ISSUE_GRINDER_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        )
+
+        self.assertEqual(
+            entry["source"],
+            {"source": "local", "path": "./plugins/issue-grinder"},
+        )
+        self.assertEqual(entry["policy"]["installation"], "AVAILABLE")
+        self.assertEqual(manifest["name"], "issue-grinder")
+        self.assertRegex(manifest["version"], r"^0\.1\.0\+codex\.\d{14}$")
+        self.assertEqual(manifest["skills"], "./skills/")
+        self.assertNotIn("mcpServers", manifest)
+        self.assertNotIn("apps", manifest)
+        self.assertFalse((ISSUE_GRINDER_PLUGIN_ROOT / ".mcp.json").exists())
+
+        issue_root = ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "issue-grinder"
+        composer_root = ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "task-composer"
+        self.assertTrue((issue_root / "SKILL.md").is_file())
+        self.assertTrue((composer_root / "SKILL.md").is_file())
+        self.assertFalse(
+            (ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
+        )
+        self.assertFalse(
+            (ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
+        )
+
+        skill = (issue_root / "SKILL.md").read_text(encoding="utf-8")
+        metadata = (issue_root / "agents" / "openai.yaml").read_text(
+            encoding="utf-8"
+        )
+        composer = (composer_root / "SKILL.md").read_text(encoding="utf-8")
+        normalized = " ".join(skill.split())
+
+        self.assertIn("name: issue-grinder", skill)
+        self.assertIn("candidate blocker → причинное объяснение → reflection", skill)
+        self.assertIn("update_goal(status=blocked)", skill)
+        self.assertIn("Production запрещён полностью", skill)
+        self.assertIn("публичного UAT", skill)
+        self.assertIn("финальный комментарий только пользователю в чате", normalized)
+        self.assertIn('value: "task-manager"', metadata)
+        self.assertIn("allow_implicit_invocation: true", metadata)
+        self.assertIn("$issue-grinder:task-composer", composer)
+
+        public_manifest = json.dumps(manifest["interface"], ensure_ascii=False)
+        self.assertIn("fresh reflection over current primary sources", public_manifest)
+        self.assertIn("Public UAT", public_manifest)
+        self.assertIn("Production remains forbidden", public_manifest)
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(
@@ -172,7 +240,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         manifest = read_json(
             SHIP_TASKS_PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
         )
-        self.assertRegex(manifest["version"], r"^0\.1\.7\+codex\.\d{14}$")
+        self.assertRegex(manifest["version"], r"^0\.1\.\d+\+codex\.\d{14}$")
         self.assertIn("selected Task Manager", manifest["description"])
         self.assertIn("A delivery verb alone", manifest["interface"]["longDescription"])
         self.assertIn("preserves natural-language subagent rules", manifest["interface"]["longDescription"])
@@ -348,7 +416,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("найденный и устранённый", run_report)
         self.assertIn("не совместим с формулировкой полного успеха", run_report)
         self.assertIn("authoritative source anchors и factual inventory", run_report)
-        self.assertIn("не делает второй editorial rewrite", run_report)
+        self.assertIn("без caller rewrite", run_report)
         for retired in (
             "строгого tool threshold",
             "строгого model-tool threshold",
@@ -403,7 +471,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertEqual(manifest["name"], "strategic-explainer")
         self.assertEqual(manifest["skills"], "./skills/")
-        self.assertRegex(manifest["version"], r"^0\.1\.0\+codex\.\d{14}$")
+        self.assertRegex(manifest["version"], r"^0\.1\.\d+\+codex\.\d{14}$")
         self.assertNotIn("mcpServers", manifest)
         self.assertNotIn("apps", manifest)
         public_manifest = json.dumps(manifest["interface"], ensure_ascii=False)
