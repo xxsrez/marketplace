@@ -97,6 +97,13 @@ signal, продолжаемую safe работу и exact resume condition. Э
 отдельного Strategic Explainer, пока effective rule его сохраняет; голое «нужен
 файл/principal» без причинной рекомендации недостаточно.
 
+Для каждой заявленной prerequisite anchors подтверждают current capability
+state. Прежний `not_available` или старый comment не достаточны: уже существующий
+capability/session/reconnect path используется агентом и не запрашивается у
+пользователя повторно. User action допустим только когда flow фактически дошёл
+до шага, который требует пароль, MFA, consent или access grant. Иначе blocker
+candidate аннулируется и ShipTask продолжает работу.
+
 ### Factual anchors: завершено
 
 Объяснить полученный outcome, его значение, ключевое evidence, exact result или

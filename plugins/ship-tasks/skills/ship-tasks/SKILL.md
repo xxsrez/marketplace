@@ -169,13 +169,14 @@ verified. Сначала свежо сопоставь finding с selector: но
 Task live selector уже in-scope и не требует approval. Только действительно
 unmatched finding не исправляй и не превращай в новую Task без authority.
 
-До `verification-blocked` исчерпай автономную test frontier: сам создай
-synthetic fixtures/seed data (PDF, ZIP, PNG, изображения, Markdown) и проведи
-их через поддерживаемые ingress, пробуя другой безопасный path после сбоя.
-User-provided файл не blocker, если input можно создать самому; второй
-principal/session, внешний account, provider evidence или access-policy effect —
-authority boundary после проверки synthetic/ephemeral substitute, без создания
-identity или ACL без authority.
+До `verification-blocked` исчерпай автономную test frontier: сам создай synthetic
+fixtures/seed data и проведи их через supported ingress, меняя safe path после
+сбоя. Для каждой заявленной prerequisite перечитай current Task/parent, related
+terminal Tasks, comments, project sources и live surfaces. Прежний `not_available`
+или report не доказательство. Уже существующий capability/session/reconnect path
+используй сам и не запрашивай у пользователя повторно. User dependency существует,
+только если current flow фактически дошёл до шага, который требует пароль, MFA,
+consent или access grant и недоступен твоей authority. Сними каждую ложную prerequisite; пока self-service path оставляет runnable in-scope работу, общий blocker candidate аннулируется; identity/ACL без authority не создавай.
 Когда candidate готов, сформулируй problem-first comment о результате и
 проведённой проверке, опубликуй и перечитай его, затем переведи
 `In Progress → In Review`. Сразу проведи приёмку: `In Review` не является
@@ -296,5 +297,4 @@ logistics; смену средства не называй repair или обя�
 success affected Task. Не заменяй Task comments этим ответом. Подробности: [run report](references/run-report.md).
 Goal `batch-implementation` заверши после fresh full inventory без незавершённой current in-scope работы; release-only run его не финализирует. В final отдельно назови Tasks, закрытые через `critical-codebase-accepted`, непроведённую functional check и residual risk.
 Goal разрешено перевести в `blocked` только после tool-level threshold и fresh full inventory без независимой safe работы; до `update_goal(status=blocked)` получи новую scope-level publication unit.
-Она не переиспользует Task comment provider и называет первичную причину невозможности продолжать, исчерпанную frontier, влияние, user/environment prerequisites, первый safe шаг и наблюдаемый сигнал возобновления.
-После write перечитай Goal и верни человеку именно этот report.
+Она не переиспользует Task comment provider и называет первичную причину невозможности продолжать, исчерпанную frontier, влияние, user/environment prerequisites, первый safe шаг и наблюдаемый сигнал возобновления; после write перечитай Goal и верни именно этот report.

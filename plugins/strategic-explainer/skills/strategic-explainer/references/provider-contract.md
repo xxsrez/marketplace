@@ -158,6 +158,15 @@ ref обычно нет. Publication с неприменимым opaque identifi
 state. Реальный выбор сравнивай только по material prerequisites,
 доказательности и trade-off; не придумывай alternatives и authority.
 
+В blocker/action unit проверь каждую prerequisite как current material claim.
+Прежний `not_available`, старый report или список симптомов не доказывают её.
+Если sources показывают уже существующий capability, выполненное условие или
+безопасный self-service/reconnect path, не проси человека повторить его: прямо
+скажи, что эта dependency не установлена, общий blocker требует пересчёта, а
+caller может продолжить соответствующий self-service step. Пароль, MFA,
+consent, системное подтверждение или access grant называй user action только
+когда evidence показывает, что current flow фактически дошёл до такого шага.
+
 ## Проверь понимание
 
 Перед возвратом мысленно убери technical names. Читатель, который знает только

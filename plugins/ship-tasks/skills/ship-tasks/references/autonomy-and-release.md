@@ -135,6 +135,18 @@ criterion независимого principal, второй authenticated session
 account, provider-side evidence или access-policy effect: это может быть
 настоящей authority boundary, если synthetic substitute в scope отсутствует.
 
+Для каждой заявленной prerequisite сначала перечитай current Task/parent,
+связанные и завершённые Tasks, comments, project sources и live runtime
+surfaces. Прежний `not_available`, старый blocker comment или subagent summary
+не доказывают current state. Уже существующий capability, поддерживаемую
+тестовую account/session, сохранённый safe reconnect/reissue path или ранее
+выполненное условие используй либо восстанови сам и не запрашивай у пользователя
+повторно. User dependency доказана только когда current flow фактически дошёл до
+шага, который требует пароль, MFA, consent, системное подтверждение или access
+grant вне authority. Каждая ложная prerequisite исключается из blocker claim;
+remaining self-service path, который оставляет runnable in-scope работу,
+означает, что общий blocker candidate аннулируется и работа продолжается.
+
 Такой blocker не завершается голым «нужен файл/principal». Перед defer подготовь
 через Strategic Explainer grounded decision report с self-service attempts,
 primary/cascade cause, recommended test path, material alternatives,
