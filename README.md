@@ -68,8 +68,11 @@ Task Manager skills:
   treats `blocked by` as implementation readiness rather than a status lock;
 - before any terminal blocker, it turns the candidate into a causal explanation
   and performs a fresh reflection over current primary sources. A verified safe
-  action cancels the blocker and resumes delivery. Public UAT is ordinary
-  non-production work; Production remains forbidden;
+  action cancels the blocker and resumes delivery. A terminal handoff lists all
+  confirmed causes and gives a separate answer for each one: why it blocks the
+  goal, why Issue Grinder cannot resolve it alone, and what the blocked step
+  contributes to the goal. Public UAT is ordinary non-production work;
+  Production remains forbidden;
 - independent writers use separate feature branches and Git worktrees. Only
   genuinely simple bounded packets use Luna Max, and material uncertainty hands
   the packet back to the current integration owner. Before fresh work, a new

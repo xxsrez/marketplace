@@ -1,6 +1,6 @@
 # Strategic Explainer routing
 
-Применяет `IG-FLOW-03..04`, `IG-GOAL-04..06` и publication часть остальных
+Применяет `IG-FLOW-03..04`, `IG-GOAL-04..07` и publication часть остальных
 переходов. Strategic Explainer — optional communication interface, не источник
 scope, authority, evidence, repair или status decision.
 
@@ -12,9 +12,10 @@ scope, authority, evidence, repair или status decision.
   `$strategic-explainer:strategic-explainer`;
 - иначе `native` без capability warning и без блокировки lifecycle.
 
-Каждый Task Manager comment, отдельный blocker-report и финальный Goal comment
-является новой publication unit. Обычный `To Do → In Progress` comment не
-создаёт. Routine chat progress не отправляй в Explainer.
+Каждый Task Manager comment, общий blocker-report, отдельный ответ по каждой
+причине блокировки и финальный Goal comment являются отдельными publication units.
+Обычный `To Do → In Progress` comment не создаёт. Routine chat progress не отправляй в
+Explainer.
 
 Для ordinary unit вызови semantic facade только с назначением, исходной
 ситуацией/вопросом, exact scope, языком, material constraints и разрешимыми
@@ -49,10 +50,16 @@ follow-up.
 
 Terminal report связывает exact scope с попыткой, primary cause, checkpoint,
 unverified remainder, impact, нужным user action и observable resume condition.
-Reason code, raw error или tool diary этого не заменяют. Goal status `blocked`
-может следовать только после принятого отчёта и platform blocker audit. Сам
-принятый report показывается пользователю и завершает текущую попытку даже если
-audit ещё не разрешает Goal mutation; в таком случае Goal остаётся активным.
+Reason code, raw error или tool diary этого не заменяют. Общий report перечисляет все
+подтверждённые current причины. Для каждой причины отдельный answer должен объяснить:
+почему она блокирует цель, почему Issue Grinder не может устранить её сам и что даст цели
+заблокированный шаг. Весь комплект готовится и проходит reflection до первой
+публикации; stale reason или найденный safe path отменяют весь blocker candidate.
+
+Goal status `blocked` может следовать только после публикации общего report, всех
+отдельных ответов и platform blocker audit. Принятый комплект показывается
+пользователю и завершает текущую попытку даже если audit ещё не разрешает Goal
+mutation; в таком случае Goal остаётся активным.
 
 Финальный Goal comment возвращается только пользователю в чате. Task Manager
 получает только issue-level comments, требуемые его lifecycle.

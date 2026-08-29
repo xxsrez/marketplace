@@ -1,7 +1,7 @@
 {
   "name": "issue-grinder",
-  "version": "0.1.0+codex.20260828201910",
-  "description": "Deliver selected Task Manager issues to verified outcomes with live scope, strategic Goals, autonomous UAT work, and blocker reflection that resumes whenever a safe path exists.",
+  "version": "0.1.0+codex.20260829085445",
+  "description": "Deliver selected Task Manager issues to verified outcomes with live scope, strategic Goals, autonomous UAT work, and detailed per-reason blocker handoffs.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Issue Grinder",
     "shortDescription": "Grind selected Task Manager issues to verified outcomes.",
-    "longDescription": "Includes two independent Task Manager skills. Issue Grinder delivers an explicit issue, Release, Project, or current-Release scope through To Do, In Progress, and In Review until no active issue remains. It creates a strategic Goal only for an explicitly invoked multi-issue run, keeps live scope dynamic, treats blocked-by as an implementation-readiness gate, and requires human-readable comments for every non-trivial lifecycle transition. A candidate blocker must become a causal explanation and a fresh reflection over current primary sources; any verified safe in-scope action cancels the blocker and resumes work. Public UAT and other confirmed non-production environments do not need routine approval, while Production remains forbidden. Independent writers use separate feature branches and Git worktrees, and genuinely simple bounded packets may use Luna Max with immediate handoff on material uncertainty. Task Composer remains planning-only and creates Task Manager Backlog scope without implementing it. Both skills use the separately installed Task Manager adapter. Issue Grinder uses the standalone Strategic Explainer when available and otherwise writes natively; its absence does not block comments, status transitions, or final reporting.",
+    "longDescription": "Includes two independent Task Manager skills. Issue Grinder delivers an explicit issue, Release, Project, or current-Release scope through To Do, In Progress, and In Review until no active issue remains. It creates a strategic Goal only for an explicitly invoked multi-issue run, keeps live scope dynamic, treats blocked-by as an implementation-readiness gate, and requires human-readable comments for every non-trivial lifecycle transition. A candidate blocker must become a causal explanation and a fresh reflection over current primary sources; any verified safe in-scope action cancels the blocker and resumes work. A terminal handoff lists every confirmed blocking cause and gives a separate answer for each one explaining why it blocks the goal, why Issue Grinder cannot resolve it alone, and what the blocked step contributes to the goal. Public UAT and other confirmed non-production environments do not need routine approval, while Production remains forbidden. Independent writers use separate feature branches and Git worktrees, and genuinely simple bounded packets may use Luna Max with immediate handoff on material uncertainty. Task Composer remains planning-only and creates Task Manager Backlog scope without implementing it. Both skills use the separately installed Task Manager adapter. Issue Grinder uses the standalone Strategic Explainer when available and otherwise writes natively; its absence does not block comments, status transitions, or final reporting.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [

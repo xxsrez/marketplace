@@ -183,6 +183,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         self.assertIn("name: issue-grinder", skill)
         self.assertIn("candidate blocker → причинное объяснение → reflection", skill)
+        self.assertIn("для каждой из них дай отдельный ответ", skill)
+        self.assertIn("почему она блокирует цель", skill)
+        self.assertIn("почему Issue Grinder не может устранить её сам", skill)
+        self.assertIn("зачем нужен заблокированный шаг", skill)
         self.assertIn("update_goal(status=blocked)", skill)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичного UAT", skill)
@@ -198,6 +202,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         public_manifest = json.dumps(manifest["interface"], ensure_ascii=False)
         self.assertIn("fresh reflection over current primary sources", public_manifest)
+        self.assertIn("A terminal handoff lists every confirmed blocking cause", public_manifest)
+        self.assertIn("why Issue Grinder cannot resolve it alone", public_manifest)
         self.assertIn("Public UAT", public_manifest)
         self.assertIn("Production remains forbidden", public_manifest)
 
