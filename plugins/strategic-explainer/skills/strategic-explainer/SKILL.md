@@ -59,16 +59,23 @@ publication-ready result не утверждает, что автономная 
 
 1. Не готовь explanation candidate, не читай provider references и не применяй
    внутренний метод provider-а.
-2. Создай нового built-in `default` subagent с `fork_turns="none"`,
-   `model="gpt-5.6-luna"` и `reasoning_effort="max"`.
-3. Преобразуй semantic request в ровно одну compact provider task:
+2. Создай нового built-in `default` subagent только прямым top-level вызовом
+   `spawn_agent` из collaboration tools, с `fork_turns="none"`,
+   `model="gpt-5.6-luna"` и `reasoning_effort="max"`. Не ищи этот tool через
+   `ALL_TOOLS` и не вызывай его из `functions.exec`: collaboration surface там
+   намеренно не показывается.
+3. Built-in subagent — это child текущей Codex task. Никогда не подменяй его
+   `create_thread`, projectless task, fork/продолжением отдельной Codex task или
+   новой пользовательской session. Если прямой `spawn_agent` недоступен или
+   завершился ошибкой, верни provider unavailability без app-level замены.
+4. Преобразуй semantic request в ровно одну compact provider task:
    - отдельная точная строка `STRATEGIC_EXPLAINER_PROVIDER_V1`;
    - указание применить `$strategic-explainer:strategic-explainer`;
    - назначение и одна реальная formulation либо explicit editing task;
    - exact scope, язык, material constraints и resolvable read-only anchors.
-4. Не передавай inherited turns, tool transcript, process diary, caller
+5. Не передавай inherited turns, tool transcript, process diary, caller
    candidate, strategic summary, свои рассуждения или format recipe.
-5. Прими только publication-ready text с отдельно обозначенным source basis
+6. Прими только publication-ready text с отдельно обозначенным source basis
    либо `STRATEGIC_EXPLAINER_INVOCATION_ERROR`. Верни внешнему workflow только
    готовый result contract; не раскрывай clean-call recipe и не выдавай
    промежуточный structural refusal за пользовательский текст.
@@ -78,11 +85,12 @@ publication-ready result не утверждает, что автономная 
 provider unavailability по contract вызывающего workflow.
 
 Если provider вернул invocation error, facade исправляет названный structural
-defect и создаёт один новый clean subagent с тем же role lock; follow-up
-прежнему экземпляру запрещён. Повторный refusal или другая operational failure
-возвращается как unavailability по contract внешнего workflow. Factual conflict
-проверяется внешним workflow по authoritative sources и приходит новым semantic
-request с исправленным source/anchor.
+defect и создаёт один новый clean subagent тем же прямым child-only способом с
+тем же role lock; follow-up прежнему экземпляру и app-level task/session
+запрещены. Повторный refusal или другая operational failure возвращается как
+unavailability по contract внешнего workflow. Factual conflict проверяется
+внешним workflow по authoritative sources и приходит новым semantic request с
+исправленным source/anchor.
 
 Один invocation обслуживает один готовящийся человеку comment, report, material
 decision/state explanation, blocker explanation, final или явную редактуру.
