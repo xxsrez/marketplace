@@ -17,6 +17,13 @@ scope, authority, evidence, repair или status decision.
 Обычный `To Do → In Progress` comment не создаёт. Routine chat progress не отправляй в
 Explainer.
 
+Всю ordinary publication unit исполняет основной coordinator. Рабочие
+subagents возвращают ему только проверенные facts, evidence и resolvable
+read-only anchors; им нельзя поручать готовый comment или вызов facade. После
+такого handoff coordinator сам вызывает semantic facade из top-level
+collaboration surface. Если direct child transport там недоступен, применяется
+обычный native fallback ниже; отдельная Codex task/session не создаётся.
+
 Для ordinary unit вызови semantic facade только с назначением, исходной
 ситуацией/вопросом, exact scope, языком, material constraints и разрешимыми
 read-only anchors. Не передавай provider topology, profile, internal protocol

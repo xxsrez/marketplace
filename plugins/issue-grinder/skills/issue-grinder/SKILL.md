@@ -82,9 +82,13 @@ issue можно завершить без ложного заявления о 
 risk. Integrity, security, identity точной версии и основной acceptance
 несущественными не считай.
 
-Только основной coordinator владеет Goal, Task Manager comments/status/version
-writes, integration и окончательной проверкой. Любой unknown write сначала
-reconcile через live read; не дублируй comment и не повторяй mutation вслепую.
+Только основной coordinator владеет Goal, всей publication unit, вызовом
+Strategic Explainer, Task Manager comments/status/version writes, integration и
+окончательной проверкой. Worker, reviewer и scout возвращают только facts,
+evidence и read-only anchors: не поручай им формулировать comment, вызывать
+Strategic Explainer или создавать отдельную Codex task/session ради текста.
+Любой unknown write сначала reconcile через live read; не дублируй comment и не
+повторяй mutation вслепую.
 Повторяй recovery только при новом evidence, изменившемся live state или другом
 существенном action; одинаковая попытка с тем же результатом не является
 прогрессом и переходит в предусмотренный fallback либо candidate blocker.
@@ -98,6 +102,10 @@ reconcile через live read; не дублируй comment и не повто
 нет, сразу пиши native. Caller error исправь и вызови facade корректно;
 техническая ошибка не маскируется, но при достаточных фактах переходи в native,
 если сама неисправность не делает обязательный текст небезопасным.
+
+Semantic facade вызывает сам основной coordinator из своей top-level
+collaboration surface. Не передавай publication unit целиком уже созданному
+subagent-у: после его evidence handoff вызови facade отдельно.
 
 Comment/final draft — точка принятия решения, не украшение готового статуса.
 Если текст или source basis выявили непонятый факт либо существенную обязательную

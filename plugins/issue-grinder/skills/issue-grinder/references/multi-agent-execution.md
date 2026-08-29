@@ -85,6 +85,15 @@ fan-in и exact integrated acceptance. Worker report и green checks в его
 worktree — evidence input, не общий result. После каждого return/blocker,
 scope change или готовой dependency пересчитай frontier.
 
+Это владение включает всю publication unit и semantic facade. Worker, reviewer
+или scout не формулирует готовый comment и не вызывает Strategic Explainer:
+он возвращает coordinator-у только facts, evidence и resolvable read-only
+anchors. Уже созданный built-in child может не иметь top-level namespace
+`collaboration`, поэтому попытка породить provider из worker-а не переносится в
+другой transport. Coordinator после evidence handoff сам вызывает facade;
+`create_thread`, отдельная projectless task, fork или новая session ради текста
+запрещены.
+
 ## Checkpoints и профили
 
 Task-owned unfinished branch/worktree сохраняется. Перед takeover докажи, что
