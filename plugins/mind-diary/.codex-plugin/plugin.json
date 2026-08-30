@@ -1,7 +1,7 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260826190538",
-  "description": "Connect the Mind Diary UAT pilot and work with private, revisioned knowledge, including exact local files.",
+  "version": "0.1.0+codex.20260830223243",
+  "description": "Connect the Mind Diary UAT pilot to read enabled Minds and preserve relevant discussed knowledge in one writable Mind.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -18,8 +18,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Mind Diary UAT",
-    "shortDescription": "Browse, update, and transfer selected Memories and files.",
-    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Attach explicit read-only Minds, choose one writable Mind, browse, search, fetch, validate, export, safely commit Markdown Memories or arbitrary regular BundleFiles, and incrementally transfer explicitly selected typed OKF entries. A bundled macOS companion keeps exact local paths inside one process, stream-hashes and uploads through a short-lived hosted intent without base64 or full-file buffering. Every write preserves immutable history and uses binding plus revision concurrency.",
+    "shortDescription": "Read enabled Minds and preserve relevant discussed knowledge.",
+    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Mind usage is configured once per user on the Site: any number may be readable and at most one may accept writes. Codex uses an exact enabled Mind when the user names it, otherwise selects readable Minds by their untrusted descriptions, loads content progressively, and automatically preserves relevant durable knowledge explicitly discussed in the current conversation through an OKF 0.2 changeset. A bundled macOS companion safely stages one explicitly selected regular file without exposing its local path or buffering it as base64. Every commit preserves immutable history and rechecks current user settings, access and revision concurrency.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -28,9 +28,9 @@
     ],
     "websiteURL": "https://mind-diary.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
-      "Show the Minds I can access",
-      "Search one Mind for a Memory",
-      "Transfer one selected typed OKF Memory into my writable Mind"
+      "Show my enabled Minds and their read or read-write modes",
+      "Use the enabled Minds whose descriptions match this question",
+      "Preserve relevant durable knowledge we discuss in my writable Mind"
     ],
     "brandColor": "#6C4BB6",
     "composerIcon": "./assets/composer-icon.svg",

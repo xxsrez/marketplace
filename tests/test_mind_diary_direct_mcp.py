@@ -30,24 +30,25 @@ def sha256_file(path: Path) -> str:
 
 
 class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
-    def test_skill_uses_get_mind_info_for_personal_mind_and_head(self) -> None:
+    def test_skill_selects_only_fresh_enabled_minds_without_fallback(self) -> None:
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
 
         self.assertIn(
-            "Read the selected Mind and its current HEAD with `get_mind_info`.",
+            "Start each relevant workflow with fresh `list_minds`.",
             skill,
         )
         self.assertIn(
-            "Use `resolve_mind` only to discover one exact canonical handle before binding.",
+            "When the user names a Mind, require that exact Mind in the fresh projection",
             skill,
         )
-        self.assertIn("Never pass `/me` to `resolve_mind`", skill)
-        self.assertNotIn(
-            "Resolve its route or Personal Mind with `resolve_mind`.",
+        self.assertIn(
+            "Otherwise select only the readable Mind or Minds whose descriptions genuinely",
             skill,
         )
+        self.assertIn("never\nuse `/me` or an implicit fallback", skill)
+        self.assertIn("Do not run an implicit cross-Mind search", skill)
 
     def test_marketplace_installs_before_authentication(self) -> None:
         marketplace = read_json(
@@ -72,6 +73,14 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertEqual(manifest["interface"]["displayName"], "Mind Diary UAT")
         self.assertIn(
             "restricted Mind Diary UAT pilot",
+            manifest["interface"]["longDescription"],
+        )
+        self.assertIn(
+            "configured once per user on the Site",
+            manifest["interface"]["longDescription"],
+        )
+        self.assertIn(
+            "automatically preserves relevant durable knowledge",
             manifest["interface"]["longDescription"],
         )
         self.assertRegex(
@@ -440,42 +449,57 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         serialized = json.dumps((first, second))
         self.assertNotIn(str(source), serialized)
 
-    def test_skill_requires_authoritative_bindings_and_explicit_rebind(self) -> None:
+    def test_skill_uses_principal_owned_modes_and_server_resolved_write_mount(self) -> None:
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
 
-        binding_read = skill.index("Call `get_mind_bindings` before every content")
-        content_read = skill.index("## Read workflow")
-        self.assertLess(binding_read, content_read)
-        self.assertIn("`list_minds` is discovery only", skill)
-        self.assertIn("never rebind\nautomatically", skill)
-        self.assertIn("Other attached Minds remain read-only", skill)
-        self.assertRegex(
-            skill,
-            re.compile(
-                r"Call `commit_changeset`[\s\S]+unchanged active "
-                r"`write_binding_id`[\s\S]+`expected_revision`"
-            ),
-        )
-        self.assertIn("principal, token, grant, email\nor internal Mind IDs", skill)
+        projection = skill.index("Start each relevant workflow with fresh `list_minds`")
+        content_read = skill.index("## Progressive read workflow")
+        self.assertLess(projection, content_read)
+        self.assertIn("mode is `read` or `read_write`", skill)
+        self.assertIn("single fresh\n  `read_write` Mind", skill)
+        self.assertIn("server, not the client, resolves and pins the current", skill)
+        self.assertIn("principal-owned mount generation", skill)
+        self.assertIn("The request `mind` must assert the exact fresh singleton", skill)
+        self.assertIn("Do not expose principal, token, grant, email, internal", skill)
 
-    def test_skill_keeps_automatic_capture_narrow_and_policy_authoritative(self) -> None:
+    def test_skill_automatically_preserves_discussed_durable_knowledge(self) -> None:
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
 
-        capture = skill.index("## Automatic capture workflow")
+        preservation = skill.index("## Consider automatic preservation")
         boundaries = skill.index("## Product boundaries")
-        self.assertLess(capture, boundaries)
-        self.assertIn("`automatic_capture.mode` is `routine_non_sensitive`", skill)
-        self.assertIn("The Sites control plane is the only place", skill)
-        self.assertIn("Never call `capture_knowledge` for credentials", skill)
-        self.assertIn("cross-Mind sources", skill)
-        self.assertIn("same writable Mind", skill)
-        self.assertIn("Treat `captured` as one new immutable revision", skill)
-        self.assertIn("`no_op` as successful\n   deduplication", skill)
-        self.assertIn("never move, replace, merge or retry the payload", skill)
+        self.assertLess(preservation, boundaries)
+        for required in (
+            "consider every newly discussed piece of durable",
+            "explicitly discussed in this current conversation",
+            "Do not ask\nfor a separate write instruction, toggle or confirmation",
+            "Private or sensitive\nknowledge may be saved",
+            "Do not collect nearby conversation, files,\nbrowser history, readable corpus",
+            "pass optional `source_references`",
+            "Fetch a targeted existing Memory",
+            "create, update, explicit delete or semantic no-op",
+            "Preserve unknown OKF types, fields",
+            "Validate the complete proposed OKF 0.2 bundle before commit",
+            "call `reconcile_changeset` with the exact",
+            "Briefly tell the user what was",
+        ):
+            self.assertIn(required, skill)
+
+        for retired in (
+            "get_mind_bindings",
+            "set_read_mind_binding",
+            "set_write_mind_binding",
+            "write_binding_id",
+            "capture_knowledge",
+            "routine_non_sensitive",
+            "automatic_capture",
+            "rebind",
+            "unbind",
+        ):
+            self.assertNotIn(retired, skill)
 
     def test_skill_routes_one_exact_local_file_through_hosted_intent(self) -> None:
         skill = (
@@ -483,15 +507,16 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         local = skill.index("## Local regular-file workflow")
-        capture = skill.index("## Automatic capture workflow")
-        self.assertLess(local, capture)
+        boundaries = skill.index("## Product boundaries")
+        self.assertLess(local, boundaries)
         self.assertIn("`prepare_local_file`", skill)
         self.assertIn("`create_file_upload_intent`", skill)
         self.assertIn("`upload_prepared_file`", skill)
-        self.assertIn("single `create_bundle_file` or `replace_bundle_file`", skill)
+        self.assertIn("`create_bundle_file` or `replace_bundle_file`", skill)
         self.assertIn("Never copy the path into a hosted tool", skill)
-        self.assertIn("The companion never deletes or modifies the source file", skill)
-        self.assertIn("not directory/bulk/archive", skill)
+        self.assertIn("The companion never\ndeletes or modifies the source file", skill)
+        self.assertIn("supports one exact regular file, not directory, bulk or", skill)
+        self.assertIn("client supplies no destination\ngeneration", skill)
 
     def test_skill_routes_incremental_typed_okf_transfer_without_bulk_state(self) -> None:
         skill = (
@@ -507,23 +532,17 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertIn("explicitly enumerates every entry", transfer)
         self.assertIn(
-            "Never infer,\ndiscover or add a related Markdown entry",
+            "Never infer or add a related\nentry",
             transfer,
         )
-        self.assertIn("every transferred entry must be selected by the user", transfer)
+        self.assertIn("every\ntransferred entry must be selected by the user", transfer)
         self.assertNotIn("or a small explicitly related set", transfer)
         self.assertIn("`recorded_by`, `applies_to` and `sources`", transfer)
         self.assertIn("Markdown stays Markdown", transfer)
         self.assertRegex(transfer, re.compile(r"`/raw/`.*`/wiki/`.*`/output/`", re.S))
-        self.assertIn("`before → after`", transfer)
-
-        confirmation = transfer.index("Apply the existing confirmation rules")
-        fresh_bindings = transfer.index("`get_mind_bindings`", confirmation)
-        fresh_head = transfer.index("exact current HEAD", fresh_bindings)
-        commit = transfer.index("`commit_changeset`", fresh_head)
-        self.assertLess(confirmation, fresh_bindings)
-        self.assertLess(fresh_bindings, fresh_head)
-        self.assertLess(fresh_head, commit)
+        self.assertIn("`before -> after`", transfer)
+        self.assertIn("fresh writable Mind and HEAD", transfer)
+        self.assertIn("current\nprincipal-owned mount", transfer)
 
         attachment_tools = [
             "`prepare_local_file`",
@@ -548,7 +567,7 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             "`operations/events`",
             "`operations/revisions`",
             "`operations/config*`",
-            "multi-writer or Drive protocol state",
+            "multi-writer or Drive protocol\nstate",
         ):
             self.assertIn(excluded, transfer)
         self.assertIn("must not rewrite the first committed entry", transfer)

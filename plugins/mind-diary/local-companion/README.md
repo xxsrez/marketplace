@@ -43,9 +43,10 @@ an expired or unavailable local ref asks for a fresh prepare. The adapter never
 labels an ordinary missing path as proven cross-host or temporary-file expiry.
 
 The process uses no browser, OAuth flow, Keychain, daemon or proxy. The hosted
-Mind Diary MCP remains the authority for binding selection and for minting the
-one-use intent. This binary is pinned to the Mind Diary UAT origin and has no
-runtime origin override.
+Mind Diary MCP remains the authority for the principal's current writable mount
+and for minting the one-use intent; the local client supplies no destination
+generation or credential-owned target identifier. This binary is pinned to the
+Mind Diary UAT origin and has no runtime origin override.
 
 Build and test from this directory:
 
