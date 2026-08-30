@@ -222,6 +222,12 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("[краткую справку](references/mode-help.md)", skill)
         self.assertIn("`По умолчанию` — не шестой режим", mode_help)
         self.assertIn("не обращается к Task Manager", mode_help)
+        self.assertIn("Sol/controller: он делает почти всё", mode_help)
+        self.assertIn(
+            "основной объём лёгкой и средней ограниченной implementation",
+            mode_help,
+        )
+        self.assertIn("возвращает пакет Sol/controller-у", mode_help)
         self.assertIn('value: "task-manager"', metadata)
         self.assertIn("allow_implicit_invocation: true", metadata)
         self.assertIn("$issue-grinder:task-composer", composer)
@@ -237,6 +243,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("issue count alone does not select it", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
         self.assertIn("delivery-free help path", public_manifest)
+        self.assertIn("controller does almost all work", public_manifest)
+        self.assertIn("preferred executor for light and medium", public_manifest)
+        self.assertIn("returns problems to the controller", public_manifest)
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(

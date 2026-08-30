@@ -133,16 +133,17 @@ normalization не используется для dispatch. Смена current 
 объективно проверяем, не требует material
 product/creative/architecture/cross-issue judgment и не зависит от
 непредсказуемой среды или риска. Маленький diff сам по себе не simple. В
-`Балансе`, `Рое` и `Экономичном` Luna Max получает более широкую работу по
-mode contract; profile normalization может сделать controller и workers
-одинаковыми.
+`Балансе` Luna Max сначала получает лёгкие и средние bounded packets; в `Рое` и
+`Экономичном` — более широкую работу по mode contract. Profile normalization
+может сделать controller и workers одинаковыми.
 
 При ambiguity, contract/context conflict, unexpected tool/environment state,
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
-неограниченные corrective mutations. Затем `Классический|Баланс` может передать
-тот же packet reviewer-у, `Рой` — запустить намеренно иной candidate, а
-`Экономичный` — оставить resumable checkpoint. Luna retry loop с тем же
-подходом/evidence запрещён.
+неограниченные corrective mutations. Затем `Классический|Баланс` возвращает
+problem fallback controller/reviewer-у: тот продолжает сам, уточняет contract
+либо формирует новый безопасный packet. `Рой` может запустить намеренно иной
+candidate, а `Экономичный` — оставить resumable checkpoint. Luna retry loop с
+тем же подходом/evidence запрещён.
 
 Недоступная automatic Luna не блокирует, пока существует mode-compatible путь.
 `Классический` может использовать controller profile; экономичные режимы ищут

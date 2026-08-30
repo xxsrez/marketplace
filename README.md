@@ -65,9 +65,13 @@ Task Manager skills:
   scope from `To Do`, `In Progress`, and `In Review` through five execution
   modes. `Соло` uses the current model to perform one issue or packet at a time
   with no subagents and native publication; it can handle one or many issues
-  but is never selected from issue count alone. `Классический`, `Баланс` and `Рой` preserve a terminal promise with
-  different amounts of economical work; `Экономичный` may instead leave one
-  honest resumable candidate without false `Done` or Goal completion. Explicit
+  but is never selected from issue count alone. In `Классический`, the
+  controller does almost all work and gives Luna only trivial bounded packets.
+  In `Баланс`, Luna first attempts light and medium bounded tasks and returns a
+  preserved checkpoint and evidence to the controller when it encounters a
+  material problem. Both modes and `Рой` preserve a terminal promise;
+  `Экономичный` may instead leave one honest resumable candidate without false
+  `Done` or Goal completion. Explicit
   mode selection wins; otherwise any top-level Luna selects `Экономичный` and
   another model selects `Классический`, once per continuous run. It keeps scope
   live. A pure question about modes, the default resolver, their differences or

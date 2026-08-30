@@ -131,8 +131,10 @@ resolvable anchors для root.
    source context, строит стратегию, dependency graph, acceptance и risk map.
 2. Product, architecture, cross-issue, migration, concurrency, security,
    shared-state и иное weak-oracle judgment остаются этому profile.
-3. Luna Max получает только strict-simple packet: bounded, self-contained,
-   disjoint, objectively verifiable, low-risk и без material judgment.
+3. Controller/reviewer остаётся основным исполнителем и делает почти всю
+   implementation сам. Luna Max получает только действительно тривиальный
+   strict-simple packet: bounded, self-contained, disjoint, objectively
+   verifiable, low-risk и без material judgment.
 4. Обычная delegation разделяет полезные независимые packets и read-only
    critique. Не создавай competing full implementations по умолчанию.
 5. Один integration owner выполняет fan-in и aggregate checks.
@@ -149,13 +151,20 @@ resolvable anchors для root.
 2. Сразу оставляет себе packets, где само решение требует material judgment.
    Если сложное решение отделимо от исполнения, передай economical worker-у
    уже принятое решение и bounded implementation contract.
-3. Luna Max выполняет основную массу implementation, research, tests и
-   preliminary verification. Независимые economical critics/test authors
+3. Luna Max является предпочтительным исполнителем лёгких и средних bounded
+   packets и выполняет основную массу implementation, research, tests и
+   preliminary verification. Средний packet может требовать содержательной
+   работы, но не material product/architecture judgment и должен иметь ясные
+   границы и проверяемый contract. Независимые economical critics/test authors
    атакуют candidate до дорогого review.
 4. Дополнительный candidate создавай только при реальной развилке, проваленном
    oracle или высокой ожидаемой ценности независимой дешёвой проверки.
 5. Integration owner собирает содержательную batch и формирует review packet.
-6. Reviewer может сам исправить локальную мелочь либо вернуть material rework в
+6. При существенной неопределённости, contract/context conflict, слабом oracle
+   или проблеме за границами packet-а Luna сохраняет изменения, checks,
+   evidence и причину остановки и возвращает fallback controller/reviewer-у без
+   одинакового retry. Тот уточняет contract, продолжает сам либо создаёт новый
+   безопасный packet. Reviewer также может вернуть bounded material rework в
    новую economical wave. После rework повтори exact-candidate gate.
 7. Без final gate не выдавай непроверенный result за terminal; режим сам не
    переключай.
