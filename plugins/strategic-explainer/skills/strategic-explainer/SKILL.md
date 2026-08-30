@@ -47,6 +47,13 @@ summary, format recipe либо правил улучшения текста. Е
 basis либо operational unavailability. Внешний workflow публикует только текст,
 проверяет material facts по basis и не переписывает результат.
 
+Source basis — вторая opaque-часть provider result, а не черновик публикации. В
+нём могут намеренно оставаться точные audit-only значения или разрешимые anchors,
+которые удалены из пользовательского текста. Facade и внешний workflow передают
+его без смыслового сокращения: не заменяют значения общей отметкой об
+исключённых деталях и не строят собственный basis. Непубликация basis не означает
+его потерю.
+
 Для незавершённого результата или невозможности продолжить publication text сам
 связывает фактическое состояние и наблюдаемый result с причиной или boundary,
 оставшимся условием, доступным действием и continuation signal; source basis не
@@ -79,8 +86,10 @@ basis либо operational unavailability. Внешний workflow публик�
    candidate, strategic summary, свои рассуждения или format recipe.
 6. Прими только publication-ready text с отдельно обозначенным source basis
    либо `STRATEGIC_EXPLAINER_INVOCATION_ERROR`. Верни внешнему workflow только
-   готовый result contract; не раскрывай clean-call recipe и не выдавай
-   промежуточный structural refusal за пользовательский текст.
+   готовый result contract: обе части provider result без смысловой переработки;
+   не сокращай и не реконструируй basis, даже если он содержит audit-only
+   значения, которые не войдут в публикацию. Не раскрывай clean-call recipe и
+   не выдавай промежуточный structural refusal за пользовательский текст.
 
 Не наследуй current model/effort и не подменяй недоступную Luna на SOL или
 другой profile. Недоступность exact Luna Max provider-а обрабатывается как
