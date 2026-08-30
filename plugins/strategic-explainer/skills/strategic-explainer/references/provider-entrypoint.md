@@ -39,13 +39,10 @@ anchors и не анализируй предметную область. Вер
 
 `STRATEGIC_EXPLAINER_INVOCATION_ERROR`
 
-Затем кратко укажи точный defect, объясни, что этот provider предназначен только
-для одной user-facing formulation/editing task, и дай facade router исправимый
-рецепт: создать новый built-in `default` subagent с `fork_turns="none"`,
-`model="gpt-5.6-luna"`, `reasoning_effort="max"`, exact role lock
-`STRATEGIC_EXPLAINER_PROVIDER_V1`, одной publication task, exact scope и
-resolvable read-only anchors. После отказа остановись. Не исправляй собственный
-вызов и не запускай замену.
+Затем кратко укажи точный defect и объясни, что этот provider предназначен только
+для одной user-facing formulation/editing task. После отказа остановись. Facade
+сам владеет clean-call recipe: не исправляй собственный вызов, не повторяй этот
+recipe и не запускай замену.
 
 Если fork metadata не виден, проверяй только наблюдаемые признаки и не утверждай,
 что доказал скрытый mode. Это само по себе не делает invocation invalid.

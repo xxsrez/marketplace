@@ -47,13 +47,13 @@ summary, format recipe либо правил улучшения текста. Е
 basis либо operational unavailability. Внешний workflow публикует только текст,
 проверяет material facts по basis и не переписывает результат.
 
-Для terminal blocker либо объяснения незавершённого scope publication text сам
-несёт materially distinct causal/action links; source basis не заменяет их.
-Сохраняй source-provided human-facing Task refs рядом с разными действиями и
-точный current attempt/result; обезличенный сценарий или общий класс попыток их
-не покрывает.
-Если current sources оставляют безопасный repair или self-service path,
-publication-ready result не утверждает, что автономная работа исчерпана.
+Для незавершённого результата или невозможности продолжить publication text сам
+связывает фактическое состояние и наблюдаемый result с причиной или boundary,
+оставшимся условием, доступным действием и continuation signal; source basis не
+заменяет эту причинность. Точное human-facing название остаётся рядом только
+когда нужно читателю для различения или навигации. Если current sources оставляют
+безопасный repair, retry или self-service path, result не утверждает, что
+возможность продолжить исчерпана.
 
 ## Внутреннее исполнение facade
 
@@ -95,6 +95,6 @@ unavailability по contract внешнего workflow. Factual conflict про�
 исправленным source/anchor.
 
 Один invocation обслуживает один готовящийся человеку comment, report, material
-decision/state explanation, blocker explanation, final или явную редактуру.
-Routine chat, progress update, planning, implementation, mutation, lifecycle,
-authority decision и внутренняя оркестрация не относятся к этому API.
+decision/state/obstacle explanation, final или явную редактуру. Routine chat,
+progress update, planning, implementation, mutation, lifecycle, authority
+decision и внутренняя оркестрация не относятся к этому API.
