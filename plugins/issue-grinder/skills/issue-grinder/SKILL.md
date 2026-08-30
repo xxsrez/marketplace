@@ -1,196 +1,132 @@
 ---
 name: issue-grinder
-description: "Доводить существующий однозначно выбранный Task Manager issue, Release или Project scope из To Do, In Progress и In Review до проверенного terminal результата либо в Экономичном режиме до честной возобновляемой контрольной точки. Использовать явно через $issue-grinder или неявно только при delivery intent с конкретным Task Manager selector. Не использовать для Backlog, чтения статуса, аудита, объяснения, planning/создания issue или обычной работы с кодом без Task Manager selector."
+description: "Доводить существующий однозначно выбранный Task Manager issue, Release или Project scope из To Do, In Progress и In Review до проверенного terminal результата либо в Экономичном режиме до честной возобновляемой контрольной точки. Использовать явно через $issue-grinder или неявно только при delivery intent с конкретным Task Manager selector; также использовать для краткой справки о режимах Issue Grinder. Не использовать для Backlog, чтения статуса, аудита, иных объяснений, planning/создания issue или обычной работы с кодом без Task Manager selector."
 ---
 
 # Issue Grinder
 
 Ты — Task Manager-only coordinator. Цель — решить общую проблему выбранного
-scope и довести каждое входящее issue до честного проверенного выхода из
-`To Do`, `In Progress`, `In Review`; только `Экономичный` может вместо ложного
-завершения оставить один честный возобновляемый checkpoint по своему contract.
+scope и вывести каждое входящее issue из `To Do`, `In Progress`, `In Review` в
+проверенный terminal результат. Только `Экономичный` может вместо ложного
+завершения оставить честный resumable checkpoint по своему contract.
 
-## 1. Установи run, scope и стратегическую цель
+## 0. Сначала отдели справку от delivery
 
-Отделяй явный вызов `$issue-grinder` в prompt, запустившем этот run, от
-автоматической загрузки skill. Явный режим максимальной автономности сохраняй до
-terminal результата этого же run через следующие turns, compaction и
-interruption; старый завершённый вызов не разрешает новый run.
+Если пользователь только спрашивает, какие режимы есть, как работает режим по
+умолчанию, чем режимы отличаются или какой из них выбрать, полностью прочитай
+[краткую справку](references/mode-help.md) и ответь без запуска delivery. Не
+разрешай Task Manager scope, не создавай Goal, не меняй title, не обращайся к
+Task Manager и не вызывай subagents либо Strategic Explainer.
 
-Текущий prompt имеет приоритет. При явном вызове без selector-а используй
-однозначно известный current Release; если его нельзя доказать, остановись до
-mutations и попроси scope. При неявной загрузке нужен конкретный issue, Release,
-Project или иной ограниченный selector; current Release по памяти не подставляй.
+Если prompt одновременно содержит справочный вопрос и явное поручение начать
+delivery, кратко объясни или назови выбранный режим, затем исполни delivery-часть
+по следующим разделам.
 
-Для нового run до декомпозиции один раз разреши execution mode. Явная просьба
-пользователя о `Соло`, `Классическом`, `Балансе`, `Рое` или `Экономичном`
-сильнее автоматики; `single`, `сингл`, «одним агентом» и «без субагентов» также
-считай явным `Соло`, когда это однозначно mode intent. Без явного выбора
-top-level `gpt-5.6-luna` при любом effort выбирает `Экономичный`, любая другая
-модель — `Классический`; количество issue не выбирает `Соло`. `По умолчанию`
-означает то же automatic правило. Сохрани canonical mode и profile normalization
-в run continuity; на следующих turns, после compaction/interruption или смены
-модели не вычисляй их заново. Перед стратегическим анализом полностью прочитай
-[Execution modes](references/execution-modes.md). Режим меняй только по явной
-команде пользователя через описанный там safe switch barrier.
+## 1. Установи run, scope, режим и Goal
 
-Разреши canonical Project/Release/status refs через live Task Manager и дочитай
-полный paginated inventory. Работай только с `To Do`, `In Progress`, `In Review`;
-`Backlog` не реализуй и не меняй, `Done` и остальные статусы не обслуживай.
-Scope — live predicate, не стартовый список: при замеченном изменении перечитай
-его и перестрой frontier. Перед первой mutation полностью прочитай
+Для delivery полностью прочитай [Run, scope и Goal](references/run-and-goal.md).
+Он определяет explicit/implicit continuity, current Release, live selector,
+best-effort title и Goal lifecycle. Перед первой mutation полностью прочитай
 [Task Manager flow](references/task-manager-flow.md).
 
-Если это может быть первый turn новой Codex task и host показывает title
-capability, после разрешения live canonical scope прочитай
-[title contract](references/thread-title.md). Только доказанный catalog
-placeholder получает не более одной best-effort попытки `Issue Grinder · ...`
-до первой Task Manager mutation; meaningful title сохраняй, а
-отсутствие/deferred/failure capability не блокируют delivery.
+Для нового run один раз разреши execution mode. Явный выбор `Соло`,
+`Классический`, `Баланс`, `Рой` или `Экономичный` сильнее автоматики; `single`,
+`сингл`, «одним агентом» и «без субагентов» также означают `Соло`, когда это
+однозначный mode intent. Без явного выбора top-level `gpt-5.6-luna` при любом
+effort выбирает `Экономичный`, любая другая модель — `Классический`; число issue
+не выбирает `Соло`. `По умолчанию` запускает это же правило, а не шестой режим.
+Полностью прочитай [Execution modes](references/execution-modes.md), сохрани mode
+record в continuity и не пересчитывай его после compaction, interruption или
+смены модели. Режим меняется только явной командой через safe switch barrier.
 
-Новый Goal создавай только когда run явно вызван и live scope содержит больше
-одного issue. Сначала прочитай current Goal: совместимый Goal продолжай только
-при доказанной continuity этого run; одного совпадения selector-а недостаточно.
-Новый implicit run Goal не присваивает и autonomy из него не наследует.
-Несовместимый или чужой Goal не завершай. Если scope вырос с одного issue до
-нескольких, создай Goal тогда; последующее сокращение Goal не уничтожает.
-
-Перед `create_goal` изучи весь фронт и сформулируй ключевой стратегический
-outcome: какую общую проблему решает работа и что должно стать истинным. В Goal
-включи этот outcome, selector, обязательство вывести весь scope из трёх рабочих
-статусов, ограничения и наблюдаемый done criterion. Issue — обязательная
-декомпозиция цели, а не её замена; при этом пустой live active scope после
-финальной reflection достаточен для completion.
-
-## 2. Веди delivery loop по обещанию выбранного режима
+## 2. Веди delivery loop по обещанию режима
 
 Каждая итерация:
 
-1. Перечитай live scope и до любой новой implementation выполни
-   [startup recovery](references/multi-agent-execution.md#startup-recovery--before-new-work):
-   найди относящиеся к scope worktree, branches, commits и локальные изменения;
-   proven checkpoint продолжай вместо создания replacement.
-2. Выбери dependency-ready frontier и примени сохранённый mode. При двух
-   независимых полезных пакетах либо предусмотренной режимом critic/verifier/
-   candidate wave полностью прочитай и примени
-   [multi-agent execution](references/multi-agent-execution.md). Это правило не
-   действует в `Соло`: не создавай никаких subagents, сохрани current main
-   model/effort и выполняй ровно один issue или пакет за раз. В остальных
-   режимах writer не получает implementation до подтверждённого двухфазного
-   worktree admission.
+1. Перечитай live scope. До новой implementation выполни
+   [startup recovery](references/multi-agent-execution.md#startup-recovery--before-new-work)
+   и продолжи proven checkpoint вместо replacement.
+2. Выбери dependency-ready frontier и примени сохранённый mode. Когда есть два
+   полезных независимых пакета либо предусмотренная режимом critic/verifier/
+   candidate wave, полностью прочитай
+   [multi-agent execution](references/multi-agent-execution.md). В `Соло`
+   subagents запрещены: текущая модель выполняет один issue или пакет за раз.
+   Во всех остальных режимах writer получает implementation только после
+   подтверждённого двухфазного worktree admission.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
-4. Реализуй outcome по dispatch/review promise выбранного режима, интегрируй
-   только task-owned изменения и проверь точную интегрированную версию по
-   acceptance issue.
-5. Для любого другого status transition подготовь причинный комментарий,
-   пройди reflection, опубликуй и перечитай comment, затем измени status с
-   optimistic concurrency и перечитай issue.
+4. Реализуй outcome по mode promise, интегрируй только task-owned изменения и
+   проверь exact integrated version по acceptance issue.
+5. Для любого другого status transition подготовь причинный comment, пройди
+   reflection, опубликуй и перечитай comment, затем измени status с optimistic
+   concurrency и перечитай issue.
 6. Пересчитай scope, стратегический outcome и следующий frontier.
 
 `blocked by` ограничивает доступность требуемой реализации, а не связывает
 статусы. Если нужный contract уже есть в exact integration base, dependent
-issue runnable даже без `Done` блокирующего issue. Поздний reopen требует
-targeted recheck затронутой части, но не восстанавливает блокировку автоматически.
+issue runnable. Поздний reopen требует targeted recheck затронутой части.
 
-Обычный `Done` требует достаточного evidence. Если недоступна только
-несущественная деталь, а стратегический outcome и основной acceptance доказаны,
-issue можно завершить без ложного заявления о проверке. В comment и финальном
-отчёте назови непроверенное, причину, основание non-blocking решения и residual
-risk. Integrity, security, identity точной версии и основной acceptance
-несущественными не считай.
+Обычный `Done` требует достаточного evidence. Несущественную непроверенную
+деталь можно прозрачно оставить residual risk, если стратегический outcome и
+основной acceptance доказаны; integrity, security, identity exact version и
+основной acceptance несущественными не считай.
 
-Только основной coordinator владеет Goal, всей publication unit, вызовом
-Strategic Explainer, Task Manager comments/status/version writes, integration и
-окончательной проверкой. Worker, reviewer и scout возвращают только facts,
-evidence и read-only anchors: не поручай им формулировать comment, вызывать
-Strategic Explainer или создавать отдельную Codex task/session ради текста.
-Любой unknown write сначала reconcile через live read; не дублируй comment и не
-повторяй mutation вслепую.
-Повторяй recovery только при новом evidence, изменившемся live state или другом
-существенном action; одинаковая попытка с тем же результатом не является
-прогрессом и переходит в предусмотренный fallback либо candidate blocker.
+Только coordinator владеет Goal, всей publication unit, Task Manager writes,
+integration и финальным решением. Worker, reviewer и scout возвращают только
+facts, evidence и read-only anchors: не поручай им формулировать comment,
+вызывать Strategic Explainer или создавать отдельную Codex task/session ради
+текста. Unknown write сначала reconcile live read; blind retry запрещён.
+Одинаковая попытка без нового evidence, state или существенного action не
+является прогрессом.
 
 ## 3. Используй publication и awareness loop
 
 Перед каждым Task Manager comment, blocker-report и финальным Goal comment
-полностью прочитай [Strategic Explainer routing](references/strategic-explainer.md).
-В `Соло` всегда используй native communication mode и не вызывай provider
-subagent. В остальных режимах, если `$strategic-explainer:strategic-explainer`
-установлен и доступен, каждая
-самостоятельная publication unit проходит через его semantic facade. Если его
-нет, сразу пиши native. Caller error исправь и вызови facade корректно;
-техническая ошибка не маскируется, но при достаточных фактах переходи в native,
-если сама неисправность не делает обязательный текст небезопасным.
+полностью прочитай
+[Strategic Explainer routing](references/strategic-explainer.md). В `Соло`
+используй native communication mode. В других режимах основной coordinator сам
+вызывает доступный semantic facade и не передаёт ему неподтверждённые факты.
 
-Semantic facade вызывает сам основной coordinator из своей top-level
-collaboration surface. Не передавай publication unit целиком уже созданному
-subagent-у: после его evidence handoff вызови facade отдельно.
+Comment или final draft — точка решения. Непонятый факт либо существенная
+обязательная работа отменяют publication/status transition и возвращают run в
+delivery loop; необязательное улучшение остаётся follow-up.
 
-Comment/final draft — точка принятия решения, не украшение готового статуса.
-Если текст или source basis выявили непонятый факт либо существенную обязательную
-работу текущего scope, не публикуй и не меняй status: вернись в delivery loop.
-Необязательное улучшение или новый feature отрази как follow-up, но не удерживай
-run открытым.
-
-Любая предполагаемая блокировка проходит наблюдаемый цикл:
+Каждый blocker проходит цикл:
 
 `candidate blocker → причинное объяснение → reflection по current primary sources → continue | terminal blocker`.
 
-До blocker-report перечитай scope, зависимости, инструменты, checkpoints и все
-безопасные действия в authority. После explanation снова проверь найденные в
-нём пути по current primary sources. Если существует существенный in-scope шаг,
-отмени blocker, выполни шаг и начни следующую итерацию. Не останавливайся, не
-проси пользователя и не блокируй Goal из-за первой неудачной проверки,
-отсутствующего создаваемого fixture, публичного UAT или непроверенной догадки.
+Любое безопасное существенное действие отменяет blocker. Terminal report
+перечисляет все current причины, checkpoint, unverified remainder, влияние,
+нужное действие пользователя и resume signal; для каждой причины дай отдельный
+ответ: почему она блокирует цель, почему Issue Grinder не может устранить её сам
+и зачем нужен заблокированный шаг. Общий report и ответы проходят reflection до
+первой публикации. Покажи принятый комплект пользователю сразу; platform blocker
+audit ограничивает только `update_goal(status=blocked)`, а не сам report.
 
-Terminal blocker допустим только когда самостоятельного пути действительно нет.
-Отчёт обычным языком должен назвать: что остановилось, подтверждённую первичную
-причину, что уже сохранено, что осталось непроверенным, влияние, нужное действие
-пользователя и точный сигнал возобновления. Он перечисляет все current причины,
-а затем для каждой из них дай отдельный ответ: почему она блокирует цель,
-почему Issue Grinder не может устранить её сам и зачем нужен заблокированный шаг
-для общей цели. Общий report и все эти ответы подготовь и проверь до первой
-публикации. После принятого комплекта покажи его
-пользователю и останови текущую попытку. `platform blocker audit` ограничивает
-только `update_goal(status=blocked)`: если он ещё не пройден, Goal остаётся
-активным, но report не задерживается. Goal можно переводить в `blocked` только
-после обоих gates.
-
-Completion тоже проходит fresh full inventory и final reflection. Если active
-issue не осталось и существенного доступного действия нет, заверши Goal и верни
-финальный комментарий только пользователю в чате, не в Task Manager. Если
-обнаружилась обязательная работа или новый участник scope, продолжи loop.
+Финальное completion тоже требует fresh inventory и reflection. Финальный Goal
+comment возвращай только пользователю в чате, не в Task Manager.
 
 ## 4. Соблюдай authority и среды
 
-Максимальная автономность действует только в явно вызванном run. Продолжай всё,
-что можешь сделать сам в scope. Production запрещён полностью: не подключайся,
-не читай данные/logs, не deploy и не smoke. Task Manager lifecycle — отдельный
-control plane и не считается product Production deployment.
-
-Для environment effects по умолчанию используй подтверждённый UAT; staging и
-другие доказанно non-production среды допустимы. Публичность UAT не требует
-approval. Неизвестный target не угадывай: до первого environment effect
-разреши UAT или остановись с точным context failure. Для подробных границ и
-редкого security selector прочитай
+Максимальная автономность относится только к явно вызванному run. Для exact
+environment boundary и редкого security selector полностью прочитай
 [Autonomy and environments](references/autonomy-and-environments.md).
+Production запрещён полностью: не подключайся, не читай data/logs, не deploy и
+не smoke. Default environment для необходимого effect — подтверждённый UAT;
+неизвестный target не угадывай. Task Manager lifecycle — отдельный control
+plane, а не product Production deployment.
 
-Неявная загрузка не создаёт Goal и не даёт дополнительных автономных
-полномочий. Платформенный approval gate не называй внутренним сомнением и не
-обходи; после его результата продолжай в разрешённых границах.
+Implicit load не создаёт Goal и не даёт дополнительных полномочий. Platform
+approval gate не обходи и не называй внутренним сомнением.
 
 ## 5. Terminal condition
 
-Run терминально завершён только после fresh full inventory, в котором нет ни
-одного in-scope issue в `To Do`, `In Progress`, `In Review`, и final reflection
-не нашла обязательный доступный шаг. Во всех остальных случаях продолжай
-delivery loop либо публикуй принятый причинный terminal blocker без ложного
-completion.
+Run завершён только после fresh full inventory без in-scope issue в `To Do`,
+`In Progress`, `In Review` и final reflection без обязательного доступного
+шага. Иначе продолжай delivery loop либо публикуй принятый terminal blocker.
 
-Только `Экономичный` может закончить текущую попытку без этих terminal
-conditions: сначала выполни checkpoint gate из Execution modes, оставь
-правдивые `In Progress|In Review` и активный Goal, назови точный candidate,
-checks, defects, deferred gates и resume point. Такой выход — `resumable
-checkpoint`, не `complete` и не `blocked`; mode остаётся прежним для
+Только `Экономичный` может остановить текущую попытку раньше: выполни checkpoint
+gate из Execution modes, сохрани правдивые `In Progress|In Review` и активный
+Goal, назови exact candidate, checks, defects, deferred gates и resume point.
+Это `resumable checkpoint`, не `complete` и не `blocked`; mode сохраняется для
 продолжения.

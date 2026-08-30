@@ -166,6 +166,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertTrue(
             (issue_root / "references" / "execution-modes.md").is_file()
         )
+        self.assertTrue((issue_root / "references" / "mode-help.md").is_file())
+        self.assertTrue((issue_root / "references" / "run-and-goal.md").is_file())
         self.assertTrue((composer_root / "SKILL.md").is_file())
         self.assertFalse(
             (ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
@@ -181,35 +183,45 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         execution_modes = (
             issue_root / "references" / "execution-modes.md"
         ).read_text(encoding="utf-8")
+        mode_help = (issue_root / "references" / "mode-help.md").read_text(
+            encoding="utf-8"
+        )
         metadata = (issue_root / "agents" / "openai.yaml").read_text(
             encoding="utf-8"
         )
         composer = (composer_root / "SKILL.md").read_text(encoding="utf-8")
-        normalized = " ".join(skill.split())
+        runtime = " ".join(
+            path.read_text(encoding="utf-8")
+            for path in sorted(issue_root.rglob("*.md"))
+        )
+        normalized = " ".join(runtime.split())
 
         self.assertIn("name: issue-grinder", skill)
-        self.assertIn("candidate blocker → причинное объяснение → reflection", skill)
-        self.assertIn("для каждой из них дай отдельный ответ", skill)
-        self.assertIn("почему она блокирует цель", skill)
-        self.assertIn("почему Issue Grinder не может устранить её сам", skill)
-        self.assertIn("зачем нужен заблокированный шаг", skill)
-        self.assertIn("update_goal(status=blocked)", skill)
+        self.assertIn("candidate blocker → причинное объяснение → reflection", runtime)
+        self.assertIn("для каждой причины дай отдельный ответ", normalized)
+        self.assertIn("почему она блокирует цель", runtime)
+        self.assertIn("почему Issue Grinder не может устранить её сам", runtime)
+        self.assertIn("зачем нужен заблокированный шаг", runtime)
+        self.assertIn("update_goal(status=blocked)", runtime)
         self.assertIn("Production запрещён полностью", skill)
-        self.assertIn("публичного UAT", skill)
-        self.assertIn("top-level `gpt-5.6-luna` при любом effort", skill)
-        self.assertIn("не вычисляй их заново", skill)
+        self.assertIn("публичный UAT", runtime)
+        self.assertIn("top-level `gpt-5.6-luna` при любом effort", normalized)
+        self.assertIn("не пересчитывай его", normalized)
         self.assertIn("## Соло", execution_modes)
         self.assertIn("## Классический", execution_modes)
         self.assertIn("## Баланс", execution_modes)
         self.assertIn("## Рой", execution_modes)
         self.assertIn("## Экономичный", execution_modes)
         self.assertIn("resumable checkpoint", execution_modes)
-        self.assertIn("Issue Grinder · ...", skill)
+        self.assertIn("Issue Grinder · ...", runtime)
         self.assertIn(
             "set_thread_title` не более одного раза без", title_contract
         )
         self.assertIn("Meaningful title", title_contract)
-        self.assertIn("финальный комментарий только пользователю в чате", normalized)
+        self.assertIn("только пользователю в чате", normalized)
+        self.assertIn("[краткую справку](references/mode-help.md)", skill)
+        self.assertIn("`По умолчанию` — не шестой режим", mode_help)
+        self.assertIn("не обращается к Task Manager", mode_help)
         self.assertIn('value: "task-manager"', metadata)
         self.assertIn("allow_implicit_invocation: true", metadata)
         self.assertIn("$issue-grinder:task-composer", composer)
@@ -224,6 +236,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Solo uses the current top-level model", public_manifest)
         self.assertIn("issue count alone does not select it", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
+        self.assertIn("delivery-free help path", public_manifest)
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(

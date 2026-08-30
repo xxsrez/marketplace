@@ -70,9 +70,12 @@ Task Manager skills:
   honest resumable candidate without false `Done` or Goal completion. Explicit
   mode selection wins; otherwise any top-level Luna selects `Экономичный` and
   another model selects `Классический`, once per continuous run. It keeps scope
-  live, creates a strategic Goal only for an explicitly invoked multi-issue
-  run, comments every non-trivial lifecycle transition, and treats `blocked by`
-  as implementation readiness rather than a status lock;
+  live. A pure question about modes, the default resolver, their differences or
+  selection uses a delivery-free help path without Task Manager, Goal, title
+  mutation or subagents. Delivery creates a strategic Goal only for an
+  explicitly invoked multi-issue run, comments every non-trivial lifecycle
+  transition, and treats `blocked by` as implementation readiness rather than a
+  status lock;
 - before any terminal blocker, it turns the candidate into a causal explanation
   and performs a fresh reflection over current primary sources. A verified safe
   action cancels the blocker and resumes delivery. A terminal handoff lists all
