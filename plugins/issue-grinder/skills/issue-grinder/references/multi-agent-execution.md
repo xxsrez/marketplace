@@ -1,21 +1,28 @@
 # Multi-agent execution
 
-Применяет `IG-MA-01..18` при двух независимых полезных пакетах либо при явном
-topology rule пользователя. Делегация не расширяет scope, authority или
-автономность неявного run.
+Применяет `IG-MA-01..18` при двух независимых полезных пакетах, при явном
+topology rule пользователя либо когда сохранённый execution mode требует
+critic/verifier/candidate wave. Сначала используй mode и profiles из
+[Execution modes](execution-modes.md). Делегация не расширяет scope, authority
+или автономность неявного run.
 
 ## Topology и ownership
 
 Явное natural-language правило пользователя о числе, ролях, условиях или
 opt-out имеет приоритет. Root/coordinator не входит в названное число
-субагентов. Без override делегируй только когда dependency-ready frontier
-содержит минимум два полезных независимых пакета; число writers определяется
-реальной шириной, capacity и стоимостью fan-in/verification.
+субагентов. Без override `Классический` делегирует при полезной независимой
+ширине; `Баланс`, `Рой` и `Экономичный` дополнительно используют предусмотренные
+режимом economical critics, verifiers и intentional candidates. Число writers
+определяется mode envelope, capacity, ожидаемой ценностью и стоимостью
+fan-in/verification.
 
 Сначала построй dependency graph и карту write surfaces: modules, files,
 schemas, generated artifacts и shared state. Пересекающиеся либо зависимые
-packets не выполняй параллельно. Каждый packet получает exact scope, owned
-surfaces, source facts, constraints, expected outcome и verification.
+обычные packets не выполняй параллельно. Intentional candidates `Роя` могут
+затрагивать одинаковые surfaces только в разных branches/worktrees и никогда не
+пишут в общий integration target. Каждый packet/candidate получает exact scope,
+owned surfaces, source facts, constraints, expected outcome, verification и,
+для конкурирующего варианта, отдельные purpose/candidate identity.
 
 ## Startup recovery — before new work
 
@@ -41,6 +48,11 @@ checkpoints. Сопоставляй candidate с live scope по несколь�
 Startup recovery предшествует `prepare`. Отсутствие Goal, receipt прошлой
 сессии или уже созданного worktree не позволяет проигнорировать однозначно
 связанные со scope branch, commit либо локальные изменения.
+
+Новый intentional candidate `Роя` создаётся только после inventory. Зафиксируй,
+чем его purpose/approach отличается от existing work, выдай отдельную candidate
+identity и общую exact base. Без этого он является запрещённым parallel
+replacement, а не допустимым Best-of-N вариантом.
 
 ## Writer admission — hard gate
 
@@ -104,14 +116,28 @@ checkpoint и передай его новому exclusive writer через т�
 quiescence. Active/unknown ownership не перехватывай, parallel replacement не
 создавай и чужие изменения не очищай.
 
-Без user profile override `gpt-5.6-luna` с `max` получает только пакет, который
-одновременно bounded, self-contained, disjoint, объективно проверяем, не требует
-material product/creative/architecture/cross-issue judgment и не зависит от
-непредсказуемой среды или риска. Маленький diff сам по себе не simple.
+Profiles всегда бери из сохранённого mode record по
+[Execution modes](execution-modes.md). Не наследуй current model/effort
+механически и не пересчитывай automatic mode после смены top-level модели.
+
+В `Классическом` без user profile override `gpt-5.6-luna` с `max` получает
+только пакет, который одновременно bounded, self-contained, disjoint,
+объективно проверяем, не требует material
+product/creative/architecture/cross-issue judgment и не зависит от
+непредсказуемой среды или риска. Маленький diff сам по себе не simple. В
+`Балансе`, `Рое` и `Экономичном` Luna Max получает более широкую работу по
+mode contract; profile normalization может сделать controller и workers
+одинаковыми.
 
 При ambiguity, contract/context conflict, unexpected tool/environment state,
-scope expansion или proof gap Luna прекращает corrective mutations, фиксирует
-checkpoint/evidence и возвращает тот же packet coordinator-у. Coordinator
-продолжает на current profile без Luna retry loop. Недоступная automatic Luna
-не блокирует: packet выполняется current profile. Явный пользовательский profile
-не подменяй. Strategic Explainer не входит в routing рабочих packets.
+scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
+неограниченные corrective mutations. Затем `Классический|Баланс` может передать
+тот же packet reviewer-у, `Рой` — запустить намеренно иной candidate, а
+`Экономичный` — оставить resumable checkpoint. Luna retry loop с тем же
+подходом/evidence запрещён.
+
+Недоступная automatic Luna не блокирует, пока существует mode-compatible путь.
+`Классический` может использовать controller profile; экономичные режимы ищут
+разрешённый economical fallback и не превращают его отсутствие в неограниченный
+расход дефицитного profile. Явный пользовательский role profile не подменяй.
+Strategic Explainer не входит в routing рабочих packets.

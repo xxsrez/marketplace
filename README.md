@@ -62,10 +62,15 @@ Issue Grinder is the current skill-only delivery plugin with two independent
 Task Manager skills:
 
 - `issue-grinder` delivers selected issue, Release, Project, or current-Release
-  scope from `To Do`, `In Progress`, and `In Review` to verified terminal
-  outcomes. It keeps scope live, creates a strategic Goal only for an explicitly
-  invoked multi-issue run, comments every non-trivial lifecycle transition, and
-  treats `blocked by` as implementation readiness rather than a status lock;
+  scope from `To Do`, `In Progress`, and `In Review` through four execution
+  modes. `Классический`, `Баланс` and `Рой` preserve a terminal promise with
+  different amounts of economical work; `Экономичный` may instead leave one
+  honest resumable candidate without false `Done` or Goal completion. Explicit
+  mode selection wins; otherwise any top-level Luna selects `Экономичный` and
+  another model selects `Классический`, once per continuous run. It keeps scope
+  live, creates a strategic Goal only for an explicitly invoked multi-issue
+  run, comments every non-trivial lifecycle transition, and treats `blocked by`
+  as implementation readiness rather than a status lock;
 - before any terminal blocker, it turns the candidate into a causal explanation
   and performs a fresh reflection over current primary sources. A verified safe
   action cancels the blocker and resumes delivery. A terminal handoff lists all
@@ -73,12 +78,13 @@ Task Manager skills:
   goal, why Issue Grinder cannot resolve it alone, and what the blocked step
   contributes to the goal. Public UAT is ordinary non-production work;
   Production remains forbidden;
-- independent writers use separate feature branches and Git worktrees. Only
-  genuinely simple bounded packets use Luna Max, and material uncertainty hands
-  the packet back to the current integration owner. Before fresh work, a new
-  run inventories related worktrees, branches, commits and local changes, then
-  resumes a proven quiescent checkpoint instead of creating a parallel
-  replacement;
+- independent writers and intentional `Рой` candidates use separate feature
+  branches and Git worktrees. One integration owner reduces work to one exact
+  candidate. `Классический` gives Luna Max only strict-simple packets;
+  `Баланс`, `Рой` and `Экономичный` use it more broadly under their mode
+  contracts. Before fresh work, a new run inventories related worktrees,
+  branches, commits and local changes, then resumes a proven quiescent
+  checkpoint instead of creating an accidental parallel replacement;
 - `task-composer` keeps the existing planning-only Backlog workflow. Both skills
   depend on the separately installed Task Manager adapter. Issue Grinder uses
   standalone Strategic Explainer when available and otherwise writes natively.

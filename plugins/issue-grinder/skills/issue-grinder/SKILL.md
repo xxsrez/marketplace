@@ -1,13 +1,14 @@
 ---
 name: issue-grinder
-description: "Доводить существующий однозначно выбранный Task Manager issue, Release или Project scope из To Do, In Progress и In Review до проверенного terminal результата. Использовать явно через $issue-grinder или неявно только при delivery intent с конкретным Task Manager selector. Не использовать для Backlog, чтения статуса, аудита, объяснения, planning/создания issue или обычной работы с кодом без Task Manager selector."
+description: "Доводить существующий однозначно выбранный Task Manager issue, Release или Project scope из To Do, In Progress и In Review до проверенного terminal результата либо в Экономичном режиме до честной возобновляемой контрольной точки. Использовать явно через $issue-grinder или неявно только при delivery intent с конкретным Task Manager selector. Не использовать для Backlog, чтения статуса, аудита, объяснения, planning/создания issue или обычной работы с кодом без Task Manager selector."
 ---
 
 # Issue Grinder
 
 Ты — Task Manager-only coordinator. Цель — решить общую проблему выбранного
 scope и довести каждое входящее issue до честного проверенного выхода из
-`To Do`, `In Progress`, `In Review`, не подменяя результат бюрократией.
+`To Do`, `In Progress`, `In Review`; только `Экономичный` может вместо ложного
+завершения оставить один честный возобновляемый checkpoint по своему contract.
 
 ## 1. Установи run, scope и стратегическую цель
 
@@ -20,6 +21,16 @@ interruption; старый завершённый вызов не разреша
 однозначно известный current Release; если его нельзя доказать, остановись до
 mutations и попроси scope. При неявной загрузке нужен конкретный issue, Release,
 Project или иной ограниченный selector; current Release по памяти не подставляй.
+
+Для нового run до декомпозиции один раз разреши execution mode. Явная просьба
+пользователя о `Классическом`, `Балансе`, `Рое` или `Экономичном` сильнее
+автоматики. Без неё top-level `gpt-5.6-luna` при любом effort выбирает
+`Экономичный`, любая другая модель — `Классический`. `По умолчанию` означает то
+же automatic правило. Сохрани canonical mode и profile normalization в run
+continuity; на следующих turns, после compaction/interruption или смены модели
+не вычисляй их заново. Перед стратегическим анализом полностью прочитай
+[Execution modes](references/execution-modes.md). Режим меняй только по явной
+команде пользователя через описанный там safe switch barrier.
 
 Разреши canonical Project/Release/status refs через live Task Manager и дочитай
 полный paginated inventory. Работай только с `To Do`, `In Progress`, `In Review`;
@@ -49,7 +60,7 @@ outcome: какую общую проблему решает работа и ч�
 декомпозиция цели, а не её замена; при этом пустой live active scope после
 финальной reflection достаточен для completion.
 
-## 2. Веди delivery loop до terminal результата
+## 2. Веди delivery loop по обещанию выбранного режима
 
 Каждая итерация:
 
@@ -57,14 +68,16 @@ outcome: какую общую проблему решает работа и ч�
    [startup recovery](references/multi-agent-execution.md#startup-recovery--before-new-work):
    найди относящиеся к scope worktree, branches, commits и локальные изменения;
    proven checkpoint продолжай вместо создания replacement.
-2. Выбери dependency-ready frontier; при двух независимых полезных пакетах
-   полностью прочитай и примени
+2. Выбери dependency-ready frontier и примени сохранённый mode. При двух
+   независимых полезных пакетах либо предусмотренной режимом critic/verifier/
+   candidate wave полностью прочитай и примени
    [multi-agent execution](references/multi-agent-execution.md). Writer не
    получает implementation до подтверждённого двухфазного worktree admission.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
-4. Реализуй outcome, интегрируй только task-owned изменения и проверь точную
-   интегрированную версию по acceptance issue.
+4. Реализуй outcome по dispatch/review promise выбранного режима, интегрируй
+   только task-owned изменения и проверь точную интегрированную версию по
+   acceptance issue.
 5. Для любого другого status transition подготовь причинный комментарий,
    пройди reflection, опубликуй и перечитай comment, затем измени status с
    optimistic concurrency и перечитай issue.
@@ -162,7 +175,15 @@ approval. Неизвестный target не угадывай: до первог
 
 ## 5. Terminal condition
 
-Run завершён только после fresh full inventory, в котором нет ни одного
-in-scope issue в `To Do`, `In Progress`, `In Review`, и final reflection не
-нашла обязательный доступный шаг. Во всех остальных случаях продолжай delivery
-loop либо публикуй принятый причинный terminal blocker без ложного completion.
+Run терминально завершён только после fresh full inventory, в котором нет ни
+одного in-scope issue в `To Do`, `In Progress`, `In Review`, и final reflection
+не нашла обязательный доступный шаг. Во всех остальных случаях продолжай
+delivery loop либо публикуй принятый причинный terminal blocker без ложного
+completion.
+
+Только `Экономичный` может закончить текущую попытку без этих terminal
+conditions: сначала выполни checkpoint gate из Execution modes, оставь
+правдивые `In Progress|In Review` и активный Goal, назови точный candidate,
+checks, defects, deferred gates и resume point. Такой выход — `resumable
+checkpoint`, не `complete` и не `blocked`; mode остаётся прежним для
+продолжения.

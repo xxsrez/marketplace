@@ -163,6 +163,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertTrue(
             (issue_root / "references" / "thread-title.md").is_file()
         )
+        self.assertTrue(
+            (issue_root / "references" / "execution-modes.md").is_file()
+        )
         self.assertTrue((composer_root / "SKILL.md").is_file())
         self.assertFalse(
             (ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
@@ -174,6 +177,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         skill = (issue_root / "SKILL.md").read_text(encoding="utf-8")
         title_contract = (
             issue_root / "references" / "thread-title.md"
+        ).read_text(encoding="utf-8")
+        execution_modes = (
+            issue_root / "references" / "execution-modes.md"
         ).read_text(encoding="utf-8")
         metadata = (issue_root / "agents" / "openai.yaml").read_text(
             encoding="utf-8"
@@ -190,6 +196,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("update_goal(status=blocked)", skill)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичного UAT", skill)
+        self.assertIn("top-level `gpt-5.6-luna` при любом effort", skill)
+        self.assertIn("не вычисляй их заново", skill)
+        self.assertIn("## Классический", execution_modes)
+        self.assertIn("## Баланс", execution_modes)
+        self.assertIn("## Рой", execution_modes)
+        self.assertIn("## Экономичный", execution_modes)
+        self.assertIn("resumable checkpoint", execution_modes)
         self.assertIn("Issue Grinder · ...", skill)
         self.assertIn(
             "set_thread_title` не более одного раза без", title_contract
@@ -206,6 +219,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("why Issue Grinder cannot resolve it alone", public_manifest)
         self.assertIn("Public UAT", public_manifest)
         self.assertIn("Production remains forbidden", public_manifest)
+        self.assertIn("four stable execution modes", public_manifest)
+        self.assertIn("once per continuous run", public_manifest)
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(
