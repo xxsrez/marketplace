@@ -11,7 +11,7 @@ dispatch/review решения.
 Один run имеет один record:
 
 ```text
-canonical_mode: classic | balance | swarm | economical
+canonical_mode: solo | classic | balance | swarm | economical
 mode_origin: explicit | automatic
 initial_main_model: <exact effective model>
 initial_main_effort: <exact effective effort when available>
@@ -27,14 +27,15 @@ worker_profile: <effective profile>
    применяй automatic resolver снова. Смена current model/effort не меняет уже
    выбранный mode.
 2. Для нового run найди в текущем prompt явное намерение выбрать режим. Прими
-   каноническое имя и свободные формы вроде «используй профиль Balance»,
-   «запусти Рой» или «работай экономично», только когда речь явно о режиме
-   Issue Grinder. Случайное слово «баланс» в описании продукта не является
+   каноническое имя и свободные формы вроде «Соло», `single`, `сингл`, «одним
+   агентом», «без субагентов», «используй профиль Balance», «запусти Рой» или
+   «работай экономично», только когда речь явно о режиме Issue Grinder.
+   Случайное слово «баланс» или «один» в описании продукта не является
    selector-ом.
 3. При явном selector-е выбери его. Иначе exact top-level model семейства
    `gpt-5.6-luna` при любом effort выбирает `economical`; любая другая модель —
    `classic`.
-4. `По умолчанию` запускает то же automatic правило и не создаёт пятый mode.
+4. `По умолчанию` запускает то же automatic правило и не создаёт шестой mode.
 5. Выполни profile normalization ниже, сохрани record в доступной continuity
    текущего run и один раз коротко назови выбранный канонический режим в
    progress update.
@@ -66,7 +67,15 @@ reasoning_effort = "max"
 - неизвестное cross-family отношение не угадывай по цене, имени или одному
   прошлому результату.
 
-Если root уже запущен на Luna ниже Max и не может изменить себя, оставь его
+В `Соло` не применяй эти profiles к исполнению: единственный execution profile
+равен exact effective current top-level model и effort этого turn. Не создавай
+Luna Max supervisor/worker и не подменяй current main profile. При продолжении
+после смены top-level model/effort сохрани canonical mode `Соло`, но следующую
+работу выполняй уже фактически текущим root profile. Нормализованные поля mode
+record могут сохраняться только для безопасного явного переключения в другой
+режим, но в `Соло` не дают права вызвать соответствующего агента.
+
+Если root уже запущен на Luna ниже Max и mode не `Соло`, оставь его
 единственной transport/authority оболочкой. Он вызывает direct built-in Luna
 Max supervisor с bounded packet для scope analysis, dispatch decision или
 review и сам сохраняет Goal, Task Manager writes, fan-in и publication unit.
@@ -89,6 +98,30 @@ resolvable anchors для root.
   external recipients, paid external calls или terminal Task Manager effects;
 - после material rework exact changed candidate проходит применимый review
   заново.
+
+## Соло
+
+Цель — терминально выполнить любой выбранный scope строго текущей моделью без
+внутренней агентной topology.
+
+1. Полностью прочитай live scope, существенный source context, dependencies,
+   acceptance и risk surfaces текущей основной моделью.
+2. Сохраняй одну execution lane: выбери один dependency-ready issue или пакет,
+   доведи его текущую итерацию до проверенного status transition либо настоящего
+   blocker gate и только затем переходи к следующему.
+3. Не вызывай subagents ни для анализа, ни для реализации, ни для тестов,
+   критики, проверки, supervisor routing, альтернативных candidates, reduction
+   или публикационного текста. Не заменяй их отдельной Codex task/session.
+4. Текущая модель сама реализует, интегрирует, запускает применимые проверки и
+   проводит self-review exact result. Её уверенность и self-report не являются
+   evidence; terminal acceptance опирается на наблюдаемые checks и факты.
+5. Используй native communication mode: Strategic Explainer не вызывается,
+   однако causal explanation и post-explanation reflection сохраняются.
+6. Goal, Task Manager writes, recovery, authority и environment rules остаются
+   общими. Несколько issue не включают Goal автоматически вне `IG-GOAL-01` и не
+   разрешают делегацию.
+7. Продолжай до empty active scope либо принятого terminal blocker handoff.
+   Resumable checkpoint `Экономичного` режима недоступен.
 
 ## Классический
 
@@ -200,7 +233,9 @@ expected gain, а не ради занятости слотов.
 3. выполни `assert-unchanged` integration checkout и reconcile ownership;
 4. сохрани exact candidates, checks и deferred effects;
 5. запиши новый canonical mode с `mode_origin=explicit`;
-6. примени его только к следующей wave/review decision.
+6. примени его только к следующей wave/review decision; если новый mode —
+   `Соло`, поставь сохранённые packets в последовательную очередь и не создавай
+   новых subagents.
 
 Переключение не меняет scope, target environment или authority и не позволяет
 повторно реализовать уже сохранённую работу.

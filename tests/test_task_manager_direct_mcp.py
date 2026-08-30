@@ -198,6 +198,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("публичного UAT", skill)
         self.assertIn("top-level `gpt-5.6-luna` при любом effort", skill)
         self.assertIn("не вычисляй их заново", skill)
+        self.assertIn("## Соло", execution_modes)
         self.assertIn("## Классический", execution_modes)
         self.assertIn("## Баланс", execution_modes)
         self.assertIn("## Рой", execution_modes)
@@ -219,7 +220,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("why Issue Grinder cannot resolve it alone", public_manifest)
         self.assertIn("Public UAT", public_manifest)
         self.assertIn("Production remains forbidden", public_manifest)
-        self.assertIn("four stable execution modes", public_manifest)
+        self.assertIn("five stable execution modes", public_manifest)
+        self.assertIn("Solo uses the current top-level model", public_manifest)
+        self.assertIn("issue count alone does not select it", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:

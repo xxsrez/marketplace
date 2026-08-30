@@ -62,8 +62,10 @@ Issue Grinder is the current skill-only delivery plugin with two independent
 Task Manager skills:
 
 - `issue-grinder` delivers selected issue, Release, Project, or current-Release
-  scope from `To Do`, `In Progress`, and `In Review` through four execution
-  modes. `Классический`, `Баланс` and `Рой` preserve a terminal promise with
+  scope from `To Do`, `In Progress`, and `In Review` through five execution
+  modes. `Соло` uses the current model to perform one issue or packet at a time
+  with no subagents and native publication; it can handle one or many issues
+  but is never selected from issue count alone. `Классический`, `Баланс` and `Рой` preserve a terminal promise with
   different amounts of economical work; `Экономичный` may instead leave one
   honest resumable candidate without false `Done` or Goal completion. Explicit
   mode selection wins; otherwise any top-level Luna selects `Экономичный` and
@@ -82,7 +84,8 @@ Task Manager skills:
   branches and Git worktrees. One integration owner reduces work to one exact
   candidate. `Классический` gives Luna Max only strict-simple packets;
   `Баланс`, `Рой` and `Экономичный` use it more broadly under their mode
-  contracts. Before fresh work, a new run inventories related worktrees,
+  contracts, while `Соло` does not route work to Luna or any other child.
+  Before fresh work, a new run inventories related worktrees,
   branches, commits and local changes, then resumes a proven quiescent
   checkpoint instead of creating an accidental parallel replacement;
 - `task-composer` keeps the existing planning-only Backlog workflow. Both skills

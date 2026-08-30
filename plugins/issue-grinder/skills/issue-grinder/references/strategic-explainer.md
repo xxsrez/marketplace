@@ -8,6 +8,8 @@ scope, authority, evidence, repair или status decision.
 
 В начале run установи communication mode:
 
+- `native`, если execution mode — `Соло`: полный запрет subagents включает
+  provider Strategic Explainer;
 - `ordinary`, если доступен и разрешён
   `$strategic-explainer:strategic-explainer`;
 - иначе `native` без capability warning и без блокировки lifecycle.

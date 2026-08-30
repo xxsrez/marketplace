@@ -23,12 +23,14 @@ mutations и попроси scope. При неявной загрузке нуж
 Project или иной ограниченный selector; current Release по памяти не подставляй.
 
 Для нового run до декомпозиции один раз разреши execution mode. Явная просьба
-пользователя о `Классическом`, `Балансе`, `Рое` или `Экономичном` сильнее
-автоматики. Без неё top-level `gpt-5.6-luna` при любом effort выбирает
-`Экономичный`, любая другая модель — `Классический`. `По умолчанию` означает то
-же automatic правило. Сохрани canonical mode и profile normalization в run
-continuity; на следующих turns, после compaction/interruption или смены модели
-не вычисляй их заново. Перед стратегическим анализом полностью прочитай
+пользователя о `Соло`, `Классическом`, `Балансе`, `Рое` или `Экономичном`
+сильнее автоматики; `single`, `сингл`, «одним агентом» и «без субагентов» также
+считай явным `Соло`, когда это однозначно mode intent. Без явного выбора
+top-level `gpt-5.6-luna` при любом effort выбирает `Экономичный`, любая другая
+модель — `Классический`; количество issue не выбирает `Соло`. `По умолчанию`
+означает то же automatic правило. Сохрани canonical mode и profile normalization
+в run continuity; на следующих turns, после compaction/interruption или смены
+модели не вычисляй их заново. Перед стратегическим анализом полностью прочитай
 [Execution modes](references/execution-modes.md). Режим меняй только по явной
 команде пользователя через описанный там safe switch barrier.
 
@@ -71,8 +73,11 @@ outcome: какую общую проблему решает работа и ч�
 2. Выбери dependency-ready frontier и примени сохранённый mode. При двух
    независимых полезных пакетах либо предусмотренной режимом critic/verifier/
    candidate wave полностью прочитай и примени
-   [multi-agent execution](references/multi-agent-execution.md). Writer не
-   получает implementation до подтверждённого двухфазного worktree admission.
+   [multi-agent execution](references/multi-agent-execution.md). Это правило не
+   действует в `Соло`: не создавай никаких subagents, сохрани current main
+   model/effort и выполняй ровно один issue или пакет за раз. В остальных
+   режимах writer не получает implementation до подтверждённого двухфазного
+   worktree admission.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
 4. Реализуй outcome по dispatch/review promise выбранного режима, интегрируй
@@ -110,7 +115,9 @@ Strategic Explainer или создавать отдельную Codex task/sess
 
 Перед каждым Task Manager comment, blocker-report и финальным Goal comment
 полностью прочитай [Strategic Explainer routing](references/strategic-explainer.md).
-Если `$strategic-explainer:strategic-explainer` установлен и доступен, каждая
+В `Соло` всегда используй native communication mode и не вызывай provider
+subagent. В остальных режимах, если `$strategic-explainer:strategic-explainer`
+установлен и доступен, каждая
 самостоятельная publication unit проходит через его semantic facade. Если его
 нет, сразу пиши native. Caller error исправь и вызови facade корректно;
 техническая ошибка не маскируется, но при достаточных фактах переходи в native,

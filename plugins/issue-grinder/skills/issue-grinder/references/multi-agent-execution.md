@@ -4,7 +4,9 @@
 topology rule пользователя либо когда сохранённый execution mode требует
 critic/verifier/candidate wave. Сначала используй mode и profiles из
 [Execution modes](execution-modes.md). Делегация не расширяет scope, authority
-или автономность неявного run.
+или автономность неявного run. Если сохранённый mode — `Соло`, не применяй
+delegation path ниже: startup recovery остаётся обязательным, но subagents и
+parallel writer admission запрещены.
 
 ## Topology и ownership
 
@@ -14,7 +16,9 @@ opt-out имеет приоритет. Root/coordinator не входит в н�
 ширине; `Баланс`, `Рой` и `Экономичный` дополнительно используют предусмотренные
 режимом economical critics, verifiers и intentional candidates. Число writers
 определяется mode envelope, capacity, ожидаемой ценностью и стоимостью
-fan-in/verification.
+fan-in/verification. `Соло` является полным opt-out: число subagents и
+одновременных execution lanes равно `0` и `1` соответственно независимо от
+ширины frontier и свободной capacity.
 
 Сначала построй dependency graph и карту write surfaces: modules, files,
 schemas, generated artifacts и shared state. Пересекающиеся либо зависимые
@@ -119,6 +123,10 @@ quiescence. Active/unknown ownership не перехватывай, parallel rep
 Profiles всегда бери из сохранённого mode record по
 [Execution modes](execution-modes.md). Не наследуй current model/effort
 механически и не пересчитывай automatic mode после смены top-level модели.
+Исключение задаёт сам contract `Соло`: его единственный execution profile —
+exact effective current top-level model/effort этого turn, а controller/worker
+normalization не используется для dispatch. Смена current profile не меняет
+сохранённый canonical mode.
 
 В `Классическом` без user profile override `gpt-5.6-luna` с `max` получает
 только пакет, который одновременно bounded, self-contained, disjoint,
@@ -140,4 +148,5 @@ scope expansion или proof gap Luna сохраняет checkpoint/evidence и 
 `Классический` может использовать controller profile; экономичные режимы ищут
 разрешённый economical fallback и не превращают его отсутствие в неограниченный
 расход дефицитного profile. Явный пользовательский role profile не подменяй.
-Strategic Explainer не входит в routing рабочих packets.
+Strategic Explainer не входит в routing рабочих packets. В `Соло` он также не
+вызывается как отдельный provider subagent: coordinator пишет native.
