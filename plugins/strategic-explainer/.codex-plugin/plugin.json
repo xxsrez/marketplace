@@ -1,6 +1,6 @@
 {
   "name": "strategic-explainer",
-  "version": "0.1.3+codex.20260830112318",
+  "version": "0.1.4+codex.20260830112727",
   "description": "Turn source-grounded technical results into concise, human-readable explanations without losing meaning, uncertainty, or next actions.",
   "author": {
     "name": "Andrey Myasnikov",
