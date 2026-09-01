@@ -1,10 +1,11 @@
 # Execution modes
 
-Применяет `IG-MODE-01..11` и mode-specific часть `IG-MA-*`. Прочитай этот
-reference после доказательства нового/продолжающегося run и до стратегической
-декомпозиции. В продолжающемся run с уже сохранённым mode record не выбирай
-режим повторно; вернись сюда только для явного переключения или mode-specific
-dispatch/review решения.
+Применяет общую часть `IG-MODE-01..11` и выбирает ровно один mode-specific
+runtime contract. Прочитай этот reference после доказательства
+нового/продолжающегося run и до стратегической декомпозиции. В продолжающемся
+run с уже сохранённым mode record не выбирай режим повторно; восстанови record
+и загрузи соответствующий ему mode-файл. Вернись сюда только для явного
+переключения или общего profile/review решения.
 
 ## Mode record — hard gate
 
@@ -99,139 +100,24 @@ resolvable anchors для root.
 - после material rework exact changed candidate проходит применимый review
   заново.
 
-## Соло
+## Выбранный режим — обязательная загрузка
 
-Цель — терминально выполнить любой выбранный scope строго текущей моделью без
-внутренней агентной topology.
+После сохранения mode record полностью прочитай ровно один соответствующий
+файл. Он является единственным runtime-местом с mode-specific topology,
+role/profile routing, fallback, review и stop promise:
 
-1. Полностью прочитай live scope, существенный source context, dependencies,
-   acceptance и risk surfaces текущей основной моделью.
-2. Сохраняй одну execution lane: выбери один dependency-ready issue или пакет,
-   доведи его текущую итерацию до проверенного status transition либо настоящего
-   blocker gate и только затем переходи к следующему.
-3. Не вызывай subagents ни для анализа, ни для реализации, ни для тестов,
-   критики, проверки, supervisor routing, альтернативных candidates, reduction
-   или публикационного текста. Не заменяй их отдельной Codex task/session.
-4. Текущая модель сама реализует, интегрирует, запускает применимые проверки и
-   проводит self-review exact result. Её уверенность и self-report не являются
-   evidence; terminal acceptance опирается на наблюдаемые checks и факты.
-5. Используй native communication mode: Strategic Explainer не вызывается,
-   однако causal explanation и post-explanation reflection сохраняются.
-6. Goal, Task Manager writes, recovery, authority и environment rules остаются
-   общими. Несколько issue не включают Goal автоматически вне `IG-GOAL-01` и не
-   разрешают делегацию.
-7. Продолжай до empty active scope либо принятого terminal blocker handoff.
-   Resumable checkpoint `Экономичного` режима недоступен.
+| `canonical_mode` | Mode contract |
+|---|---|
+| `solo` | [Соло](modes/solo.md) |
+| `classic` | [Классический](modes/classic.md) |
+| `balance` | [Баланс](modes/balance.md) |
+| `swarm` | [Рой](modes/swarm.md) |
+| `economical` | [Экономичный](modes/economical.md) |
 
-## Классический
-
-Цель — полный терминальный результат с высокой уверенностью.
-
-1. Controller/reviewer самостоятельно читает весь live scope и существенный
-   source context, строит стратегию, dependency graph, acceptance и risk map.
-2. Product, architecture, cross-issue, migration, concurrency, security,
-   shared-state и иное weak-oracle judgment остаются этому profile.
-3. Controller/reviewer остаётся основным исполнителем и делает почти всю
-   implementation сам. Luna Max получает только действительно тривиальный
-   strict-simple packet: bounded, self-contained, disjoint, objectively
-   verifiable, low-risk и без material judgment.
-4. Обычная delegation разделяет полезные независимые packets и read-only
-   critique. Не создавай competing full implementations по умолчанию.
-5. Один integration owner выполняет fan-in и aggregate checks.
-6. Controller/reviewer читает exact integrated diff, material source и raw
-   evidence, проводит final code/result review и только затем разрешает Done.
-7. Продолжай до empty active scope либо принятого terminal blocker handoff.
-
-## Баланс
-
-Цель — terminal result с меньшим расходом controller/reviewer profile.
-
-1. Controller/reviewer выполняет первоначальный full-scope analysis,
-   декомпозицию, acceptance и risk classification.
-2. Сразу оставляет себе packets, где само решение требует material judgment.
-   Если сложное решение отделимо от исполнения, передай economical worker-у
-   уже принятое решение и bounded implementation contract.
-3. Luna Max является предпочтительным исполнителем лёгких и средних bounded
-   packets и выполняет основную массу implementation, research, tests и
-   preliminary verification. Средний packet может требовать содержательной
-   работы, но не material product/architecture judgment и должен иметь ясные
-   границы и проверяемый contract. Независимые economical critics/test authors
-   атакуют candidate до дорогого review.
-4. Дополнительный candidate создавай только при реальной развилке, проваленном
-   oracle или высокой ожидаемой ценности независимой дешёвой проверки.
-5. Integration owner собирает содержательную batch и формирует review packet.
-6. При существенной неопределённости, contract/context conflict, слабом oracle
-   или проблеме за границами packet-а Luna сохраняет изменения, checks,
-   evidence и причину остановки и возвращает fallback controller/reviewer-у без
-   одинакового retry. Тот уточняет contract, продолжает сам либо создаёт новый
-   безопасный packet. Reviewer также может вернуть bounded material rework в
-   новую economical wave. После rework повтори exact-candidate gate.
-7. Без final gate не выдавай непроверенный result за terminal; режим сам не
-   переключай.
-
-## Рой
-
-Цель — использовать большой объём дешёвого поиска, реализации и критики с
-одним проверяемым выходом.
-
-До wave задай конечный envelope: явный user budget либо bounded число волн с
-условиями остановки. Свободная capacity не является бесконечным budget.
-
-Допустимые роли: scouts, design candidates, implementation candidates,
-minimal-diff/reliability alternatives, critics, test authors, economical
-judges и evidence reducers. Различай подходы; множество одинаковых prompts
-создаёт коррелированные ошибки и не является достаточным разнообразием.
-
-Intentional candidate получает purpose, base, identity, branch/worktree и
-verification. Он может затрагивать те же files, что другой candidate, только в
-полной изоляции. Existing checkpoint сначала обнаруживается; новый candidate
-не называется его resume/replacement.
-
-После каждой wave:
-
-1. deterministic checks удаляют явно несостоятельные варианты;
-2. economical critics/judges сравнивают оставшиеся, сохраняя provenance,
-   dissent и negative evidence;
-3. reducer оставляет один recommended candidate и максимум один runner-up при
-   действительно material unresolved fork;
-4. integration owner принимает только task-owned commit выбранного candidate;
-5. reviewer получает compressed review packet, а не transcripts всех agents;
-6. замечания создают новую bounded rework wave и повторный exact review.
-
-Останови новые attempts, когда candidate прошёл acceptance/final gate,
-дальнейшие waves перестали добавлять независимые гипотезы/evidence, исчерпан
-envelope или появился настоящий authority/environment blocker. Без final review
-режим не завершает scope и не превращается в `Экономичный` автоматически.
-
-## Экономичный
-
-Цель — максимальный безопасный прогресс почти без расхода более дефицитного
-profile. Economical controller/supervisor и workers могут анализировать,
-реализовывать, тестировать, проводить self-review, independent critique и
-bounded Best-of-N. Не сохраняй бесконтрольное множество вариантов: своди его к
-одному recommended candidate.
-
-Выполняй все доступные deterministic и aggregate checks. Сохраняй raw results,
-known defects, unknowns, rejected candidates и deferred gates. `In Review`
-допустим только для действительно review-ready candidate; иначе оставь
-`In Progress`.
-
-Если terminal acceptance доказан обычным evidence, заверши scope. Иначе текущая
-попытка может закончиться только после checkpoint gate:
-
-- один exact recommended candidate;
-- task-owned commit либо честный owned dirty checkpoint;
-- base, branch/worktree и integration identity;
-- выполненные checks с raw results;
-- known defects, unknowns и deferred review/authority gates;
-- точный следующий шаг и resume condition;
-- правдивые Task Manager statuses и активный Goal.
-
-Этот выход называется `resumable checkpoint`, не `complete` и не `blocked`.
-Не вызывай `update_goal(complete|blocked)` только из-за него. Покажи
-пользователю, что готово, что не принято и откуда продолжать. Дополнительные
-cheap attempts после достаточного checkpoint запускай только при material
-expected gain, а не ради занятости слотов.
+Не загружай остальные четыре mode-файла «для сравнения» во время delivery и не
+собирай mode-specific policy из `mode-help.md`, Architecture, старого run или
+соседнего файла. Общие resolver, normalization, invariants, switch barrier и
+review packet остаются в этом reference; выбранный файл их не переопределяет.
 
 ## Explicit mode switch
 

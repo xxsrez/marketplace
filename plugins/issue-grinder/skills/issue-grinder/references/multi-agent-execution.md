@@ -3,30 +3,29 @@
 Применяет `IG-MA-01..18` при двух независимых полезных пакетах, при явном
 topology rule пользователя либо когда сохранённый execution mode требует
 critic/verifier/candidate wave. Сначала используй mode и profiles из
-[Execution modes](execution-modes.md). Делегация не расширяет scope, authority
-или автономность неявного run. Если сохранённый mode — `Соло`, не применяй
-delegation path ниже: startup recovery остаётся обязательным, но subagents и
-parallel writer admission запрещены.
+[Execution modes](execution-modes.md) и полностью прочитай выбранный там
+mode-файл. Делегация не расширяет scope, authority или автономность неявного
+run. Если сохранённый mode запрещает delegation, не применяй path ниже: startup
+recovery остаётся обязательным, но subagents и parallel writer admission
+запрещены.
 
 ## Topology и ownership
 
 Явное natural-language правило пользователя о числе, ролях, условиях или
 opt-out имеет приоритет. Root/coordinator не входит в названное число
-субагентов. Без override `Классический` делегирует при полезной независимой
-ширине; `Баланс`, `Рой` и `Экономичный` дополнительно используют предусмотренные
-режимом economical critics, verifiers и intentional candidates. Число writers
-определяется mode envelope, capacity, ожидаемой ценностью и стоимостью
-fan-in/verification. `Соло` является полным opt-out: число subagents и
-одновременных execution lanes равно `0` и `1` соответственно независимо от
-ширины frontier и свободной capacity.
+субагентов. Допустимые topology, роли и envelope бери только из выбранного
+mode-файла. Число writers определяется этим envelope, capacity, ожидаемой
+ценностью и стоимостью fan-in/verification; свободные слоты сами по себе не
+создают полезную роль.
 
 Сначала построй dependency graph и карту write surfaces: modules, files,
 schemas, generated artifacts и shared state. Пересекающиеся либо зависимые
-обычные packets не выполняй параллельно. Intentional candidates `Роя` могут
-затрагивать одинаковые surfaces только в разных branches/worktrees и никогда не
-пишут в общий integration target. Каждый packet/candidate получает exact scope,
-owned surfaces, source facts, constraints, expected outcome, verification и,
-для конкурирующего варианта, отдельные purpose/candidate identity.
+обычные packets не выполняй параллельно. Только предусмотренные выбранным
+mode-файлом intentional candidates могут затрагивать одинаковые surfaces, и то
+только в разных branches/worktrees; они никогда не пишут в общий integration
+target. Каждый packet/candidate получает exact scope, owned surfaces, source
+facts, constraints, expected outcome, verification и, для конкурирующего
+варианта, отдельные purpose/candidate identity.
 
 ## Startup recovery — before new work
 
@@ -53,10 +52,11 @@ Startup recovery предшествует `prepare`. Отсутствие Goal, 
 сессии или уже созданного worktree не позволяет проигнорировать однозначно
 связанные со scope branch, commit либо локальные изменения.
 
-Новый intentional candidate `Роя` создаётся только после inventory. Зафиксируй,
-чем его purpose/approach отличается от existing work, выдай отдельную candidate
-identity и общую exact base. Без этого он является запрещённым parallel
-replacement, а не допустимым Best-of-N вариантом.
+Новый intentional candidate, если его разрешает выбранный mode-файл, создаётся
+только после inventory. Зафиксируй, чем его purpose/approach отличается от
+existing work, выдай отдельную candidate identity и общую exact base. Без этого
+он является запрещённым parallel replacement, а не допустимым Best-of-N
+вариантом.
 
 ## Writer admission — hard gate
 
@@ -121,33 +121,19 @@ quiescence. Active/unknown ownership не перехватывай, parallel rep
 создавай и чужие изменения не очищай.
 
 Profiles всегда бери из сохранённого mode record по
-[Execution modes](execution-modes.md). Не наследуй current model/effort
-механически и не пересчитывай automatic mode после смены top-level модели.
-Исключение задаёт сам contract `Соло`: его единственный execution profile —
-exact effective current top-level model/effort этого turn, а controller/worker
-normalization не используется для dispatch. Смена current profile не меняет
-сохранённый canonical mode.
-
-В `Классическом` без user profile override `gpt-5.6-luna` с `max` получает
-только пакет, который одновременно bounded, self-contained, disjoint,
-объективно проверяем, не требует material
-product/creative/architecture/cross-issue judgment и не зависит от
-непредсказуемой среды или риска. Маленький diff сам по себе не simple. В
-`Балансе` Luna Max сначала получает лёгкие и средние bounded packets; в `Рое` и
-`Экономичном` — более широкую работу по mode contract. Profile normalization
-может сделать controller и workers одинаковыми.
+[Execution modes](execution-modes.md), а допустимые роли и packets — только из
+выбранного mode-файла. Не наследуй current model/effort механически и не
+пересчитывай automatic mode после смены top-level модели. Profile normalization
+может сделать controller и workers одинаковыми; это не меняет topology и
+delivery promise выбранного режима.
 
 При ambiguity, contract/context conflict, unexpected tool/environment state,
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
-неограниченные corrective mutations. Затем `Классический|Баланс` возвращает
-problem fallback controller/reviewer-у: тот продолжает сам, уточняет contract
-либо формирует новый безопасный packet. `Рой` может запустить намеренно иной
-candidate, а `Экономичный` — оставить resumable checkpoint. Luna retry loop с
-тем же подходом/evidence запрещён.
+неограниченные corrective mutations. Следующее действие выбирай по fallback
+выбранного mode-файла. Luna retry loop с тем же подходом/evidence запрещён.
 
 Недоступная automatic Luna не блокирует, пока существует mode-compatible путь.
-`Классический` может использовать controller profile; экономичные режимы ищут
-разрешённый economical fallback и не превращают его отсутствие в неограниченный
-расход дефицитного profile. Явный пользовательский role profile не подменяй.
-Strategic Explainer не входит в routing рабочих packets. В `Соло` он также не
-вызывается как отдельный provider subagent: coordinator пишет native.
+Fallback и допустимый расход дефицитного profile бери из выбранного mode-файла.
+Явный пользовательский role profile не подменяй. Strategic Explainer не входит
+в routing рабочих packets; communication topology также задаёт выбранный
+mode-файл.

@@ -166,6 +166,17 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertTrue(
             (issue_root / "references" / "execution-modes.md").is_file()
         )
+        mode_files = {
+            "Соло": "solo.md",
+            "Классический": "classic.md",
+            "Баланс": "balance.md",
+            "Рой": "swarm.md",
+            "Экономичный": "economical.md",
+        }
+        for filename in mode_files.values():
+            self.assertTrue(
+                (issue_root / "references" / "modes" / filename).is_file()
+            )
         self.assertTrue((issue_root / "references" / "mode-help.md").is_file())
         self.assertTrue((issue_root / "references" / "run-and-goal.md").is_file())
         self.assertTrue((composer_root / "SKILL.md").is_file())
@@ -207,12 +218,18 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("публичный UAT", runtime)
         self.assertIn("top-level `gpt-5.6-luna` при любом effort", normalized)
         self.assertIn("не пересчитывай его", normalized)
-        self.assertIn("## Соло", execution_modes)
-        self.assertIn("## Классический", execution_modes)
-        self.assertIn("## Баланс", execution_modes)
-        self.assertIn("## Рой", execution_modes)
-        self.assertIn("## Экономичный", execution_modes)
-        self.assertIn("resumable checkpoint", execution_modes)
+        self.assertIn("## Выбранный режим — обязательная загрузка", execution_modes)
+        for mode, filename in mode_files.items():
+            mode_contract = (
+                issue_root / "references" / "modes" / filename
+            ).read_text(encoding="utf-8")
+            self.assertTrue(mode_contract.startswith(f"# {mode}\n"))
+            self.assertIn(f"modes/{filename}", execution_modes)
+        self.assertNotIn("## Соло", execution_modes)
+        economical = (
+            issue_root / "references" / "modes" / "economical.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("resumable checkpoint", economical)
         self.assertIn("Issue Grinder · ...", runtime)
         self.assertIn(
             "set_thread_title` не более одного раза без", title_contract

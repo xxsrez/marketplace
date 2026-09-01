@@ -37,7 +37,8 @@ effort выбирает `Экономичный`, любая другая мод
 не выбирает `Соло`. `По умолчанию` запускает это же правило, а не шестой режим.
 Полностью прочитай [Execution modes](references/execution-modes.md), сохрани mode
 record в continuity и не пересчитывай его после compaction, interruption или
-смены модели. Режим меняется только явной командой через safe switch barrier.
+смены модели. Затем полностью прочитай ровно один связанный там файл выбранного
+режима. Режим меняется только явной командой через safe switch barrier.
 
 ## 2. Веди delivery loop по обещанию режима
 
@@ -126,7 +127,8 @@ Run завершён только после fresh full inventory без in-scop
 шага. Иначе продолжай delivery loop либо публикуй принятый terminal blocker.
 
 Только `Экономичный` может остановить текущую попытку раньше: выполни checkpoint
-gate из Execution modes, сохрани правдивые `In Progress|In Review` и активный
-Goal, назови exact candidate, checks, defects, deferred gates и resume point.
+gate из [его mode contract](references/modes/economical.md), сохрани правдивые
+`In Progress|In Review` и активный Goal, назови exact candidate, checks,
+defects, deferred gates и resume point.
 Это `resumable checkpoint`, не `complete` и не `blocked`; mode сохраняется для
 продолжения.
