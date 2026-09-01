@@ -15,8 +15,7 @@ bounded Best-of-N. Не сохраняй бесконтрольное множе
 repository research, decomposition, implementation, tests, preliminary и final
 self-review, independent critique и reduction. Каждый child dispatch явно
 задаёт `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
-проходит routing guard. Встроенные platform-типы `critic`/`reviewer` не
-используй; их semantic роли выполняет `default`, `explorer` или `worker` с Luna
+проходит routing guard. Имя и тип child не заменяют проверку его effective
 profile.
 
 Если top-level root уже запущен не на Luna, он является только

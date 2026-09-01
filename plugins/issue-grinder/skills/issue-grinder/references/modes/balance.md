@@ -22,9 +22,8 @@ resolver, authority, recovery и evidence rules бери из
    authoring, test execution, preliminary verification, critique и bounded
    rework для лёгких и средних packets. Каждый child получает явные
    `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
-   зелёный routing receipt. Встроенные `critic`/`reviewer` не используй;
-   semantic critics/test authors запускаются как `default`, `explorer` или
-   `worker` с Luna profile.
+   зелёный routing receipt. Имя и тип child не заменяют проверку его effective
+   profile.
 4. Первый Luna handoff является gate режима: пока нет наблюдаемого Luna child
    profile и содержательного evidence по packet-у, controller не начинает
    ordinary implementation/research/test lane сам. Несовпадение profile закрывает

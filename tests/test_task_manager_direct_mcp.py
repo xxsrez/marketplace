@@ -244,7 +244,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Best-of-M wave с `M >= 2`", swarm)
         self.assertIn("Все содержательные решения и работа режима выполняются Luna Max", economical)
         self.assertIn("issue-grinder/model-routing/v1", routing_guard)
-        self.assertIn("platform_agent_type_bypasses_mode_profile", routing_guard)
+        self.assertIn("actual_luna_model_mismatch", routing_guard)
+        self.assertNotIn("FORCED_PROFILE_AGENT_TYPES", routing_guard)
+        self.assertNotIn("platform_agent_type_bypasses_mode_profile", routing_guard)
+        self.assertIn("Имя или тип агента не выбирает профиль режима", execution_modes)
         self.assertIn("Issue Grinder · ...", runtime)
         self.assertIn(
             "set_thread_title` не более одного раза без", title_contract

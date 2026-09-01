@@ -69,11 +69,9 @@ existing work, выдай отдельную candidate identity и общую ex
 packet-е, передай необходимые facts и anchors явно; `fork_turns="all"` либо
 omitted fork нельзя совмещать с mode-controlled profile.
 
-Platform `agent_type` не является semantic role. В `Балансе`, `Рое` и
-`Экономичном` не используй встроенные `critic`/`reviewer` без явного
-пользовательского profile override: их platform profile обходит выбранную
-Luna-route. Создай `default`, `explorer` или `worker` с точным profile, а
-обязанности критика, судьи или reviewer опиши в packet-е. Наблюдаемый child
+Platform `agent_type` не является semantic role и сам по себе не выбирает
+model/effort. Для любого child используй effective profile текущего dispatch и
+явно передавай профиль, который требует выбранный режим. Наблюдаемый child
 profile сразу добавь в receipt; mismatch останавливает wave до FileChange,
 fan-in, тестов и lifecycle effects. Если tool не раскрывает actual profile,
 сохрани `telemetry_pending` и exact spawn args для внешней recursive проверки.

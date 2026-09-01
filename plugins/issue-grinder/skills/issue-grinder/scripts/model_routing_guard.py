@@ -12,7 +12,6 @@ SCHEMA = "issue-grinder/model-routing/v1"
 LUNA_MODEL = "gpt-5.6-luna"
 LUNA_EFFORT = "max"
 ECONOMICAL_MODES = frozenset({"balance", "swarm", "economical"})
-FORCED_PROFILE_AGENT_TYPES = frozenset({"critic", "reviewer"})
 BALANCE_CONTROLLER_ROLES = frozenset(
     {"material_judgment", "integration_decision", "final_review"}
 )
@@ -101,12 +100,6 @@ def validate_route(
         normalized_role,
         user_profile_override=user_profile_override,
     )
-    if (
-        normalized_mode in ECONOMICAL_MODES
-        and normalized_agent_type in FORCED_PROFILE_AGENT_TYPES
-        and not user_profile_override
-    ):
-        defects.append("platform_agent_type_bypasses_mode_profile")
     if luna_required:
         if normalized_model != LUNA_MODEL:
             defects.append("luna_model_required")

@@ -100,10 +100,9 @@ wave при несовпадении. Если runtime surface не раскры
 В `Балансе`, `Рое` и `Экономичном` Luna-lane всегда запускается с явно
 переданными `model="gpt-5.6-luna"`, `reasoning_effort="max"` и
 `fork_turns="none"` либо положительным bounded числом. Не оставляй model/effort
-на наследование root. Platform-типы `critic` и `reviewer` имеют собственный
-фиксированный profile и поэтому без явного пользовательского role override в
-этих трёх режимах запрещены: используй `default`, `explorer` или `worker` с
-явным Luna profile, а роль критика/reviewer задай в bounded packet.
+на наследование root. Имя или тип агента не выбирает профиль режима и не
+является основанием для запрета. Используй effective profile текущего dispatch,
+передавай требуемые режимом model/effort явно и сверяй наблюдаемый профиль.
 
 Пример pre-dispatch gate для содержательного writer-а:
 

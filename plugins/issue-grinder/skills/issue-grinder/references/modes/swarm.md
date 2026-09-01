@@ -21,10 +21,9 @@ design/implementation candidates, minimal-diff/reliability alternatives,
 critics, test authors, economical judges, evidence reducers и bounded rework.
 Каждый dispatch явно задаёт `model="gpt-5.6-luna"`,
 `reasoning_effort="max"`, bounded `fork_turns` и проходит routing guard.
-Встроенные platform-типы `critic`/`reviewer` не используй: semantic роль задай
-`default`, `explorer` или `worker` с Luna profile. Sol/controller сохраняет
-effect ownership, fan-in, material integration decision и final review, но не
-подменяет собой search, candidate writing или cheap critique.
+Имя и тип child не заменяют проверку его effective profile. Sol/controller
+сохраняет effect ownership, fan-in, material integration decision и final
+review, но не подменяет собой search, candidate writing или cheap critique.
 
 Intentional candidate получает purpose, base, identity, branch/worktree и
 verification. Он может затрагивать те же files, что другой candidate, только в
