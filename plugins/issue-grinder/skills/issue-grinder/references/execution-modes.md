@@ -71,11 +71,13 @@ reasoning_effort = "max"
 
 В `Соло` не применяй эти profiles к исполнению: единственный execution profile
 равен exact effective current top-level model и effort этого turn. Не создавай
-Luna Max supervisor/worker и не подменяй current main profile. При продолжении
-после смены top-level model/effort сохрани canonical mode `Соло`, но следующую
-работу выполняй уже фактически текущим root profile. Нормализованные поля mode
-record могут сохраняться только для безопасного явного переключения в другой
-режим, но в `Соло` не дают права вызвать соответствующего агента.
+Luna Max supervisor/worker для работы Issue Grinder и не подменяй current main
+profile. При продолжении после смены top-level model/effort сохрани canonical
+mode `Соло`, но следующую работу выполняй уже фактически текущим root profile.
+Нормализованные поля mode record могут сохраняться только для безопасного
+явного переключения в другой режим, но в `Соло` не дают права вызвать
+соответствующего execution-agent. Внешний semantic provider не является такой
+ролью и управляет своим profile через собственный interface.
 
 Если root уже запущен на Luna ниже Max и mode не `Соло`, оставь его
 единственной transport/authority оболочкой. Он вызывает direct built-in Luna
@@ -87,7 +89,7 @@ resolvable anchors для root.
 
 ## Model routing — hard gate
 
-Для каждого child dispatch заранее отдели смысловую роль от platform
+Для каждого Issue Grinder execution-child dispatch заранее отдели смысловую роль от platform
 `agent_type` и выполни bundled `scripts/model_routing_guard.py` по его
 абсолютному resolved path. Receipt фиксирует canonical mode, semantic role,
 `agent_type`, exact requested model/effort, bounded `fork_turns` и, когда tool
@@ -136,6 +138,10 @@ profile override сохраняется, но также проходит receip
 - routing receipt относится к реальному semantic packet, а не к названию child:
   текстовая роль `critic` не разрешает скрыть implementation, а
   `material_judgment` не является универсальным обходом Luna-lane.
+- mode topology охватывает только агентов, которым Issue Grinder передал
+  содержательную delivery-работу. Agent-backed Strategic Explainer, connector
+  или другой semantic provider остаётся вне неё, пока исполняет только свой
+  ограниченный interface; техническое положение в thread tree этого не меняет.
 
 ## Выбранный режим — обязательная загрузка
 
@@ -167,7 +173,7 @@ review packet остаются в этом reference; выбранный фай�
 5. запиши новый canonical mode с `mode_origin=explicit`;
 6. примени его только к следующей wave/review decision; если новый mode —
    `Соло`, поставь сохранённые packets в последовательную очередь и не создавай
-   новых subagents.
+   новых Issue Grinder execution-subagents.
 
 Переключение не меняет scope, target environment или authority и не позволяет
 повторно реализовать уже сохранённую работу.

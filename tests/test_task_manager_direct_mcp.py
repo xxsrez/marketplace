@@ -274,7 +274,18 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Public UAT", public_manifest)
         self.assertIn("Production remains forbidden", public_manifest)
         self.assertIn("five stable execution modes", public_manifest)
-        self.assertIn("Solo uses the current top-level model", public_manifest)
+        self.assertIn(
+            "Solo keeps all Issue Grinder delivery work in one execution lane",
+            public_manifest,
+        )
+        self.assertIn(
+            "Mode topology includes only agents doing Issue Grinder delivery work",
+            public_manifest,
+        )
+        self.assertIn(
+            "In all five modes Issue Grinder uses the standalone Strategic Explainer",
+            public_manifest,
+        )
         self.assertIn("issue count alone does not select it", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
         self.assertIn("delivery-free help path", public_manifest)

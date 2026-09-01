@@ -51,7 +51,8 @@ record в continuity и не пересчитывай его после compacti
    полезных независимых пакета либо предусмотренная режимом critic/verifier/
    candidate wave, полностью прочитай
    [multi-agent execution](references/multi-agent-execution.md). В `Соло`
-   subagents запрещены: текущая модель выполняет один issue или пакет за раз.
+   рабочая делегация Issue Grinder запрещена: текущая модель выполняет один
+   issue или пакет за раз. Внешние semantic providers не входят в эту topology.
    Во всех остальных режимах writer получает implementation только после
    подтверждённых model-routing и двухфазного worktree admission. Для каждого
    child перенеси в spawn exact model/effort/fork из зелёного routing receipt;
@@ -86,9 +87,9 @@ facts, evidence и read-only anchors: не поручай им формулир�
 
 Перед каждым Task Manager comment, blocker-report и финальным Goal comment
 полностью прочитай
-[Strategic Explainer routing](references/strategic-explainer.md). В `Соло`
-используй native communication mode. В других режимах основной coordinator сам
-вызывает доступный semantic facade и не передаёт ему неподтверждённые факты.
+[Strategic Explainer routing](references/strategic-explainer.md). Во всех
+режимах основной coordinator сам вызывает доступный semantic facade и не
+передаёт ему неподтверждённые факты либо delivery-работу выбранного scope.
 
 Comment или final draft — точка решения. Непонятый факт либо существенная
 обязательная работа отменяют publication/status transition и возвращают run в

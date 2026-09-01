@@ -8,11 +8,15 @@ scope, authority, evidence, repair или status decision.
 
 В начале run установи communication mode:
 
-- `native`, если execution mode — `Соло`: полный запрет subagents включает
-  provider Strategic Explainer;
 - `ordinary`, если доступен и разрешён
   `$strategic-explainer:strategic-explainer`;
 - иначе `native` без capability warning и без блокировки lifecycle.
+
+Это правило одинаково для всех пяти execution modes. Provider-agent Strategic
+Explainer не входит в Issue Grinder execution topology: он получает только
+publication request и не анализирует, не реализует, не тестирует и не проверяет
+delivery scope. Если пользователь отдельно запретил вообще любых subagents,
+используй `native`.
 
 Каждый Task Manager comment, общий blocker-report, отдельный ответ по каждой
 причине блокировки и финальный Goal comment являются отдельными publication units.

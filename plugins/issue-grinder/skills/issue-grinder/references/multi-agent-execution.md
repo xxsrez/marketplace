@@ -5,9 +5,10 @@ topology rule пользователя либо когда сохранённы�
 critic/verifier/candidate wave. Сначала используй mode и profiles из
 [Execution modes](execution-modes.md) и полностью прочитай выбранный там
 mode-файл. Делегация не расширяет scope, authority или автономность неявного
-run. Если сохранённый mode запрещает delegation, не применяй path ниже: startup
-recovery остаётся обязательным, но subagents и parallel writer admission
-запрещены.
+run. Если сохранённый mode запрещает рабочую delegation Issue Grinder, не
+применяй path ниже: startup recovery остаётся обязательным, но execution-
+subagents и parallel writer admission запрещены. Agent-backed semantic
+providers регулируются собственными interfaces и не входят в этот path.
 
 ## Topology и ownership
 
@@ -60,7 +61,8 @@ existing work, выдай отдельную candidate identity и общую ex
 
 ## Model routing admission — hard gate
 
-До каждого `spawn_agent` сначала сформулируй настоящий semantic role packet-а и
+До каждого `spawn_agent`, которому Issue Grinder передаёт delivery-работу,
+сначала сформулируй настоящий semantic role packet-а и
 получи зелёный receipt от bundled
 [`model_routing_guard.py`](../scripts/model_routing_guard.py). Exact параметры
 успешного receipt перенеси в один фактический spawn без наследования или
@@ -157,5 +159,6 @@ scope expansion или proof gap Luna сохраняет checkpoint/evidence и 
 Недоступная automatic Luna не блокирует, пока существует mode-compatible путь.
 Fallback и допустимый расход дефицитного profile бери из выбранного mode-файла.
 Явный пользовательский role profile не подменяй. Strategic Explainer не входит
-в routing рабочих packets; communication topology также задаёт выбранный
-mode-файл.
+в routing рабочих packets и не считается execution-agent режима, пока получает
+только свой semantic request. Его communication topology задаёт собственный
+interface, а не mode-файл Issue Grinder.
