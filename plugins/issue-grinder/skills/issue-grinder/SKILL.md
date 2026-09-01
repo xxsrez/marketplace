@@ -53,7 +53,9 @@ record в continuity и не пересчитывай его после compacti
    [multi-agent execution](references/multi-agent-execution.md). В `Соло`
    subagents запрещены: текущая модель выполняет один issue или пакет за раз.
    Во всех остальных режимах writer получает implementation только после
-   подтверждённого двухфазного worktree admission.
+   подтверждённых model-routing и двухфазного worktree admission. Для каждого
+   child перенеси в spawn exact model/effort/fork из зелёного routing receipt;
+   наследование root profile не считается выбором worker profile.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
 4. Реализуй outcome по mode promise, интегрируй только task-owned изменения и

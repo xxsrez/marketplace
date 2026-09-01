@@ -179,6 +179,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             )
         self.assertTrue((issue_root / "references" / "mode-help.md").is_file())
         self.assertTrue((issue_root / "references" / "run-and-goal.md").is_file())
+        self.assertTrue((issue_root / "scripts" / "model_routing_guard.py").is_file())
         self.assertTrue((composer_root / "SKILL.md").is_file())
         self.assertFalse(
             (ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
@@ -230,6 +231,20 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             issue_root / "references" / "modes" / "economical.md"
         ).read_text(encoding="utf-8")
         self.assertIn("resumable checkpoint", economical)
+        balance = (
+            issue_root / "references" / "modes" / "balance.md"
+        ).read_text(encoding="utf-8")
+        swarm = (
+            issue_root / "references" / "modes" / "swarm.md"
+        ).read_text(encoding="utf-8")
+        routing_guard = (
+            issue_root / "scripts" / "model_routing_guard.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("До первой source mutation", balance)
+        self.assertIn("Best-of-M wave с `M >= 2`", swarm)
+        self.assertIn("Все содержательные решения и работа режима выполняются Luna Max", economical)
+        self.assertIn("issue-grinder/model-routing/v1", routing_guard)
+        self.assertIn("platform_agent_type_bypasses_mode_profile", routing_guard)
         self.assertIn("Issue Grinder · ...", runtime)
         self.assertIn(
             "set_thread_title` не более одного раза без", title_contract

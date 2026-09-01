@@ -1,6 +1,6 @@
 {
   "name": "issue-grinder",
-  "version": "0.1.0+codex.20260901162108",
+  "version": "0.1.0+codex.20260901174112",
   "description": "Deliver selected Task Manager scope through five execution modes and answer mode-help questions without starting delivery.",
   "author": {
     "name": "Andrey Myasnikov",

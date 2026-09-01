@@ -11,13 +11,31 @@ profile. Economical controller/supervisor и workers могут анализир
 bounded Best-of-N. Не сохраняй бесконтрольное множество вариантов: своди его к
 одному recommended candidate.
 
+Все содержательные решения и работа режима выполняются Luna Max: scope analysis,
+repository research, decomposition, implementation, tests, preliminary и final
+self-review, independent critique и reduction. Каждый child dispatch явно
+задаёт `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
+проходит routing guard. Встроенные platform-типы `critic`/`reviewer` не
+используй; их semantic роли выполняет `default`, `explorer` или `worker` с Luna
+profile.
+
+Если top-level root уже запущен не на Luna, он является только
+transport/authority оболочкой: разрешает live refs, хранит Goal и receipts,
+выполняет Task Manager mutations, механический fan-in и publication. До любой
+содержательной repository analysis, source mutation, test authoring/execution
+или review он вызывает direct Luna Max supervisor. Supervisor возвращает
+решения и готовые bounded packets, а root механически dispatch-ит их direct Luna
+workers. Root не считается экономичным исполнителем и не переносит эту работу
+на Sol при нехватке Luna. Для настоящего end-user run без Sol
+top-level session также должна быть Luna Max.
+
 При ambiguity, contract/context conflict, unexpected tool/environment state,
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
 одинаковые corrective retry. Режим может оставить resumable checkpoint.
-Недоступная automatic Luna не блокирует, пока существует разрешённый
-mode-compatible economical fallback; её отсутствие не разрешает
-неограниченный расход дефицитного profile. Явный пользовательский role profile
-не подменяй.
+Недоступная automatic Luna уменьшает capacity: используй доступную serial Luna
+lane, а если её нет — сохрани достаточный resumable checkpoint. Не подменяй её
+Sol/GPT-5.4 и не продолжай содержательную дорогую работу под именем
+`Экономичный`. Явный пользовательский role profile не подменяй.
 
 Выполняй все доступные deterministic и aggregate checks. Сохраняй raw results,
 known defects, unknowns, rejected candidates и deferred gates. `In Review`

@@ -67,11 +67,14 @@ Task Manager skills:
   with no subagents and native publication; it can handle one or many issues
   but is never selected from issue count alone. In `Классический`, the
   controller does almost all work and gives Luna only trivial bounded packets.
-  In `Баланс`, Luna first attempts light and medium bounded tasks and returns a
-  preserved checkpoint and evidence to the controller when it encounters a
-  material problem. Both modes and `Рой` preserve a terminal promise;
-  `Экономичный` may instead leave one honest resumable candidate without false
-  `Done` or Goal completion. Explicit
+  In `Баланс`, Luna performs the ordinary research, implementation, tests and
+  preliminary critique, while the controller keeps material decisions,
+  integration and final review. `Рой` runs its scouts, competing candidates,
+  critics, test authors and reducers on Luna and requires a real multi-candidate
+  wave for a material fork. Both modes preserve a terminal promise;
+  `Экономичный` performs all substantive work on Luna, keeps any non-Luna root
+  as a transport/authority shell only, and may instead leave one honest
+  resumable candidate without false `Done` or Goal completion. Explicit
   mode selection wins; otherwise any top-level Luna selects `Экономичный` and
   another model selects `Классический`, once per continuous run. It keeps scope
   live. A pure question about modes, the default resolver, their differences or

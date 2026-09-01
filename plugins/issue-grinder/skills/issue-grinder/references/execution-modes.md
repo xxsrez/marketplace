@@ -18,6 +18,7 @@ initial_main_model: <exact effective model>
 initial_main_effort: <exact effective effort when available>
 controller_profile: <effective profile>
 worker_profile: <effective profile>
+routing_receipts: <pre-dispatch receipts and observed child profiles>
 ```
 
 До первого implementation dispatch:
@@ -84,6 +85,40 @@ Supervisor не пишет comment, не вызывает Strategic Explainer и
 отдельную Codex task/session. Его результат — decisions, facts, evidence и
 resolvable anchors для root.
 
+## Model routing — hard gate
+
+Для каждого child dispatch заранее отдели смысловую роль от platform
+`agent_type` и выполни bundled `scripts/model_routing_guard.py` по его
+абсолютному resolved path. Receipt фиксирует canonical mode, semantic role,
+`agent_type`, exact requested model/effort, bounded `fork_turns` и, когда tool
+surface его раскрывает, exact observed model/effort. До зелёного pre-dispatch
+receipt child не создавай; доступный observed profile сверяй сразу и закрывай
+wave при несовпадении. Если runtime surface не раскрывает actual profile, пометь
+его `telemetry_pending`, не выдумывай подтверждение и сохрани exact spawn args
+для внешней recursive telemetry проверки.
+
+В `Балансе`, `Рое` и `Экономичном` Luna-lane всегда запускается с явно
+переданными `model="gpt-5.6-luna"`, `reasoning_effort="max"` и
+`fork_turns="none"` либо положительным bounded числом. Не оставляй model/effort
+на наследование root. Platform-типы `critic` и `reviewer` имеют собственный
+фиксированный profile и поэтому без явного пользовательского role override в
+этих трёх режимах запрещены: используй `default`, `explorer` или `worker` с
+явным Luna profile, а роль критика/reviewer задай в bounded packet.
+
+Пример pre-dispatch gate для содержательного writer-а:
+
+```bash
+python3 <installed-skill>/scripts/model_routing_guard.py \
+  --mode balance --semantic-role implementation --agent-type worker \
+  --model gpt-5.6-luna --effort max --fork-turns none
+```
+
+Отсутствие либо отрицательный receipt, фактически другая model/effort или
+substantive Sol/GPT-5.4 child там, где mode требует Luna, являются routing
+failure. Не продолжай дорогую implementation wave под видом выбранного режима:
+сохрани evidence и примени fallback выбранного mode-файла. Явный пользовательский
+profile override сохраняется, но также проходит receipt с этим exact profile.
+
 ## Общие инварианты
 
 Во всех режимах:
@@ -99,6 +134,9 @@ resolvable anchors для root.
   external recipients, paid external calls или terminal Task Manager effects;
 - после material rework exact changed candidate проходит применимый review
   заново.
+- routing receipt относится к реальному semantic packet, а не к названию child:
+  текстовая роль `critic` не разрешает скрыть implementation, а
+  `material_judgment` не является универсальным обходом Luna-lane.
 
 ## Выбранный режим — обязательная загрузка
 

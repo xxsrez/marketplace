@@ -16,10 +16,27 @@ minimal-diff/reliability alternatives, critics, test authors, economical
 judges и evidence reducers. Различай подходы; множество одинаковых prompts
 создаёт коррелированные ошибки и не является достаточным разнообразием.
 
+Все содержательные child roles `Роя` по умолчанию являются Luna Max: scouts,
+design/implementation candidates, minimal-diff/reliability alternatives,
+critics, test authors, economical judges, evidence reducers и bounded rework.
+Каждый dispatch явно задаёт `model="gpt-5.6-luna"`,
+`reasoning_effort="max"`, bounded `fork_turns` и проходит routing guard.
+Встроенные platform-типы `critic`/`reviewer` не используй: semantic роль задай
+`default`, `explorer` или `worker` с Luna profile. Sol/controller сохраняет
+effect ownership, fan-in, material integration decision и final review, но не
+подменяет собой search, candidate writing или cheap critique.
+
 Intentional candidate получает purpose, base, identity, branch/worktree и
 verification. Он может затрагивать те же files, что другой candidate, только в
 полной изоляции. Existing checkpoint сначала обнаруживается; новый candidate
 не называется его resume/replacement.
+
+Если scope содержит material candidate-friendly развилку, до ordinary
+implementation зарегистрируй хотя бы одну настоящую Best-of-M wave с `M >= 2`
+независимыми Luna candidates от общей exact base. Один writer на каждую Task без
+конкурирующей material wave не выполняет обещание `Роя`. Если candidate-friendly
+развилки действительно нет, сохрани проверяемую причину и всё равно используй
+Luna для scouts/critics; свободная capacity не создаёт искусственную развилку.
 
 После каждой wave:
 
@@ -36,9 +53,9 @@ verification. Он может затрагивать те же files, что д�
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
 одинаковые corrective retry. Следующая wave может запустить намеренно иной
 candidate, но не параллельную копию того же подхода. Недоступная automatic Luna
-не блокирует, пока существует разрешённый mode-compatible economical fallback;
-её отсутствие не разрешает неограниченный расход дефицитного profile. Явный
-пользовательский role profile не подменяй.
+не разрешает заменить wave Sol/GPT-5.4 children. Используй доступную serial Luna
+lane либо сохрани candidates/evidence и честно остановись до следующей capacity;
+явный пользовательский role profile не подменяй.
 
 Останови новые attempts, когда candidate прошёл acceptance/final gate,
 дальнейшие waves перестали добавлять независимые гипотезы/evidence, исчерпан

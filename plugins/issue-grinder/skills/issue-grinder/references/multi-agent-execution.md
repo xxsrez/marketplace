@@ -58,6 +58,26 @@ existing work, выдай отдельную candidate identity и общую ex
 он является запрещённым parallel replacement, а не допустимым Best-of-N
 вариантом.
 
+## Model routing admission — hard gate
+
+До каждого `spawn_agent` сначала сформулируй настоящий semantic role packet-а и
+получи зелёный receipt от bundled
+[`model_routing_guard.py`](../scripts/model_routing_guard.py). Exact параметры
+успешного receipt перенеси в один фактический spawn без наследования или
+подмены: для Luna-lane явно укажи `model="gpt-5.6-luna"`,
+`reasoning_effort="max"` и bounded `fork_turns`. Если полный history нужен в
+packet-е, передай необходимые facts и anchors явно; `fork_turns="all"` либо
+omitted fork нельзя совмещать с mode-controlled profile.
+
+Platform `agent_type` не является semantic role. В `Балансе`, `Рое` и
+`Экономичном` не используй встроенные `critic`/`reviewer` без явного
+пользовательского profile override: их platform profile обходит выбранную
+Luna-route. Создай `default`, `explorer` или `worker` с точным profile, а
+обязанности критика, судьи или reviewer опиши в packet-е. Наблюдаемый child
+profile сразу добавь в receipt; mismatch останавливает wave до FileChange,
+fan-in, тестов и lifecycle effects. Если tool не раскрывает actual profile,
+сохрани `telemetry_pending` и exact spawn args для внешней recursive проверки.
+
 ## Writer admission — hard gate
 
 Каждый одновременно пишущий subagent до первой записи получает собственные
@@ -126,6 +146,10 @@ Profiles всегда бери из сохранённого mode record по
 пересчитывай automatic mode после смены top-level модели. Profile normalization
 может сделать controller и workers одинаковыми; это не меняет topology и
 delivery promise выбранного режима.
+
+Mode record хранит все pre-dispatch и observed routing receipts текущей wave.
+Название child, его self-report или намерение coordinator-а не доказывают
+маршрутизацию без exact model/effort evidence.
 
 При ambiguity, contract/context conflict, unexpected tool/environment state,
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
