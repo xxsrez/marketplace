@@ -1,6 +1,6 @@
 ---
 name: scope-reviewer
-description: "Проверять однозначно выбранный Task Manager план или Release через независимые Luna Max оптики и возвращать один понятный человеку обзор; по явному intent улучшать только agent-owned planning model, не меняя Human Requirements. Использовать явно через $issue-grinder:scope-reviewer и неявно для human-readable plan/release review. Не использовать для delivery, implementation, lifecycle mutations или обычного просмотра отдельных карточек."
+description: "Проверять однозначно выбранный Task Manager план или Release через независимые Luna Max оптики и возвращать один понятный человеку обзор. Автоматически использовать без явного имени skill-а для ревью плана перед запуском и для изучения активного долгого Issue Grinder / Task Manager delivery run. По явному intent улучшать только agent-owned planning model, не меняя Human Requirements. Не использовать для delivery, lifecycle mutations, ordinary single-Task lookup или произвольной Codex task без Task Manager scope."
 ---
 
 # Scope Reviewer
@@ -9,6 +9,20 @@ description: "Проверять однозначно выбранный Task Ma
 читать все карточки и технические материалы. Глубоко анализируй scope через
 несколько независимых уместных оптик, но публикуй только один лёгкий для чтения
 отчёт с существенными выводами.
+
+## 0. Автоматически входи в два класса review
+
+Не требуй явного `$issue-grinder:scope-reviewer`, когда пользователь:
+
+- просит проверить или объяснить выбранный Task Manager план перед запуском;
+- просит понять, что происходит в текущем активном долгом Issue Grinder /
+  Task Manager delivery run.
+
+Если запрос относится к одному из этих классов, полностью прочитай
+[автоматический вход и live-run handoff](references/invocation-and-live-run.md).
+Короткое «посмотри на неё» является достаточным только при однозначной current
+run continuity. Не срабатывай по таймеру, после каждого plan creation, на raw
+single-Task lookup или на generic Codex task без Task Manager scope.
 
 ## 1. Разреши intent и exact scope
 
@@ -26,9 +40,10 @@ implementation, testing, release, Goal, status transitions, production,
 destructive/access/privacy/secret/external-recipient decisions.
 
 Через Task Manager adapter разреши один exact Project, Release, Epic, Task или
-явный связный набор Tasks. Не выбирай current объект по максимальному номеру,
-последней дате или похожему имени. Если selector неоднозначен, остановись до
-анализа и запроси exact выбор.
+явный связный набор Tasks. Для live-run review разрешай relative wording через
+доказанную current run continuity. Не выбирай current объект по максимальному
+номеру, последней дате или похожему имени. Если selector неоднозначен,
+остановись до анализа и запроси exact выбор.
 
 ## 2. Построй согласованный snapshot
 

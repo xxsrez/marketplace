@@ -214,6 +214,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         reviewer_metadata = (reviewer_root / "agents" / "openai.yaml").read_text(
             encoding="utf-8"
         )
+        reviewer_invocation = (
+            reviewer_root / "references" / "invocation-and-live-run.md"
+        ).read_text(encoding="utf-8")
         runtime = " ".join(
             path.read_text(encoding="utf-8")
             for path in sorted(issue_root.rglob("*.md"))
@@ -290,6 +293,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Human Requirements\nне изменяй ни при каких обстоятельствах", reviewer)
         self.assertIn('value: "task-manager"', reviewer_metadata)
         self.assertIn("allow_implicit_invocation: true", reviewer_metadata)
+        self.assertIn("ревью плана перед запуском", reviewer)
+        self.assertIn("активного долгого Issue Grinder", reviewer)
+        self.assertIn("Pre-launch review", reviewer_invocation)
+        self.assertIn("Active long-run review", reviewer_invocation)
+        self.assertIn("передай управление owning Issue Grinder", reviewer_invocation)
 
         public_manifest = json.dumps(manifest["interface"], ensure_ascii=False)
         self.assertIn("fresh reflection over current primary sources", public_manifest)
@@ -320,6 +328,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Scope Reviewer turns an exact selected plan", public_manifest)
         self.assertIn("Plan review and every Release review remain read-only", public_manifest)
         self.assertIn("never Human Requirements", public_manifest)
+        self.assertIn("plans before launch or active long runs", public_manifest)
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(

@@ -1,7 +1,7 @@
 interface:
   display_name: "Scope Reviewer"
-  short_description: "Проверить план или Release и понятно объяснить"
-  default_prompt: "Используй $issue-grinder:scope-reviewer, чтобы независимо проверить выбранный Task Manager план или Release и вернуть один понятный отчёт; меняй agent-owned план только по моему явному запросу и никогда не меняй Human Requirements."
+  short_description: "Проверить план перед запуском или долгий Release"
+  default_prompt: "Используй $issue-grinder:scope-reviewer, чтобы проверить план перед запуском или понятно объяснить ход активного долгого Task Manager delivery run; меняй agent-owned план только по моему явному запросу и никогда не меняй Human Requirements."
 
 dependencies:
   tools:
