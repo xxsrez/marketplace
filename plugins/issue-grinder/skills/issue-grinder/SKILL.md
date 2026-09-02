@@ -10,6 +10,11 @@ scope и вывести каждое входящее issue из `To Do`, `In Pr
 проверенный terminal результат. Только `Экономичный` может вместо ложного
 завершения оставить честный resumable checkpoint по своему contract.
 
+Strategic Outcome — постоянный ориентир исполнения: используй его при каждом
+существенном выборе, но не превращай в источник новых Requirements, Tasks,
+проверок или blockers. Формальная задолженность определяется только current
+issue contracts и active scope.
+
 ## 0. Сначала отдели справку от delivery
 
 Если пользователь только спрашивает, какие режимы есть, как работает режим по
@@ -44,7 +49,8 @@ record в continuity и не пересчитывай его после compacti
 
 Каждая итерация:
 
-1. Перечитай live scope. До новой implementation выполни
+1. Перечитай live scope, восстанови Strategic Outcome, Human Requirements и
+   вклад следующего issue. До новой implementation выполни
    [startup recovery](references/multi-agent-execution.md#startup-recovery--before-new-work)
    и продолжи proven checkpoint вместо replacement.
 2. Выбери dependency-ready frontier и примени сохранённый mode. Когда есть два
@@ -59,8 +65,9 @@ record в continuity и не пересчитывай его после compacti
    наследование root profile не считается выбором worker profile.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
-4. Реализуй outcome по mode promise, интегрируй только task-owned изменения и
-   проверь exact integrated version по acceptance issue.
+4. Реализуй issue outcome по mode promise, используя Strategic Outcome для
+   локальных trade-offs без расширения scope; интегрируй только task-owned
+   изменения и проверь exact integrated version по acceptance issue.
 5. Для любого другого status transition подготовь причинный comment, пройди
    reflection, опубликуй и перечитай comment, затем измени status с optimistic
    concurrency и перечитай issue.
@@ -71,7 +78,7 @@ record в continuity и не пересчитывай его после compacti
 issue runnable. Поздний reopen требует targeted recheck затронутой части.
 
 Обычный `Done` требует достаточного evidence. Несущественную непроверенную
-деталь можно прозрачно оставить residual risk, если стратегический outcome и
+деталь можно прозрачно оставить residual risk, если обязательный issue outcome и
 основной acceptance доказаны; integrity, security, identity exact version и
 основной acceptance несущественными не считай.
 
@@ -92,8 +99,9 @@ facts, evidence и read-only anchors: не поручай им формулир�
 передаёт ему неподтверждённые факты либо delivery-работу выбранного scope.
 
 Comment или final draft — точка решения. Непонятый факт либо существенная
-обязательная работа отменяют publication/status transition и возвращают run в
-delivery loop; необязательное улучшение остаётся follow-up.
+обязательная работа текущего issue contract отменяют publication/status
+transition и возвращают run в delivery loop; strategic gap или необязательное
+улучшение остаются follow-up.
 
 Каждый blocker проходит цикл:
 
@@ -102,8 +110,9 @@ delivery loop; необязательное улучшение остаётся 
 Любое безопасное существенное действие отменяет blocker. Terminal report
 перечисляет все current причины, checkpoint, unverified remainder, влияние,
 нужное действие пользователя и resume signal; для каждой причины дай отдельный
-ответ: почему она блокирует цель, почему Issue Grinder не может устранить её сам
-и зачем нужен заблокированный шаг. Общий report и ответы проходят reflection до
+ответ: почему она блокирует обязательный результат активного issue, почему Issue
+Grinder не может устранить её сам и зачем этот шаг нужен issue contract и общей
+цели. Общий report и ответы проходят reflection до
 первой публикации. Покажи принятый комплект пользователю сразу; platform blocker
 audit ограничивает только `update_goal(status=blocked)`, а не сам report.
 
@@ -128,6 +137,8 @@ approval gate не обходи и не называй внутренним со
 Run завершён только после fresh full inventory без in-scope issue в `To Do`,
 `In Progress`, `In Review` и final reflection без обязательного доступного
 шага. Иначе продолжай delivery loop либо публикуй принятый terminal blocker.
+Известный strategic gap раскрой в финале, но не создавай из него новую Task,
+blocker или второй completion gate: empty active scope остаётся достаточным.
 
 Только `Экономичный` может остановить текущую попытку раньше: выполни checkpoint
 gate из [его mode contract](references/modes/economical.md), сохрани правдивые

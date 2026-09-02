@@ -49,8 +49,9 @@ current primary sources; сам Explainer result ничего не доказы�
 Для Task comment отмени publication/status transition, если обнаружены
 неподтверждённый факт, неверная causal связь или существенная обязательная
 работа issue. Для final отмени completion при новом active member, существенном
-остатке или доступном обязательном шаге. Optional improvement остаётся
-follow-up.
+остатке внутри current issue contracts или доступном обязательном шаге. Новый
+strategic gap и optional improvement остаются follow-up и не создают второй
+completion gate.
 
 Для candidate blocker:
 
@@ -65,8 +66,9 @@ Terminal report связывает exact scope с попыткой, primary caus
 unverified remainder, impact, нужным user action и observable resume condition.
 Reason code, raw error или tool diary этого не заменяют. Общий report перечисляет все
 подтверждённые current причины. Для каждой причины отдельный answer должен объяснить:
-почему она блокирует цель, почему Issue Grinder не может устранить её сам и что даст цели
-заблокированный шаг. Весь комплект готовится и проходит reflection до первой
+почему она блокирует обязательный результат активного issue, почему Issue Grinder
+не может устранить её сам и что заблокированный шаг даст issue contract и общей
+цели. Весь комплект готовится и проходит reflection до первой
 публикации; stale reason или найденный safe path отменяют весь blocker candidate.
 
 Goal status `blocked` может следовать только после публикации общего report, всех

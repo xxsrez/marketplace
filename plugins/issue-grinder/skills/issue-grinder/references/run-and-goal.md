@@ -35,6 +35,18 @@ terminal decision перечитай inventory и перестрой frontier. �
 read-back и transaction rules находятся в
 [Task Manager flow](task-manager-flow.md).
 
+Для каждого существенного implementation/rework, dispatch, integration/review,
+blocker и terminal решения восстанови три роли: Strategic Outcome всего scope,
+применимые Human Requirements и формальный Agent Plan/issue contract. После
+compaction, interruption, resume или material scope change не полагайся на
+усечённый локальный контекст. Для single issue без Goal прочитай её parent chain
+и выведи общий ориентир из Task/Epic и current scope.
+
+Strategic Outcome направляет trade-offs и помогает понять вклад issue, но не
+создаёт Requirement, Task, acceptance, verification или blocker. Известный gap
+между завершёнными issue и широким outcome попадёт в final report и может стать
+входом отдельного planning flow; текущий run он не удерживает открытым.
+
 Если это может быть первый turn новой Codex task и host показывает title
 capability, после разрешения canonical scope прочитай
 [title contract](thread-title.md). Только доказанный catalog placeholder
@@ -57,7 +69,8 @@ capability не блокируют delivery.
 декомпозицией цели, а не её заменой.
 
 Goal завершается только после fresh full inventory с пустым active scope и
-final reflection, не нашедшей обязательной доступной работы. Нетерминальный
+final reflection, не нашедшей обязательной доступной работы внутри current
+issue contracts. Нетерминальный
 checkpoint `Экономичного` режима сохраняет Goal активным. Terminal blocker
 может изменить Goal только после publication и platform blocker gates из
 [Strategic Explainer routing](strategic-explainer.md).

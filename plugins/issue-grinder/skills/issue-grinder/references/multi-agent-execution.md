@@ -28,6 +28,12 @@ target. Каждый packet/candidate получает exact scope, owned surfac
 facts, constraints, expected outcome, verification и, для конкурирующего
 варианта, отдельные purpose/candidate identity.
 
+Каждый packet также несёт Strategic Outcome всего scope, вклад конкретного issue
+или пакета, применимые Human Requirements и отличимый Agent Plan. Outcome
+направляет локальные решения, но не разрешает child расширять exact scope,
+изобретать requirements, работу, verification либо stopping condition. После
+resume или material scope change packet пересобирается из current sources.
+
 ## Startup recovery — before new work
 
 До новой implementation, branch, worktree или dispatch прочитай весь текущий

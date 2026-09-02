@@ -223,9 +223,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("name: issue-grinder", skill)
         self.assertIn("candidate blocker → причинное объяснение → reflection", runtime)
         self.assertIn("для каждой причины дай отдельный ответ", normalized)
-        self.assertIn("почему она блокирует цель", runtime)
-        self.assertIn("почему Issue Grinder не может устранить её сам", runtime)
-        self.assertIn("зачем нужен заблокированный шаг", runtime)
+        self.assertIn(
+            "почему она блокирует обязательный результат активного issue, "
+            "почему Issue Grinder не может устранить её сам и что "
+            "заблокированный шаг даст issue contract и общей цели",
+            normalized,
+        )
+        self.assertIn("не превращай в источник новых Requirements", skill)
+        self.assertIn("empty active scope остаётся достаточным", runtime)
         self.assertIn("update_goal(status=blocked)", runtime)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичный UAT", runtime)

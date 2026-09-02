@@ -14,6 +14,8 @@ material disagreement, uncertainty и границу evidence.
 Для плана читатель должен суметь понять:
 
 - какую проблему решает scope и какой будущий результат ожидается;
+- чем Strategic Outcome, Human Requirements и Agent Plan отличаются в этом
+  scope;
 - где система находится сейчас и что существенно изменится;
 - как Task-ы совместно дают outcome без пересказа каждой карточки;
 - что было исправлено автоматически и что подтверждено read-back;
@@ -31,6 +33,8 @@ Release review всегда read-only. Разделяй:
 
 - фактически доказанный product/release outcome;
 - current Task Manager lifecycle projection;
+- формальную полноту Tasks и степень достижения более широкого Strategic
+  Outcome;
 - известную незавершённую или in-flight работу;
 - critical path и следующий observable state;
 - current blockers и лишь возможные будущие risks;
@@ -38,9 +42,12 @@ Release review всегда read-only. Разделяй:
   human dependency.
 
 Task count и status percentage могут быть supporting context, но не заменяют
-оценку относительно общей цели. Worker narrative без primary evidence не
-становится завершённым результатом. Scope Reviewer не пишет comments, не меняет
-status/Goal и не ремонтирует delivery scope.
+оценку относительно общей цели. Empty active scope при правдивых terminal
+статусах достаточен для формального завершения Goal даже при частичном
+Strategic Outcome. Такой gap показывается отдельно, но не создаёт новую Task,
+blocker или delivery loop. Worker narrative без primary evidence не становится
+завершённым результатом. Scope Reviewer не пишет comments, не меняет status/Goal
+и не ремонтирует delivery scope.
 
 ## Независимый редакторский проход
 

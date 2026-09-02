@@ -45,6 +45,14 @@ material overlap изучи до решения. Не изменяй и не reu
 attachment mapping, parent-child hierarchy, labels и relation graph всего
 candidate scope.
 
+Сохрани три различимые роли: **Strategic Outcome** объясняет общую проблему и
+направляет решения; **Human Requirements** содержат только явно данные или
+согласованные человеком обязательства; **Agent Plan** хранит изменяемые
+decomposition, boundaries, dependencies, acceptance, evidence и technical
+detail. Фиксированные заголовки не обязательны, но предположение агента,
+рекомендуемый hardening или широкий стратегический ориентир никогда не становятся
+Human Requirement из-за одной формулировки.
+
 Не превращай шаги исходного плана в Tasks механически. Строй outcome graph из
 independently verifiable results; порядок задавай только настоящими
 dependencies.
@@ -59,17 +67,17 @@ Type/classification выражай native Label и hierarchy, не title: не �
 Legacy-prefixed и clean outcome title считай одним duplicate candidate.
 
 Оставь одну Task, когда есть один independently deliverable outcome. Она
-содержит problem, observable outcome, exact scope, material constraints,
-достаточную technical конкретику, objective acceptance criteria и evidence.
-Не создавай Epic с одной формальной подзадачей.
+содержит problem и Strategic Outcome, отличимые Human Requirements/exact scope и
+Agent Plan с достаточной technical конкретикой, objective acceptance criteria и
+evidence. Не создавай Epic с одной формальной подзадачей.
 
 Создай Epic/parent Task, когда outcome требует нескольких independently
 deliverable частей, разных проверяемых результатов или настоящих dependencies.
 Используй самую мелкую полезную hierarchy.
 
-Epic сохраняет problem, beneficiary, desired outcome, strategic intent, exact
-scope, human requirements, cross-cutting acceptance/non-goals и целостный вклад
-подзадач. Перед его созданием примени sibling
+Epic сохраняет problem, beneficiary, Strategic Outcome, отличимые Human
+Requirements/exact scope, Agent Plan, cross-cutting acceptance/non-goals и
+целостный вклад подзадач. Перед его созданием примени sibling
 `$strategic-explainer:strategic-explainer` как semantic facade отдельной
 publication unit. Передай только назначение description, исходный вопрос, exact
 planning scope, язык, material constraints и resolvable read-only anchors. Не
@@ -86,8 +94,9 @@ decomposition, Project, status, labels, relations или write authority. Есл
 Epic не нужен, от этого не блокируется.
 
 Каждая подзадача получает один конкретный результат, exact change boundary,
-свой вклад в desired outcome Epic, material technical details, применимые parent
-requirements/dependencies, acceptance criteria и expected evidence.
+свой вклад в Strategic Outcome Epic, material technical details, применимые
+Human Requirements/non-goals и Agent Plan с dependencies, acceptance criteria и
+expected evidence.
 Cross-cutting requirement остаётся в Epic и отражается в каждой применимой
 подзадаче. Native parent link ведёт к полному strategic context, но одной ссылки
 недостаточно: child description содержит компактную самодостаточную проекцию
@@ -96,6 +105,11 @@ Cross-cutting requirement остаётся в Epic и отражается в к
 boundary и планку качества без догадки; Epic context не расширяет scope child.
 Material противоречие исправь до write. Для secrets указывай только имя
 credential/secret store и target, никогда значение.
+
+Strategic Outcome помогает выбирать реализацию и проверять связность, но не
+расширяет exact scope и не создаёт новую задолженность. Material работа вне
+согласованного scope остаётся planning gap либо вопросом человеку; не маскируй
+её под Human Requirement.
 
 Если пользователь создаёт Task по bug report и передал attachment, оцени его
 уместность по содержанию, связи с самой конкретной создаваемой Task и пользе
@@ -152,6 +166,9 @@ Read-back должен подтвердить canonical identities, `Backlog`, R
 intended strategic/technical split в descriptions, а также каждый обязательный
 attachment на сопоставленной Task. Проверь, что title не дублирует
 type/classification Label, кроме exact verbatim user title.
+Отдельно проверь, что Strategic Outcome, Human Requirements и Agent Plan
+различимы и ни одно agent-owned предположение не записано как требование
+человека.
 
 Финальный ответ перечисляет созданный scope, duplicate disposition, Project,
 Release, status, hierarchy, labels/label gaps, relations, attachment disposition

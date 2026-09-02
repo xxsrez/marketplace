@@ -15,16 +15,19 @@ ref, состав явно выбранного набора и current context 
 
 1. пройди pagination каждого inventory до terminal cursor;
 2. прочитай full detail каждой materially relevant Task;
-3. восстанови parent/child hierarchy, relations, statuses, Requirements и Agent
-   Plan;
+3. восстанови parent/child hierarchy, relations, statuses, Strategic Outcome,
+   Human Requirements и Agent Plan;
 4. прочитай comments и внешние evidence anchors только когда они нужны для
    заявленного состояния;
 5. запиши manifest из selector, canonical refs, versions и source anchors.
 
 Сохраняй различие:
 
-- **Human Requirements** — problem, desired outcome, пользовательские
-  требования, constraints и non-goals;
+- **Strategic Outcome** — общий ориентир, синтезирующий problem и желаемое
+  изменение; он направляет решения, но не является исчерпывающим completion
+  checklist;
+- **Human Requirements** — явно данные или согласованные пользователем
+  обязательные outcomes, constraints и non-goals;
 - **Agent Plan** — decomposition, Task boundaries, acceptance, expected
   evidence, hierarchy, relations, sequencing и technical detail.
 
@@ -50,6 +53,7 @@ product outcome без соответствующего primary evidence.
 Для review плана Requirements integrity — отдельная обязательная оптика. Затем
 оцени необходимость классов:
 
+- strategic coherence, вклад Tasks и отсутствие agent-invented obligations;
 - outcome/decomposition, coverage и ownership;
 - dependencies, sequencing и critical path;
 - acceptance, expected evidence и observable readiness;
@@ -98,14 +102,18 @@ Lens не пишет Tasks, не меняет Requirements, не решает li
 Coordinator подтверждает каждое material утверждение primary sources. Дубли
 объединяются с strongest evidence; factual conflict возвращается к sources;
 настоящее disagreement остаётся видимым. Optional improvement не становится
-blocker-ом, а Requirement issue — auto-fix-ом.
+blocker-ом, а Requirement issue — auto-fix-ом. Agent assumption, hardening или
+Strategic Outcome не становятся Human Requirement только из-за полезности либо
+повторения в плане.
 
-Для плана построй внутреннюю coverage map:
+Для плана построй две внутренние карты:
 
 ```text
-Requirement → Task/plan element → acceptance → expected evidence
+Strategic Outcome → вклад Tasks и известный стратегический gap
+Human Requirement → Task/plan element → acceptance → expected evidence
 ```
 
-Карта выявляет скрытый остаток, duplicate ownership и обязательный outcome без
-observable proof. Она служит основанием readiness, но не навязывает форму
-пользовательского отчёта.
+Первая карта направляет улучшение плана, но не создаёт обязательств и terminal
+gate. Вторая выявляет скрытый обязательный остаток, duplicate ownership и
+обязательный outcome без observable proof и служит основанием readiness. Обе
+карты внутренние и не навязывают форму пользовательского отчёта.

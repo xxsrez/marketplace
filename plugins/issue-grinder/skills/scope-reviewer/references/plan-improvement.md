@@ -11,6 +11,7 @@ intent. Plan review и Release review остаются read-only и не чит�
 - exact planning scope и write authority;
 - current snapshot и неизменившуюся Requirements version;
 - однозначную границу Human Requirements/Agent Plan;
+- различимый Strategic Outcome и сохранение его пользовательского смысла;
 - что Task принадлежит planning surface, а не активной delivery/rework;
 - что patch не меняет problem, desired outcome, требования, constraints,
   non-goals и exact user scope;
@@ -23,10 +24,11 @@ description «по смыслу» и не считай собственный п
 
 ## Разрешённая поверхность
 
-При прошедшем admission можно уточнять agent-owned Task wording и technical
-boundary, acceptance, expected evidence, existing-label assignment, hierarchy,
-relations, sequencing и decomposition. Изменение должно устранять подтверждённый
-finding и сохранять историю.
+При прошедшем admission можно уточнять формулировку Strategic Outcome без
+material изменения problem/desired outcome, а также agent-owned Task wording и
+technical boundary, acceptance, expected evidence, existing-label assignment,
+hierarchy, relations, sequencing и decomposition. Изменение должно устранять
+подтверждённый finding и сохранять историю.
 
 Не разрешены:
 
@@ -68,6 +70,8 @@ Ready означает одновременно:
 
 - Human Requirements однозначны для scope либо явно выделены вопросы человеку;
 - coverage map не содержит скрытого обязательного остатка;
+- известный strategic gap назван и не превращён в Requirement, blocker или
+  скрытую Task;
 - decomposition, ownership и dependencies согласованы;
 - acceptance и expected evidence наблюдают каждый обязательный outcome;
 - material auto-fix findings устранены и подтверждены read-back;

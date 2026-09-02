@@ -34,8 +34,10 @@ destructive/access/privacy/secret/external-recipient decisions.
 
 Полностью прочитай [scope и review contract](references/scope-and-review.md).
 Пройди все страницы inventory, прочитай materially relevant details, hierarchy,
-relations, statuses, Human Requirements, Agent Plan, comments и применимое
-evidence. Task Manager state доказывает только собственную projection.
+relations, statuses, Strategic Outcome, Human Requirements, Agent Plan, comments
+и применимое evidence. Различай общий ориентир, защищённые обязательства
+человека и изменяемый способ выполнения; Task Manager state доказывает только
+собственную projection.
 
 Зафиксируй snapshot manifest: exact selector, canonical refs, versions и source
 anchors. Все оптики получают один логический snapshot. Перед repair и итоговым
@@ -48,6 +50,12 @@ report перечитай version vector; material change требует нов�
 review обязательна отдельная Requirements integrity optic; остальные выводятся
 из problem, Requirements, task graph, состояния и рисков. Не создавай две
 оптики, если они проверят одно и то же решение.
+
+В каждом review проверь стратегическую связность Tasks и происхождение
+обязательств. Широкий Strategic Outcome, agent assumption, рекомендуемый
+hardening или удобная практика не становятся Human Requirement, обязательной
+проверкой либо blocker. Для этого можно выбрать отдельную оптику или включить
+вопрос в другую независимую materially useful оптику.
 
 Каждую оптику исполняет отдельный built-in `default` subagent через top-level
 collaboration surface с точными параметрами:
@@ -78,6 +86,10 @@ gap и условием полноценного повторного запус
 Report subagent-а не является evidence. Requirements issue никогда не
 переклассифицируй в auto-fix ради продолжения.
 
+Строй две разные связи: `Strategic Outcome → вклад Tasks/известный gap` для
+направления и `Human Requirement → plan → acceptance → evidence` для формальных
+обязательств. Стратегический gap не создаёт скрытую задолженность.
+
 В Plan improvement полностью прочитай
 [plan-improvement contract](references/plan-improvement.md). Human Requirements
 не изменяй ни при каких обстоятельствах. Если их границу нельзя однозначно
@@ -85,6 +97,10 @@ Report subagent-а не является evidence. Requirements issue никог
 representation blocker. Каждый разрешённый write использует current version,
 optimistic concurrency и read-back; unknown outcome сначала reconciles через
 reads.
+
+Формулировку Strategic Outcome можно уточнить, а Agent Plan — перестроить только
+при сохранённом пользовательском смысле, exact scope и Requirements. Material
+изменение problem или desired outcome верни человеку.
 
 После repair построй новый snapshot и повтори применимые оптики. Plan readiness
 не запускает Issue Grinder, не меняет `Backlog`/рабочие статусы и не доказывает
@@ -107,3 +123,8 @@ report и честно отметь отсутствие независимог�
 или process diary. Сначала дай главный причинный вывод и требуемое действие;
 technical refs и служебные квитанции оставь в коротком source basis только если
 они нужны для проверки.
+
+В Release review отдельно назови формальную полноту Tasks и достижение
+Strategic Outcome. Empty active scope достаточно для формального завершения
+Goal; даже подтверждённый стратегический gap не разрешает создавать новую Task,
+blocker или удерживать Goal открытым.
