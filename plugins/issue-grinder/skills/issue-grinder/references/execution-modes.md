@@ -19,6 +19,7 @@ initial_main_effort: <exact effective effort when available>
 controller_profile: <effective profile>
 worker_profile: <effective profile>
 routing_receipts: <pre-dispatch receipts and observed child profiles>
+expensive_work_ledger: <reason-coded controller/reviewer work when required by mode>
 ```
 
 До первого implementation dispatch:
@@ -91,13 +92,16 @@ resolvable anchors для root.
 
 Для каждого Issue Grinder execution-child dispatch заранее отдели смысловую роль от platform
 `agent_type` и выполни bundled `scripts/model_routing_guard.py` по его
-абсолютному resolved path. Receipt фиксирует canonical mode, semantic role,
-`agent_type`, exact requested model/effort, bounded `fork_turns` и, когда tool
-surface его раскрывает, exact observed model/effort. До зелёного pre-dispatch
-receipt child не создавай; доступный observed profile сверяй сразу и закрывай
-wave при несовпадении. Если runtime surface не раскрывает actual profile, пометь
-его `telemetry_pending`, не выдумывай подтверждение и сохрани exact spawn args
-для внешней recursive telemetry проверки.
+абсолютному resolved path. Receipt фиксирует unique `packet_id`, canonical
+mode, semantic role, `agent_type`, exact requested model/effort, bounded
+`fork_turns`, fingerprint этих dispatch args и, когда tool surface его
+раскрывает, exact observed model/effort. До зелёного pre-dispatch receipt child
+не создавай; точные поля receipt перенеси в один фактический spawn, а доступный
+observed profile сверяй сразу. Receipt другого packet-а либо с другим
+fingerprint не переиспользуй. При mismatch закрой wave до содержательной работы.
+Если runtime surface не раскрывает actual profile, пометь его
+`telemetry_pending`, не выдумывай подтверждение и сохрани exact spawn args для
+внешней recursive telemetry проверки.
 
 В `Балансе`, `Рое` и `Экономичном` Luna-lane всегда запускается с явно
 переданными `model="gpt-5.6-luna"`, `reasoning_effort="max"` и
@@ -110,6 +114,7 @@ wave при несовпадении. Если runtime surface не раскры
 
 ```bash
 python3 <installed-skill>/scripts/model_routing_guard.py \
+  --packet-id TM-123-implementation-1 \
   --mode balance --semantic-role implementation --agent-type worker \
   --model gpt-5.6-luna --effort max --fork-turns none
 ```
@@ -119,6 +124,13 @@ substantive Sol/GPT-5.4 child там, где mode требует Luna, явля�
 failure. Не продолжай дорогую implementation wave под видом выбранного режима:
 сохрани evidence и примени fallback выбранного mode-файла. Явный пользовательский
 profile override сохраняется, но также проходит receipt с этим exact profile.
+
+Bundled guard валидирует объявленный dispatch, но не перехватывает raw
+platform `spawn_agent`. Пропуск guard-а, отсутствующий packet-bound receipt либо
+расхождение fingerprint являются наблюдаемым protocol violation и делают
+cost-aware run невалидным; не называй это физически непропускаемым platform
+enforcement. Настоящий unskippable gate возможен только в dispatcher-е, который
+одновременно валидирует и создаёт child.
 
 ## Общие инварианты
 
@@ -186,9 +198,14 @@ review packet остаются в этом reference; выбранный фай�
 - problem/acceptance и integrated diff с source anchors;
 - deterministic и aggregate checks с raw evidence;
 - material decisions и отклонённые alternatives;
+- finding ledger, где каждый material finding имеет evidence и disposition
+  `fixed | refuted_with_evidence | escalate`;
 - unresolved objections, negative evidence, known defects и unknowns;
+- reason-coded expensive-work ledger для режима, который ограничивает работу
+  controller/reviewer profile;
 - migrations, shared-state, permissions и внешние effects;
 - один точный вопрос либо требуемое решение reviewer-а.
 
 Summary помогает найти evidence, но не заменяет чтение существенного кода и
-фактов reviewer-ом.
+фактов reviewer-ом. Количество общих одобрений не перевешивает один
+воспроизводимый material defect.

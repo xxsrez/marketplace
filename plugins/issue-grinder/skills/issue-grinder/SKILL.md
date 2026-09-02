@@ -63,6 +63,11 @@ record в continuity и не пересчитывай его после compacti
    подтверждённых model-routing и двухфазного worktree admission. Для каждого
    child перенеси в spawn exact model/effort/fork из зелёного routing receipt;
    наследование root profile не считается выбором worker profile.
+   Если выбранный mode назначает economical packet lead, оставь ему полный
+   routine loop ограниченного пакета и получи один compact evidence handoff;
+   не расходуй coordinator profile на пошаговое дублирование его research,
+   implementation, tests, critique и rework. Packet lead не получает Goal,
+   Task Manager, fan-in, publication или final-acceptance authority.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
 4. Реализуй issue outcome по mode promise, используя Strategic Outcome для

@@ -69,9 +69,11 @@ Task Manager skills:
   with no subagents and native publication; it can handle one or many issues
   but is never selected from issue count alone. In `Классический`, the
   controller does almost all work and gives Luna only trivial bounded packets.
-  In `Баланс`, Luna performs the ordinary research, implementation, tests and
-  preliminary critique, while the controller keeps material decisions,
-  integration and final review. `Рой` runs its scouts, competing candidates,
+  In `Баланс`, Luna owns the full bounded packet loop: ordinary research,
+  implementation, tests, independent critique and rework. The controller keeps
+  only material decisions, integration and final review; reproducible findings
+  are fixed, refuted with evidence or narrowly escalated instead of voted away.
+  `Рой` runs its scouts, competing candidates,
   critics, test authors and reducers on Luna and requires a real multi-candidate
   wave for a material fork. Both modes preserve a terminal promise;
   `Экономичный` performs all substantive work on Luna, keeps any non-Luna root
@@ -96,7 +98,9 @@ Task Manager skills:
   branches and Git worktrees. One integration owner reduces work to one exact
   candidate. `Классический` gives Luna Max only strict-simple packets;
   `Баланс`, `Рой` and `Экономичный` use it more broadly under their mode
-  contracts, while `Соло` does not route work to Luna or any other child.
+  contracts. Balance routing receipts are bound to the packet and exact
+  dispatch arguments; a functionally successful hidden Sol pipeline remains an
+  invalid Balance run. `Соло` does not route work to Luna or any other child.
   Before fresh work, a new run inventories related worktrees,
   branches, commits and local changes, then resumes a proven quiescent
   checkpoint instead of creating an accidental parallel replacement;

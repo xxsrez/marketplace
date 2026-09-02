@@ -4,11 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from dataclasses import asdict, dataclass
 
 
-SCHEMA = "issue-grinder/model-routing/v1"
+SCHEMA = "issue-grinder/model-routing/v2"
 LUNA_MODEL = "gpt-5.6-luna"
 LUNA_EFFORT = "max"
 ECONOMICAL_MODES = frozenset({"balance", "swarm", "economical"})
@@ -20,12 +21,14 @@ BALANCE_CONTROLLER_ROLES = frozenset(
 @dataclass(frozen=True)
 class RoutingReceipt:
     schema: str
+    packet_id: str
     mode: str
     semantic_role: str
     agent_type: str
     requested_model: str
     requested_effort: str
     fork_turns: str
+    dispatch_fingerprint: str
     user_profile_override: bool
     luna_required: bool
     telemetry_status: str
@@ -58,6 +61,7 @@ def luna_required_for(
 
 def validate_route(
     *,
+    packet_id: str,
     mode: str,
     semantic_role: str,
     agent_type: str,
@@ -70,6 +74,7 @@ def validate_route(
 ) -> RoutingReceipt:
     """Validate requested and, when known, observed child-agent routing."""
 
+    normalized_packet_id = packet_id.strip()
     normalized_mode = mode.strip().casefold()
     normalized_role = semantic_role.strip().casefold()
     normalized_agent_type = agent_type.strip().casefold()
@@ -84,6 +89,8 @@ def validate_route(
     )
 
     defects: list[str] = []
+    if not normalized_packet_id:
+        defects.append("blank_packet_id")
     if normalized_mode not in {"solo", "classic", *ECONOMICAL_MODES}:
         defects.append("unknown_mode")
     if not normalized_role:
@@ -115,14 +122,35 @@ def validate_route(
         if normalized_actual_effort != normalized_effort:
             defects.append("actual_effort_mismatch")
 
+    fingerprint_payload = {
+        "packet_id": normalized_packet_id,
+        "mode": normalized_mode,
+        "semantic_role": normalized_role,
+        "agent_type": normalized_agent_type,
+        "requested_model": normalized_model,
+        "requested_effort": normalized_effort,
+        "fork_turns": normalized_fork,
+        "user_profile_override": user_profile_override,
+    }
+    dispatch_fingerprint = hashlib.sha256(
+        json.dumps(
+            fingerprint_payload,
+            ensure_ascii=True,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+
     return RoutingReceipt(
         schema=SCHEMA,
+        packet_id=normalized_packet_id,
         mode=normalized_mode,
         semantic_role=normalized_role,
         agent_type=normalized_agent_type,
         requested_model=normalized_model,
         requested_effort=normalized_effort,
         fork_turns=normalized_fork,
+        dispatch_fingerprint=dispatch_fingerprint,
         user_profile_override=user_profile_override,
         luna_required=luna_required,
         telemetry_status=(
@@ -140,6 +168,7 @@ def validate_route(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--packet-id", required=True)
     parser.add_argument("--mode", required=True)
     parser.add_argument("--semantic-role", required=True)
     parser.add_argument("--agent-type", required=True)
@@ -155,6 +184,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     receipt = validate_route(
+        packet_id=args.packet_id,
         mode=args.mode,
         semantic_role=args.semantic_role,
         agent_type=args.agent_type,

@@ -34,6 +34,15 @@ facts, constraints, expected outcome, verification и, для конкуриру
 изобретать requirements, работу, verification либо stopping condition. После
 resume или material scope change packet пересобирается из current sources.
 
+Если выбранный mode назначает packet lead, он остаётся execution-child внутри
+одного bounded packet-а, а не вторым операционным coordinator-ом. Он может вести
+routine research/implementation/test/critique/rework loop и при доступной
+nested delegation создавать только mode-compatible execution-children с
+собственными routing receipts. Packet lead не пишет Task Manager, не вызывает
+Strategic Explainer, не делает fan-in в общий candidate и не принимает final
+result. Без nested delegation coordinator вызывает те же bounded роли напрямую,
+но не дублирует их работу на дорогом profile.
+
 ## Startup recovery — before new work
 
 До новой implementation, branch, worktree или dispatch прочитай весь текущий
@@ -68,11 +77,11 @@ existing work, выдай отдельную candidate identity и общую ex
 ## Model routing admission — hard gate
 
 До каждого `spawn_agent`, которому Issue Grinder передаёт delivery-работу,
-сначала сформулируй настоящий semantic role packet-а и
+сначала назначь unique `packet_id`, сформулируй настоящий semantic role и
 получи зелёный receipt от bundled
 [`model_routing_guard.py`](../scripts/model_routing_guard.py). Exact параметры
-успешного receipt перенеси в один фактический spawn без наследования или
-подмены: для Luna-lane явно укажи `model="gpt-5.6-luna"`,
+и dispatch fingerprint успешного receipt перенеси в один фактический spawn без
+наследования или подмены: для Luna-lane явно укажи `model="gpt-5.6-luna"`,
 `reasoning_effort="max"` и bounded `fork_turns`. Если полный history нужен в
 packet-е, передай необходимые facts и anchors явно; `fork_turns="all"` либо
 omitted fork нельзя совмещать с mode-controlled profile.
@@ -83,6 +92,9 @@ model/effort. Для любого child используй effective profile т�
 profile сразу добавь в receipt; mismatch останавливает wave до FileChange,
 fan-in, тестов и lifecycle effects. Если tool не раскрывает actual profile,
 сохрани `telemetry_pending` и exact spawn args для внешней recursive проверки.
+Receipt с другим `packet_id` либо fingerprint не подтверждает этот dispatch.
+Сам Python guard не перехватывает прямой platform spawn: его пропуск является
+protocol violation, которое должно остановить mode-valid run при обнаружении.
 
 ## Writer admission — hard gate
 
