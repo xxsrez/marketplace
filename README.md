@@ -22,8 +22,10 @@ Then install the plugins you need:
    to be installed separately. Strategic Explainer is optional for Issue
    Grinder: it uses ordinary when installed and allowed, and otherwise writes
    natively without
-   blocking comments or lifecycle transitions. Task Composer continues to
-   require ordinary Strategic Explainer for its Explainer-backed path. Legacy
+   blocking comments or lifecycle transitions. Scope Reviewer also keeps a
+   factual native report when the Explainer is unavailable. Task Composer
+   continues to require ordinary Strategic Explainer for its Explainer-backed
+   path. Legacy
    Ship Tasks remains available only as a rollback package and should not be
    installed together with Issue Grinder. The Explainer plugin has no connector
    or authentication of its own.
@@ -58,7 +60,7 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
   only in process memory after first use, and never sends the full path to Task
   Manager. The local bind tool performs the second staged Agent REST operation.
 
-Issue Grinder is the current skill-only delivery plugin with two independent
+Issue Grinder is the current skill-only delivery plugin with three independent
 Task Manager skills:
 
 - `issue-grinder` delivers selected issue, Release, Project, or current-Release
@@ -98,9 +100,15 @@ Task Manager skills:
   Before fresh work, a new run inventories related worktrees,
   branches, commits and local changes, then resumes a proven quiescent
   checkpoint instead of creating an accidental parallel replacement;
-- `task-composer` keeps the existing planning-only Backlog workflow. Both skills
-  depend on the separately installed Task Manager adapter. Issue Grinder uses
-  standalone Strategic Explainer when available and otherwise writes natively.
+- `task-composer` keeps the existing planning-only Backlog workflow;
+- `scope-reviewer` turns a selected plan or current Release into one readable
+  report through separate fresh Luna Max perspectives. Plan/Release review is
+  read-only; explicit plan improvement may change only the agent-owned plan and
+  never Human Requirements or delivery lifecycle.
+
+All three skills depend on the separately installed Task Manager adapter. Issue
+Grinder and Scope Reviewer use standalone Strategic Explainer when available and
+otherwise preserve a factual native reporting path.
 
 Ship Tasks is the preserved rollback plugin with two coordinated Task Manager
 skills:
@@ -188,6 +196,8 @@ Repository layout:
   workflow;
 - `plugins/issue-grinder/skills/task-composer/` — canonical planning-only
   Task Composer copy;
+- `plugins/issue-grinder/skills/scope-reviewer/` — canonical multi-perspective
+  plan and Release review copy;
 - `plugins/strategic-explainer/.codex-plugin/plugin.json` — standalone
   Strategic Explainer plugin manifest;
 - `plugins/strategic-explainer/skills/strategic-explainer/` — deterministic role
@@ -218,6 +228,8 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
   plugins/issue-grinder/skills/issue-grinder
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/issue-grinder/skills/task-composer
+python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  plugins/issue-grinder/skills/scope-reviewer
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/ship-tasks/skills/ship-tasks
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
@@ -252,6 +264,8 @@ diff -qr /Users/andrey/Projects/Home/ShipTask/issue-grinder \
   plugins/issue-grinder/skills/issue-grinder
 diff -qr /Users/andrey/Projects/Home/ShipTask/task-composer \
   plugins/issue-grinder/skills/task-composer
+diff -qr /Users/andrey/Projects/Home/ShipTask/scope-reviewer \
+  plugins/issue-grinder/skills/scope-reviewer
 diff -qr /Users/andrey/Projects/Home/ShipTask/strategic-explainer \
   plugins/strategic-explainer/skills/strategic-explainer
 git diff --check

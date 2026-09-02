@@ -126,6 +126,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             (TASK_MANAGER_PLUGIN_ROOT / "skills" / "task-composer").exists()
         )
         self.assertFalse(
+            (TASK_MANAGER_PLUGIN_ROOT / "skills" / "scope-reviewer").exists()
+        )
+        self.assertFalse(
             (TASK_MANAGER_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
         )
         self.assertFalse(
@@ -159,6 +162,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
 
         issue_root = ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "issue-grinder"
         composer_root = ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "task-composer"
+        reviewer_root = ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "scope-reviewer"
         self.assertTrue((issue_root / "SKILL.md").is_file())
         self.assertTrue(
             (issue_root / "references" / "thread-title.md").is_file()
@@ -181,6 +185,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertTrue((issue_root / "references" / "run-and-goal.md").is_file())
         self.assertTrue((issue_root / "scripts" / "model_routing_guard.py").is_file())
         self.assertTrue((composer_root / "SKILL.md").is_file())
+        self.assertTrue((reviewer_root / "SKILL.md").is_file())
+        self.assertTrue(
+            (reviewer_root / "scripts" / "lens_routing_guard.py").is_file()
+        )
         self.assertFalse(
             (ISSUE_GRINDER_PLUGIN_ROOT / "skills" / "ship-tasks").exists()
         )
@@ -202,6 +210,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             encoding="utf-8"
         )
         composer = (composer_root / "SKILL.md").read_text(encoding="utf-8")
+        reviewer = (reviewer_root / "SKILL.md").read_text(encoding="utf-8")
+        reviewer_metadata = (reviewer_root / "agents" / "openai.yaml").read_text(
+            encoding="utf-8"
+        )
         runtime = " ".join(
             path.read_text(encoding="utf-8")
             for path in sorted(issue_root.rglob("*.md"))
@@ -266,6 +278,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn('value: "task-manager"', metadata)
         self.assertIn("allow_implicit_invocation: true", metadata)
         self.assertIn("$issue-grinder:task-composer", composer)
+        self.assertIn("name: scope-reviewer", reviewer)
+        self.assertIn("$issue-grinder:scope-reviewer", reviewer)
+        self.assertIn('model="gpt-5.6-luna"', reviewer)
+        self.assertIn('reasoning_effort="max"', reviewer)
+        self.assertIn("Human Requirements\nне изменяй ни при каких обстоятельствах", reviewer)
+        self.assertIn('value: "task-manager"', reviewer_metadata)
+        self.assertIn("allow_implicit_invocation: true", reviewer_metadata)
 
         public_manifest = json.dumps(manifest["interface"], ensure_ascii=False)
         self.assertIn("fresh reflection over current primary sources", public_manifest)
@@ -292,6 +311,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("controller does almost all work", public_manifest)
         self.assertIn("preferred executor for light and medium", public_manifest)
         self.assertIn("returns problems to the controller", public_manifest)
+        self.assertIn("Includes three independent Task Manager skills", public_manifest)
+        self.assertIn("Scope Reviewer turns an exact selected plan", public_manifest)
+        self.assertIn("Plan review and every Release review remain read-only", public_manifest)
+        self.assertIn("never Human Requirements", public_manifest)
 
     def test_ship_tasks_is_a_separate_skill_only_plugin(self) -> None:
         marketplace = read_json(
@@ -328,6 +351,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertFalse(
             (SHIP_TASKS_PLUGIN_ROOT / "skills" / "strategic-explainer").exists()
+        )
+        self.assertFalse(
+            (SHIP_TASKS_PLUGIN_ROOT / "skills" / "scope-reviewer").exists()
         )
 
         metadata = (
