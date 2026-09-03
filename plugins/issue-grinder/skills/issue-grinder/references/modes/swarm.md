@@ -65,11 +65,22 @@ scouts/critics; свободная capacity не создаёт искусств
    follow-up и проходит один новый event-driven wait без replacement
    guard/spawn.
 
+Campaign до dispatch задаёт reducer/reviewer action budget и единые критерии
+сравнения. Reducer не перечитывает сырые transcripts и не воспроизводит research
+каждого writer-а: он использует compact candidate handoffs, один source/diff
+pass выбранного exact candidate, один основной deterministic suite и только
+оправданные targeted risk probes; для малого/среднего scope по умолчанию не
+больше трёх. Open-ended fuzzing, tool discovery ради parent messaging, cleanup
+из read-only роли и повторный общий поиск после rework запрещены.
+
 Каждый новый direct campaign owner проходит заранее разрешённый routing guard и
 один spawn. Независимых candidate owners запускай как один bounded stage и
-используй общий `event-driven wait`, а не отдельный polling loop на каждого.
-Reducer/reviewer запускается
-после их quiescence. Owners не отправляют routine progress. Sol/controller не
+используй общий `event-driven wait` до переданного stage deadline, а не
+произвольную десятиминутную отсечку или отдельный polling loop на каждого.
+Технический timeout ожидания до deadline только продолжает то же ожидание без
+`list`, probe, commentary или nudge. Reducer/reviewer запускается после
+quiescence candidates. Final response каждого owner-а является его handoff;
+отдельный messaging tool он не ищет. Sol/controller не
 ищет guard, не читает его `--help`, не делает status polling, повторные `list`
 или пустые nudges при неизменном состоянии.
 

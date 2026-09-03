@@ -183,10 +183,19 @@ resolved routing guard ×1 → spawn owner ×1 → event wait ×1
 
 Owner не отправляет routine progress родителю. Event wait длится до результата,
 запроса внимания или owner deadline, который короче остатка общего run ceiling.
+Передай в wait весь остаток этого deadline, а не произвольные десять минут;
+ранний технический timeout только продолжает то же ожидание без `list`, probe,
+commentary или nudge.
 Независимых owners одной стадии можно ждать общим event mechanism. При
 неизменном состоянии запрещены discovery/`--help`, status polling, повторные
 `list` и пустые nudges. На deadline owner возвращает candidate/ledger либо
 точный partial handoff, а не исчезает без evidence.
+
+Reviewer/reducer получает action budget и stopping condition до dispatch. Для
+малого/среднего scope normal budget — один source/diff pass, один основной suite
+и максимум три targeted risk probes. Его final response автоматически является
+handoff родителю; искать messaging tool, делать open-ended fuzzing, повторно
+читать неизменившийся candidate либо чистить workspace из read-only роли нельзя.
 
 После material rework переиспользуй того же owner-а и ту же reviewer session:
 

@@ -27,6 +27,12 @@ Task Manager и не вызывай subagents либо Strategic Explainer.
 delivery, кратко объясни или назови выбранный режим, затем исполни delivery-часть
 по следующим разделам.
 
+Для явно изолированной local model-forward evaluation без Task Manager, Goal,
+сети и external effects не читай run/Goal, Task Manager, autonomy и publication
+references. Прочитай execution modes,
+выбранный mode, нужную multi-agent mechanics и local scope; topology, routing,
+independent review и exact final gate обязательны, lifecycle не симулируй.
+
 ## 1. Установи run, scope, режим и Goal
 
 Для delivery полностью прочитай [Run, scope и Goal](references/run-and-goal.md).
@@ -66,14 +72,15 @@ record в continuity и не пересчитывай его после compacti
    Не предполагай, что execution-child умеет создавать собственных agents:
    nested delegation допустима только при наблюдаемой такой capability. Если её
    нет, используй mode-specific direct stages без остановки terminal-режима. В
-   `Балансе` direct Luna execution owner возвращает один candidate, затем
-   отдельный direct Luna reviewer независимо проверяет его до единственного
-   итогового review controller-а. В `Рое` controller один раз задаёт bounded
-   campaign, напрямую запускает оправданные изолированные Luna candidates, а
+   `Балансе` direct Luna execution owner возвращает один candidate, а
+   независимый Luna reviewer параллельно готовит ограниченный review plan и
+   применяет его к exact candidate после handoff. В `Рое` controller задаёт
+   bounded campaign, напрямую запускает оправданные Luna candidates, а
    после их завершения — одного Luna reducer/reviewer. Новый direct owner
-   проходит заранее разрешённый guard и один spawn; ожидание событийное, без
-   status polling, повторных `list` и пустых nudges. Coordinator получает только
-   compact handoffs и не дублирует Luna research, implementation или critique.
+   проходит заранее разрешённый guard и один spawn; ожидание событийное до
+   stage deadline, без произвольной десятиминутной отсечки, polling, повторных
+   `list` и nudges. Final response owner-а и есть handoff; coordinator не
+   дублирует Luna research, implementation, exploratory tests или critique.
    Ни один packet/campaign owner не получает Goal, Task Manager, publication или
    final-acceptance authority.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
@@ -83,8 +90,11 @@ record в continuity и не пересчитывай его после compacti
    изменения и проверь exact integrated version по acceptance issue.
    Во всех режимах, кроме `Соло`, даже простой exact candidate до terminal
    acceptance получает independent reviewer-а, который не был его автором.
-   После material rework продолжи того же owner-а и reviewer session одним
-   follow-up и одним event-driven wait без нового guard/spawn. Partial review
+   Review packet задаёт action budget: один source/diff pass, основной suite и
+   для малого/среднего scope максимум три targeted probes. Запрещены open-ended
+   fuzzing, повторное чтение, parent-messaging discovery и read-only cleanup.
+   После rework прежний reviewer проверяет reproducer, changed surfaces и suite
+   без нового общего поиска. Partial review
    блокирует terminal acceptance; только `Экономичный` может сохранить его как
    deferred gate resumable checkpoint.
 5. Для любого другого status transition подготовь причинный comment, пройди

@@ -117,23 +117,39 @@ protocol violation, которое должно остановить mode-valid 
 
 Для каждого нового direct owner-а normal trace содержит один заранее
 разрешённый routing guard, один spawn и событийное ожидание до результата,
-запроса внимания либо deadline. Несколько одновременно запущенных независимых
-owners можно ждать одним доступным multi-target/event mechanism; требование не
-создаёт отдельный polling turn на каждого. Пока состояние не изменилось, не
-вызывай `list_agents`, короткие повторные waits, status probes, пустые
-`send_message` или другие nudges.
+запроса внимания либо переданного stage deadline. `wait` получает весь остаток
+stage deadline, а не произвольные десять минут. Если platform технически вернул
+timeout раньше deadline, сразу продолжи то же ожидание без `list_agents`, status
+probe, commentary, сообщения owner-у или новой интерпретации состояния.
+Несколько одновременно запущенных независимых owners можно ждать одним
+доступным multi-target/event mechanism; событие одного owner-а разрешает
+обработать только его handoff, затем снова ждать оставшихся до того же deadline.
 
-Каждая стадия возвращает один consolidated handoff на owner: exact candidate
+Каждая стадия возвращает один consolidated handoff на owner через его final
+response: exact candidate
 либо ledger, task-owned identity, checks, known defects, negative evidence и
 следующий разрешённый переход. На малом scope direct reviewer читает exact
 candidate сам. На большом он может использовать nested read-only lenses только
 при доказанной capability; иначе coordinator создаёт ограниченные direct lenses
 по независимым поверхностям риска и передаёт их результаты одному final reviewer,
-не заставляя дорогой профиль читать их сырые transcripts.
+не заставляя дорогой профиль читать их сырые transcripts. Owner не исследует
+tool catalog ради отдельного parent messaging: platform сам возвращает final
+response родителю.
 
-В `Балансе` normal order — `control brief → Luna execution candidate(s) → Luna
-independent reduction/review/rework → integrated checks → controller final
-review`. Первый дорогой
+Control brief задаёт каждому reviewer/reducer-у `review_envelope`: exact
+candidate identity, risk surfaces, максимальное число useful actions и stopping
+condition. Для малого/среднего scope normal envelope — один source/diff pass,
+один основной deterministic suite и максимум три targeted risk probes.
+Open-ended fuzzing, повторные чтения неизменившегося candidate и cleanup из
+read-only роли запрещены. После rework прежний reviewer проверяет reproducer,
+изменённые surfaces и основной suite; общий поиск повторяется только когда само
+изменение создало новую material risk surface. Controller final gate читает
+compact ledger, делает один exact source/diff pass и один integrated suite, не
+дублируя exploratory review без противоречащего evidence.
+
+В `Балансе` normal order — `control brief → parallel Luna execution candidate(s)
++ independent review planning → Luna exact reduction/review/rework → integrated
+checks → controller final review`. Первый дорогой
 review exact candidate начинается только после завершения Luna stages. В `Рое`
 normal order — `control brief → Luna candidate campaign → Luna reduction and
 independent review → integration → controller final review`. Coordinator может
@@ -161,6 +177,14 @@ worktree принадлежит одному writer. Одного file ownership
 [`writer_worktree_guard.py`](../scripts/writer_worktree_guard.py) по его
 абсолютному resolved path; если Python/Git/isolated capacity
 недоступны, выполняй write packets последовательно и не эмулируй parallel writer.
+
+До чтения implementation guard source или попытки `prepare` сделай дешёвый
+preflight: writable ли фактический Git common dir и разрешено ли создать linked
+worktree. Если Git metadata read-only, не читай guard implementation и не
+запускай заведомо невозможный worktree flow. Отправь Luna read-only packet для
+создания exact patch/candidate, дождись завершения owner-а и только затем
+механически примени его patch в coordinator-owned checkout. Это последовательный
+fallback, а не разрешение controller-у заново реализовать candidate.
 
 Перед каждой writer wave:
 

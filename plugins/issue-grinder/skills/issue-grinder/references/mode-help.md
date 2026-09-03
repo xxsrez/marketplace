@@ -28,12 +28,14 @@ Strategic Explainer. Если тот же prompt ещё и явно поруча
   один независимый Luna reviewer проверяет exact candidate даже на простом
   scope; режим терминальный.
 - `Баланс` — Luna ведёт полный routine loop ограниченных пакетов: research,
-  implementation, tests, независимую дешёвую проверку и rework;
+  implementation и tests; независимый Luna reviewer параллельно готовит
+  ограниченный план проверки и после candidate выполняет bounded review/rework;
   Sol/controller оставляет material decisions, интеграцию и final review;
   режим терминальный.
 - `Рой` — bounded Luna campaign исследует разные подходы, создаёт изолированные
   конкурирующие candidates и возражения; отдельный Luna reducer/reviewer
-  сокращает их до одного exact candidate, после чего Sol/controller проводит
+  по заранее заданному action budget сокращает их до одного exact candidate,
+  после чего Sol/controller проводит
   final review. Режим терминальный и намеренно допускает больше дешёвых попыток.
 - `Экономичный` — Luna выполняет всю содержательную работу и сохраняет один
   проверяемый candidate с независимой Luna-проверкой перед terminal acceptance;

@@ -33,8 +33,11 @@ resolver, authority, recovery и evidence rules бери из
    владеет research, implementation, tests и self-review одного bounded
    candidate. Material fork, слабый oracle либо высокая ожидаемая ценность могут
    оправдать несколько purpose-distinct candidate owners от общей exact base;
-   свободные слоты сами по себе этого не оправдывают. Если
-   он наблюдаемо умеет nested delegation, он может добавить mode-compatible
+   свободные слоты сами по себе этого не оправдывают. Одновременно с execution
+   stage запусти независимого Luna reviewer-а только для построения bounded
+   review plan по requirements, risk map и исходной base; candidate до handoff
+   он не оценивает. Если execution owner наблюдаемо умеет nested delegation, он
+   может добавить mode-compatible
    внутренние роли. Если нет, это normal platform shape, а не proof gap:
    candidate завершается этим owner-ом, после чего coordinator запускает
    отдельную direct Luna review stage.
@@ -46,10 +49,11 @@ resolver, authority, recovery и evidence rules бери из
    Task Manager, publication, integration либо final-acceptance authority.
 6. Каждый exact candidate до дорогого final gate, включая простой или малый
    scope, передай независимому Luna verifier/critic. При недоступной nested
-   delegation это отдельный direct read-only owner, запущенный только после
-   завершения candidate stage. Если material fork дал несколько candidates,
-   этот же независимый owner сначала сводит их по oracle и negative evidence,
-   затем проверяет выбранный exact candidate.
+   delegation это отдельный direct read-only owner: его plan может готовиться
+   параллельно, но exact review начинается только после завершения candidate
+   stage. Если material fork дал несколько candidates, этот же независимый owner
+   сначала сводит их по oracle и negative evidence, затем проверяет выбранный
+   exact candidate.
    Дай ему current requirements, exact diff/source anchors и oracle, но не
    используй итоговый self-report автора как доказательство. Отсутствующая либо
    незавершённая проверка остаётся незакрытым gate и запрещает terminal result.
@@ -65,10 +69,20 @@ resolver, authority, recovery и evidence rules бери из
    replacement guard/spawn без доказанной причины не создавай.
 
 Каждый новый direct stage owner проходит заранее разрешённый routing guard и
-один spawn; `event-driven wait` длится до результата, запроса внимания или deadline.
-Не ищи guard, не читай его `--help`, не запускай status polling, повторные
-`list` или пустые nudges при неизменном состоянии. Owner не отправляет routine
-progress родителю и возвращает один consolidated handoff.
+один spawn; `event-driven wait` длится до результата, запроса внимания или
+переданного stage deadline. Не используй произвольные десятиминутные отсечки.
+Технический timeout ожидания до stage deadline означает немедленно продолжить
+то же событийное ожидание без `list`, status probe, commentary или nudge. Owner
+не ищет messaging tool: его final response является одним consolidated handoff.
+
+Execution packet заранее ограничивает полезные actions и checks. Review packet
+задаёт один source/diff pass, один основной deterministic suite и только
+оправданные targeted risk probes; для малого/среднего scope по умолчанию не
+больше трёх. Open-ended fuzzing, повторное чтение неизменившихся файлов,
+исследование parent messaging tools и cleanup из read-only reviewer-а запрещены.
+После rework reviewer проверяет исходный reproducer, изменённые surfaces и один
+основной suite; новый общий поиск допустим только при доказанно новой risk
+surface, созданной изменением.
 
 ## Адаптивная избыточность
 
@@ -97,7 +111,9 @@ progress родителю и возвращает один consolidated handoff.
     навигацией к source/check evidence; сырой transcript всех Luna waves не
     является обязательным reviewer input.
 14. Только после завершения Luna candidate/review/rework stages
-    controller/reviewer проводит final code/result gate точной интегрированной версии.
+    controller/reviewer проводит final code/result gate точной интегрированной
+    версии: один source/diff pass и один integrated deterministic suite. Он не
+    повторяет exploratory probes Luna без противоречия в evidence.
     После material rework повтори exact-candidate gate. Без final gate не
     выдавай непроверенный result за terminal.
 15. Первый содержательный Luna handoff является gate режима. Отсутствующий или
