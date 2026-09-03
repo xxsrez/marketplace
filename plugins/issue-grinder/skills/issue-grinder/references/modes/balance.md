@@ -75,23 +75,33 @@ resolver, authority, recovery и evidence rules бери из
 то же событийное ожидание без `list`, status probe, commentary или nudge. Owner
 не ищет messaging tool: его final response является одним consolidated handoff.
 
-Execution packet заранее ограничивает полезные actions и checks. Review packet
-задаёт один source/diff pass, один основной deterministic suite и только
-оправданные targeted risk probes; для малого/среднего scope по умолчанию не
-больше трёх. Численные defaults: candidate owner — максимум десять tool calls,
-review plan — три, exact review — пять, recheck — три, controller final gate
-— три. Увеличение фиксируется до dispatch и обосновывается независимыми risk
-surfaces, а не числом Tasks или свободным временем. Open-ended fuzzing,
-повторное чтение неизменившихся файлов, parent messaging discovery и cleanup из
-read-only reviewer-а запрещены. После rework reviewer проверяет reproducer,
-изменённые surfaces и основной suite; новый общий поиск допустим только при
-доказанно новой risk surface, созданной изменением.
+Execution packet заранее материализует exact candidate root, прямой source
+manifest, owned files, checks, action ceiling и compact output envelope. Review
+packet задаёт один source/diff pass, один основной deterministic suite и только
+оправданные targeted risk probes; для малого/среднего scope не больше трёх.
+Жёсткие ceilings: candidate owner — максимум десять tool calls, review plan —
+три, exact review — пять, recheck — три, controller final gate — три. Число
+Tasks, файлов или risk surfaces их не увеличивает. Большой Teams-подобный scope
+дели на purpose-distinct packets/lenses; только доказанно неделимый риск может
+до dispatch получить `budget_exception` максимум +3 calls с reproducer и
+stopping condition. Rework всегда отдельный трёхвызовный packet.
+
+Delegated child не перечитывает Issue Grinder `SKILL.md`, references,
+Architecture или routing guard, не исследует tool catalog/parent messaging и не
+делает directory discovery уже переданных путей. Open-ended fuzzing и повторное
+чтение неизменившихся файлов запрещены. После rework reviewer проверяет
+reproducer, изменённые surfaces и основной suite; новый общий поиск допустим
+только при доказанно новой risk surface, созданной изменением. После последнего
+check child сразу возвращает короткий handoff
+`candidate | owned files | checks | findings<=3 | unknowns | next`.
 
 Candidate owner делает один source pass, изменяет настоящий admitted candidate
 и запускает suite. Если Git metadata недоступна, используй один task-owned
 shadow tree по общему multi-agent contract; read-only генерация патча остаётся
 последним fallback. Не заменяй работу в candidate повторной in-memory
-реконструкцией всего проекта.
+реконструкцией всего проекта. Все mutation-вызовы используют абсолютные пути с
+префиксом exact candidate root; относительный patch из integration checkout
+запрещён.
 
 Параллельный review-plan turn завершается своим final handoff до четвёртого
 вызова; reviewer session остаётся доступна для follow-up с exact candidate. Он

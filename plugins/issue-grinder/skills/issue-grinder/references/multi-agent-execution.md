@@ -136,18 +136,33 @@ candidate сам. На большом он может использовать n
 tool catalog ради отдельного parent messaging: platform сам возвращает final
 response родителю.
 
-Control brief задаёт каждому reviewer/reducer-у `review_envelope`: exact
-candidate identity, risk surfaces, action budget и stopping condition. Для
-малого/среднего scope defaults: candidate owner — десять tool calls, review plan
-— три, exact review — пять, recheck — три, controller final gate — три.
-Budget увеличивается до dispatch только по независимым risk surfaces. Candidate
-owner делает один source pass, работает с настоящим изолированным candidate и
-запускает основной suite; он не повторяет заведомо красный baseline без
-диагностической пользы, не реконструирует проект несколькими in-memory
-симуляциями и не ищет parent messaging. Reviewer получает один source/diff pass,
-один suite и максимум три targeted probes. После rework он проверяет reproducer,
+Control brief материализует каждому owner-у self-contained packet: exact base и
+candidate root, source manifest с прямыми путями, owned files, разрешённые
+checks, purpose, action ceiling, stopping condition и compact output envelope.
+Для малого/среднего scope это жёсткие ceilings: candidate owner — десять tool
+calls, review plan — три, exact review — пять, recheck — три, controller final
+gate — три. Число Tasks, файлов, candidates или risk surfaces их не увеличивает.
+Большой Teams-подобный scope делится на purpose-distinct execution packets и
+read-only lenses с отдельным ownership. До dispatch одного неделимого риска
+допустим `budget_exception` максимум на три дополнительных calls с role, base
+ceiling, reproducer/evidence и stopping condition; общий список рисков exception
+не создаёт. Rework всегда получает отдельный трёхвызовный packet.
+
+Child использует materialized packet как orchestration policy: он не читает
+Issue Grinder `SKILL.md`, references/Architecture или routing guard, не ищет
+tool catalog и parent messaging/collaboration interface, не делает directory
+discovery уже переданных путей. Targeted поиск символа внутри source manifest
+входит в единственный source pass. Candidate owner работает с настоящим
+изолированным candidate, запускает основной suite и не повторяет заведомо
+красный baseline без диагностической пользы. Все writer mutations используют
+абсолютный путь с префиксом exact candidate root; относительный patch из
+integration checkout запрещён. Reviewer получает один source/diff pass, один
+suite и максимум три targeted probes. После rework он проверяет reproducer,
 changed surfaces и suite. Controller читает compact ledger и делает один exact
 pass с integrated suite, не повторяя exploration без противоречащего evidence.
+После последнего check child сразу возвращает
+`candidate | owned files | checks | findings<=3 | unknowns | next`, без
+transcript, повтора contract-а и развёрнутого отчёта.
 Параллельный review-plan turn заканчивается final response-ом в пределах трёх
 calls; это handoff и quiescence turn, а не потеря session. Exact candidate
 приходит в ту же session follow-up-ом с отдельным лимитом в пять calls. Reviewer
@@ -197,7 +212,10 @@ artifact после проверки. Read-only review planning может ид�
 read-only patch-return packet. Controller не реализует candidate заново.
 
 Shadow path задаётся напрямую из packet identity; не исследуй reference tree,
-`.gitignore` или cache-каталоги ради его выбора. После review coordinator одним
+`.gitignore` или cache-каталоги ради его выбора. Writer получает абсолютный
+shadow path и использует его префикс во всех mutation-вызовах; запись в
+integration checkout является ownership defect и требует reconciliation до
+review/fan-in. После review coordinator одним
 механическим действием переносит exact bytes только declared owned files
 (`rsync`/copy либо один автоматически построенный patch по local policy), затем
 отдельно сверяет identity. Не печатай полный diff в model context и не набирай

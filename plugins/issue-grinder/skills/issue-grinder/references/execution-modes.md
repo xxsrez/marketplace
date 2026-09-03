@@ -193,19 +193,28 @@ commentary или nudge.
 
 Reviewer/reducer получает action budget и stopping condition до dispatch. Для
 малого/среднего scope normal budget — один source/diff pass, один основной suite
-и максимум три targeted risk probes. Численные defaults: candidate owner —
-десять tool calls, review plan — три, exact review — пять, recheck — три,
-controller final gate — три. Увеличивай их до dispatch только по числу
-независимых risk surfaces, а не Tasks, candidates или оставшегося времени. Один
-tool call может пакетировать связанные чтения или проверки без потери evidence.
+и максимум три targeted risk probes. Жёсткие ceilings: candidate owner — десять
+tool calls, review plan — три, exact review — пять, recheck — три, controller
+final gate — три. Число Tasks, files, candidates или risk surfaces их не
+увеличивает. Большой Teams-подобный scope дели на purpose-distinct packets и
+read-only lenses. Только один доказанно неделимый риск может до dispatch получить
+`budget_exception` максимум +3 calls с reproducer/evidence и stopping condition.
+Один tool call может пакетировать связанные чтения или проверки без потери
+evidence.
 
-Candidate owner один раз читает contract/source, изменяет настоящий изолированный
-candidate и запускает основной suite; известный заведомо красный baseline suite
-не повторяет без диагностической ценности. Он не реконструирует весь проект
-несколькими in-memory программами, не запускает open-ended simulation/fuzzing и
-не ищет parent messaging: final response является handoff. Те же запреты на
-повторные чтения, messaging discovery и read-only cleanup действуют для
-reviewer-а.
+Coordinator материализует exact candidate root, прямой source manifest, owned
+files, checks, ceiling и compact output envelope. Candidate owner использует их
+как готовую policy: не перечитывает Issue Grinder `SKILL.md`, references,
+Architecture или routing guard, не ищет tool catalog/parent messaging и не
+делает directory discovery уже переданных путей. Он один раз читает
+contract/source, изменяет настоящий изолированный candidate абсолютными путями
+под candidate root и запускает основной suite; известный заведомо красный
+baseline suite не повторяет без диагностической ценности. Он не реконструирует
+весь проект несколькими in-memory программами и не запускает open-ended
+simulation/fuzzing. После последнего check сразу возвращает короткий handoff
+`candidate | owned files | checks | findings<=3 | unknowns | next`. Те же
+запреты на повторные чтения, messaging discovery и read-only cleanup действуют
+для reviewer-а.
 
 Параллельная подготовка review заканчивает свой turn final response-ом не позже
 третьего tool call; это handoff плана и завершение turn, а не всей reviewer

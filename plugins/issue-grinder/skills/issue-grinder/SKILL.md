@@ -90,10 +90,10 @@ record в continuity и не пересчитывай его после compacti
    изменения и проверь exact integrated version по acceptance issue.
    Во всех режимах, кроме `Соло`, даже простой exact candidate до terminal
    acceptance получает independent reviewer-а, который не был его автором.
-   Для малого/среднего scope budgets: candidate 10 tool calls, review plan 3 +
-   exact review 5, recheck 3, controller final gate 3; расширяй по risk surfaces.
-   Запрещены open-ended fuzzing, повторное чтение, parent-messaging discovery и
-   read-only cleanup.
+   Жёсткие budgets: candidate 10 tool calls; review plan 3, exact review 5,
+   recheck 3, final 3. Teams-подобный scope дели на packets/lenses, exception
+   ограничен `+3`. Child не перечитывает Issue Grinder policy/tool catalog,
+   пишет по absolute candidate path и сразу возвращает compact handoff.
    После rework прежний reviewer проверяет reproducer, changed surfaces и suite.
    Partial review блокирует terminal acceptance; только `Экономичный` сохраняет
    его как deferred gate resumable checkpoint.

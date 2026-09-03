@@ -67,20 +67,33 @@ scouts/critics; свободная capacity не создаёт искусств
    guard/spawn.
 
 Campaign до dispatch задаёт reducer/reviewer action budget и единые критерии
-сравнения. Reducer не перечитывает сырые transcripts и не воспроизводит research
-каждого writer-а: он использует compact candidate handoffs, один source/diff
-pass выбранного exact candidate, один основной deterministic suite и только
-оправданные targeted risk probes; для малого/среднего scope по умолчанию не
-больше трёх. Численные defaults: каждый candidate owner — максимум десять tool
-calls, reducer/reviewer — восемь, recheck — три, controller final gate — три.
-Увеличение фиксируется до dispatch по независимым risk surfaces, а не по числу
-candidates или свободному времени. Open-ended fuzzing, parent messaging
-discovery, cleanup из read-only роли и повторный общий поиск запрещены.
+сравнения. Каждый materialized packet содержит exact candidate root, прямой
+source manifest, owned files, checks, action ceiling и compact output envelope.
+Reducer не перечитывает сырые transcripts и не воспроизводит research каждого
+writer-а: он использует compact candidate handoffs, один source/diff pass
+выбранного exact candidate, один основной deterministic suite и только
+оправданные targeted risk probes; для малого/среднего scope не больше трёх.
+Жёсткие ceilings: каждый candidate owner — максимум десять tool calls,
+reducer/reviewer — восемь, recheck — три, controller final gate — три. Число
+candidates, Tasks, файлов или risk surfaces их не увеличивает. Большой
+Teams-подобный scope дели на purpose-distinct candidate packets и read-only
+lenses; только один доказанно неделимый риск может до dispatch получить
+`budget_exception` максимум +3 calls с reproducer/evidence и stopping condition.
+Rework всегда отдельный трёхвызовный packet.
+
+Delegated child не перечитывает Issue Grinder `SKILL.md`, references,
+Architecture или routing guard, не исследует tool catalog/parent messaging и не
+делает directory discovery уже переданных путей. Open-ended fuzzing, cleanup из
+read-only роли и повторный общий поиск запрещены. После последнего check child
+сразу возвращает короткий handoff
+`candidate | owned files | checks | findings<=3 | unknowns | next`.
 
 Каждый candidate owner делает один source pass, изменяет настоящий isolated
 candidate и запускает suite. При read-only Git metadata и только одной writing
 lane используй task-owned shadow tree по общему multi-agent contract; несколько
 параллельных writers по-прежнему требуют отдельных admitted Git worktrees.
+Все mutation-вызовы используют абсолютные пути с префиксом exact candidate root;
+относительный patch из integration checkout запрещён.
 После выбора reviewer-ом exact shadow candidate coordinator переносит его
 task-owned файлы одной механической операцией без вывода и повторного набора
 полного patch в model context; затем отдельно сверяет identity.
