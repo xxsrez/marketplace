@@ -40,8 +40,9 @@ verification. Он может затрагивать те же files, что д�
 не называется его resume/replacement.
 
 Если scope содержит material candidate-friendly развилку, до ordinary
-implementation зарегистрируй хотя бы одну настоящую Best-of-M stage с `M >= 2`
-самостоятельными одно-ownerными Luna candidate waves от общей exact base. Один
+implementation зарегистрируй хотя бы одну настоящую Best-of-M wave с `M >= 2`;
+в campaign record это Best-of-M stage с `M >= 2` самостоятельными
+одно-ownerными Luna candidate waves от общей exact base. Один
 writer на каждую Task без конкурирующей material stage не выполняет обещание
 `Роя`. Если candidate-friendly развилки действительно нет, сохрани проверяемую
 причину и всё равно используй Luna для одного candidate и независимых
@@ -70,8 +71,16 @@ Campaign до dispatch задаёт reducer/reviewer action budget и едины
 каждого writer-а: он использует compact candidate handoffs, один source/diff
 pass выбранного exact candidate, один основной deterministic suite и только
 оправданные targeted risk probes; для малого/среднего scope по умолчанию не
-больше трёх. Open-ended fuzzing, tool discovery ради parent messaging, cleanup
-из read-only роли и повторный общий поиск после rework запрещены.
+больше трёх. Численные defaults: каждый candidate owner — максимум десять tool
+calls, reducer/reviewer — восемь, recheck — три, controller final gate — три.
+Увеличение фиксируется до dispatch по независимым risk surfaces, а не по числу
+candidates или свободному времени. Open-ended fuzzing, parent messaging
+discovery, cleanup из read-only роли и повторный общий поиск запрещены.
+
+Каждый candidate owner делает один source pass, изменяет настоящий isolated
+candidate и запускает suite. При read-only Git metadata и только одной writing
+lane используй task-owned shadow tree по общему multi-agent contract; несколько
+параллельных writers по-прежнему требуют отдельных admitted Git worktrees.
 
 Каждый новый direct campaign owner проходит заранее разрешённый routing guard и
 один spawn. Независимых candidate owners запускай как один bounded stage и

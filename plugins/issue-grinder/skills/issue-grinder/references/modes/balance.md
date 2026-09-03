@@ -78,11 +78,20 @@ resolver, authority, recovery и evidence rules бери из
 Execution packet заранее ограничивает полезные actions и checks. Review packet
 задаёт один source/diff pass, один основной deterministic suite и только
 оправданные targeted risk probes; для малого/среднего scope по умолчанию не
-больше трёх. Open-ended fuzzing, повторное чтение неизменившихся файлов,
-исследование parent messaging tools и cleanup из read-only reviewer-а запрещены.
-После rework reviewer проверяет исходный reproducer, изменённые surfaces и один
-основной suite; новый общий поиск допустим только при доказанно новой risk
-surface, созданной изменением.
+больше трёх. Численные defaults: candidate owner — максимум десять tool calls,
+review plan вместе с exact review — восемь, recheck — три, controller final gate
+— три. Увеличение фиксируется до dispatch и обосновывается независимыми risk
+surfaces, а не числом Tasks или свободным временем. Open-ended fuzzing,
+повторное чтение неизменившихся файлов, parent messaging discovery и cleanup из
+read-only reviewer-а запрещены. После rework reviewer проверяет reproducer,
+изменённые surfaces и основной suite; новый общий поиск допустим только при
+доказанно новой risk surface, созданной изменением.
+
+Candidate owner делает один source pass, изменяет настоящий admitted candidate
+и запускает suite. Если Git metadata недоступна, используй один task-owned
+shadow tree по общему multi-agent contract; read-only генерация патча остаётся
+последним fallback. Не заменяй работу в candidate повторной in-memory
+реконструкцией всего проекта.
 
 ## Адаптивная избыточность
 

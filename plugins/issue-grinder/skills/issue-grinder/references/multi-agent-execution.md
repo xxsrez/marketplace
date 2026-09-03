@@ -137,15 +137,17 @@ tool catalog ради отдельного parent messaging: platform сам в�
 response родителю.
 
 Control brief задаёт каждому reviewer/reducer-у `review_envelope`: exact
-candidate identity, risk surfaces, максимальное число useful actions и stopping
-condition. Для малого/среднего scope normal envelope — один source/diff pass,
-один основной deterministic suite и максимум три targeted risk probes.
-Open-ended fuzzing, повторные чтения неизменившегося candidate и cleanup из
-read-only роли запрещены. После rework прежний reviewer проверяет reproducer,
-изменённые surfaces и основной suite; общий поиск повторяется только когда само
-изменение создало новую material risk surface. Controller final gate читает
-compact ledger, делает один exact source/diff pass и один integrated suite, не
-дублируя exploratory review без противоречащего evidence.
+candidate identity, risk surfaces, action budget и stopping condition. Для
+малого/среднего scope defaults: candidate owner — десять tool calls, review plan
+вместе с exact review — восемь, recheck — три, controller final gate — три.
+Budget увеличивается до dispatch только по независимым risk surfaces. Candidate
+owner делает один source pass, работает с настоящим изолированным candidate и
+запускает основной suite; он не повторяет заведомо красный baseline без
+диагностической пользы, не реконструирует проект несколькими in-memory
+симуляциями и не ищет parent messaging. Reviewer получает один source/diff pass,
+один suite и максимум три targeted probes. После rework он проверяет reproducer,
+changed surfaces и suite. Controller читает compact ledger и делает один exact
+pass с integrated suite, не повторяя exploration без противоречащего evidence.
 
 В `Балансе` normal order — `control brief → parallel Luna execution candidate(s)
 + independent review planning → Luna exact reduction/review/rework → integrated
@@ -180,11 +182,15 @@ worktree принадлежит одному writer. Одного file ownership
 
 До чтения implementation guard source или попытки `prepare` сделай дешёвый
 preflight: writable ли фактический Git common dir и разрешено ли создать linked
-worktree. Если Git metadata read-only, не читай guard implementation и не
-запускай заведомо невозможный worktree flow. Отправь Luna read-only packet для
-создания exact patch/candidate, дождись завершения owner-а и только затем
-механически примени его patch в coordinator-owned checkout. Это последовательный
-fallback, а не разрешение controller-у заново реализовать candidate.
+worktree. Если Git metadata read-only, не запускай заведомо невозможный flow.
+При одной последовательной writing lane coordinator создаёт внутри разрешённого
+sandbox task-owned shadow tree точной base без `.git`, фиксирует его identity и
+передаёт одному Luna owner-у исключительное право записи. Owner изменяет файлы и
+запускает tests прямо в shadow tree; coordinator затем строит точный diff к base,
+механически применяет его в своём checkout и удаляет только созданный им shadow
+artifact после проверки. Read-only review planning может идти параллельно,
+поскольку второго автора нет. Если даже shadow tree недоступен, используй один
+read-only patch-return packet. Controller не реализует candidate заново.
 
 Перед каждой writer wave:
 

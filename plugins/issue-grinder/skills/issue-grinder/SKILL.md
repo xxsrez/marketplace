@@ -29,9 +29,9 @@ delivery, кратко объясни или назови выбранный р�
 
 Для явно изолированной local model-forward evaluation без Task Manager, Goal,
 сети и external effects не читай run/Goal, Task Manager, autonomy и publication
-references. Прочитай execution modes,
-выбранный mode, нужную multi-agent mechanics и local scope; topology, routing,
-independent review и exact final gate обязательны, lifecycle не симулируй.
+references. Прочитай отдельно и ровно по одному разу execution modes, выбранный
+mode, нужную multi-agent mechanics и local scope; не объединяй их в обрезаемый
+вывод и не делай `wc`. Topology, routing, review и final gate обязательны.
 
 ## 1. Установи run, scope, режим и Goal
 
@@ -66,8 +66,8 @@ record в continuity и не пересчитывай его после compacti
    рабочая делегация Issue Grinder запрещена: текущая модель выполняет один
    issue или пакет за раз. Внешние semantic providers не входят в эту topology.
    Во всех остальных режимах writer получает implementation только после
-   подтверждённых model-routing и двухфазного worktree admission. Для каждого
-   child перенеси в spawn exact model/effort/fork из зелёного routing receipt;
+   подтверждённых routing и двухфазного worktree admission либо разрешённого
+   shadow tree admission. Перенеси exact model/effort/fork из routing receipt;
    наследование root profile не считается выбором worker profile.
    Не предполагай, что execution-child умеет создавать собственных agents:
    nested delegation допустима только при наблюдаемой такой capability. Если её
@@ -90,13 +90,13 @@ record в continuity и не пересчитывай его после compacti
    изменения и проверь exact integrated version по acceptance issue.
    Во всех режимах, кроме `Соло`, даже простой exact candidate до terminal
    acceptance получает independent reviewer-а, который не был его автором.
-   Review packet задаёт action budget: один source/diff pass, основной suite и
-   для малого/среднего scope максимум три targeted probes. Запрещены open-ended
-   fuzzing, повторное чтение, parent-messaging discovery и read-only cleanup.
-   После rework прежний reviewer проверяет reproducer, changed surfaces и suite
-   без нового общего поиска. Partial review
-   блокирует terminal acceptance; только `Экономичный` может сохранить его как
-   deferred gate resumable checkpoint.
+   Для малого/среднего scope budgets: candidate 10 tool calls, review plan + exact
+   review 8, recheck 3, controller final gate 3; расширяй только по risk surfaces.
+   Запрещены open-ended fuzzing, повторное чтение, parent-messaging discovery и
+   read-only cleanup.
+   После rework прежний reviewer проверяет reproducer, changed surfaces и suite.
+   Partial review блокирует terminal acceptance; только `Экономичный` сохраняет
+   его как deferred gate resumable checkpoint.
 5. Для любого другого status transition подготовь причинный comment, пройди
    reflection, опубликуй и перечитай comment, затем измени status с optimistic
    concurrency и перечитай issue.
