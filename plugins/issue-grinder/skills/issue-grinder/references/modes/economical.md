@@ -1,7 +1,7 @@
 # Экономичный
 
 Применяет `IG-MODE-06`, mode-specific части `IG-MODE-08..09` и
-`IG-MA-15..17` только когда сохранённый `canonical_mode=economical`. Общие
+`IG-MA-15..19` только когда сохранённый `canonical_mode=economical`. Общие
 resolver, authority, recovery и evidence rules бери из
 [Execution modes](../execution-modes.md); остальные mode-файлы не читай.
 
@@ -17,6 +17,21 @@ self-review, independent critique и reduction. Каждый child dispatch яв
 задаёт `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
 проходит routing guard. Имя и тип child не заменяют проверку его effective
 profile.
+
+Каждый exact candidate, включая простой или малый scope, до terminal acceptance
+получает independent Luna Max review owner, который не был его автором. Для
+Luna top-level это один direct child проверочной волны. Для non-Luna
+transport/authority root-а единственным direct child остаётся Luna supervisor,
+а reviewer создаётся внутри его волны. Reviewer возвращает один finding ledger;
+его отсутствие запрещает terminal result, но может быть сохранено как deferred
+gate resumable checkpoint.
+
+Новый direct owner проходит один заранее разрешённый routing guard, один spawn и
+один event-driven wait до результата, запроса внимания или deadline. Не ищи
+guard, не читай его `--help`, не делай status polling, повторные `list` или
+пустые nudges при неизменном состоянии. После material rework продолжи того же
+owner-а и ту же reviewer session одним follow-up и одним новым event-driven wait
+без replacement guard/spawn.
 
 Если top-level root уже запущен не на Luna, он является только
 transport/authority оболочкой: разрешает live refs, хранит Goal и receipts,

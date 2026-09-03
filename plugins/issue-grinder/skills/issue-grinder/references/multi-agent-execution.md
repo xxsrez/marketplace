@@ -1,6 +1,6 @@
 # Multi-agent execution
 
-Применяет `IG-MA-01..18` при двух независимых полезных пакетах, при явном
+Применяет `IG-MA-01..19` при двух независимых полезных пакетах, при явном
 topology rule пользователя либо когда сохранённый execution mode требует
 critic/verifier/candidate wave. Сначала используй mode и profiles из
 [Execution modes](execution-modes.md) и полностью прочитай выбранный там
@@ -34,14 +34,15 @@ facts, constraints, expected outcome, verification и, для конкуриру
 изобретать requirements, работу, verification либо stopping condition. После
 resume или material scope change packet пересобирается из current sources.
 
-Если выбранный mode назначает packet lead, он остаётся execution-child внутри
-одного bounded packet-а, а не вторым операционным coordinator-ом. Он может вести
-routine research/implementation/test/critique/rework loop и при доступной
-nested delegation создавать только mode-compatible execution-children с
-собственными routing receipts. Packet lead не пишет Task Manager, не вызывает
-Strategic Explainer, не делает fan-in в общий candidate и не принимает final
-result. Без nested delegation coordinator вызывает те же bounded роли напрямую,
-но не дублирует их работу на дорогом profile.
+Каждая non-Solo multi-agent wave имеет ровно одного direct owner-а, а не плоский
+набор children operational coordinator-а. Owner остаётся execution-child внутри
+bounded packet/wave, а не вторым операционным coordinator-ом. Он может вести
+routine research/implementation/test/critique/rework loop и при nested
+delegation создавать только mode-compatible execution-children с собственными
+routing receipts. Packet/wave owner не пишет Task Manager, не вызывает Strategic
+Explainer, не делает fan-in в общий candidate и не принимает final result. Если
+nested delegation недоступна, owner возвращает checkpoint/proof gap; coordinator
+не разворачивает внутренние роли в собственный плоский набор direct children.
 
 ## Startup recovery — before new work
 
@@ -76,9 +77,11 @@ existing work, выдай отдельную candidate identity и общую ex
 
 ## Model routing admission — hard gate
 
+При первой загрузке этого reference один раз разреши абсолютный путь bundled
+[`model_routing_guard.py`](../scripts/model_routing_guard.py), сохрани его в mode
+record и используй стабильный interface без повторного discovery или `--help`.
 До каждого `spawn_agent`, которому Issue Grinder передаёт delivery-работу,
-сначала назначь unique `packet_id`, сформулируй настоящий semantic role и
-получи зелёный receipt от bundled
+назначь unique `packet_id`, сформулируй настоящий semantic role и получи зелёный receipt от bundled
 [`model_routing_guard.py`](../scripts/model_routing_guard.py). Exact параметры
 и dispatch fingerprint успешного receipt перенеси в один фактический spawn без
 наследования или подмены: для Luna-lane явно укажи `model="gpt-5.6-luna"`,
@@ -95,6 +98,40 @@ fan-in, тестов и lifecycle effects. Если tool не раскрывае
 Receipt с другим `packet_id` либо fingerprint не подтверждает этот dispatch.
 Сам Python guard не перехватывает прямой platform spawn: его пропуск является
 protocol violation, которое должно остановить mode-valid run при обнаружении.
+
+## Wave-owner lifecycle — bounded event path
+
+Для нового direct owner-а normal trace содержит ровно:
+
+```text
+routing guard ×1 → spawn owner ×1 → event wait ×1
+```
+
+Выбери owner deadline короче остатка общего run ceiling и передай его в packet.
+Owner не отправляет routine progress родителю: возвращает только complete
+handoff, `needs_attention` с одним узким вопросом либо deadline handoff с полным
+или partial finding ledger. Coordinator использует одно событийное ожидание до
+одного из этих outcomes. Пока state не изменился, не вызывай `list_agents`,
+короткие polling waits, status probes, пустые `send_message` или другие nudges.
+
+На малом scope independent review owner читает exact candidate сам. На большом
+он может создать read-only lenses по независимым risk surfaces, но собирает их в
+один ledger и не передаёт parent-у поток внутренних сообщений. `Баланс` и `Рой`
+держат implementation/review/reduction внутри packet/swarm owner-а; в
+`Классическом` direct owner владеет independent review; Luna top-level
+`Экономичного` создаёт одного direct independent review owner-а.
+
+После material rework продолжи существующего owner-а и ту же независимую
+reviewer session:
+
+```text
+follow-up exact changed candidate ×1 → event wait ×1
+```
+
+Не запускай новый guard/spawn, пока не доказаны недоступность прежнего
+reviewer-а, потеря независимости либо material изменение review contract.
+Незавершённый review запрещает terminal acceptance; `Экономичный` может
+сохранить partial ledger как deferred gate resumable checkpoint.
 
 ## Writer admission — hard gate
 

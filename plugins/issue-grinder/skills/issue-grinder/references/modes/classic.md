@@ -1,6 +1,6 @@
 # Классический
 
-Применяет `IG-MODE-03` и mode-specific части `IG-MA-14..17` только когда
+Применяет `IG-MODE-03` и mode-specific части `IG-MA-14..19` только когда
 сохранённый `canonical_mode=classic`. Общие resolver, authority, recovery и
 evidence rules бери из [Execution modes](../execution-modes.md); остальные
 mode-файлы не читай.
@@ -27,6 +27,16 @@ mode-файлы не читай.
    себе не является blocker-ом. Явный пользовательский role profile не
    подменяй.
 7. Один integration owner выполняет fan-in и aggregate checks.
-8. Controller/reviewer читает exact integrated diff, material source и raw
-   evidence, проводит final code/result review и только затем разрешает Done.
-9. Продолжай до empty active scope либо принятого terminal blocker handoff.
+8. Каждый exact integrated candidate, включая простой или малый scope, до
+   terminal acceptance получает independent Luna Max review owner. Это
+   единственный direct child проверочной волны: он проходит один заранее
+   разрешённый routing guard, один spawn и один event-driven wait, сам читает
+   candidate и возвращает один finding ledger. Не запускай status polling,
+   повторные `list` или nudges при неизменном состоянии.
+9. При material rework продолжи того же owner-а и ту же reviewer session:
+   один follow-up с exact changed candidate и один event-driven wait без нового
+   guard/spawn. Replacement допустим только по доказанной причине.
+10. Controller/reviewer читает exact integrated diff, material source, raw
+    evidence и независимый ledger, проводит final code/result review и только
+    затем разрешает Done.
+11. Продолжай до empty active scope либо принятого terminal blocker handoff.

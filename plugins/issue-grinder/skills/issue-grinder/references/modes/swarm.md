@@ -1,7 +1,7 @@
 # Рой
 
 Применяет `IG-MODE-05`, mode-specific части `IG-MODE-08..09` и
-`IG-MA-15..17` только когда сохранённый `canonical_mode=swarm`. Общие resolver,
+`IG-MA-15..19` только когда сохранённый `canonical_mode=swarm`. Общие resolver,
 authority, recovery и evidence rules бери из
 [Execution modes](../execution-modes.md); остальные mode-файлы не читай.
 
@@ -15,6 +15,12 @@ authority, recovery и evidence rules бери из
 minimal-diff/reliability alternatives, critics, test authors, economical
 judges и evidence reducers. Различай подходы; множество одинаковых prompts
 создаёт коррелированные ошибки и не является достаточным разнообразием.
+
+Для всей bounded wave создай одного direct Luna Max swarm owner-а. Он является
+единственным child, видимым Sol/controller-у, и внутри своей волны управляет
+scouts, candidates, critics, test authors, economical judges, independent
+reviewer-ом, evidence reducers и bounded rework. Sol/controller получает один
+consolidated handoff, а не ведёт каждого участника напрямую.
 
 Все содержательные child roles `Роя` по умолчанию являются Luna Max: scouts,
 design/implementation candidates, minimal-diff/reliability alternatives,
@@ -45,8 +51,20 @@ Luna для scouts/critics; свободная capacity не создаёт ис
 3. reducer оставляет один recommended candidate и максимум один runner-up при
    действительно material unresolved fork;
 4. integration owner принимает только task-owned commit выбранного candidate;
-5. reviewer получает compressed review packet, а не transcripts всех agents;
-6. замечания создают новую bounded rework wave и повторный exact review.
+5. независимый reviewer, который не был автором выбранного candidate, получает
+   compressed review packet, а не transcripts всех agents; прежние critics,
+   judges и большинство одобрений эту проверку не заменяют;
+6. замечания создают bounded rework внутри того же owner-а; после material
+   rework та же reviewer session получает exact changed candidate одним
+   follow-up и проходит один новый event-driven wait без replacement
+   guard/spawn.
+
+Новый direct swarm owner проходит один заранее разрешённый routing guard, один
+spawn и один event-driven wait до результата, запроса внимания или deadline.
+Owner применяет тот же gate к своим children, не отправляет routine progress
+родителю и возвращает полный либо частичный finding ledger. Sol/controller не
+ищет guard, не читает его `--help`, не делает status polling, повторные `list`
+или пустые nudges при неизменном состоянии.
 
 При ambiguity, contract/context conflict, unexpected tool/environment state,
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
@@ -54,7 +72,9 @@ scope expansion или proof gap Luna сохраняет checkpoint/evidence и 
 candidate, но не параллельную копию того же подхода. Недоступная automatic Luna
 не разрешает заменить wave Sol/GPT-5.4 children. Используй доступную serial Luna
 lane либо сохрани candidates/evidence и честно остановись до следующей capacity;
-явный пользовательский role profile не подменяй.
+явный пользовательский role profile не подменяй. Если swarm owner не может
+создать обязательную независимую проверку, верни checkpoint/evidence и не
+объявляй terminal acceptance.
 
 Останови новые attempts, когда candidate прошёл acceptance/final gate,
 дальнейшие waves перестали добавлять независимые гипотезы/evidence, исчерпан

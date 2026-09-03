@@ -18,7 +18,10 @@ initial_main_model: <exact effective model>
 initial_main_effort: <exact effective effort when available>
 controller_profile: <effective profile>
 worker_profile: <effective profile>
+routing_guard_path: <once-resolved absolute bundled path>
 routing_receipts: <pre-dispatch receipts and observed child profiles>
+wave_owner: <one direct owner and its deadline>
+review_session: <independent reviewer identity and current state>
 expensive_work_ledger: <reason-coded controller/reviewer work when required by mode>
 ```
 
@@ -92,7 +95,9 @@ resolvable anchors для root.
 
 Для каждого Issue Grinder execution-child dispatch заранее отдели смысловую роль от platform
 `agent_type` и выполни bundled `scripts/model_routing_guard.py` по его
-абсолютному resolved path. Receipt фиксирует unique `packet_id`, canonical
+абсолютному resolved path. Разреши этот путь один раз при загрузке multi-agent
+runtime и сохрани его в mode record; не ищи script и не читай `--help` перед
+каждым dispatch без доказанного package/path mismatch. Receipt фиксирует unique `packet_id`, canonical
 mode, semantic role, `agent_type`, exact requested model/effort, bounded
 `fork_turns`, fingerprint этих dispatch args и, когда tool surface его
 раскрывает, exact observed model/effort. До зелёного pre-dispatch receipt child
@@ -143,6 +148,9 @@ enforcement. Настоящий unskippable gate возможен только �
 - один effect owner владеет Goal, Task Manager writes, fan-in и publication;
 - один exact integrated candidate является предметом acceptance;
 - worker self-report и isolated green tests не являются final evidence;
+- любой non-Solo exact candidate до terminal acceptance получает independent
+  reviewer-а, который не был его автором; малый или простой scope review не
+  отменяет;
 - intentional cheap failures не размножают deployment, shared mutable state,
   external recipients, paid external calls или terminal Task Manager effects;
 - после material rework exact changed candidate проходит применимый review
@@ -154,6 +162,41 @@ enforcement. Настоящий unskippable gate возможен только �
   содержательную delivery-работу. Agent-backed Strategic Explainer, connector
   или другой semantic provider остаётся вне неё, пока исполняет только свой
   ограниченный interface; техническое положение в thread tree этого не меняет.
+
+## Wave ownership и событийная координация
+
+В `Классическом`, `Балансе`, `Рое` и `Экономичном` каждая многоагентная рабочая
+или проверочная волна имеет одного direct owner-а. Internal workers, critics,
+verifiers, reviewers и reducers создаются owner-ом и не становятся прямыми
+children дефицитного coordinator-а. В `Классическом` owner сам выполняет
+independent review; в `Балансе` packet lead отделяет автора от reviewer-а; в
+`Рое` swarm owner управляет всей bounded candidate/review/reduction wave; в
+`Экономичном` Luna root вызывает одного independent review owner-а, а non-Luna
+shell — одного Luna supervisor-а со внутренним reviewer-ом.
+
+Normal direct-owner lifecycle:
+
+```text
+resolved routing guard ×1 → spawn owner ×1 → event wait ×1
+```
+
+Owner не отправляет routine progress родителю. Event wait длится до результата,
+запроса внимания или owner deadline, который короче остатка общего run ceiling.
+При неизменном состоянии запрещены discovery/`--help`, status polling, повторные
+`list` и пустые nudges. На deadline owner возвращает полный либо partial finding
+ledger, а не исчезает без handoff.
+
+После material rework переиспользуй того же owner-а и ту же reviewer session:
+
+```text
+follow-up exact changed candidate ×1 → event wait ×1
+```
+
+Новый guard/spawn допустим только после доказанной недоступности прежнего
+reviewer-а, потери независимости либо material изменения review contract. На
+большом scope owner может создавать read-only lenses по независимым risk
+surfaces; parent всё равно получает один exact candidate и один consolidated
+ledger.
 
 ## Выбранный режим — обязательная загрузка
 

@@ -63,16 +63,27 @@ record в continuity и не пересчитывай его после compacti
    подтверждённых model-routing и двухфазного worktree admission. Для каждого
    child перенеси в spawn exact model/effort/fork из зелёного routing receipt;
    наследование root profile не считается выбором worker profile.
-   Если выбранный mode назначает economical packet lead, оставь ему полный
-   routine loop ограниченного пакета и получи один compact evidence handoff;
-   не расходуй coordinator profile на пошаговое дублирование его research,
-   implementation, tests, critique и rework. Packet lead не получает Goal,
-   Task Manager, fan-in, publication или final-acceptance authority.
+   В каждом non-Solo режиме создай ровно одного direct wave owner-а и оставь
+   ему внутренние workers/critics/reviewers/reducers. Новый owner проходит один
+   заранее разрешённый guard, один spawn и один event-driven wait; при
+   неизменном состоянии не ищи guard, не читай `--help`, не делай status polling,
+   повторные `list` или nudges. Получи один compact evidence handoff и не
+   расходуй coordinator profile на пошаговое дублирование внутренней волны.
+   В `Балансе` этот owner является economical packet lead и владеет полным
+   внутренним циклом пакета.
+   Packet/wave owner не получает Goal, Task Manager, fan-in, publication или
+   final-acceptance authority.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
 4. Реализуй issue outcome по mode promise, используя Strategic Outcome для
    локальных trade-offs без расширения scope; интегрируй только task-owned
    изменения и проверь exact integrated version по acceptance issue.
+   Во всех режимах, кроме `Соло`, даже простой exact candidate до terminal
+   acceptance получает independent reviewer-а, который не был его автором.
+   После material rework продолжи того же owner-а и reviewer session одним
+   follow-up и одним event-driven wait без нового guard/spawn. Partial review
+   блокирует terminal acceptance; только `Экономичный` может сохранить его как
+   deferred gate resumable checkpoint.
 5. Для любого другого status transition подготовь причинный comment, пройди
    reflection, опубликуй и перечитай comment, затем измени status с optimistic
    concurrency и перечитай issue.

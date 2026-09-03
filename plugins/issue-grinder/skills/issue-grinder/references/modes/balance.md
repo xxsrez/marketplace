@@ -1,7 +1,7 @@
 # Баланс
 
 Применяет `IG-MODE-04`, mode-specific части `IG-MODE-08..09` и
-`IG-MA-15..17` только когда сохранённый `canonical_mode=balance`. Общие
+`IG-MA-15..19` только когда сохранённый `canonical_mode=balance`. Общие
 resolver, authority, recovery и evidence rules бери из
 [Execution modes](../execution-modes.md); остальные mode-файлы не читай.
 
@@ -31,20 +31,22 @@ resolver, authority, recovery и evidence rules бери из
 4. До первой source mutation или targeted test создай первую Luna Max wave.
    Обычная форма — один Luna packet lead, который получает self-contained
    contract и владеет полным внутренним циклом пакета: research,
-   implementation, tests, economical critique и rework. Если nested delegation
-   недоступна, coordinator сохраняет тот же дешёвый цикл через direct Luna
-   lanes; он не выполняет их работу сам.
+   implementation, tests, economical critique и rework. Он является
+   единственным direct wave owner для дорогого coordinator-а; внутренние
+   writers, critics и verifier-ы остаются его children. Если nested delegation
+   недоступна, lead возвращает checkpoint и proof gap: coordinator не
+   разворачивает внутреннюю волну в собственный плоский набор children.
 5. Каждый execution-child получает уникальный `packet_id`, зелёный
    `issue-grinder/model-routing/v2` receipt, точные
    `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
    совпадающий dispatch fingerprint. Packet lead может создавать только
    mode-compatible Luna execution-children с такими же receipts и не получает
    Task Manager, publication, integration либо final-acceptance authority.
-6. Существенно изменившийся candidate до дорогого final gate передай
-   независимому Luna verifier/critic, когда такая проверка возможна. Дай ему
-   current requirements, exact diff/source anchors и oracle, но не используй
-   итоговый self-report автора как доказательство. Отсутствие независимой
-   проверки сохрани как явный proof gap.
+6. Каждый exact candidate до дорогого final gate, включая простой или малый
+   scope, передай независимому Luna verifier/critic внутри packet-owner wave.
+   Дай ему current requirements, exact diff/source anchors и oracle, но не
+   используй итоговый self-report автора как доказательство. Отсутствующая либо
+   незавершённая проверка остаётся незакрытым gate и запрещает terminal result.
 7. Packet result содержит один exact candidate либо checkpoint, owned surfaces,
    checks с raw results, source anchors, material decisions, known defects,
    unknowns и finding ledger. Для каждого material finding допустим только
@@ -53,6 +55,14 @@ resolver, authority, recovery и evidence rules бери из
 8. Исправление возвращай в Luna-owned loop. Новая wave оправдана новым
    evidence, изменённым состоянием, иной гипотезой или сохраняющейся ожидаемой
    ценностью; одинаковый retry без новой информации запрещён.
+   После material rework packet owner продолжает ту же reviewer session одним
+   follow-up и одним event-driven wait без replacement guard/spawn.
+
+Новый direct packet owner проходит один заранее разрешённый routing guard, один
+spawn и один event-driven wait до результата, запроса внимания или deadline. Не
+ищи guard, не читай его `--help`, не запускай status polling, повторные `list`
+или пустые nudges при неизменном состоянии. Owner не отправляет routine progress
+родителю и возвращает один consolidated handoff.
 
 ## Адаптивная избыточность
 
