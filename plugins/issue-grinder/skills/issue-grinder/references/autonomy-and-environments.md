@@ -20,6 +20,13 @@ compaction и interruption. Terminal result, явная отмена или яв
   как Production и отказаться.
 - Default environment для необходимого effect — подтверждённый UAT. Staging и
   другая доказанно non-production среда допустимы.
+- Классифицируй environment по current project context/profile и exact target,
+  а не по общей подписи connector-а, tool schema или platform guard. Метка
+  `production`, которой provider называет любой публичный hosted deployment,
+  не превращает подтверждённый project UAT в Product Production и не является
+  основанием спрашивать подтверждение. Вызывай обычную прямую операцию exact UAT;
+  фактический platform gate не обходи, а его отказ сохраняй как provider
+  evidence и проводи через blocker loop без внутреннего permission loop.
 - Target разрешай перед первым environment effect, а не как бессмысленный
   preflight для локальной работы. Неизвестный UAT — ранний context failure до
   environment mutation; Production не fallback.

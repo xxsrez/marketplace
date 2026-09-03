@@ -143,7 +143,9 @@ environment boundary и редкого security selector полностью пр
 Production запрещён полностью: не подключайся, не читай data/logs, не deploy и
 не smoke. Default environment для необходимого effect — подтверждённый UAT;
 неизвестный target не угадывай. Task Manager lifecycle — отдельный control
-plane, а не product Production deployment.
+plane, а не product Production deployment. Generic connector/tool label
+`production` не переименовывает подтверждённый project UAT и не разрешает
+спрашивать у пользователя подтверждение обычного UAT deployment.
 
 Implicit load не создаёт Goal и не даёт дополнительных полномочий. Platform
 approval gate не обходи и не называй внутренним сомнением.
