@@ -34,15 +34,17 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
+        normalized = " ".join(skill.split())
 
         self.assertIn(
             "Start each relevant workflow with fresh `list_minds`.",
             skill,
         )
         self.assertIn(
-            "When the user names a Mind, require that exact Mind in the fresh projection",
+            "When the current user names Personal Mind or asks to read or use My Mind",
             skill,
         )
+        self.assertIn("Personal Mind has `routing_profile=personal_default` and no description", normalized)
         self.assertIn(
             "Otherwise select only the readable Mind or Minds whose descriptions genuinely",
             skill,
@@ -80,7 +82,11 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             manifest["interface"]["longDescription"],
         )
         self.assertIn(
-            "automatically preserves relevant durable knowledge",
+            "writes specific Personal-Mind knowledge only after that user directly asks",
+            manifest["interface"]["longDescription"],
+        )
+        self.assertIn(
+            "may automatically preserve matching durable knowledge",
             manifest["interface"]["longDescription"],
         )
         self.assertRegex(
@@ -464,20 +470,27 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("The request `mind` must assert the exact fresh singleton", skill)
         self.assertIn("Do not expose principal, token, grant, email, internal", skill)
 
-    def test_skill_automatically_preserves_discussed_durable_knowledge(self) -> None:
+    def test_skill_separates_requested_personal_writes_from_ordinary_automatic_preservation(self) -> None:
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
+        normalized = " ".join(skill.split())
 
-        preservation = skill.index("## Consider automatic preservation")
+        preservation = skill.index("## Choose write authority")
         boundaries = skill.index("## Product boundaries")
         self.assertLess(preservation, boundaries)
         for required in (
+            "For Personal Mind, write only when the current user directly asks",
+            "Discussion, durability, relevance, ambiguity, a previous request",
+            "does not authorize a Personal write",
+            "Personal `read_write` is only effective capability, not automatic consent",
+            "For an ordinary `description_based` writable Mind",
             "consider every newly discussed piece of durable",
             "explicitly discussed in this current conversation",
-            "Do not ask\nfor a separate write instruction, toggle or confirmation",
-            "Private or sensitive\nknowledge may be saved",
-            "Do not collect nearby conversation, files,\nbrowser history, readable corpus",
+            "Do not ask for a separate write instruction, toggle or confirmation for a",
+            "This never supplies the direct current request required for Personal Mind",
+            "Private or sensitive knowledge may be saved",
+            "Do not collect nearby conversation, files, browser history, readable corpus",
             "pass optional `source_references`",
             "Fetch a targeted existing Memory",
             "create, update, explicit delete or semantic no-op",
@@ -486,7 +499,7 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             "call `reconcile_changeset` with the exact",
             "Briefly tell the user what was",
         ):
-            self.assertIn(required, skill)
+            self.assertIn(required, normalized)
 
         for retired in (
             "get_mind_bindings",

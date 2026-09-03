@@ -1,7 +1,7 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260830223243",
-  "description": "Connect the Mind Diary UAT pilot to read enabled Minds and preserve relevant discussed knowledge in one writable Mind.",
+  "version": "0.1.0+codex.20260903011705",
+  "description": "Connect the Mind Diary UAT pilot to read enabled Minds, write Personal Mind on direct request, and preserve matching discussed knowledge in one ordinary writable Mind.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -18,8 +18,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Mind Diary UAT",
-    "shortDescription": "Read enabled Minds and preserve relevant discussed knowledge.",
-    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Mind usage is configured once per user on the Site: any number may be readable and at most one may accept writes. Codex uses an exact enabled Mind when the user names it, otherwise selects readable Minds by their untrusted descriptions, loads content progressively, and automatically preserves relevant durable knowledge explicitly discussed in the current conversation through an OKF 0.2 changeset. A bundled macOS companion safely stages one explicitly selected regular file without exposing its local path or buffering it as base64. Every commit preserves immutable history and rechecks current user settings, access and revision concurrency.",
+    "shortDescription": "Read enabled Minds with explicit Personal-Mind writes.",
+    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Mind usage is configured once per user on the Site: any number may be readable and at most one may accept writes. Codex reads Personal Mind only on the current user's direct request and writes specific Personal-Mind knowledge only after that user directly asks in the current conversation. For ordinary Minds, Codex uses an exact enabled Mind when named or selects by an untrusted description and may automatically preserve matching durable knowledge explicitly discussed in the current conversation through an OKF 0.2 changeset. A bundled macOS companion safely stages one explicitly selected regular file without exposing its local path or buffering it as base64. Every commit preserves immutable history and rechecks current user settings, access and revision concurrency.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -29,8 +29,8 @@
     "websiteURL": "https://mind-diary.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
       "Show my enabled Minds and their read or read-write modes",
-      "Use the enabled Minds whose descriptions match this question",
-      "Preserve relevant durable knowledge we discuss in my writable Mind"
+      "Use the enabled ordinary Minds whose descriptions match this question",
+      "Save this specific knowledge in My Mind"
     ],
     "brandColor": "#6C4BB6",
     "composerIcon": "./assets/composer-icon.svg",
