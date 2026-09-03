@@ -28,14 +28,16 @@ resolver, authority, recovery и evidence rules бери из
 
 ## Luna-owned packet loop
 
-4. До первой source mutation или targeted test создай первую Luna Max wave.
-   Обычная форма — один Luna packet lead, который получает self-contained
-   contract и владеет полным внутренним циклом пакета: research,
-   implementation, tests, economical critique и rework. Он является
-   единственным direct wave owner для дорогого coordinator-а; внутренние
-   writers, critics и verifier-ы остаются его children. Если nested delegation
-   недоступна, lead возвращает checkpoint и proof gap: coordinator не
-   разворачивает внутреннюю волну в собственный плоский набор children.
+4. До первой source mutation или targeted test создай первую Luna Max execution
+   stage. Обычно один Luna packet owner получает self-contained contract и
+   владеет research, implementation, tests и self-review одного bounded
+   candidate. Material fork, слабый oracle либо высокая ожидаемая ценность могут
+   оправдать несколько purpose-distinct candidate owners от общей exact base;
+   свободные слоты сами по себе этого не оправдывают. Если
+   он наблюдаемо умеет nested delegation, он может добавить mode-compatible
+   внутренние роли. Если нет, это normal platform shape, а не proof gap:
+   candidate завершается этим owner-ом, после чего coordinator запускает
+   отдельную direct Luna review stage.
 5. Каждый execution-child получает уникальный `packet_id`, зелёный
    `issue-grinder/model-routing/v2` receipt, точные
    `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
@@ -43,7 +45,11 @@ resolver, authority, recovery и evidence rules бери из
    mode-compatible Luna execution-children с такими же receipts и не получает
    Task Manager, publication, integration либо final-acceptance authority.
 6. Каждый exact candidate до дорогого final gate, включая простой или малый
-   scope, передай независимому Luna verifier/critic внутри packet-owner wave.
+   scope, передай независимому Luna verifier/critic. При недоступной nested
+   delegation это отдельный direct read-only owner, запущенный только после
+   завершения candidate stage. Если material fork дал несколько candidates,
+   этот же независимый owner сначала сводит их по oracle и negative evidence,
+   затем проверяет выбранный exact candidate.
    Дай ему current requirements, exact diff/source anchors и oracle, но не
    используй итоговый self-report автора как доказательство. Отсутствующая либо
    незавершённая проверка остаётся незакрытым gate и запрещает terminal result.
@@ -52,17 +58,17 @@ resolver, authority, recovery и evidence rules бери из
    unknowns и finding ledger. Для каждого material finding допустим только
    disposition `fixed | refuted_with_evidence | escalate`; несколько общих
    одобрений не перевешивают один воспроизводимый дефект.
-8. Исправление возвращай в Luna-owned loop. Новая wave оправдана новым
+8. Исправление возвращай тому же Luna candidate owner. Новая wave оправдана новым
    evidence, изменённым состоянием, иной гипотезой или сохраняющейся ожидаемой
    ценностью; одинаковый retry без новой информации запрещён.
-   После material rework packet owner продолжает ту же reviewer session одним
-   follow-up и одним event-driven wait без replacement guard/spawn.
+   После material rework продолжи того же reviewer-а с exact changed candidate;
+   replacement guard/spawn без доказанной причины не создавай.
 
-Новый direct packet owner проходит один заранее разрешённый routing guard, один
-spawn и один event-driven wait до результата, запроса внимания или deadline. Не
-ищи guard, не читай его `--help`, не запускай status polling, повторные `list`
-или пустые nudges при неизменном состоянии. Owner не отправляет routine progress
-родителю и возвращает один consolidated handoff.
+Каждый новый direct stage owner проходит заранее разрешённый routing guard и
+один spawn; `event-driven wait` длится до результата, запроса внимания или deadline.
+Не ищи guard, не читай его `--help`, не запускай status polling, повторные
+`list` или пустые nudges при неизменном состоянии. Owner не отправляет routine
+progress родителю и возвращает один consolidated handoff.
 
 ## Адаптивная избыточность
 
@@ -90,7 +96,8 @@ spawn и один event-driven wait до результата, запроса в
     integrated candidate и формирует компактный review packet. Summary служит
     навигацией к source/check evidence; сырой transcript всех Luna waves не
     является обязательным reviewer input.
-14. Reviewer проводит final code/result gate точной интегрированной версии.
+14. Только после завершения Luna candidate/review/rework stages
+    controller/reviewer проводит final code/result gate точной интегрированной версии.
     После material rework повтори exact-candidate gate. Без final gate не
     выдавай непроверенный result за terminal.
 15. Первый содержательный Luna handoff является gate режима. Отсутствующий или

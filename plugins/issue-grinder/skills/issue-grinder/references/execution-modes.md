@@ -20,7 +20,7 @@ controller_profile: <effective profile>
 worker_profile: <effective profile>
 routing_guard_path: <once-resolved absolute bundled path>
 routing_receipts: <pre-dispatch receipts and observed child profiles>
-wave_owner: <one direct owner and its deadline>
+campaign_stages: <bounded direct or nested owner stages and deadlines>
 review_session: <independent reviewer identity and current state>
 expensive_work_ledger: <reason-coded controller/reviewer work when required by mode>
 ```
@@ -163,18 +163,19 @@ enforcement. Настоящий unskippable gate возможен только �
   или другой semantic provider остаётся вне неё, пока исполняет только свой
   ограниченный interface; техническое положение в thread tree этого не меняет.
 
-## Wave ownership и событийная координация
+## Владение стадиями и событийная координация
 
-В `Классическом`, `Балансе`, `Рое` и `Экономичном` каждая многоагентная рабочая
-или проверочная волна имеет одного direct owner-а. Internal workers, critics,
-verifiers, reviewers и reducers создаются owner-ом и не становятся прямыми
-children дефицитного coordinator-а. В `Классическом` owner сам выполняет
-independent review; в `Балансе` packet lead отделяет автора от reviewer-а; в
-`Рое` swarm owner управляет всей bounded candidate/review/reduction wave; в
-`Экономичном` Luna root вызывает одного independent review owner-а, а non-Luna
-shell — одного Luna supervisor-а со внутренним reviewer-ом.
+Каждая многоагентная campaign разбивается на ограниченные стадии. Каждая direct
+рабочая или проверочная волна внутри стадии имеет ровно одного owner-а и один
+понятный outcome. Internal roles остаются за одним owner-ом только при
+наблюдаемой nested delegation; неизвестная child tool surface не считается
+такой capability. Когда вложенность недоступна, `Баланс` использует отдельные
+direct Luna execution и review stages, а `Рой` — bounded batch самостоятельных
+direct candidate waves и последующий direct Luna reducer/reviewer. Это
+mode-compatible fallback, а не
+основание остановить terminal run.
 
-Normal direct-owner lifecycle:
+Normal lifecycle каждого нового direct owner-а:
 
 ```text
 resolved routing guard ×1 → spawn owner ×1 → event wait ×1
@@ -182,9 +183,10 @@ resolved routing guard ×1 → spawn owner ×1 → event wait ×1
 
 Owner не отправляет routine progress родителю. Event wait длится до результата,
 запроса внимания или owner deadline, который короче остатка общего run ceiling.
-При неизменном состоянии запрещены discovery/`--help`, status polling, повторные
-`list` и пустые nudges. На deadline owner возвращает полный либо partial finding
-ledger, а не исчезает без handoff.
+Независимых owners одной стадии можно ждать общим event mechanism. При
+неизменном состоянии запрещены discovery/`--help`, status polling, повторные
+`list` и пустые nudges. На deadline owner возвращает candidate/ledger либо
+точный partial handoff, а не исчезает без evidence.
 
 После material rework переиспользуй того же owner-а и ту же reviewer session:
 
@@ -192,11 +194,11 @@ ledger, а не исчезает без handoff.
 follow-up exact changed candidate ×1 → event wait ×1
 ```
 
-Новый guard/spawn допустим только после доказанной недоступности прежнего
-reviewer-а, потери независимости либо material изменения review contract. На
-большом scope owner может создавать read-only lenses по независимым risk
-surfaces; parent всё равно получает один exact candidate и один consolidated
-ledger.
+Новый reviewer guard/spawn допустим только после доказанной недоступности
+прежнего reviewer-а, потери независимости либо material изменения review
+contract. На большом scope доказанно способный owner может создавать внутренние
+read-only lenses; иначе direct lenses ограничиваются независимыми risk surfaces,
+а один final reviewer получает их compact findings и exact candidate.
 
 ## Выбранный режим — обязательная загрузка
 

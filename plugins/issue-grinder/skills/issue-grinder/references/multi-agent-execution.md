@@ -34,15 +34,29 @@ facts, constraints, expected outcome, verification и, для конкуриру
 изобретать requirements, работу, verification либо stopping condition. После
 resume или material scope change packet пересобирается из current sources.
 
-Каждая non-Solo multi-agent wave имеет ровно одного direct owner-а, а не плоский
-набор children operational coordinator-а. Owner остаётся execution-child внутри
-bounded packet/wave, а не вторым операционным coordinator-ом. Он может вести
-routine research/implementation/test/critique/rework loop и при nested
-delegation создавать только mode-compatible execution-children с собственными
-routing receipts. Packet/wave owner не пишет Task Manager, не вызывает Strategic
-Explainer, не делает fan-in в общий candidate и не принимает final result. Если
-nested delegation недоступна, owner возвращает checkpoint/proof gap; coordinator
-не разворачивает внутренние роли в собственный плоский набор direct children.
+Оркестрация строится как bounded campaign из стадий. Каждая direct стадия
+состоит из одной или нескольких самостоятельных атомарных рабочих волн с одним
+owner-ом и одним понятным outcome у каждой волны; последующая проверочная волна
+также имеет одного независимого owner-а. Поэтому direct candidate authors не
+считаются внутренними авторами общей скрытой волны. Не предполагай nested
+delegation из имени, типа или обещания
+execution-child: она считается доступной только когда фактическая child tool
+surface позволяет создавать и ожидать mode-compatible agents. При доказанной
+capability один direct owner может вести внутренние роли с отдельными routing
+receipts. При её отсутствии operational coordinator использует только прямые
+стадии, предусмотренные mode-файлом; отсутствие вложенности само по себе не
+создаёт checkpoint и не снимает terminal promise.
+
+`Баланс` без nested delegation использует последовательные direct stages:
+обычно один Luna execution owner возвращает exact candidate, затем другой Luna
+owner, не бывший автором, возвращает independent finding ledger. Material fork
+может оправдать несколько атомарных candidate waves; тогда reviewer также
+сводит варианты перед проверкой выбранного exact candidate. `Рой` использует
+bounded direct candidate stage от общей exact base, затем отдельного Luna
+reducer/reviewer. Прямое число owners ограничивается полезными ролями и
+campaign envelope, а не свободными слотами. Packet/campaign owner не пишет Task
+Manager, не вызывает Strategic Explainer, не делает fan-in в общий candidate и
+не принимает final result.
 
 ## Startup recovery — before new work
 
@@ -99,30 +113,35 @@ Receipt с другим `packet_id` либо fingerprint не подтвержд
 Сам Python guard не перехватывает прямой platform spawn: его пропуск является
 protocol violation, которое должно остановить mode-valid run при обнаружении.
 
-## Wave-owner lifecycle — bounded event path
+## Direct-stage lifecycle — bounded event path
 
-Для нового direct owner-а normal trace содержит ровно:
+Для каждого нового direct owner-а normal trace содержит один заранее
+разрешённый routing guard, один spawn и событийное ожидание до результата,
+запроса внимания либо deadline. Несколько одновременно запущенных независимых
+owners можно ждать одним доступным multi-target/event mechanism; требование не
+создаёт отдельный polling turn на каждого. Пока состояние не изменилось, не
+вызывай `list_agents`, короткие повторные waits, status probes, пустые
+`send_message` или другие nudges.
 
-```text
-routing guard ×1 → spawn owner ×1 → event wait ×1
-```
+Каждая стадия возвращает один consolidated handoff на owner: exact candidate
+либо ledger, task-owned identity, checks, known defects, negative evidence и
+следующий разрешённый переход. На малом scope direct reviewer читает exact
+candidate сам. На большом он может использовать nested read-only lenses только
+при доказанной capability; иначе coordinator создаёт ограниченные direct lenses
+по независимым поверхностям риска и передаёт их результаты одному final reviewer,
+не заставляя дорогой профиль читать их сырые transcripts.
 
-Выбери owner deadline короче остатка общего run ceiling и передай его в packet.
-Owner не отправляет routine progress родителю: возвращает только complete
-handoff, `needs_attention` с одним узким вопросом либо deadline handoff с полным
-или partial finding ledger. Coordinator использует одно событийное ожидание до
-одного из этих outcomes. Пока state не изменился, не вызывай `list_agents`,
-короткие polling waits, status probes, пустые `send_message` или другие nudges.
+В `Балансе` normal order — `control brief → Luna execution candidate(s) → Luna
+independent reduction/review/rework → integrated checks → controller final
+review`. Первый дорогой
+review exact candidate начинается только после завершения Luna stages. В `Рое`
+normal order — `control brief → Luna candidate campaign → Luna reduction and
+independent review → integration → controller final review`. Coordinator может
+механически вести routing, ownership и fan-in между стадиями, но не выполняет за
+Luna их research, implementation, tests или critique.
 
-На малом scope independent review owner читает exact candidate сам. На большом
-он может создать read-only lenses по независимым risk surfaces, но собирает их в
-один ledger и не передаёт parent-у поток внутренних сообщений. `Баланс` и `Рой`
-держат implementation/review/reduction внутри packet/swarm owner-а; в
-`Классическом` direct owner владеет independent review; Luna top-level
-`Экономичного` создаёт одного direct independent review owner-а.
-
-После material rework продолжи существующего owner-а и ту же независимую
-reviewer session:
+После material rework продолжи существующего candidate owner-а и ту же
+независимую reviewer session:
 
 ```text
 follow-up exact changed candidate ×1 → event wait ×1

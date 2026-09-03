@@ -63,15 +63,18 @@ record в continuity и не пересчитывай его после compacti
    подтверждённых model-routing и двухфазного worktree admission. Для каждого
    child перенеси в spawn exact model/effort/fork из зелёного routing receipt;
    наследование root profile не считается выбором worker profile.
-   В каждом non-Solo режиме создай ровно одного direct wave owner-а и оставь
-   ему внутренние workers/critics/reviewers/reducers. Новый owner проходит один
-   заранее разрешённый guard, один spawn и один event-driven wait; при
-   неизменном состоянии не ищи guard, не читай `--help`, не делай status polling,
-   повторные `list` или nudges. Получи один compact evidence handoff и не
-   расходуй coordinator profile на пошаговое дублирование внутренней волны.
-   В `Балансе` этот owner является economical packet lead и владеет полным
-   внутренним циклом пакета.
-   Packet/wave owner не получает Goal, Task Manager, fan-in, publication или
+   Не предполагай, что execution-child умеет создавать собственных agents:
+   nested delegation допустима только при наблюдаемой такой capability. Если её
+   нет, используй mode-specific direct stages без остановки terminal-режима. В
+   `Балансе` direct Luna execution owner возвращает один candidate, затем
+   отдельный direct Luna reviewer независимо проверяет его до единственного
+   итогового review controller-а. В `Рое` controller один раз задаёт bounded
+   campaign, напрямую запускает оправданные изолированные Luna candidates, а
+   после их завершения — одного Luna reducer/reviewer. Новый direct owner
+   проходит заранее разрешённый guard и один spawn; ожидание событийное, без
+   status polling, повторных `list` и пустых nudges. Coordinator получает только
+   compact handoffs и не дублирует Luna research, implementation или critique.
+   Ни один packet/campaign owner не получает Goal, Task Manager, publication или
    final-acceptance authority.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.

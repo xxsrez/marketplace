@@ -31,10 +31,10 @@ Strategic Explainer. Если тот же prompt ещё и явно поруча
   implementation, tests, независимую дешёвую проверку и rework;
   Sol/controller оставляет material decisions, интеграцию и final review;
   режим терминальный.
-- `Рой` — Luna-волны исследуют разные подходы, создают конкурирующие candidates
-  и возражения под одним Luna wave owner-ом; результат сокращается до одного
-  exact candidate и проходит независимый final review; режим терминальный и
-  намеренно допускает больше дешёвых попыток.
+- `Рой` — bounded Luna campaign исследует разные подходы, создаёт изолированные
+  конкурирующие candidates и возражения; отдельный Luna reducer/reviewer
+  сокращает их до одного exact candidate, после чего Sol/controller проводит
+  final review. Режим терминальный и намеренно допускает больше дешёвых попыток.
 - `Экономичный` — Luna выполняет всю содержательную работу и сохраняет один
   проверяемый candidate с независимой Luna-проверкой перед terminal acceptance;
   non-Luna root допустим только как transport/authority оболочка. Это
@@ -70,9 +70,9 @@ Sol получает compact evidence packet, а не сырой transcript де
 Final acceptance в обоих режимах остаётся за Sol/controller profile.
 
 Во всех режимах, кроме `Соло`, независимый reviewer сохраняется даже для малого
-scope. Coordinator видит одного владельца волны и получает один consolidated
-ledger; внутреннее число workers/critics не создаёт пропорциональное число
-дорогих guard, polling и status turns.
+scope. Если execution-child не имеет nested delegation, `Баланс` и `Рой`
+используют bounded direct stages вместо остановки; coordinator получает compact
+handoffs и не превращает число дешёвых workers/critics в polling loop.
 
 ## Быстрый выбор
 
