@@ -81,8 +81,9 @@ when all of these are true:
 - the knowledge was explicitly discussed in this current conversation rather
   than discovered by background scanning;
 - it will remain useful beyond the current exchange;
-- it genuinely fits the untrusted description of the single fresh
-  `read_write` Mind;
+- it genuinely fits the untrusted description of the single fresh ordinary
+  `read_write` Mind; an independently writable Personal Mind does not replace
+  or disqualify this ordinary destination;
 - fresh projection and current credential show effective write capability;
 - the change can be expressed as a bounded create, update, explicit delete or
   semantic no-op and validated as a complete OKF 0.2 bundle.
@@ -105,9 +106,11 @@ provenance from a snippet.
 ## Canonical changeset workflow
 
 Use ordinary `commit_changeset` for both user-requested writes and automatic
-preservation. The request `mind` must assert the exact fresh singleton
-`read_write` Mind; the server, not the client, resolves and pins the current
-principal-owned mount generation.
+preservation. The request `mind` must assert the exact selected Mind whose own
+Personal or ordinary lane is fresh and effective `read_write`; the server, not
+the client, resolves and pins that lane's current principal-owned mount
+generation. Personal and ordinary write lanes may both be active, so select by
+the authorization rules above rather than by writable-descriptor cardinality.
 
 1. Read the writable Mind's fresh HEAD and search the likely canonical paths.
    Fetch a targeted existing Memory before deciding whether the result is a
@@ -152,7 +155,7 @@ use ordinary local workspace read capability and never edit, reorganize or scan
 it for additional material. Never create a migration database or copy source
 project state.
 
-If the writable destination is Personal Mind, the same current request must
+If the selected writable destination is Personal Mind, the same current request must
 directly name Personal Mind as the destination for this specific transfer. An
 ordinary destination must match its untrusted description. Never infer either
 destination from the selected source.
@@ -208,12 +211,12 @@ or one exact workspace-generated artifact to the writable Mind. The server
 resolves the current principal-owned mount; the client supplies no destination
 generation or credential-owned target identifier.
 
-If the writable destination is Personal Mind, require that direct current
+If the selected writable destination is Personal Mind, require that direct current
 request to name Personal Mind for this specific file. An ordinary destination
 must match its untrusted description. Never infer a destination from the file,
 its name or its contents.
 
-1. Read the fresh enabled projection and current writable Mind HEAD. Use
+1. Read the fresh enabled projection and the selected writable Mind HEAD. Use
    `source_kind: local_path` for an ordinary selected path. Use
    `workspace/generated_artifact` only for one explicitly selected artifact in
    a canonical root supplied by trusted Codex process configuration through

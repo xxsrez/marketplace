@@ -46,6 +46,10 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertIn("Personal Mind has `routing_profile=personal_default` and no description", normalized)
         self.assertIn(
+            "Personal and ordinary write lanes may both be active",
+            normalized,
+        )
+        self.assertIn(
             "Otherwise select only the readable Mind or Minds whose descriptions genuinely",
             skill,
         )
@@ -79,6 +83,10 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         )
         self.assertIn(
             "configured once per user on the Site",
+            manifest["interface"]["longDescription"],
+        )
+        self.assertIn(
+            "at most one ordinary Mind may accept automatic writes, and Personal Mind may independently accept directly requested writes",
             manifest["interface"]["longDescription"],
         )
         self.assertIn(
@@ -459,15 +467,16 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
+        normalized = " ".join(skill.split())
 
         projection = skill.index("Start each relevant workflow with fresh `list_minds`")
         content_read = skill.index("## Progressive read workflow")
         self.assertLess(projection, content_read)
         self.assertIn("mode is `read` or `read_write`", skill)
-        self.assertIn("single fresh\n  `read_write` Mind", skill)
-        self.assertIn("server, not the client, resolves and pins the current", skill)
-        self.assertIn("principal-owned mount generation", skill)
-        self.assertIn("The request `mind` must assert the exact fresh singleton", skill)
+        self.assertIn("single fresh ordinary\n  `read_write` Mind", skill)
+        self.assertIn("server, not the client, resolves and pins that lane's current principal-owned mount", normalized)
+        self.assertIn("Personal and ordinary write lanes may both be active", normalized)
+        self.assertIn("The request `mind` must assert the exact selected Mind", skill)
         self.assertIn("Do not expose principal, token, grant, email, internal", skill)
 
     def test_skill_separates_requested_personal_writes_from_ordinary_automatic_preservation(self) -> None:

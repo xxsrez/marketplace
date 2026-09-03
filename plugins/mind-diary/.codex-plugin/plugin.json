@@ -1,6 +1,6 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260903011705",
+  "version": "0.1.0+codex.20260903133455",
   "description": "Connect the Mind Diary UAT pilot to read enabled Minds, write Personal Mind on direct request, and preserve matching discussed knowledge in one ordinary writable Mind.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Mind Diary UAT",
     "shortDescription": "Read enabled Minds with explicit Personal-Mind writes.",
-    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Mind usage is configured once per user on the Site: any number may be readable and at most one may accept writes. Codex reads Personal Mind only on the current user's direct request and writes specific Personal-Mind knowledge only after that user directly asks in the current conversation. For ordinary Minds, Codex uses an exact enabled Mind when named or selects by an untrusted description and may automatically preserve matching durable knowledge explicitly discussed in the current conversation through an OKF 0.2 changeset. A bundled macOS companion safely stages one explicitly selected regular file without exposing its local path or buffering it as base64. Every commit preserves immutable history and rechecks current user settings, access and revision concurrency.",
+    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Mind usage is configured once per user on the Site: any number may be readable, at most one ordinary Mind may accept automatic writes, and Personal Mind may independently accept directly requested writes. Codex reads Personal Mind only on the current user's direct request and writes specific Personal-Mind knowledge only after that user directly asks in the current conversation. For ordinary Minds, Codex uses an exact enabled Mind when named or selects by an untrusted description and may automatically preserve matching durable knowledge explicitly discussed in the current conversation through an OKF 0.2 changeset. A bundled macOS companion safely stages one explicitly selected regular file without exposing its local path or buffering it as base64. Every commit preserves immutable history and rechecks current user settings, access and revision concurrency.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
