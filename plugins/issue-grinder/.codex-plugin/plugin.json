@@ -1,6 +1,6 @@
 {
   "name": "issue-grinder",
-  "version": "0.1.0+codex.20260903120055",
+  "version": "0.1.0+codex.20260903124811",
   "description": "Deliver Task Manager scope, compose plans, and auto-review plans before launch or active long runs.",
   "author": {
     "name": "Andrey Myasnikov",

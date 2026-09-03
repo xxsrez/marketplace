@@ -29,9 +29,9 @@ delivery, кратко объясни или назови выбранный р�
 
 Для явно изолированной local model-forward evaluation без Task Manager, Goal,
 сети и external effects не читай run/Goal, Task Manager, autonomy и publication
-references. Прочитай отдельно и ровно по одному разу execution modes, выбранный
-mode, нужную multi-agent mechanics и local scope; не объединяй их в обрезаемый
-вывод и не делай `wc`. Topology, routing, review и final gate обязательны.
+references. Прочитай отдельно по одному разу linked execution modes, mode,
+multi-agent mechanics и local scope; не ищи их через `find`/`rg`, не объединяй
+в обрезаемый вывод и не делай `wc`. Routing, review и final gate обязательны.
 
 ## 1. Установи run, scope, режим и Goal
 
@@ -90,8 +90,8 @@ record в continuity и не пересчитывай его после compacti
    изменения и проверь exact integrated version по acceptance issue.
    Во всех режимах, кроме `Соло`, даже простой exact candidate до terminal
    acceptance получает independent reviewer-а, который не был его автором.
-   Для малого/среднего scope budgets: candidate 10 tool calls, review plan + exact
-   review 8, recheck 3, controller final gate 3; расширяй только по risk surfaces.
+   Для малого/среднего scope budgets: candidate 10 tool calls, review plan 3 +
+   exact review 5, recheck 3, controller final gate 3; расширяй по risk surfaces.
    Запрещены open-ended fuzzing, повторное чтение, parent-messaging discovery и
    read-only cleanup.
    После rework прежний reviewer проверяет reproducer, changed surfaces и suite.

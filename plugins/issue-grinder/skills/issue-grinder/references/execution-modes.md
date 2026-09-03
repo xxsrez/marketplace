@@ -194,7 +194,7 @@ commentary или nudge.
 Reviewer/reducer получает action budget и stopping condition до dispatch. Для
 малого/среднего scope normal budget — один source/diff pass, один основной suite
 и максимум три targeted risk probes. Численные defaults: candidate owner —
-десять tool calls, review plan вместе с exact review — восемь, recheck — три,
+десять tool calls, review plan — три, exact review — пять, recheck — три,
 controller final gate — три. Увеличивай их до dispatch только по числу
 независимых risk surfaces, а не Tasks, candidates или оставшегося времени. Один
 tool call может пакетировать связанные чтения или проверки без потери evidence.
@@ -206,6 +206,12 @@ candidate и запускает основной suite; известный за�
 не ищет parent messaging: final response является handoff. Те же запреты на
 повторные чтения, messaging discovery и read-only cleanup действуют для
 reviewer-а.
+
+Параллельная подготовка review заканчивает свой turn final response-ом не позже
+третьего tool call; это handoff плана и завершение turn, а не всей reviewer
+session. Не ищи messaging tool и не удерживай turn открытым. После candidate
+coordinator продолжает ту же session follow-up-ом, где exact review получает
+оставшиеся пять calls.
 
 После material rework переиспользуй того же owner-а и ту же reviewer session:
 

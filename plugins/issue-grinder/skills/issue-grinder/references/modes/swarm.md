@@ -81,6 +81,9 @@ discovery, cleanup из read-only роли и повторный общий по
 candidate и запускает suite. При read-only Git metadata и только одной writing
 lane используй task-owned shadow tree по общему multi-agent contract; несколько
 параллельных writers по-прежнему требуют отдельных admitted Git worktrees.
+После выбора reviewer-ом exact shadow candidate coordinator переносит его
+task-owned файлы одной механической операцией без вывода и повторного набора
+полного patch в model context; затем отдельно сверяет identity.
 
 Каждый новый direct campaign owner проходит заранее разрешённый routing guard и
 один spawn. Независимых candidate owners запускай как один bounded stage и

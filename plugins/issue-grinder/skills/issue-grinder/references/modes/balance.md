@@ -79,7 +79,7 @@ Execution packet заранее ограничивает полезные action
 задаёт один source/diff pass, один основной deterministic suite и только
 оправданные targeted risk probes; для малого/среднего scope по умолчанию не
 больше трёх. Численные defaults: candidate owner — максимум десять tool calls,
-review plan вместе с exact review — восемь, recheck — три, controller final gate
+review plan — три, exact review — пять, recheck — три, controller final gate
 — три. Увеличение фиксируется до dispatch и обосновывается независимыми risk
 surfaces, а не числом Tasks или свободным временем. Open-ended fuzzing,
 повторное чтение неизменившихся файлов, parent messaging discovery и cleanup из
@@ -92,6 +92,10 @@ Candidate owner делает один source pass, изменяет настоя
 shadow tree по общему multi-agent contract; read-only генерация патча остаётся
 последним fallback. Не заменяй работу в candidate повторной in-memory
 реконструкцией всего проекта.
+
+Параллельный review-plan turn завершается своим final handoff до четвёртого
+вызова; reviewer session остаётся доступна для follow-up с exact candidate. Он
+не ищет отдельный способ отправить plan родителю и не держит turn открытым.
 
 ## Адаптивная избыточность
 

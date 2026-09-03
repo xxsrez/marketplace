@@ -139,7 +139,7 @@ response родителю.
 Control brief задаёт каждому reviewer/reducer-у `review_envelope`: exact
 candidate identity, risk surfaces, action budget и stopping condition. Для
 малого/среднего scope defaults: candidate owner — десять tool calls, review plan
-вместе с exact review — восемь, recheck — три, controller final gate — три.
+— три, exact review — пять, recheck — три, controller final gate — три.
 Budget увеличивается до dispatch только по независимым risk surfaces. Candidate
 owner делает один source pass, работает с настоящим изолированным candidate и
 запускает основной suite; он не повторяет заведомо красный baseline без
@@ -148,6 +148,10 @@ owner делает один source pass, работает с настоящим 
 один suite и максимум три targeted probes. После rework он проверяет reproducer,
 changed surfaces и suite. Controller читает compact ledger и делает один exact
 pass с integrated suite, не повторяя exploration без противоречащего evidence.
+Параллельный review-plan turn заканчивается final response-ом в пределах трёх
+calls; это handoff и quiescence turn, а не потеря session. Exact candidate
+приходит в ту же session follow-up-ом с отдельным лимитом в пять calls. Reviewer
+не ищет messaging tool и не пытается оставаться активным между этими turns.
 
 В `Балансе` normal order — `control brief → parallel Luna execution candidate(s)
 + independent review planning → Luna exact reduction/review/rework → integrated
@@ -191,6 +195,14 @@ sandbox task-owned shadow tree точной base без `.git`, фиксируе
 artifact после проверки. Read-only review planning может идти параллельно,
 поскольку второго автора нет. Если даже shadow tree недоступен, используй один
 read-only patch-return packet. Controller не реализует candidate заново.
+
+Shadow path задаётся напрямую из packet identity; не исследуй reference tree,
+`.gitignore` или cache-каталоги ради его выбора. После review coordinator одним
+механическим действием переносит exact bytes только declared owned files
+(`rsync`/copy либо один автоматически построенный patch по local policy), затем
+отдельно сверяет identity. Не печатай полный diff в model context и не набирай
+его вручную по chunks; повторный integration action допустим только после
+конкретного conflict или tool failure.
 
 Перед каждой writer wave:
 
