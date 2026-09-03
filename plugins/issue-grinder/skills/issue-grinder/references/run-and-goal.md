@@ -74,3 +74,13 @@ issue contracts. Нетерминальный
 checkpoint `Экономичного` режима сохраняет Goal активным. Terminal blocker
 может изменить Goal только после publication и platform blocker gates из
 [Strategic Explainer routing](strategic-explainer.md).
+
+После первого принятого blocker-handoff сохрани checkpoint fingerprint из
+selector/frontier, заблокированного effect, current причин, authority boundary и
+resume signal. Автоматическое продолжение Goal без релевантного user signal или
+изменения primary state засчитывает следующий platform audit turn по этому
+checkpoint, но не повторяет browser/profile discovery, external proof, вопрос
+пользователю, publication или Strategic Explainer. До порога закончи turn без
+нового handoff; на пороге выполни только отсутствующий `update_goal(blocked)`.
+Релевантный resume signal либо изменившийся primary state инвалидирует
+checkpoint и возвращает run к live reconciliation.

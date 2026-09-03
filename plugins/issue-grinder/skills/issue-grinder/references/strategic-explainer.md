@@ -39,6 +39,12 @@ native и не имитируй provider method; остановка допуст
 обязательный безопасный текст невозможно сформировать либо ошибка одновременно
 сломала более широкую необходимую capability.
 
+Каждый завершившийся facade call закрыт навсегда. Не сохраняй его provider-child
+как канал и не используй `followup_task` или `send_message` для исправления либо
+следующей publication unit: caller repair и новая unit получают новый top-level
+semantic call. Автоматическое продолжение Goal с уже принятым неизменным
+blocker-handoff новой unit не создаёт и вообще не вызывает facade.
+
 ## Reflection gate
 
 Publication text и source basis читаются как reflection input. Проверь их по
@@ -74,7 +80,9 @@ Reason code, raw error или tool diary этого не заменяют. Об�
 Goal status `blocked` может следовать только после публикации общего report, всех
 отдельных ответов и platform blocker audit. Принятый комплект показывается
 пользователю и завершает текущую попытку даже если audit ещё не разрешает Goal
-mutation; в таком случае Goal остаётся активным.
+mutation; в таком случае Goal остаётся активным. Следующий автоматический turn
+с тем же blocker fingerprint не повторяет report, reason answers или user
+request.
 
 Финальный Goal comment возвращается только пользователю в чате. Task Manager
 получает только issue-level comments, требуемые его lifecycle.

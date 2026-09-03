@@ -121,16 +121,13 @@ facts, evidence и read-only anchors: не поручай им формулир�
 
 ## 3. Используй publication и awareness loop
 
-Перед каждым Task Manager comment, blocker-report и финальным Goal comment
-полностью прочитай
-[Strategic Explainer routing](references/strategic-explainer.md). Во всех
-режимах основной coordinator сам вызывает доступный semantic facade и не
+Перед каждым Task Manager comment, blocker-report и финальным Goal comment полностью прочитай
+[Strategic Explainer routing](references/strategic-explainer.md). Во всех режимах основной coordinator сам вызывает доступный semantic facade и не
 передаёт ему неподтверждённые факты либо delivery-работу выбранного scope.
 
-Comment или final draft — точка решения. Непонятый факт либо существенная
-обязательная работа текущего issue contract отменяют publication/status
-transition и возвращают run в delivery loop; strategic gap или необязательное
-улучшение остаются follow-up.
+Comment или final draft — точка решения. Непонятый факт либо существенная обязательная
+работа current issue contract отменяют publication/status transition и возвращают run в
+delivery loop; strategic gap или необязательное улучшение остаются follow-up.
 
 Каждый blocker проходит цикл:
 
@@ -143,7 +140,10 @@ transition и возвращают run в delivery loop; strategic gap или н
 Grinder не может устранить её сам и зачем этот шаг нужен issue contract и общей
 цели. Общий report и ответы проходят reflection до
 первой публикации. Покажи принятый комплект пользователю сразу; platform blocker
-audit ограничивает только `update_goal(status=blocked)`, а не сам report.
+audit ограничивает только `update_goal(status=blocked)`, а не сам report. На
+автоматическом продолжении без нового релевантного сигнала переиспользуй blocker
+fingerprint: не повторяй проверку, facade, handoff или user request; на достигнутом
+пороге выполни только Goal mutation.
 
 Финальное completion тоже требует fresh inventory и reflection. Финальный Goal
 comment возвращай только пользователю в чате, не в Task Manager.
