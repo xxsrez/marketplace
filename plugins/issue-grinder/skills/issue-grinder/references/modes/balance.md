@@ -14,18 +14,26 @@ Luna саму по себе.
 
 1. Основной профиль одним full-scope pass изучает current state, requirements,
    dependency graph, write surfaces, acceptance, risks и integration points. Он
-   выбирает общий способ решения и оставляет за собой критический либо связующий
-   пакет.
+   выбирает общий способ решения и оставляет за собой downstream integration,
+   CLI, общий harness, cross-cutting risk либо другой связующий пакет, который
+   может выполняться по уже стабильным interfaces.
 2. До dispatch допусти пакет Luna только когда одновременно доказаны:
    dependency readiness, понятный outcome, self-contained inputs, отдельная
    непересекающаяся write surface, стабильный interface, изолированный candidate,
    локальный oracle и отсутствие общего external/irreversible effect.
 3. Параллельная wave требует минимум два подходящих пакета. Запусти не больше
-   трёх Luna workers и только одну active wave. Число Tasks, файлов или свободных
-   slots само по себе не создаёт пакет и не оправдывает делегацию.
+   трёх Luna workers и только одну execution wave за весь run. Число Tasks,
+   файлов или свободных slots само по себе не создаёт пакет и не оправдывает
+   делегацию. Но учитывай устранимое последовательное время tool-bound работы:
+   два независимых пакета с долгими build/test/analyzer gates могут окупить
+   dispatch даже при небольшом diff.
 4. Если подходящей ширины нет, основной профиль продолжает scope последовательно.
    Это нормальный `Баланс`, а не повод искусственно дробить работу или менять
    режим.
+5. Полностью заверши admission до первой source mutation и первого долгого
+   packet-local gate. Если минимум два пакета прошли admission, dispatch всей
+   волны обязателен до собственной реализации main profile. Не начинай один
+   пригодный пакет последовательно и не откладывай Luna до следующей frontier.
 
 ## Одна Luna High wave
 
@@ -88,14 +96,15 @@ checks — основной lane. Параллельность инструме�
 Даже тогда main profile сохраняет final acceptance и режим не превращается в
 Manager Loop.
 
-Если после fan-in открылась новая готовая независимая frontier, можно запустить
-следующую wave по тем же правилам. Одновременно активна только одна Luna wave.
-Terminal result требует exact integrated checks и final acceptance main profile;
-нетерминальный checkpoint `Экономичного` режима недоступен.
+После fan-in новую execution wave не создавай: вновь открывшуюся frontier и
+неполные handoff-ы основной профиль завершает сам. Terminal result требует exact
+integrated checks и final acceptance main profile; нетерминальный checkpoint
+`Экономичного` режима недоступен.
 
 ## Evidence и отклонения
 
-Mode evidence содержит admission reasons, dependency/write-surface map,
+Mode evidence содержит admission reasons, подтверждение admission до первой
+source mutation, учёт tool-bound critical path, dependency/write-surface map,
 routing receipts, worker profiles, dispatch window, peak Luna concurrency,
 collective wait, candidate identities, ownership receipts, fan-in identity,
 integrated tool checks и final acceptance.
@@ -109,6 +118,8 @@ integrated tool checks и final acceptance.
 - повтор Luna work основным профилем без конкретного defect/conflict;
 - последовательные dispatch/wait cycles там, где packets были одновременно
   готовы;
+- source mutation или долгий packet-local gate до обязательного dispatch;
+- вторая execution wave того же run;
 - polling и coordination churn вместо одного collective wait;
 - принятие worker self-report без exact integrated checks;
 - отсутствие итогового exact-diff review основным профилем.
