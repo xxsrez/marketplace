@@ -6,7 +6,15 @@ scope, authority, evidence, repair или status decision.
 
 ## Выбор mode
 
-В начале run установи communication mode:
+В начале run сначала проверь активную модель. При Astra (`gpt-6-astra`)
+автоматическая publication unit всегда получает `native` mode: Strategic
+Explainer не вызывается, потому что Astra сама формулирует текст. Этот guard
+имеет приоритет над availability provider-а и сохранённым mode и применяется к
+каждой новой unit. Явный отдельный запрос пользователя к
+`$strategic-explainer:strategic-explainer` остаётся самостоятельным direct call,
+но не включается автоматически этим workflow.
+
+Во всех остальных случаях в начале run установи communication mode:
 
 - `ordinary`, если доступен и разрешён
   `$strategic-explainer:strategic-explainer`;

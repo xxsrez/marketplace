@@ -124,9 +124,13 @@ facts, evidence и read-only anchors: не поручай им формулир�
 
 ## 3. Используй publication и awareness loop
 
-Перед каждым Task Manager comment, blocker-report и финальным Goal comment полностью прочитай
-[Strategic Explainer routing](references/strategic-explainer.md). Во всех режимах основной coordinator сам вызывает доступный semantic facade и не
-передаёт ему неподтверждённые факты либо delivery-работу выбранного scope.
+Перед каждым Task Manager comment, blocker-report и финальным Goal comment
+полностью прочитай [Strategic Explainer routing](references/strategic-explainer.md)
+и сначала проверь active model. При Astra (`gpt-6-astra`) основной coordinator
+выбирает native writing и не вызывает Strategic Explainer; этот guard имеет
+приоритет над availability и сохранённым mode. В остальных случаях coordinator
+сам вызывает доступный semantic facade и не передаёт ему неподтверждённые факты
+либо delivery-работу выбранного scope.
 
 Comment или final draft — точка решения. Непонятый факт либо существенная обязательная
 работа current issue contract отменяют publication/status transition и возвращают run в

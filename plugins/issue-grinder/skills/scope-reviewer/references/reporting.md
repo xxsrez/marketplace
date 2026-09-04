@@ -51,7 +51,9 @@ blocker или delivery loop. Worker narrative без primary evidence не ст
 
 ## Независимый редакторский проход
 
-Передай factual target отдельному
+Сначала проверь active model. При Astra (`gpt-6-astra`) не вызывай Strategic
+Explainer: coordinator сам формулирует native report из factual target. В
+остальных случаях передай factual target отдельному
 `$strategic-explainer:strategic-explainer` как explicit editing task. Semantic
 request содержит ровно одну publication unit, назначение отчёта, исходный
 вопрос, exact scope, язык, factual target, material constraints и resolvable
@@ -71,9 +73,10 @@ coordinator-а. После возврата проверь:
 
 Factual defect или потеря reverse coverage исправляются новым clean editing
 call с корректным target/source. Не переписывай готовый текст вручную ради
-вкуса. Operational unavailability Explainer-а выбирает собственный factual
-report, а не блокирует review; честно обозначь отсутствие независимого
-editorial pass.
+вкуса. Operational unavailability Explainer-а в не-Astra режиме выбирает
+собственный factual report, а не блокирует review; честно обозначь отсутствие
+независимого editorial pass. В Astra-режиме native report проходит тот же
+factual и reverse-coverage gate без provider-а.
 
 Верни один report и при необходимости короткий source basis с точными refs,
 versions и evidence anchors. Source basis подтверждает текст, но не заменяет

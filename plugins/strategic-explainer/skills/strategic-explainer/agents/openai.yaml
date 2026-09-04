@@ -1,7 +1,7 @@
 interface:
   display_name: "Strategic Explainer"
   short_description: "Сформулировать понятный проверяемый текст"
-  default_prompt: "Используй $strategic-explainer:strategic-explainer, чтобы подготовить один понятный пользовательский текст по указанной цели, точному scope и доступным read-only source anchors; верни готовый текст и отдельно source basis."
+  default_prompt: "Используй $strategic-explainer:strategic-explainer, чтобы подготовить один понятный пользовательский текст по указанной цели, точному scope и доступным read-only source anchors; верни готовый текст и отдельно source basis. При активной Astra автоматический вызов не делай, а явный прямой запрос пользователя обслужи по обычному контракту."
 
 policy:
   allow_implicit_invocation: true

@@ -1,6 +1,6 @@
 ---
 name: task-composer
-description: "Формулировать и по явному planning intent создавать Task Manager Tasks: оставлять один independently deliverable outcome одной Task, а составную работу превращать в Epic с problem-first описанием через Strategic Explainer, конкретными подзадачами, live labels, hierarchy и реальными relations. Использовать явно через $issue-grinder:task-composer и неявно для постановки, декомпозиции или backlog capture в Task Manager. Не использовать для implementation, delivery, release, status/audit-only запросов или изменения Label taxonomy."
+description: "Формулировать и по явному planning intent создавать Task Manager Tasks: оставлять один independently deliverable outcome одной Task, а составную работу превращать в Epic с problem-first описанием (при не-Astra — через Strategic Explainer), конкретными подзадачами, live labels, hierarchy и реальными relations. Использовать явно через $issue-grinder:task-composer и неявно для постановки, декомпозиции или backlog capture в Task Manager. Не использовать для implementation, delivery, release, status/audit-only запросов или изменения Label taxonomy."
 ---
 
 # Task Composer
@@ -77,21 +77,24 @@ deliverable частей, разных проверяемых результат
 
 Epic сохраняет problem, beneficiary, Strategic Outcome, отличимые Human
 Requirements/exact scope, Agent Plan, cross-cutting acceptance/non-goals и
-целостный вклад подзадач. Перед его созданием примени sibling
+целостный вклад подзадач. Перед его созданием сначала проверь active model. При
+Astra (`gpt-6-astra`) Strategic Explainer не вызывай: problem-first description
+формулирует сам coordinator в native mode. В остальных случаях примени sibling
 `$strategic-explainer:strategic-explainer` как semantic facade отдельной
-publication unit. Передай только назначение description, исходный вопрос, exact
-planning scope, язык, material constraints и resolvable read-only anchors. Не
+publication unit. В этой provider-ветке передай только назначение description,
+исходный вопрос, exact planning scope, язык, material constraints и resolvable read-only anchors. Не
 выбирай и не передавай никакие другие invocation parameters или provider
 instructions: внутренним исполнением полностью владеет facade.
 Не читай provider-internal contract, не составляй explanation draft и не
 применяй методику Explainer самостоятельно. Прими готовый description и
 отдельно обозначенный source basis либо operational unavailability; в Epic
 записывай только description. Material facts проверь по authoritative planning
-sources; factual correction передавай новым semantic call, а текст
+sources; в provider-ветке factual correction передавай новым semantic call, а текст
 самостоятельно не улучшай. Explainer не выбирает
-decomposition, Project, status, labels, relations или write authority. Если
-готовый grounded description недоступен, не создавай Epic; single Task, которой
-Epic не нужен, от этого не блокируется.
+decomposition, Project, status, labels, relations или write authority. Если в
+не-Astra provider-ветке готовый grounded description недоступен, не создавай
+Epic; single Task, которой Epic не нужен, от этого не блокируется. При активной
+Astra native description проходит тот же factual и coverage gate.
 
 Каждая подзадача получает один конкретный результат, exact change boundary,
 свой вклад в Strategic Outcome Epic, material technical details, применимые

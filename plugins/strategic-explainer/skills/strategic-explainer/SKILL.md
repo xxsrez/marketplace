@@ -1,6 +1,6 @@
 ---
 name: strategic-explainer
-description: "Сформулировать один понятный, проверяемый и готовый к публикации comment, report, blocker explanation, final или явно отредактированный target text через изолированный Strategic Explainer. Не использовать для routine chat, mutations, authority decisions или orchestration."
+description: "Сформулировать один понятный, проверяемый и готовый к публикации comment, report, blocker explanation, final или явно отредактированный target text через изолированный Strategic Explainer. Не использовать для routine chat, mutations, authority decisions или orchestration. При активной модели Astra (gpt-6-astra) не вызывать автоматически: Astra сама формулирует текст; явный прямой запрос пользователя остаётся допустимым."
 ---
 
 # Strategic Explainer
@@ -9,6 +9,14 @@ description: "Сформулировать один понятный, прове
 редакторских инструкций для текущего агента. Внешний workflow передаёт только
 смысловую задачу; topology, profile, clean invocation и retry принадлежат этому
 skill. Методика улучшения текста принадлежит только terminal provider-у.
+
+## Astra guard для автоматических вызовов
+
+Если активная модель — Astra (`gpt-6-astra`), этот skill не выбирается для
+автоматической или delegated publication unit: вызывающий coordinator должен
+сформулировать текст native сам и не запускать provider path. Явный прямой
+пользовательский запрос к `$strategic-explainer:strategic-explainer` остаётся
+отдельным разрешённым вызовом.
 
 ## Сначала разреши роль
 

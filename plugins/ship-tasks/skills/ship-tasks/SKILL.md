@@ -76,7 +76,9 @@ simple packet запускай на `gpt-5.6-luna`/`max`: bounded self-contained
 architecture/authority/risk judgment и environment uncertainty. Остальные
 packets наследуют current model/effort; маленький diff сам по себе не simple.
 Strategic Explainer не относится к этому profile routing: раздел 5 вызывает
-только его semantic facade. При ambiguity, context/contract
+только его semantic facade, кроме автоматической Astra-ветки
+(`gpt-6-astra`), где provider не вызывается и coordinator пишет native text.
+При ambiguity, context/contract
 conflict, unexpected environment/tool state, scope expansion или proof gap Luna
 прекращает packet без corrective mutations, guess и ослабления acceptance;
 bounded read-only read-back partial effects обязателен. Верни exact
@@ -109,8 +111,9 @@ Native comment create/list/read — гарантированная часть cu
 adapter. Всегда создай и перечитай обязательный comment. Неизвестный write
 outcome сначала разреши через native read-back; не повторяй write вслепую.
 Каждый комментарий сформулируй в выбранном communication mode из
-[reference](references/strategic-explainer.md): доступный и разрешённый ordinary
-provider, иначе native ShipTask writing. Opt-out также
+[reference](references/strategic-explainer.md): при Astra (`gpt-6-astra`) всегда
+native ShipTask writing без вызова provider-а; иначе доступный и разрешённый
+ordinary provider, а при его отсутствии — native ShipTask writing. Opt-out также
 выбирает native. Native mode сообщает обязательные lifecycle facts по
 собственному truth contract ShipTask: не читает, не применяет и не имитирует
 внутреннюю методику Explainer и не заявляет эквивалентное качество. Отсутствие
@@ -234,15 +237,19 @@ terminal Task сначала получает opening comment, затем exact 
 
 ## 5. Обеспечь человеческое объяснение
 
-В начале run выбери communication mode по live skill catalog и effective user
-rule: ordinary `$strategic-explainer:strategic-explainer`, если он доступен и
-разрешён, иначе native. Сохраняй mode до explicit rule change или failure
-выбранного provider-а. Каждый Task Manager comment, отдельный
+В начале run сначала проверь active model. При Astra (`gpt-6-astra`) выбери
+native и не вызывай Strategic Explainer; guard имеет приоритет над provider
+availability и сохранённым mode. В начале run выбери communication mode по live
+skill catalog и effective user rule только в не-Astra ветке: ordinary
+`$strategic-explainer:strategic-explainer`,
+если он доступен и разрешён, иначе native. Сохраняй mode до explicit rule change
+или failure выбранного provider-а. Каждый Task Manager comment, отдельный
 Task/scope report, blocker explanation и final — отдельная publication unit;
 routine chat/progress unit не создают.
 
-Следуй [client protocol](references/strategic-explainer.md). Ordinary provider
-вызывай только через semantic facade `$strategic-explainer:strategic-explainer`:
+Следуй [client protocol](references/strategic-explainer.md). В не-Astra
+provider mode Ordinary provider вызывай только через semantic facade
+`$strategic-explainer:strategic-explainer`:
 передай назначение publication unit, исходный вопрос, exact scope, язык,
 material constraints и resolvable read-only anchors. Не выбирай и не передавай
 никакие другие invocation parameters или provider instructions: внутренним

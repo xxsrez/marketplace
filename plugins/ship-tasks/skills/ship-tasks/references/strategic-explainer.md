@@ -7,9 +7,14 @@
 
 ## Когда выбирать и вызывать
 
-В начале run прочитай live skill catalog и effective user rule. Зафиксируй mode
-для следующих publication units; перечитай выбор только после явного изменения
-правила или failure выбранного provider-а.
+В начале run сначала проверь активную модель. При Astra (`gpt-6-astra`)
+автоматически выбери `native`: Strategic Explainer не вызывай, потому что Astra
+сама формулирует текст. Guard имеет приоритет над availability provider-а,
+effective user rule и сохранённым mode и применяется к каждой новой publication
+unit. Явный отдельный пользовательский direct call остаётся самостоятельным.
+В остальных случаях прочитай live skill catalog и effective user rule. Зафиксируй
+mode для следующих publication units; перечитай выбор только после явного
+изменения правила или failure выбранного provider-а.
 
 Каждый Task Manager comment, отдельный Task/scope report, blocker explanation и
 final является самостоятельной publication unit. Routine chat, progress update
@@ -25,13 +30,14 @@ write и возвращают только facts и evidence, verdict и рек�
 
 ## Матрица выбора
 
-Выбирай первый доступный и разрешённый mode:
+В не-Astra режиме выбирай первый доступный и разрешённый mode:
 
 1. ordinary `$strategic-explainer:strategic-explainer`;
 2. native ShipTask writing.
 
 | Ordinary | Mode |
 | --- | --- |
+| активна Astra (`gpt-6-astra`) | native |
 | доступен и разрешён | ordinary |
 | отсутствует или отключён | native |
 

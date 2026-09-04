@@ -6,8 +6,9 @@ create/list/read. ShipTask всегда создаёт и перечитывае
 Он предназначен человеку, а не внутреннему workflow.
 
 Каждый комментарий формулируется в выбранном mode по
-[availability protocol](strategic-explainer.md): ordinary, если он доступен и
-разрешён, иначе native. Это относится не только к обязательным переходам. В native mode основной
+[availability protocol](strategic-explainer.md): при Astra (`gpt-6-astra`)
+всегда native без вызова Strategic Explainer; в остальных случаях ordinary,
+если он доступен и разрешён, иначе native. Это относится не только к обязательным переходам. В native mode основной
 агент сообщает обязательные lifecycle facts по собственному truth contract и не
 читает, не применяет и не имитирует provider method.
 
@@ -93,9 +94,11 @@ fixtures/seed data агент создал сам, какие поддержив
 independent principal или вторая authenticated session), report отдельно
 называет primary/cascade cause, сравнивает grounded test paths, рекомендует
 лучший feasible путь, указывает prerequisites/authority, observable success
-signal, продолжаемую safe работу и exact resume condition. Этот текст проходит
-отдельного Strategic Explainer, пока effective rule его сохраняет; голое «нужен
-файл/principal» без причинной рекомендации недостаточно.
+signal, продолжаемую safe работу и exact resume condition. В не-Astra режиме
+этот текст проходит отдельного Strategic Explainer, пока effective rule его
+сохраняет. При активной Astra (`gpt-6-astra`) тот же текст формулируется native
+без provider-а; голое «нужен файл/principal» без причинной рекомендации
+недостаточно.
 
 Для каждой заявленной prerequisite anchors подтверждают current capability
 state. Прежний `not_available` или старый comment не достаточны: уже существующий

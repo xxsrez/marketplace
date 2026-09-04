@@ -48,10 +48,12 @@ rationale, прежний verdict или process diary. Critic самостоя�
 
 ## Обязательный factual packet для completion comment
 
-Перед `Done` availability-selected Strategic Explainer получает pass с anchors
-на grounded packet. ShipTask не составляет второй explanation draft: ordinary
-provider method остаётся opaque. При отсутствии или opt-out provider-а ShipTask
-формулирует comment в native mode.
+Перед `Done` availability-selected Strategic Explainer в не-Astra режиме получает
+pass с anchors на grounded packet. При активной Astra (`gpt-6-astra`) provider не
+вызывается: ShipTask формулирует comment native. Во всех случаях ShipTask не
+составляет второй explanation draft; ordinary provider method остаётся opaque.
+При отсутствии или opt-out provider-а ShipTask также формулирует comment в
+native mode.
 Factual anchors обязаны включать:
 
 - точную непроведённую функциональную проверку;

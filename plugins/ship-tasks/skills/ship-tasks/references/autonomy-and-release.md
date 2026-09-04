@@ -89,7 +89,8 @@ worktree не требуют. Только integration owner делает fan-in
 self-contained, с ясными acceptance/evidence и без material creative,
 architectural, authority/risk или environment uncertainty. Остальные рабочие
 packets наследуют current model/effort. Strategic Explainer не относится к этой
-классификации: communication path вызывает только его semantic facade.
+классификации: в не-Astra communication path вызывает только его semantic
+facade, а при Astra (`gpt-6-astra`) использует native writing без provider-а.
 
 Luna не выполняет corrective recovery mutations. При ambiguity,
 context/contract conflict, unexpected environment/tool state, scope expansion
@@ -147,12 +148,14 @@ grant вне authority. Каждая ложная prerequisite исключае�
 remaining self-service path, который оставляет runnable in-scope работу,
 означает, что общий blocker candidate аннулируется и работа продолжается.
 
-Такой blocker не завершается голым «нужен файл/principal». Перед defer подготовь
-через Strategic Explainer grounded decision report с self-service attempts,
+Такой blocker не завершается голым «нужен файл/principal». Перед defer, если
+Astra не активна, подготовь через Strategic Explainer grounded decision report
+с self-service attempts,
 primary/cascade cause, recommended test path, material alternatives,
 prerequisites/authority, success signal, safe continuation и exact resume
 condition. Explainer не выполняет mutation и не принимает status/authority
-решение.
+решение. При активной Astra (`gpt-6-astra`) этот report формулируй native без
+вызова provider-а, сохраняя те же self-service и resume details.
 
 Browser/controller/session switch допустим как диагностика, но не является
 repair продукта. Если exact candidate или server path уже доказал product

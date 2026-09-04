@@ -124,15 +124,19 @@ reads.
 ## 5. Верни один человекочитаемый отчёт
 
 Полностью прочитай [reporting contract](references/reporting.md). Сначала собери
-factual target из current snapshot и принятых findings, затем передай его
-отдельному `$strategic-explainer:strategic-explainer` как явную editing task с
-exact scope, языком и resolvable anchors. Не читай provider-internal contract и
-не передавай Explainer-у planning, readiness, lifecycle или authority decisions.
+factual target из current snapshot и принятых findings, затем проверь active
+model. При Astra (`gpt-6-astra`) не вызывай Strategic Explainer: coordinator сам
+формулирует native report. В остальных случаях передай target отдельному
+`$strategic-explainer:strategic-explainer` как явную editing task с exact scope,
+языком и resolvable anchors. Не читай provider-internal contract и не передавай
+Explainer-у planning, readiness, lifecycle или authority decisions.
 
 Проверь готовый текст на factual conflict и reverse coverage. Потерянный факт
 или ошибка требуют нового clean editing call, а не самостоятельной стилистической
-переписи. Если Explainer operationally unavailable, верни собственный factual
-report и честно отметь отсутствие независимого editorial pass.
+переписи. Если Explainer operationally unavailable в не-Astra режиме, верни
+собственный factual report и честно отметь отсутствие независимого editorial
+pass. В Astra-режиме проверь native report тем же factual и reverse-coverage
+gate, без вызова provider-а.
 
 Публикация — один связный ответ, а не dump ответов Luna, task-by-task inventory
 или process diary. Сначала дай главный причинный вывод и требуемое действие;

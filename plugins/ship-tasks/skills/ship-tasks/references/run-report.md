@@ -7,7 +7,9 @@
 
 Сначала основной агент перечитывает затронутые Tasks, комментарии, статусы,
 применимый Goal и обязательные внешние действия. Он формирует не explanation
-draft, а authoritative source anchors и factual inventory ниже. В ordinary mode
+draft, а authoritative source anchors и factual inventory ниже. При активной
+Astra (`gpt-6-astra`) итоговый текст формулируется native без вызова Strategic
+Explainer. В ordinary mode
 основной агент передаёт semantic facade одну короткую задачу, exact run scope и
 эти resolvable anchors. Никакие другие invocation parameters или provider
 instructions не передаются. Source packet исключает журнал инструментов, caller

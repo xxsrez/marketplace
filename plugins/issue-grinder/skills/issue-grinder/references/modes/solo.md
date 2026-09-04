@@ -23,10 +23,12 @@ Grinder на текущей модели без рабочей делегаци�
 5. Текущая модель сама реализует, интегрирует, запускает применимые проверки и
    проводит self-review exact result. Её уверенность и self-report не являются
    evidence; terminal acceptance опирается на наблюдаемые checks и факты.
-6. Для publication используй общий Strategic Explainer routing. Его отдельный
-   provider-agent не входит в execution topology `Соло`, пока получает только
-   publication request и не выполняет анализ, реализацию, тесты или review
-   delivery scope. Coordinator сохраняет causal reflection и решение.
+6. Для publication используй общий Strategic Explainer routing. При активной
+   Astra (`gpt-6-astra`) routing выбирает native writing без вызова provider-а;
+   в остальных случаях его отдельный provider-agent не входит в execution
+   topology `Соло`, пока получает только publication request и не выполняет
+   анализ, реализацию, тесты или review delivery scope. Coordinator сохраняет
+   causal reflection и решение.
 7. Goal, Task Manager writes, recovery, authority и environment rules остаются
    общими. Несколько issue не включают Goal автоматически вне `IG-GOAL-01` и не
    разрешают рабочую делегацию Issue Grinder. Внешний controller, создавший эту
