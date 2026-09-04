@@ -47,11 +47,11 @@ receipts. При её отсутствии operational coordinator исполь�
 стадии, предусмотренные mode-файлом; отсутствие вложенности само по себе не
 создаёт checkpoint и не снимает terminal promise.
 
-`Баланс` без nested delegation использует последовательные direct stages:
-обычно один Luna execution owner возвращает exact candidate, затем другой Luna
-owner, не бывший автором, возвращает independent finding ledger. Material fork
-может оправдать несколько атомарных candidate waves; тогда reviewer также
-сводит варианты перед проверкой выбранного exact candidate. `Рой` использует
+`Баланс` использует одну active wave из двух или трёх direct Luna writers:
+каждый владеет отдельным dependency-ready packet и изолированным candidate, а
+main profile параллельно выполняет непересекающуюся полезную работу. Nested
+delegation, manager, reviewer, reducer и конкурирующие реализации одного packet
+не входят в normal path. `Менеджер` использует
 отдельные постоянные direct Luna manager и implementer sessions с одним exact
 candidate; operational coordinator механически пересылает между ними одну
 активную phase и compact evidence. После manager `complete` запускается одна
@@ -89,7 +89,7 @@ Startup recovery предшествует `prepare`. Отсутствие Goal, 
 Новый intentional candidate, если его адаптивно разрешает выбранный mode-файл,
 создаётся только после inventory. Зафиксируй, чем его purpose/approach отличается
 от existing work, выдай отдельную candidate identity и общую exact base. Без
-этого он является запрещённым parallel replacement. В `Рое` normal path имеет
+этого он является запрещённым parallel replacement. В `Менеджере` normal path имеет
 один candidate; новый восстановительный вариант допустим только после
 доказанного тупика и решения manager-а, не параллельно прежнему.
 
@@ -102,10 +102,11 @@ record и используй стабильный interface без повтор�
 назначь unique `packet_id`, сформулируй настоящий semantic role и получи зелёный receipt от bundled
 [`model_routing_guard.py`](../scripts/model_routing_guard.py). Exact параметры
 и dispatch fingerprint успешного receipt перенеси в один фактический spawn без
-наследования или подмены: для Luna-lane явно укажи `model="gpt-5.6-luna"`,
-`reasoning_effort="max"` и bounded `fork_turns`. Если полный history нужен в
-packet-е, передай необходимые facts и anchors явно; `fork_turns="all"` либо
-omitted fork нельзя совмещать с mode-controlled profile.
+наследования или подмены: для Balance Luna-lane явно укажи
+`model="gpt-5.6-luna"`, `reasoning_effort="high"` и bounded `fork_turns`;
+для остальных mode-controlled Luna-lanes используй profile выбранного mode.
+Если полный history нужен в packet-е, передай необходимые facts и anchors явно;
+`fork_turns="all"` либо omitted fork нельзя совмещать с mode-controlled profile.
 
 Platform `agent_type` не является semantic role и сам по себе не выбирает
 model/effort. Для любого child используй effective profile текущего dispatch и
@@ -129,64 +130,48 @@ probe, commentary, сообщения owner-у или новой интерпр�
 доступным multi-target/event mechanism; событие одного owner-а разрешает
 обработать только его handoff, затем снова ждать оставшихся до того же deadline.
 
-Каждая стадия возвращает один consolidated handoff на owner через его final
-response: exact candidate
-либо ledger, task-owned identity, checks, known defects, negative evidence и
-следующий разрешённый переход. На малом scope direct reviewer читает exact
-candidate сам. На большом он может использовать nested read-only lenses только
-при доказанной capability в `Классическом` или `Балансе`; иначе coordinator
-создаёт ограниченные direct lenses по независимым поверхностям риска и передаёт
-их результаты одному final reviewer. Reviewer `Роя` проходит risk sections сам
-в одной session и не создаёт descendants. Owner не исследует
-tool catalog ради отдельного parent messaging: platform сам возвращает final
-response родителю.
+Каждый owner стадии возвращает один consolidated handoff через final response:
+exact candidate либо ledger, task-owned identity, checks, known defects,
+negative evidence и следующий разрешённый переход. На малом scope direct
+reviewer читает exact candidate сам. На большом `Классический` может использовать
+nested read-only lenses при доказанной capability; иначе coordinator создаёт
+ограниченные direct lenses и передаёт их одному final reviewer. Reviewer
+`Менеджера` проходит risk sections сам в одной session и не создаёт descendants.
+`Баланс` возвращает workers напрямую main profile и не создаёт review lenses
+штатно. Owner не исследует tool catalog ради parent messaging: platform сам
+возвращает final response родителю.
 
 Control brief материализует каждому owner-у self-contained packet: exact base и
 candidate root, source manifest с прямыми путями, owned files, разрешённые
-checks, purpose, action ceiling, stopping condition и compact output envelope.
-Для малого/среднего `Баланса` это жёсткие ceilings: candidate owner — десять tool
-calls, review plan — три, exact review — пять, recheck — три, controller final
-gate — три. Число Tasks, файлов, candidates или risk surfaces их не увеличивает.
-Большой Teams-подобный Balance scope делится на purpose-distinct execution
-packets и read-only lenses с отдельным ownership. До dispatch одного неделимого риска
-допустим `budget_exception` максимум на три дополнительных calls с role, base
-ceiling, reproducer/evidence и stopping condition; общий список рисков exception
-не создаёт. Rework всегда получает отдельный трёхвызовный packet. В `Рое`
-manager выдаёт небольшое число крупных фаз с конечными outcome-specific budgets;
-универсальные потолки малого Balance packet-а на них не переносятся.
+checks, purpose, stopping condition и compact output envelope. Для `Баланса`
+admission требует dependency-ready packet, отдельную write surface, стабильный
+interface, изолированный candidate и локальный oracle. В `Менеджере` manager
+выдаёт небольшое число крупных фаз с конечными outcome-specific budgets.
 
-Child использует materialized packet как orchestration policy: он не читает
-Issue Grinder `SKILL.md`, references/Architecture или routing guard, не ищет
-tool catalog и parent messaging/collaboration interface, не делает directory
-discovery уже переданных путей. Targeted поиск символа внутри source manifest
-входит в единственный source pass. Candidate owner работает с настоящим
-изолированным candidate, запускает основной suite и не повторяет заведомо
-красный baseline без диагностической пользы. Все writer mutations используют
-абсолютный путь с префиксом exact candidate root; относительный patch из
-integration checkout запрещён. Reviewer получает один source/diff pass, один
-suite и максимум три targeted probes. После rework он проверяет reproducer,
-changed surfaces и suite. Controller читает compact ledger и делает один exact
-pass с integrated suite, не повторяя exploration без противоречащего evidence.
-После последнего check child сразу возвращает
+Child использует materialized packet как execution contract: он не читает Issue
+Grinder `SKILL.md`, references/Architecture или routing guard, не ищет tool
+catalog и parent messaging/collaboration interface, не делает directory
+discovery уже переданных путей. Candidate owner работает с настоящим
+изолированным candidate, запускает quick checks и не повторяет заведомо красный
+baseline без диагностической пользы. Все writer mutations используют абсолютный
+путь с префиксом exact candidate root; относительный patch из integration
+checkout запрещён. Reviewer в режимах, где он предусмотрен, получает bounded
+source/diff pass и probes. Balance main profile делает один exact pass с
+integrated suite и не повторяет Luna implementation без конкретного
+defect/conflict. После последнего check child сразу возвращает
 `candidate | owned files | checks | findings<=3 | unknowns | next`, без
 transcript, повтора contract-а и развёрнутого отчёта.
-В `Балансе` параллельный review-plan turn заканчивается final response-ом в пределах трёх
-calls; это handoff и quiescence turn, а не потеря session. Exact candidate
-приходит в ту же session follow-up-ом с отдельным лимитом в пять calls. Reviewer
-не ищет messaging tool и не пытается оставаться активным между этими turns.
-
-В `Балансе` normal order — `control brief → parallel Luna execution candidate(s)
-+ independent review planning → Luna exact reduction/review/rework → integrated
-checks → controller final review`. Первый дорогой
-review exact candidate начинается только после завершения Luna stages. В `Рое`
+В `Балансе` normal order — `full-scope plan → one parallel Luna High writer
+wave + useful main work → one collective wait → mechanical fan-in → parallel
+tool gates → main exact-diff review and acceptance`. В `Менеджере`
 normal order — `control brief → persistent Luna manager ↔ persistent Luna
 implementer по одной фазе → manager complete → одна independent Luna reviewer
 session → integration → controller final review`. Coordinator может механически
 вести routing, relay compact packets, ownership и fan-in между стадиями, но не
 выполняет за Luna phase decisions, research, implementation, tests или review.
 
-После material rework продолжи существующего candidate owner-а и ту же
-независимую reviewer session:
+После material rework в режиме с independent reviewer продолжи существующего
+candidate owner-а и ту же reviewer session:
 
 ```text
 follow-up exact changed candidate ×1 → event wait ×1
@@ -298,9 +283,9 @@ scope expansion или proof gap Luna сохраняет checkpoint/evidence и 
 неограниченные corrective mutations. Следующее действие выбирай по fallback
 выбранного mode-файла. Luna retry loop с тем же подходом/evidence запрещён.
 
-Недоступная automatic Luna не блокирует, пока существует mode-compatible путь.
-Fallback и допустимый расход дефицитного profile бери из выбранного mode-файла.
-Явный пользовательский role profile не подменяй. Strategic Explainer не входит
+Requirements предполагают штатную доступность выбранных профилей. Не проектируй
+автоматическую замену модели, mode switch или перераспределение quota на случай
+их отсутствия. Явный пользовательский role profile не подменяй. Strategic Explainer не входит
 в routing рабочих packets и не считается execution-agent режима, пока получает
 только свой semantic request. Его communication topology задаёт собственный
 interface, а не mode-файл Issue Grinder.

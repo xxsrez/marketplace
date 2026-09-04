@@ -45,11 +45,8 @@ top-level session также должна быть Luna Max.
 
 При ambiguity, contract/context conflict, unexpected tool/environment state,
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
-одинаковые corrective retry. Режим может оставить resumable checkpoint.
-Недоступная automatic Luna уменьшает capacity: используй доступную serial Luna
-lane, а если её нет — сохрани достаточный resumable checkpoint. Не подменяй её
-Sol/GPT-5.4 и не продолжай содержательную дорогую работу под именем
-`Экономичный`. Явный пользовательский role profile не подменяй.
+одинаковые corrective retry. Режим может оставить resumable checkpoint. Явный
+пользовательский role profile не подменяй.
 
 Выполняй все доступные deterministic и aggregate checks. Сохраняй raw results,
 known defects, unknowns, rejected candidates и deferred gates. `In Review`

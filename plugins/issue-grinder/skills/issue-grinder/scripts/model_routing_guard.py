@@ -11,11 +11,9 @@ from dataclasses import asdict, dataclass
 
 SCHEMA = "issue-grinder/model-routing/v2"
 LUNA_MODEL = "gpt-5.6-luna"
-LUNA_EFFORT = "max"
-ECONOMICAL_MODES = frozenset({"balance", "swarm", "economical"})
-BALANCE_CONTROLLER_ROLES = frozenset(
-    {"material_judgment", "integration_decision", "final_review"}
-)
+LUNA_MAX_EFFORT = "max"
+LUNA_HIGH_EFFORT = "high"
+LUNA_MODES = frozenset({"balance", "swarm", "economical"})
 
 
 @dataclass(frozen=True)
@@ -50,13 +48,17 @@ def luna_required_for(
     *,
     user_profile_override: bool,
 ) -> bool:
-    """Return whether the selected mode requires an explicit Luna Max child."""
+    """Return whether the selected mode requires an explicit Luna child."""
 
-    if mode not in ECONOMICAL_MODES or user_profile_override:
-        return False
-    if mode == "balance" and semantic_role in BALANCE_CONTROLLER_ROLES:
+    if mode not in LUNA_MODES or user_profile_override:
         return False
     return True
+
+
+def required_luna_effort(mode: str) -> str:
+    """Return the mode-specific default effort for a required Luna child."""
+
+    return LUNA_HIGH_EFFORT if mode == "balance" else LUNA_MAX_EFFORT
 
 
 def validate_route(
@@ -91,7 +93,7 @@ def validate_route(
     defects: list[str] = []
     if not normalized_packet_id:
         defects.append("blank_packet_id")
-    if normalized_mode not in {"solo", "classic", *ECONOMICAL_MODES}:
+    if normalized_mode not in {"solo", "classic", *LUNA_MODES}:
         defects.append("unknown_mode")
     if not normalized_role:
         defects.append("blank_semantic_role")
@@ -108,13 +110,14 @@ def validate_route(
         user_profile_override=user_profile_override,
     )
     if luna_required:
+        required_effort = required_luna_effort(normalized_mode)
         if normalized_model != LUNA_MODEL:
             defects.append("luna_model_required")
-        if normalized_effort != LUNA_EFFORT:
-            defects.append("luna_max_effort_required")
+        if normalized_effort != required_effort:
+            defects.append(f"luna_{required_effort}_effort_required")
         if normalized_actual_model is not None and normalized_actual_model != LUNA_MODEL:
             defects.append("actual_luna_model_mismatch")
-        if normalized_actual_effort is not None and normalized_actual_effort != LUNA_EFFORT:
+        if normalized_actual_effort is not None and normalized_actual_effort != required_effort:
             defects.append("actual_luna_effort_mismatch")
     elif normalized_actual_model is not None:
         if normalized_actual_model != normalized_model:

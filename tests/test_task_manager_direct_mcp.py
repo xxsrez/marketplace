@@ -174,7 +174,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "Соло": "solo.md",
             "Классический": "classic.md",
             "Баланс": "balance.md",
-            "Рой": "swarm.md",
+            "Менеджер": "swarm.md",
             "Экономичный": "economical.md",
         }
         for filename in mode_files.values():
@@ -237,7 +237,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("update_goal(status=blocked)", runtime)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичный UAT", runtime)
-        self.assertIn("top-level `gpt-5.6-luna` при любом effort", normalized)
+        self.assertIn("Без явного выбора всегда действует `Соло`", normalized)
         self.assertIn("не пересчитывай его", normalized)
         self.assertIn("## Выбранный режим — обязательная загрузка", execution_modes)
         for mode, filename in mode_files.items():
@@ -260,7 +260,11 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         routing_guard = (
             issue_root / "scripts" / "model_routing_guard.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("До первой source mutation", balance)
+        self.assertIn("До dispatch допусти пакет Luna", balance)
+        self.assertIn('reasoning_effort="high"', balance)
+        self.assertIn("не больше\n   трёх Luna workers", balance)
+        self.assertIn("одним collective event-driven wait", balance)
+        self.assertIn("не является штатной ролью `Баланса`", balance)
         normalized_swarm = " ".join(swarm.split())
         for marker in (
             "Manager Loop, а не Best-of-N",
@@ -288,12 +292,12 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("[краткую справку](references/mode-help.md)", skill)
         self.assertIn("`По умолчанию` — не шестой режим", mode_help)
         self.assertIn("не обращается к Task Manager", mode_help)
-        self.assertIn("Sol/controller: он делает почти всё", mode_help)
+        self.assertIn("Sol/controller делает почти всю работу сам", mode_help)
         self.assertIn(
-            "основной объём лёгкой и средней ограниченной implementation",
+            "основная модель планирует весь scope",
             mode_help,
         )
-        self.assertIn("возвращает пакет Sol/controller-у", mode_help)
+        self.assertIn("не имеет штатного отдельного reviewer-а", mode_help)
         self.assertIn('value: "task-manager"', metadata)
         self.assertIn("allow_implicit_invocation: true", metadata)
         self.assertIn("$issue-grinder:task-composer", composer)
@@ -329,13 +333,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "In all five modes Issue Grinder uses the standalone Strategic Explainer",
             public_manifest,
         )
-        self.assertIn("issue count alone does not select it", public_manifest)
+        self.assertIn("always selected by default", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
         self.assertIn("delivery-free help path", public_manifest)
         self.assertIn("controller does almost all work", public_manifest)
-        self.assertIn("Luna owns the full routine research", public_manifest)
-        self.assertIn("adaptive redundancy rather than a fixed vote", public_manifest)
-        self.assertIn("separable work returns to Luna", public_manifest)
+        self.assertIn("one wave of two or three Luna High writers", public_manifest)
+        self.assertIn("no separate reviewer by default", public_manifest)
+        self.assertIn(
+            "Classic, Balance, Manager, and Economical require an explicit user request",
+            public_manifest,
+        )
         self.assertIn("Includes three independent Task Manager skills", public_manifest)
         self.assertIn("Scope Reviewer turns an exact selected plan", public_manifest)
         self.assertIn("Plan review and every Release review remain read-only", public_manifest)

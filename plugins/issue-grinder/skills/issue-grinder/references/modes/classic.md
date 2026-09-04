@@ -23,20 +23,17 @@ mode-файлы не читай.
    scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
    одинаковые corrective retry. Problem fallback получает controller/reviewer:
    он продолжает сам, уточняет contract либо формирует новый безопасный packet.
-6. Если automatic Luna недоступна, используй controller profile; это само по
-   себе не является blocker-ом. Явный пользовательский role profile не
-   подменяй.
-7. Один integration owner выполняет fan-in и aggregate checks.
-8. Каждый exact integrated candidate, включая простой или малый scope, до
+6. Один integration owner выполняет fan-in и aggregate checks.
+7. Каждый exact integrated candidate, включая простой или малый scope, до
    terminal acceptance получает independent Luna Max review owner. Это
    единственный direct child проверочной волны: он проходит один заранее
    разрешённый routing guard, один spawn и один event-driven wait, сам читает
    candidate и возвращает один finding ledger. Не запускай status polling,
    повторные `list` или nudges при неизменном состоянии.
-9. При material rework продолжи того же owner-а и ту же reviewer session:
+8. При material rework продолжи того же owner-а и ту же reviewer session:
    один follow-up с exact changed candidate и один event-driven wait без нового
    guard/spawn. Replacement допустим только по доказанной причине.
-10. Controller/reviewer читает exact integrated diff, material source, raw
+9. Controller/reviewer читает exact integrated diff, material source, raw
     evidence и независимый ledger, проводит final code/result review и только
     затем разрешает Done.
-11. Продолжай до empty active scope либо принятого terminal blocker handoff.
+10. Продолжай до empty active scope либо принятого terminal blocker handoff.

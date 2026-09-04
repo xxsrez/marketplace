@@ -1,4 +1,4 @@
-# Рой
+# Менеджер
 
 Применяет `IG-MODE-05`, mode-specific части `IG-MODE-08..09` и
 `IG-MA-15..19` только когда сохранённый `canonical_mode=swarm`. Внутреннее имя
@@ -110,12 +110,12 @@ session использует один новый event-driven wait без пов
 integration target, проверяет identity и exact integrated candidate, запускает
 основной suite и передаёт Sol/controller-у сжатый final packet. Final gate имеет
 один source/evidence pass и не воспроизводит manager/implementer exploration.
-Без independent review и final gate `Рой` не завершает scope и не превращается
+Без independent review и final gate `Менеджер` не завершает scope и не превращается
 автоматически в `Экономичный`.
 
 Mode-invalid, но потенциально функционально полезным считается прогон, где
 manager читает source или использует рабочие tools, implementer заменён без
 причины, одновременно выполняются две фазы, reviewer стартует до `complete`,
-reviewer создаёт собственный рой либо Sol/controller выполняет routine
+reviewer создаёт собственную группу либо Sol/controller выполняет routine
 implementation. Сохрани такие отклонения в evidence и исправь topology до
 terminal acceptance.

@@ -41,11 +41,11 @@ best-effort title и Goal lifecycle. Перед первой mutation полно
 [Task Manager flow](references/task-manager-flow.md).
 
 Для нового run один раз разреши execution mode. Явный выбор `Соло`,
-`Классический`, `Баланс`, `Рой` или `Экономичный` сильнее автоматики; `single`,
+`Классический`, `Баланс`, `Менеджер` или `Экономичный` сильнее default; `single`,
 `сингл`, «одним агентом» и «без субагентов» также означают `Соло`, когда это
-однозначный mode intent. Без явного выбора top-level `gpt-5.6-luna` при любом
-effort выбирает `Экономичный`, любая другая модель — `Классический`; число issue
-не выбирает `Соло`. `По умолчанию` запускает это же правило, а не шестой режим.
+однозначный mode intent. Без явного выбора всегда действует `Соло` независимо от
+модели, effort, scope, capacity и quota. `По умолчанию` также означает `Соло`, а
+не шестой режим.
 Полностью прочитай [Execution modes](references/execution-modes.md), сохрани mode
 record в continuity и не пересчитывай его после compaction, interruption или
 смены модели. Затем полностью прочитай ровно один связанный там файл выбранного
@@ -72,9 +72,11 @@ record в continuity и не пересчитывай его после compacti
    Не предполагай, что execution-child умеет создавать собственных agents:
    nested delegation допустима только при наблюдаемой такой capability. Если её
    нет, используй mode-specific direct stages без остановки terminal-режима. В
-   `Балансе` direct Luna execution owner возвращает один candidate, а
-   независимый Luna reviewer параллельно готовит ограниченный review plan и
-   применяет его к exact candidate после handoff. В `Рое` controller создаёт
+   `Балансе` основной профиль одним окном запускает до трёх independent Luna
+   High writers на непересекающихся packets и одновременно делает собственную
+   полезную работу. После одного collective wait он механически объединяет
+   handoffs, запускает общие long-running checks параллельным tool batch и сам
+   проводит final acceptance. В `Менеджере` controller создаёт
    control brief и держит постоянные Luna manager/implementer sessions: без
    содержательной переработки пересылает одной активной фазе compact packet, а
    manager-у — evidence. Manager не получает source/tool work; implementer
@@ -89,13 +91,14 @@ record в continuity и не пересчитывай его после compacti
 4. Реализуй issue outcome по mode promise, используя Strategic Outcome для
    локальных trade-offs без расширения scope; интегрируй только task-owned
    изменения и проверь exact integrated version по acceptance issue.
-   Во всех режимах, кроме `Соло`, даже простой exact candidate до terminal
-   acceptance получает independent reviewer-а, который не был его автором.
-   В `Балансе` бюджеты: candidate 10 tool calls; review plan 3, exact review 5,
-   recheck 3, final 3; Teams-подобный scope дели на packets/lenses, exception
-   `+3`. В `Рое` крупная фаза имеет конечный budget без дробления ради потолка
-   Balance. Child не перечитывает policy/tool catalog, пишет по absolute path и возвращает handoff.
-   После rework прежний reviewer проверяет changed candidate. Partial review
+   Independent reviewer запускается там, где его требует выбранный mode,
+   пользователь, project policy или exact scope; он не является штатной ролью
+   `Баланса`. Balance packet допускается только при готовой зависимости,
+   отдельной write surface, стабильном interface, изолированном candidate и
+   локальном oracle; одновременно active не больше трёх Luna workers и одной
+   wave. В `Менеджере` крупная фаза имеет конечный budget. Child не перечитывает
+   policy/tool catalog, пишет по absolute path и возвращает handoff. После
+   rework прежний reviewer проверяет changed candidate. Partial review
    блокирует acceptance; только `Экономичный` сохраняет deferred gate checkpoint.
 5. Для любого другого status transition подготовь причинный comment, пройди
    reflection, опубликуй и перечитай comment, затем измени status с optimistic

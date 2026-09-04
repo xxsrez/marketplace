@@ -67,21 +67,21 @@ Task Manager skills:
   scope from `To Do`, `In Progress`, and `In Review` through five execution
   modes. `Соло` uses the current model to perform one issue or packet at a time
   with no subagents and native publication; it can handle one or many issues
-  but is never selected from issue count alone. In `Классический`, the
+  and is always the default unless another mode is requested explicitly. In `Классический`, the
   controller does almost all work and gives Luna only trivial bounded packets.
-  In `Баланс`, Luna owns the full bounded packet loop: ordinary research,
-  implementation, tests, independent critique and rework. The controller keeps
-  only material decisions, integration and final review; reproducible findings
-  are fixed, refuted with evidence or narrowly escalated instead of voted away.
-  `Рой` uses one persistent Luna manager to guide one persistent Luna
+  In `Баланс`, the main agent owns architecture, integration and final
+  acceptance while one wave of two or three Luna High writers implements
+  independent isolated packets in parallel with useful main work. Long
+  tool-bound gates run centrally in parallel after fan-in, and there is no
+  separate reviewer by default. `Менеджер` uses one persistent Luna manager to guide one persistent Luna
   implementer through large sequential phases of one candidate, then one
   independent Luna reviewer checks the complete candidate without delegating
   descendants before the controller final gate. Both modes preserve a terminal promise;
   `Экономичный` performs all substantive work on Luna, keeps any non-Luna root
   as a transport/authority shell only, and may instead leave one honest
   resumable candidate without false `Done` or Goal completion. Explicit
-  mode selection wins; otherwise any top-level Luna selects `Экономичный` and
-  another model selects `Классический`, once per continuous run. It keeps scope
+  non-default mode selection is explicit; otherwise every run selects `Соло`,
+  once per continuous run. It keeps scope
   live. A pure question about modes, the default resolver, their differences or
   selection uses a delivery-free help path without Task Manager, Goal, title
   mutation or subagents. Delivery creates a strategic Goal only for an
@@ -95,11 +95,11 @@ Task Manager skills:
   goal, why Issue Grinder cannot resolve it alone, and what the blocked step
   contributes to the goal. Public UAT is ordinary non-production work;
   Production remains forbidden;
-- independent writers and intentional `Рой` candidates use separate feature
+- independent writers and intentional `Менеджер` candidates use separate feature
   branches and Git worktrees. One integration owner reduces work to one exact
   candidate. `Классический` gives Luna Max only strict-simple packets;
-  `Баланс`, `Рой` and `Экономичный` use it more broadly under their mode
-  contracts. Balance routing receipts are bound to the packet and exact
+  `Менеджер` and `Экономичный` use Luna Max more broadly under their mode
+  contracts, while Balance writers use Luna High. Balance routing receipts are bound to the packet and exact
   dispatch arguments; a functionally successful hidden Sol pipeline remains an
   invalid Balance run. `Соло` does not route work to Luna or any other child.
   Before fresh work, a new run inventories related worktrees,

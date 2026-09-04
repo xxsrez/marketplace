@@ -1,149 +1,118 @@
 # Баланс
 
-Применяет `IG-MODE-04`, mode-specific части `IG-MODE-08..09` и
-`IG-MA-15..19` только когда сохранённый `canonical_mode=balance`. Общие
+Применяет `IG-MODE-04`, `IG-MODE-13..18` и mode-specific части
+`IG-MA-01..19` только когда сохранённый `canonical_mode=balance`. Общие
 resolver, authority, recovery и evidence rules бери из
 [Execution modes](../execution-modes.md); остальные mode-файлы не читай.
 
-Цель — сохранить terminal outcome, автономность и сильную приёмку
-`Классического`, но существенно уменьшить расход controller/reviewer profile.
-Оптимизируй принятый результат на единицу дефицитной квоты, а не число Luna,
-общее количество токенов или красивую параллельность.
+Цель — получить терминальный результат сложного scope быстрее `Соло` за счёт
+ограниченной параллельной помощи Luna, сохранив основную модель владельцем
+архитектуры, интеграции и итоговой приёмки. Не оптимизируй число agents или долю
+Luna саму по себе.
 
-## Дорогой control plane
+## Main-owned план и admission
 
-1. Controller/reviewer одним целостным проходом выполняет первоначальный
-   full-scope analysis: восстанавливает Strategic Outcome и Human Requirements,
-   строит dependency/risk map, acceptance, package boundaries и integration
-   points.
-2. Сохрани `expensive-work ledger`. В нём допустимы только конкретные
-   `material_judgment`, `integration_decision` и `final_review`. Для каждого
-   другого содержательного действия controller-а назови, почему его нельзя
-   отделить и передать Luna; статус root/coordinator сам по себе причиной не
-   является.
-3. Если сложное решение отделимо от исполнения, controller принимает только
-   решение и передаёт Luna новый bounded contract. Обычные repository research,
-   implementation, test authoring/execution, preliminary critique и rework на
-   дорогой lane не переносятся.
+1. Основной профиль одним full-scope pass изучает current state, requirements,
+   dependency graph, write surfaces, acceptance, risks и integration points. Он
+   выбирает общий способ решения и оставляет за собой критический либо связующий
+   пакет.
+2. До dispatch допусти пакет Luna только когда одновременно доказаны:
+   dependency readiness, понятный outcome, self-contained inputs, отдельная
+   непересекающаяся write surface, стабильный interface, изолированный candidate,
+   локальный oracle и отсутствие общего external/irreversible effect.
+3. Параллельная wave требует минимум два подходящих пакета. Запусти не больше
+   трёх Luna workers и только одну active wave. Число Tasks, файлов или свободных
+   slots само по себе не создаёт пакет и не оправдывает делегацию.
+4. Если подходящей ширины нет, основной профиль продолжает scope последовательно.
+   Это нормальный `Баланс`, а не повод искусственно дробить работу или менять
+   режим.
 
-## Luna-owned packet loop
+## Одна Luna High wave
 
-4. До первой source mutation или targeted test создай первую Luna Max execution
-   stage. Обычно один Luna packet owner получает self-contained contract и
-   владеет research, implementation, tests и self-review одного bounded
-   candidate. Material fork, слабый oracle либо высокая ожидаемая ценность могут
-   оправдать несколько purpose-distinct candidate owners от общей exact base;
-   свободные слоты сами по себе этого не оправдывают. Одновременно с execution
-   stage запусти независимого Luna reviewer-а только для построения bounded
-   review plan по requirements, risk map и исходной base; candidate до handoff
-   он не оценивает. Если execution owner наблюдаемо умеет nested delegation, он
-   может добавить mode-compatible
-   внутренние роли. Если нет, это normal platform shape, а не proof gap:
-   candidate завершается этим owner-ом, после чего coordinator запускает
-   отдельную direct Luna review stage.
-5. Каждый execution-child получает уникальный `packet_id`, зелёный
-   `issue-grinder/model-routing/v2` receipt, точные
-   `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
-   совпадающий dispatch fingerprint. Packet lead может создавать только
-   mode-compatible Luna execution-children с такими же receipts и не получает
-   Task Manager, publication, integration либо final-acceptance authority.
-6. Каждый exact candidate до дорогого final gate, включая простой или малый
-   scope, передай независимому Luna verifier/critic. При недоступной nested
-   delegation это отдельный direct read-only owner: его plan может готовиться
-   параллельно, но exact review начинается только после завершения candidate
-   stage. Если material fork дал несколько candidates, этот же независимый owner
-   сначала сводит их по oracle и negative evidence, затем проверяет выбранный
-   exact candidate.
-   Дай ему current requirements, exact diff/source anchors и oracle, но не
-   используй итоговый self-report автора как доказательство. Отсутствующая либо
-   незавершённая проверка остаётся незакрытым gate и запрещает terminal result.
-7. Packet result содержит один exact candidate либо checkpoint, owned surfaces,
-   checks с raw results, source anchors, material decisions, known defects,
-   unknowns и finding ledger. Для каждого material finding допустим только
-   disposition `fixed | refuted_with_evidence | escalate`; несколько общих
-   одобрений не перевешивают один воспроизводимый дефект.
-8. Исправление возвращай тому же Luna candidate owner. Новая wave оправдана новым
-   evidence, изменённым состоянием, иной гипотезой или сохраняющейся ожидаемой
-   ценностью; одинаковый retry без новой информации запрещён.
-   После material rework продолжи того же reviewer-а с exact changed candidate;
-   replacement guard/spawn без доказанной причины не создавай.
+Каждый worker получает отдельный admitted worktree либо отдельный task-owned
+shadow tree root и один self-contained packet:
 
-Каждый новый direct stage owner проходит заранее разрешённый routing guard и
-один spawn; `event-driven wait` длится до результата, запроса внимания или
-переданного stage deadline. Не используй произвольные десятиминутные отсечки.
-Технический timeout ожидания до stage deadline означает немедленно продолжить
-то же событийное ожидание без `list`, status probe, commentary или nudge. Owner
-не ищет messaging tool: его final response является одним consolidated handoff.
+```text
+packet_id | purpose | exact base/root | owned surfaces | forbidden surfaces
+source facts | architecture constraints | expected outcome | quick check
+handoff: candidate identity | changed surfaces | checks | findings | unknowns
+```
 
-Execution packet заранее материализует exact candidate root, прямой source
-manifest, owned files, checks, action ceiling и compact output envelope. Review
-packet задаёт один source/diff pass, один основной deterministic suite и только
-оправданные targeted risk probes; для малого/среднего scope не больше трёх.
-Жёсткие ceilings: candidate owner — максимум десять tool calls, review plan —
-три, exact review — пять, recheck — три, controller final gate — три. Число
-Tasks, файлов или risk surfaces их не увеличивает. Большой Teams-подобный scope
-дели на purpose-distinct packets/lenses; только доказанно неделимый риск может
-до dispatch получить `budget_exception` максимум +3 calls с reproducer и
-stopping condition. Rework всегда отдельный трёхвызовный packet.
+Default worker profile — exact `model="gpt-5.6-luna"`,
+`reasoning_effort="high"` и bounded `fork_turns`. Перед dispatch обязателен
+зелёный packet-bound routing receipt. Явный пользовательский profile override
+сохраняется и проходит тот же guard.
 
-Delegated child не перечитывает Issue Grinder `SKILL.md`, references,
-Architecture или routing guard, не исследует tool catalog/parent messaging и не
-делает directory discovery уже переданных путей. Open-ended fuzzing и повторное
-чтение неизменившихся файлов запрещены. После rework reviewer проверяет
-reproducer, изменённые surfaces и основной suite; новый общий поиск допустим
-только при доказанно новой risk surface, созданной изменением. После последнего
-check child сразу возвращает короткий handoff
-`candidate | owned files | checks | findings<=3 | unknowns | next`.
+Luna выполняет относящееся к пакету research, implementation и быструю локальную
+проверку. Она не получает роли manager, supervisor, critic, reviewer, reducer,
+integration owner или lifecycle owner; не создаёт descendants и не передаёт
+packet дальше. Она не читает Issue Grinder `SKILL.md`, соседние mode references,
+history или sibling modules, если нужные facts уже материализованы в packet-е.
+После последнего quick check сразу возвращает compact handoff. Долгий процесс
+нельзя оставить без доступного owner-а и результата.
 
-Candidate owner делает один source pass, изменяет настоящий admitted candidate
-и запускает suite. Если Git metadata недоступна, используй один task-owned
-shadow tree по общему multi-agent contract; read-only генерация патча остаётся
-последним fallback. Не заменяй работу в candidate повторной in-memory
-реконструкцией всего проекта. Все mutation-вызовы используют абсолютные пути с
-префиксом exact candidate root; относительный patch из integration checkout
-запрещён.
+Все packets текущей wave dispatch-ятся в одном окне. Основной профиль сразу
+продолжает независимую полезную работу: выполняет critical/integration packet,
+готовит общий test harness, исследует cross-cutting risk либо готовит fan-in. Он
+не повторяет активную Luna work и не создаёт фиктивную занятость.
 
-Параллельный review-plan turn завершается своим final handoff до четвёртого
-вызова; reviewer session остаётся доступна для follow-up с exact candidate. Он
-не ищет отдельный способ отправить plan родителю и не держит turn открытым.
+После завершения собственной независимой работы ожидай всех оставшихся workers
+одним collective event-driven wait до результата, внимания или общего stage
+deadline. Не используй polling, повторные status lists, пустые nudges,
+произвольный десятиминутный timeout или промежуточную synthesis неизменившегося
+состояния. Технический timeout раньше deadline продолжает то же ожидание.
 
-## Адаптивная избыточность
+## Fan-in, tools и итоговая приёмка
 
-9. По умолчанию используй один implementation candidate и независимую дешёвую
-   проверку. Дополнительный candidate создавай только при реальной развилке,
-   проваленном или слабом oracle, неудаче прежнего подхода либо высокой
-   ожидаемой ценности отдельной попытки.
-10. Различай purpose и approach дополнительных candidates. Множество одинаковых
-    prompts не является независимостью. Reducer сохраняет один рекомендуемый
-    result и весь material negative evidence; решение принимается по findings и
-    evidence, а не большинством голосов.
+После quiescence wave основной профиль последовательно:
 
-## Узкая эскалация и final gate
+1. сверяет candidate identity и owned surfaces каждого handoff;
+2. механически переносит task-owned commits/bytes в integration candidate;
+3. разрешает реальные conflicts и сохраняет пригодную часть неполного handoff;
+4. не реализует заново успешно выполненный packet;
+5. завершает сам недостающую часть дефектного packet-а без штатной цепочки
+   replacement agents;
+6. запускает независимые долгие build/test/analyzer gates точной интегрированной
+   версии одним parallel tool batch;
+7. перечитывает requirements и exact integrated diff одним итоговым проходом;
+8. проверяет архитектурные и межпакетные решения, raw check results, known risks
+   и remaining unknowns, исправляет найденное и принимает точный candidate.
 
-11. При material uncertainty, contract/context conflict, unexpected
-    tool/environment state, scope expansion, proof gap или проблеме за
-    границами packet-а Luna останавливает corrective mutations и возвращает
-    compact evidence packet с одним узким вопросом либо требуемым решением.
-12. Controller/reviewer разрешает именно неделимую неопределённость. После
-    решения создай новый bounded Luna contract и верни отделимое исполнение или
-    material rework в economical wave. Controller продолжает весь packet сам
-    только когда judgment неотделим от исполнения; причину сохрани в
-    `expensive-work ledger`.
-13. Integration owner объединяет только task-owned commits, проверяет exact
-    integrated candidate и формирует компактный review packet. Summary служит
-    навигацией к source/check evidence; сырой transcript всех Luna waves не
-    является обязательным reviewer input.
-14. Только после завершения Luna candidate/review/rework stages
-    controller/reviewer проводит final code/result gate точной интегрированной
-    версии: один source/diff pass и один integrated deterministic suite. Он не
-    повторяет exploratory probes Luna без противоречия в evidence.
-    После material rework повтори exact-candidate gate. Без final gate не
-    выдавай непроверенный result за terminal.
-15. Первый содержательный Luna handoff является gate режима. Отсутствующий или
-    отрицательный routing receipt, несовпавший observed profile, скрытая
-    ordinary Sol/GPT-5.4 work либо основная содержательная работа controller-а
-    делают прогон невалидным `Балансом`, даже если функциональный результат
-    успешен. Не исправляй routing failure дорогой реализацией под прежним mode.
-16. Недоступная automatic Luna уменьшает capacity. Используй совместимую serial
-    Luna lane либо сохрани evidence и честно остановись/попроси явную смену
-    режима. Самостоятельно режим не переключай.
+Полный patch не пересказывай в model context: fan-in использует commit, copy,
+sync либо автоматически построенный diff с отдельной identity-сверкой.
+Package-local quick checks принадлежат Luna; общие, длительные и integration
+checks — основной lane. Параллельность инструментов не создаёт новых agents.
+
+Отдельный independent reviewer не является штатной ролью `Баланса`. Добавляй
+его только по явному требованию пользователя, project policy или exact scope.
+Даже тогда main profile сохраняет final acceptance и режим не превращается в
+Manager Loop.
+
+Если после fan-in открылась новая готовая независимая frontier, можно запустить
+следующую wave по тем же правилам. Одновременно активна только одна Luna wave.
+Terminal result требует exact integrated checks и final acceptance main profile;
+нетерминальный checkpoint `Экономичного` режима недоступен.
+
+## Evidence и отклонения
+
+Mode evidence содержит admission reasons, dependency/write-surface map,
+routing receipts, worker profiles, dispatch window, peak Luna concurrency,
+collective wait, candidate identities, ownership receipts, fan-in identity,
+integrated tool checks и final acceptance.
+
+Не являются доказательством `Баланса`:
+
+- пересекающиеся writers либо запись worker-а в integration checkout;
+- больше трёх Luna workers или две active waves;
+- Luna manager/reviewer/reducer либо nested delegation;
+- несколько конкурирующих реализаций одного packet-а или Best-of-N;
+- повтор Luna work основным профилем без конкретного defect/conflict;
+- последовательные dispatch/wait cycles там, где packets были одновременно
+  готовы;
+- polling и coordination churn вместо одного collective wait;
+- принятие worker self-report без exact integrated checks;
+- отсутствие итогового exact-diff review основным профилем.
+
+Локальный measurement noise или отклонение, не мешающее безопасно сохранить и
+проверить candidate, записывается как nuance. Оно не обнуляет функциональный
+результат, но topology deviation остаётся видимой в mode evidence.
