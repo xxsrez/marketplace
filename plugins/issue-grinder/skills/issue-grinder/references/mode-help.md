@@ -32,11 +32,11 @@ Strategic Explainer. Если тот же prompt ещё и явно поруча
   ограниченный план проверки и после candidate выполняет bounded review/rework;
   Sol/controller оставляет material decisions, интеграцию и final review;
   режим терминальный.
-- `Рой` — bounded Luna campaign исследует разные подходы, создаёт изолированные
-  конкурирующие candidates и возражения; отдельный Luna reducer/reviewer
-  по заранее заданному action budget сокращает их до одного exact candidate,
-  после чего Sol/controller проводит
-  final review. Режим терминальный и намеренно допускает больше дешёвых попыток.
+- `Рой` — Sol/controller один раз планирует весь scope, затем постоянный Luna
+  manager ведёт постоянного Luna implementer-а по одной крупной проверяемой
+  фазе; после завершения всех фаз один независимый Luna reviewer проверяет exact
+  candidate целиком, а Sol/controller проводит final review. Режим терминальный,
+  экономит Sol и не создаёт Best-of-N candidates по умолчанию.
 - `Экономичный` — Luna выполняет всю содержательную работу и сохраняет один
   проверяемый candidate с независимой Luna-проверкой перед terminal acceptance;
   non-Luna root допустим только как transport/authority оболочка. Это
@@ -72,9 +72,10 @@ Sol получает compact evidence packet, а не сырой transcript де
 Final acceptance в обоих режимах остаётся за Sol/controller profile.
 
 Во всех режимах, кроме `Соло`, независимый reviewer сохраняется даже для малого
-scope. Если execution-child не имеет nested delegation, `Баланс` и `Рой`
-используют bounded direct stages вместо остановки; coordinator получает compact
-handoffs и не превращает число дешёвых workers/critics в polling loop.
+scope. Если execution-child не имеет nested delegation, `Баланс` использует
+bounded direct stages, а `Рой` — постоянные direct manager/implementer sessions
+с механическим relay компактных пакетов через coordinator-а. Это не основание
+останавливать terminal run или превращать ожидание в polling loop.
 
 ## Быстрый выбор
 
@@ -83,8 +84,8 @@ handoffs и не превращает число дешёвых workers/critics 
 - Нужна максимальная обычная уверенность без массовых альтернатив —
   `Классический`.
 - Нужно экономить проверяющий профиль, сохранив сильный final gate — `Баланс`.
-- Полезны альтернативные candidates, широкая критика или поиск сложного решения
-  дешёвыми волнами — `Рой`.
+- Большую связанную задачу нужно провести дешёвым менеджером и исполнителем по
+  крупным фазам, а затем независимо проверить целиком — `Рой`.
 - Проверяющий профиль дефицитен и приемлем честный возобновляемый checkpoint —
   `Экономичный`.
 

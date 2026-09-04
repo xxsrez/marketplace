@@ -73,9 +73,10 @@ Task Manager skills:
   implementation, tests, independent critique and rework. The controller keeps
   only material decisions, integration and final review; reproducible findings
   are fixed, refuted with evidence or narrowly escalated instead of voted away.
-  `Рой` runs its scouts, competing candidates,
-  critics, test authors and reducers on Luna and requires a real multi-candidate
-  wave for a material fork. Both modes preserve a terminal promise;
+  `Рой` uses one persistent Luna manager to guide one persistent Luna
+  implementer through large sequential phases of one candidate, then one
+  independent Luna reviewer checks the complete candidate without delegating
+  descendants before the controller final gate. Both modes preserve a terminal promise;
   `Экономичный` performs all substantive work on Luna, keeps any non-Luna root
   as a transport/authority shell only, and may instead leave one honest
   resumable candidate without false `Done` or Goal completion. Explicit

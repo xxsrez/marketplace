@@ -60,8 +60,8 @@ record в continuity и не пересчитывай его после compacti
    [startup recovery](references/multi-agent-execution.md#startup-recovery--before-new-work)
    и продолжи proven checkpoint вместо replacement.
 2. Выбери dependency-ready frontier и примени сохранённый mode. Когда есть два
-   полезных независимых пакета либо предусмотренная режимом critic/verifier/
-   candidate wave, полностью прочитай
+   полезных независимых пакета либо предусмотренные режимом critic/verifier или
+   Manager Loop, полностью прочитай
    [multi-agent execution](references/multi-agent-execution.md). В `Соло`
    рабочая делегация Issue Grinder запрещена: текущая модель выполняет один
    issue или пакет за раз. Внешние semantic providers не входят в эту topology.
@@ -74,15 +74,16 @@ record в continuity и не пересчитывай его после compacti
    нет, используй mode-specific direct stages без остановки terminal-режима. В
    `Балансе` direct Luna execution owner возвращает один candidate, а
    независимый Luna reviewer параллельно готовит ограниченный review plan и
-   применяет его к exact candidate после handoff. В `Рое` controller задаёт
-   bounded campaign, напрямую запускает оправданные Luna candidates, а
-   после их завершения — одного Luna reducer/reviewer. Новый direct owner
-   проходит заранее разрешённый guard и один spawn; ожидание событийное до
-   stage deadline, без произвольной десятиминутной отсечки, polling, повторных
-   `list` и nudges. Final response owner-а и есть handoff; coordinator не
-   дублирует Luna research, implementation, exploratory tests или critique.
-   Ни один packet/campaign owner не получает Goal, Task Manager, publication или
-   final-acceptance authority.
+   применяет его к exact candidate после handoff. В `Рое` controller создаёт
+   control brief и держит постоянные Luna manager/implementer sessions: без
+   содержательной переработки пересылает одной активной фазе compact packet, а
+   manager-у — evidence. Manager не получает source/tool work; implementer
+   сохраняет exact candidate. После manager `complete` один Luna reviewer без
+   descendants проверяет его целиком. Новый direct owner проходит guard и один
+   spawn; ожидание событийное до stage deadline без произвольной отсечки,
+   polling, повторных `list` и nudges. Final response — handoff; coordinator не
+   дублирует Luna work. Ни один child не получает Goal, Task
+   Manager, publication или final-acceptance authority.
 3. Перед реализацией переведи `To Do → In Progress` и подтверди read-back;
    комментарий для этого тривиального перехода не нужен.
 4. Реализуй issue outcome по mode promise, используя Strategic Outcome для
@@ -90,13 +91,12 @@ record в continuity и не пересчитывай его после compacti
    изменения и проверь exact integrated version по acceptance issue.
    Во всех режимах, кроме `Соло`, даже простой exact candidate до terminal
    acceptance получает independent reviewer-а, который не был его автором.
-   Жёсткие budgets: candidate 10 tool calls; review plan 3, exact review 5,
-   recheck 3, final 3. Teams-подобный scope дели на packets/lenses, exception
-   ограничен `+3`. Child не перечитывает Issue Grinder policy/tool catalog,
-   пишет по absolute candidate path и сразу возвращает compact handoff.
-   После rework прежний reviewer проверяет reproducer, changed surfaces и suite.
-   Partial review блокирует terminal acceptance; только `Экономичный` сохраняет
-   его как deferred gate resumable checkpoint.
+   В `Балансе` бюджеты: candidate 10 tool calls; review plan 3, exact review 5,
+   recheck 3, final 3; Teams-подобный scope дели на packets/lenses, exception
+   `+3`. В `Рое` крупная фаза имеет конечный budget без дробления ради потолка
+   Balance. Child не перечитывает policy/tool catalog, пишет по absolute path и возвращает handoff.
+   После rework прежний reviewer проверяет changed candidate. Partial review
+   блокирует acceptance; только `Экономичный` сохраняет deferred gate checkpoint.
 5. Для любого другого status transition подготовь причинный comment, пройди
    reflection, опубликуй и перечитай comment, затем измени status с optimistic
    concurrency и перечитай issue.

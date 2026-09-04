@@ -261,7 +261,16 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             issue_root / "scripts" / "model_routing_guard.py"
         ).read_text(encoding="utf-8")
         self.assertIn("До первой source mutation", balance)
-        self.assertIn("Best-of-M wave с `M >= 2`", swarm)
+        normalized_swarm = " ".join(swarm.split())
+        for marker in (
+            "Manager Loop, а не Best-of-N",
+            "одну постоянную manager session",
+            "одну постоянную implementer session",
+            "ровно одна phase/rework wave",
+            "reviewer последовательно проходит крупные risk sections сам",
+            "не делегирует descendants",
+        ):
+            self.assertIn(marker, normalized_swarm)
         self.assertIn("Все содержательные решения и работа режима выполняются Luna Max", economical)
         self.assertIn("issue-grinder/model-routing/v2", routing_guard)
         self.assertIn('parser.add_argument("--packet-id", required=True)', routing_guard)

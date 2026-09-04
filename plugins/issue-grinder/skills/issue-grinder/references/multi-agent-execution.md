@@ -52,9 +52,12 @@ receipts. При её отсутствии operational coordinator исполь�
 owner, не бывший автором, возвращает independent finding ledger. Material fork
 может оправдать несколько атомарных candidate waves; тогда reviewer также
 сводит варианты перед проверкой выбранного exact candidate. `Рой` использует
-bounded direct candidate stage от общей exact base, затем отдельного Luna
-reducer/reviewer. Прямое число owners ограничивается полезными ролями и
-campaign envelope, а не свободными слотами. Packet/campaign owner не пишет Task
+отдельные постоянные direct Luna manager и implementer sessions с одним exact
+candidate; operational coordinator механически пересылает между ними одну
+активную phase и compact evidence. После manager `complete` запускается одна
+постоянная independent Luna reviewer session без descendants. Прямое число
+owners ограничивается этими полезными ролями и mode envelope, а не свободными
+слотами. Packet/manager/implementer/reviewer owner не пишет Task
 Manager, не вызывает Strategic Explainer, не делает fan-in в общий candidate и
 не принимает final result.
 
@@ -83,11 +86,12 @@ Startup recovery предшествует `prepare`. Отсутствие Goal, 
 сессии или уже созданного worktree не позволяет проигнорировать однозначно
 связанные со scope branch, commit либо локальные изменения.
 
-Новый intentional candidate, если его разрешает выбранный mode-файл, создаётся
-только после inventory. Зафиксируй, чем его purpose/approach отличается от
-existing work, выдай отдельную candidate identity и общую exact base. Без этого
-он является запрещённым parallel replacement, а не допустимым Best-of-N
-вариантом.
+Новый intentional candidate, если его адаптивно разрешает выбранный mode-файл,
+создаётся только после inventory. Зафиксируй, чем его purpose/approach отличается
+от existing work, выдай отдельную candidate identity и общую exact base. Без
+этого он является запрещённым parallel replacement. В `Рое` normal path имеет
+один candidate; новый восстановительный вариант допустим только после
+доказанного тупика и решения manager-а, не параллельно прежнему.
 
 ## Model routing admission — hard gate
 
@@ -130,23 +134,26 @@ response: exact candidate
 либо ledger, task-owned identity, checks, known defects, negative evidence и
 следующий разрешённый переход. На малом scope direct reviewer читает exact
 candidate сам. На большом он может использовать nested read-only lenses только
-при доказанной capability; иначе coordinator создаёт ограниченные direct lenses
-по независимым поверхностям риска и передаёт их результаты одному final reviewer,
-не заставляя дорогой профиль читать их сырые transcripts. Owner не исследует
+при доказанной capability в `Классическом` или `Балансе`; иначе coordinator
+создаёт ограниченные direct lenses по независимым поверхностям риска и передаёт
+их результаты одному final reviewer. Reviewer `Роя` проходит risk sections сам
+в одной session и не создаёт descendants. Owner не исследует
 tool catalog ради отдельного parent messaging: platform сам возвращает final
 response родителю.
 
 Control brief материализует каждому owner-у self-contained packet: exact base и
 candidate root, source manifest с прямыми путями, owned files, разрешённые
 checks, purpose, action ceiling, stopping condition и compact output envelope.
-Для малого/среднего scope это жёсткие ceilings: candidate owner — десять tool
+Для малого/среднего `Баланса` это жёсткие ceilings: candidate owner — десять tool
 calls, review plan — три, exact review — пять, recheck — три, controller final
 gate — три. Число Tasks, файлов, candidates или risk surfaces их не увеличивает.
-Большой Teams-подобный scope делится на purpose-distinct execution packets и
-read-only lenses с отдельным ownership. До dispatch одного неделимого риска
+Большой Teams-подобный Balance scope делится на purpose-distinct execution
+packets и read-only lenses с отдельным ownership. До dispatch одного неделимого риска
 допустим `budget_exception` максимум на три дополнительных calls с role, base
 ceiling, reproducer/evidence и stopping condition; общий список рисков exception
-не создаёт. Rework всегда получает отдельный трёхвызовный packet.
+не создаёт. Rework всегда получает отдельный трёхвызовный packet. В `Рое`
+manager выдаёт небольшое число крупных фаз с конечными outcome-specific budgets;
+универсальные потолки малого Balance packet-а на них не переносятся.
 
 Child использует materialized packet как orchestration policy: он не читает
 Issue Grinder `SKILL.md`, references/Architecture или routing guard, не ищет
@@ -163,7 +170,7 @@ pass с integrated suite, не повторяя exploration без против�
 После последнего check child сразу возвращает
 `candidate | owned files | checks | findings<=3 | unknowns | next`, без
 transcript, повтора contract-а и развёрнутого отчёта.
-Параллельный review-plan turn заканчивается final response-ом в пределах трёх
+В `Балансе` параллельный review-plan turn заканчивается final response-ом в пределах трёх
 calls; это handoff и quiescence turn, а не потеря session. Exact candidate
 приходит в ту же session follow-up-ом с отдельным лимитом в пять calls. Reviewer
 не ищет messaging tool и не пытается оставаться активным между этими turns.
@@ -172,10 +179,11 @@ calls; это handoff и quiescence turn, а не потеря session. Exact ca
 + independent review planning → Luna exact reduction/review/rework → integrated
 checks → controller final review`. Первый дорогой
 review exact candidate начинается только после завершения Luna stages. В `Рое`
-normal order — `control brief → Luna candidate campaign → Luna reduction and
-independent review → integration → controller final review`. Coordinator может
-механически вести routing, ownership и fan-in между стадиями, но не выполняет за
-Luna их research, implementation, tests или critique.
+normal order — `control brief → persistent Luna manager ↔ persistent Luna
+implementer по одной фазе → manager complete → одна independent Luna reviewer
+session → integration → controller final review`. Coordinator может механически
+вести routing, relay compact packets, ownership и fan-in между стадиями, но не
+выполняет за Luna phase decisions, research, implementation, tests или review.
 
 После material rework продолжи существующего candidate owner-а и ту же
 независимую reviewer session:

@@ -1,125 +1,121 @@
 # Рой
 
 Применяет `IG-MODE-05`, mode-specific части `IG-MODE-08..09` и
-`IG-MA-15..19` только когда сохранённый `canonical_mode=swarm`. Общие resolver,
-authority, recovery и evidence rules бери из
-[Execution modes](../execution-modes.md); остальные mode-файлы не читай.
+`IG-MA-15..19` только когда сохранённый `canonical_mode=swarm`. Внутреннее имя
+`swarm` сохраняется для совместимости continuation, но current topology —
+Manager Loop, а не Best-of-N. Общие resolver, authority, recovery и evidence
+rules бери из [Execution modes](../execution-modes.md); остальные mode-файлы не
+читай.
 
-Цель — использовать большой объём дешёвого поиска, реализации и критики с
-одним проверяемым выходом.
+Цель — заменить длительное пошаговое исполнение Sol/controller-а постоянными
+Luna Max manager и implementer sessions, сохранив терминальный результат,
+независимую проверку и один точный кандидат.
 
-До wave задай конечный envelope: явный user budget либо bounded число волн с
-условиями остановки. Свободная capacity не является бесконечным budget.
+## Control brief и постоянные роли
 
-Допустимые роли: scouts, design candidates, implementation candidates,
-minimal-diff/reliability alternatives, critics, test authors, economical
-judges и evidence reducers. Различай подходы; множество одинаковых prompts
-создаёт коррелированные ошибки и не является достаточным разнообразием.
+До первой implementation Sol/controller одним целостным проходом изучает весь
+live scope и материализует control brief: Strategic Outcome, Human Requirements,
+Agent Plan, exact base/candidate, dependency и risk maps, acceptance/oracles,
+external-effect gates, конечный phase envelope и final gate. Он не превращает
+это в пошаговую реализацию.
 
-До запуска задай одну bounded campaign: material fork, общую exact base,
-различимые candidate purposes, максимальное число попыток и условия остановки.
-Не рассчитывай на nested delegation. Если она доказанно доступна, один Luna Max
-swarm owner может вести внутренние роли. Иначе Sol/controller одним dispatch
-stage запускает напрямую только оправданные Luna candidates, а после их
-завершения — одного direct Luna reducer/reviewer. Это штатная форма `Роя`, а не
-checkpoint. Controller не ведёт исследование каждого кандидата и получает по
-одному compact handoff на candidate и один итоговый ledger.
+После startup recovery создай три Luna Max роли с отдельными routing receipts:
 
-Все содержательные child roles `Роя` по умолчанию являются Luna Max: scouts,
-design/implementation candidates, minimal-diff/reliability alternatives,
-critics, test authors, economical judges, evidence reducers и bounded rework.
-Каждый dispatch явно задаёт `model="gpt-5.6-luna"`,
-`reasoning_effort="max"`, bounded `fork_turns` и проходит routing guard.
-Имя и тип child не заменяют проверку его effective profile. Sol/controller
-сохраняет effect ownership, fan-in, material integration decision и final
-review, но не подменяет собой search, candidate writing или cheap critique.
+1. одну постоянную manager session без repository paths, shell, source access,
+   FileChange и Task Manager authority;
+2. одну постоянную implementer session с одним admitted writer worktree либо
+   task-owned shadow tree и одним exact candidate на весь loop;
+3. одну независимую reviewer session только после manager `complete`.
 
-Intentional candidate получает purpose, base, identity, branch/worktree и
-verification. Он может затрагивать те же files, что другой candidate, только в
-полной изоляции. Existing checkpoint сначала обнаруживается; новый candidate
-не называется его resume/replacement.
+Каждый первоначальный dispatch явно задаёт `model="gpt-5.6-luna"`,
+`reasoning_effort="max"`, bounded `fork_turns` и проходит routing guard. Имя или
+`agent_type` не заменяет observed profile. Sol/controller сохраняет Goal,
+Task Manager, external effects, fan-in, integration и final acceptance, но не
+выполняет routine research, implementation, tests, phase decisions или cheap
+review.
 
-Если scope содержит material candidate-friendly развилку, до ordinary
-implementation зарегистрируй хотя бы одну настоящую Best-of-M wave с `M >= 2`;
-в campaign record это Best-of-M stage с `M >= 2` самостоятельными
-одно-ownerными Luna candidate waves от общей exact base. Один
-writer на каждую Task без конкурирующей material stage не выполняет обещание
-`Роя`. Если candidate-friendly развилки действительно нет, сохрани проверяемую
-причину и всё равно используй Luna для одного candidate и независимых
-scouts/critics; свободная capacity не создаёт искусственную развилку.
+## Manager Loop
 
-После candidate stage:
+Manager получает control brief без source tree и возвращает ровно один пакет:
 
-1. deterministic checks удаляют явно несостоятельные варианты;
-2. direct Luna reducer/reviewer сравнивает оставшиеся, при необходимости
-   используя доказанно доступные internal либо ограниченные direct read-only
-   critics по независимым рискам, и сохраняет provenance, dissent и negative
-   evidence;
-3. reducer оставляет один recommended candidate и максимум один runner-up при
-   действительно material unresolved fork;
-4. integration owner принимает только task-owned commit выбранного candidate;
-5. reducer/reviewer, который не был автором выбранного candidate, применяет
-   compressed review packet к exact integrated candidate; прежние self-review и
-   большинство одобрений эту проверку не заменяют;
-6. замечания создают bounded rework внутри того же owner-а; после material
-   rework та же reviewer session получает exact changed candidate одним
-   follow-up и проходит один новый event-driven wait без replacement
-   guard/spawn.
+```text
+phase:<stable id> | goal | acceptance | material dependencies | evidence expected
+rework:<same phase id> | reproduced defect | exact acceptance delta
+complete | accepted phases | remaining unknowns | final-review packet
+escalate | one material question | evidence | blocked decision
+```
 
-Campaign до dispatch задаёт reducer/reviewer action budget и единые критерии
-сравнения. Каждый materialized packet содержит exact candidate root, прямой
-source manifest, owned files, checks, action ceiling и compact output envelope.
-Reducer не перечитывает сырые transcripts и не воспроизводит research каждого
-writer-а: он использует compact candidate handoffs, один source/diff pass
-выбранного exact candidate, один основной deterministic suite и только
-оправданные targeted risk probes; для малого/среднего scope не больше трёх.
-Жёсткие ceilings: каждый candidate owner — максимум десять tool calls,
-reducer/reviewer — восемь, recheck — три, controller final gate — три. Число
-candidates, Tasks, файлов или risk surfaces их не увеличивает. Большой
-Teams-подобный scope дели на purpose-distinct candidate packets и read-only
-lenses; только один доказанно неделимый риск может до dispatch получить
-`budget_exception` максимум +3 calls с reproducer/evidence и stopping condition.
-Rework всегда отдельный трёхвызовный packet.
+Manager поддерживает общий plan state, выбирает только следующую
+dependency-ready фазу и после evidence принимает `accept`, `targeted rework`,
+`complete` либо одну material escalation. Фаза объединяет связный проверяемый
+outcome; отдельный checklist item, файл или мелкий тест не создаёт manager turn.
+Одновременно активна ровно одна phase/rework wave.
 
-Delegated child не перечитывает Issue Grinder `SKILL.md`, references,
-Architecture или routing guard, не исследует tool catalog/parent messaging и не
-делает directory discovery уже переданных путей. Open-ended fuzzing, cleanup из
-read-only роли и повторный общий поиск запрещены. После последнего check child
-сразу возвращает короткий handoff
-`candidate | owned files | checks | findings<=3 | unknowns | next`.
+Coordinator механически пересылает phase packet в ту же implementer session, а
+её compact evidence — обратно той же manager session. Он не пересказывает и не
+расширяет пакеты, не выбирает следующую фазу и не дублирует Luna work. Если
+доказан прямой совместимый transport между sessions, его можно использовать с
+теми же identities и packet contract; sibling messaging не является
+предусловием режима.
 
-Каждый candidate owner делает один source pass, изменяет настоящий isolated
-candidate и запускает suite. При read-only Git metadata и только одной writing
-lane используй task-owned shadow tree по общему multi-agent contract; несколько
-параллельных writers по-прежнему требуют отдельных admitted Git worktrees.
-Все mutation-вызовы используют абсолютные пути с префиксом exact candidate root;
-относительный patch из integration checkout запрещён.
-После выбора reviewer-ом exact shadow candidate coordinator переносит его
-task-owned файлы одной механической операцией без вывода и повторного набора
-полного patch в model context; затем отдельно сверяет identity.
+Implementer применяет текущий packet к тому же exact candidate, делает один
+целевой source pass, реализует фазу, запускает относящиеся к ней checks и
+self-review и сразу возвращает:
 
-Каждый новый direct campaign owner проходит заранее разрешённый routing guard и
-один spawn. Независимых candidate owners запускай как один bounded stage и
-используй общий `event-driven wait` до переданного stage deadline, а не
-произвольную десятиминутную отсечку или отдельный polling loop на каждого.
-Технический timeout ожидания до deadline только продолжает то же ожидание без
-`list`, probe, commentary или nudge. Reducer/reviewer запускается после
-quiescence candidates. Final response каждого owner-а является его handoff;
-отдельный messaging tool он не ищет. Sol/controller не
-ищет guard, не читает его `--help`, не делает status polling, повторные `list`
-или пустые nudges при неизменном состоянии.
+```text
+phase id | changed surfaces | checks | findings<=3 | unknowns | next
+```
 
-При ambiguity, contract/context conflict, unexpected tool/environment state,
-scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает
-одинаковые corrective retry. Следующая wave может запустить намеренно иной
-candidate, но не параллельную копию того же подхода. Недоступная automatic Luna
-не разрешает заменить wave Sol/GPT-5.4 children. Используй доступную serial Luna
-lane либо сохрани candidates/evidence и честно остановись до следующей capacity;
-явный пользовательский role profile не подменяй. Недоступность nested
-delegation не является причиной checkpoint, пока coordinator может запустить
-предусмотренные direct candidate и reducer/reviewer stages.
+Он не перечитывает Issue Grinder `SKILL.md`, references/Architecture, routing
+guard или tool catalog, не ищет parent messaging и не меняет общий phase plan.
+Все mutations используют absolute candidate path. Новая фаза не начинается до
+решения manager-а по предыдущей. Повтор без нового reproducer, evidence или
+materially иного способа запрещён.
 
-Останови новые attempts, когда candidate прошёл acceptance/final gate,
-дальнейшие waves перестали добавлять независимые гипотезы/evidence, исчерпан
-envelope или появился настоящий authority/environment blocker. Без final review
-режим не завершает scope и не превращается в `Экономичный` автоматически.
+Большой Teams-подобный scope дели на небольшое число крупных фаз по реальным
+dependency/integration boundaries, например contract/data model,
+authorization/API, UI/synchronization и сквозная verification. Это пример, а не
+фиксированный шаблон; не дели механически по числу Tasks, файлов или tests.
+Phase action budget конечен и соразмерен её outcome, но универсальный потолок
+малого Balance packet-а не применяется к большой фазе `Роя`.
+
+Best-of-N, параллельные реализации, массовые scouts/critics, reducer и
+использование свободных слотов запрещены normal path. После доказанного тупика
+manager может назначить один materially иной восстановительный путь, сохранив
+старое negative evidence и не запуская варианты для голосования.
+
+## Независимая проверка и завершение
+
+Reviewer запускается только после manager `complete` и сам читает exact final
+candidate, requirements, diff/source anchors и checks. Он сохраняет одну
+постоянную session, конечный review plan и один finding ledger. Даже на большом
+scope reviewer последовательно проходит крупные risk sections сам и не
+делегирует descendants. Open-ended fuzzing, cleanup из read-only роли, поиск
+messaging tool и повторное чтение mode policy запрещены.
+
+Каждый material finding содержит reproducer/evidence и disposition
+`fixed | refuted_with_evidence | escalate`. Targeted rework получает прежняя
+implementer session; exact changed candidate одним follow-up получает прежняя
+reviewer session. Новый reviewer или implementer допустим только после
+доказанной недоступности прежнего, потери независимости либо material изменения
+контракта, с сохранением уже собранного evidence.
+
+Новый direct owner проходит `guard ×1 → spawn ×1 → event-driven wait` до
+результата, внимания или переданного stage deadline. Follow-up существующей
+session использует один новый event-driven wait без повторного guard/spawn.
+Технический timeout до deadline продолжает то же ожидание без status polling,
+`list`, commentary или nudge. Final response session является её handoff.
+
+После reviewer pass coordinator механически переносит task-owned bytes/commit в
+integration target, проверяет identity и exact integrated candidate, запускает
+основной suite и передаёт Sol/controller-у сжатый final packet. Final gate имеет
+один source/evidence pass и не воспроизводит manager/implementer exploration.
+Без independent review и final gate `Рой` не завершает scope и не превращается
+автоматически в `Экономичный`.
+
+Mode-invalid, но потенциально функционально полезным считается прогон, где
+manager читает source или использует рабочие tools, implementer заменён без
+причины, одновременно выполняются две фазы, reviewer стартует до `complete`,
+reviewer создаёт собственный рой либо Sol/controller выполняет routine
+implementation. Сохрани такие отклонения в evidence и исправь topology до
+terminal acceptance.

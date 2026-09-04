@@ -22,6 +22,7 @@ routing_guard_path: <once-resolved absolute bundled path>
 routing_receipts: <pre-dispatch receipts and observed child profiles>
 campaign_stages: <bounded direct or nested owner stages and deadlines>
 review_session: <independent reviewer identity and current state>
+roy_loop: <persistent manager/implementer ids, phase ids and decisions when swarm>
 expensive_work_ledger: <reason-coded controller/reviewer work when required by mode>
 ```
 
@@ -170,10 +171,11 @@ enforcement. Настоящий unskippable gate возможен только �
 понятный outcome. Internal roles остаются за одним owner-ом только при
 наблюдаемой nested delegation; неизвестная child tool surface не считается
 такой capability. Когда вложенность недоступна, `Баланс` использует отдельные
-direct Luna execution и review stages, а `Рой` — bounded batch самостоятельных
-direct candidate waves и последующий direct Luna reducer/reviewer. Это
-mode-compatible fallback, а не
-основание остановить terminal run.
+direct Luna execution и review stages, а `Рой` — отдельные постоянные direct
+Luna manager/implementer sessions с механическим relay phase/evidence packets
+через coordinator-а и одну independent reviewer session после manager
+`complete`. Это mode-compatible transport, а не основание остановить terminal
+run.
 
 Normal lifecycle каждого нового direct owner-а:
 
@@ -191,16 +193,18 @@ commentary или nudge.
 `list` и пустые nudges. На deadline owner возвращает candidate/ledger либо
 точный partial handoff, а не исчезает без evidence.
 
-Reviewer/reducer получает action budget и stopping condition до dispatch. Для
+Reviewer получает action budget и stopping condition до dispatch. Для
 малого/среднего scope normal budget — один source/diff pass, один основной suite
-и максимум три targeted risk probes. Жёсткие ceilings: candidate owner — десять
-tool calls, review plan — три, exact review — пять, recheck — три, controller
-final gate — три. Число Tasks, files, candidates или risk surfaces их не
-увеличивает. Большой Teams-подобный scope дели на purpose-distinct packets и
-read-only lenses. Только один доказанно неделимый риск может до dispatch получить
-`budget_exception` максимум +3 calls с reproducer/evidence и stopping condition.
-Один tool call может пакетировать связанные чтения или проверки без потери
-evidence.
+и максимум три targeted risk probes. В `Балансе` действуют жёсткие ceilings:
+candidate owner — десять tool calls, review plan — три, exact review — пять,
+recheck — три, controller final gate — три. Число Tasks, files, candidates или
+risk surfaces их не увеличивает. Большой Teams-подобный Balance scope дели на
+purpose-distinct packets и read-only lenses. Только один доказанно неделимый
+риск может до dispatch получить `budget_exception` максимум +3 calls с
+reproducer/evidence и stopping condition. В `Рое` каждая крупная фаза и единый
+последовательный review получают конечный outcome-specific budget; не дроби
+фазу на мелкие manager turns ради потолка Balance. Один tool call может
+пакетировать связанные чтения или проверки без потери evidence.
 
 Coordinator материализует exact candidate root, прямой source manifest, owned
 files, checks, ceiling и compact output envelope. Candidate owner использует их
@@ -216,7 +220,7 @@ simulation/fuzzing. После последнего check сразу возвр�
 запреты на повторные чтения, messaging discovery и read-only cleanup действуют
 для reviewer-а.
 
-Параллельная подготовка review заканчивает свой turn final response-ом не позже
+В `Балансе` параллельная подготовка review заканчивает свой turn final response-ом не позже
 третьего tool call; это handoff плана и завершение turn, а не всей reviewer
 session. Не ищи messaging tool и не удерживай turn открытым. После candidate
 coordinator продолжает ту же session follow-up-ом, где exact review получает
@@ -230,9 +234,10 @@ follow-up exact changed candidate ×1 → event wait ×1
 
 Новый reviewer guard/spawn допустим только после доказанной недоступности
 прежнего reviewer-а, потери независимости либо material изменения review
-contract. На большом scope доказанно способный owner может создавать внутренние
-read-only lenses; иначе direct lenses ограничиваются независимыми risk surfaces,
-а один final reviewer получает их compact findings и exact candidate.
+contract. На большом scope reviewer `Классического` или `Баланса` может
+создавать внутренние read-only lenses, когда capability доказана; reviewer
+`Роя` проходит risk sections сам в одной session и не создаёт descendants.
+Один final reviewer всегда возвращает compact findings и exact candidate.
 
 ## Выбранный режим — обязательная загрузка
 
