@@ -37,6 +37,12 @@ Luna саму по себе.
 
 ## Одна активная Luna High wave
 
+Сокращай время до dispatch: после admission не проектируй подробно реализацию
+Luna-пакетов. Собери исходный inventory, подготовку изоляции и routing checks
+независимых packets одним tool batch, когда это допускает среда. Используй
+проверенный локальный helper, если он сохраняет ownership и candidate identity.
+Не заменяй неизвестный результат проверки предположением ради быстрого запуска.
+
 Каждый worker получает отдельный admitted worktree либо отдельный task-owned
 shadow tree root и один self-contained packet:
 
@@ -99,6 +105,11 @@ deadline. Не используй polling, повторные status lists, пу
 
 Полный patch не пересказывай в model context: fan-in использует commit, copy,
 sync либо автоматически построенный diff с отдельной identity-сверкой.
+Identity, changed surfaces и diffs всех завершённых packets собирай одним
+batch; изучи diff перед принятием и один раз сверь bytes после переноса.
+Повторное полное чтение тех же файлов до и после копирования нужно только при
+конфликте, дефекте или нехватке контекста; успешная identity-сверка не требует
+нового содержательного обзора неизменившейся версии.
 Package-local quick checks принадлежат Luna; общие, длительные и integration
 checks — основной lane. Параллельность инструментов не создаёт новых agents.
 Если exact-diff review потребовал material rework, повтори только затронутые
