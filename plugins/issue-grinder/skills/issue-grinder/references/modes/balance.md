@@ -64,6 +64,16 @@ history или sibling modules, если нужные facts уже матери�
 готовит общий test harness, исследует cross-cutting risk либо готовит fan-in. Он
 не повторяет активную Luna work и не создаёт фиктивную занятость.
 
+Если текущий checkout — отдельный clean task-owned run, Luna writers работают в
+разных shadow roots общей exact base и их owned surfaces не пересекаются, main
+profile владеет integration checkout и пишет свой downstream packet прямо в
+него. До dispatch зафиксируй exact base, исходный status и main-owned surfaces;
+после каждого handoff докажи, что observed integration diff ограничен этими
+surfaces. Не создавай `.lanes/main` или другой main shadow и не копируй затем
+весь main candidate обратно. Luna по-прежнему не пишет в integration checkout.
+Для dirty пользовательского checkout, Git-worktree writers или пересекающихся
+surfaces действует общий read-only integration rule.
+
 После завершения собственной независимой работы ожидай всех оставшихся workers
 одним collective event-driven wait до результата, внимания или общего stage
 deadline. Не используй polling, повторные status lists, пустые nudges,
@@ -81,7 +91,8 @@ deadline. Не используй polling, повторные status lists, пу
 5. завершает сам недостающую часть дефектного packet-а без штатной цепочки
    replacement agents;
 6. запускает независимые долгие build/test/analyzer gates точной интегрированной
-   версии одним parallel tool batch;
+   версии ровно одним parallel tool batch и сохраняет handles/results каждого
+   процесса без повторного запуска;
 7. перечитывает requirements и exact integrated diff одним итоговым проходом;
 8. проверяет архитектурные и межпакетные решения, raw check results, known risks
    и remaining unknowns, исправляет найденное и принимает точный candidate.
@@ -90,6 +101,9 @@ deadline. Не используй polling, повторные status lists, пу
 sync либо автоматически построенный diff с отдельной identity-сверкой.
 Package-local quick checks принадлежат Luna; общие, длительные и integration
 checks — основной lane. Параллельность инструментов не создаёт новых agents.
+Если exact-diff review потребовал material rework, повтори только затронутые
+gates и минимальный общий acceptance. Не запускай полный уже зелёный batch снова
+без cross-cutting изменения и не повторяй его только из-за механического fan-in.
 
 Отдельный independent reviewer не является штатной ролью `Баланса`. Добавляй
 его только по явному требованию пользователя, project policy или exact scope.
@@ -107,7 +121,9 @@ Mode evidence содержит admission reasons, подтверждение adm
 source mutation, учёт tool-bound critical path, dependency/write-surface map,
 routing receipts, worker profiles, dispatch window, peak Luna concurrency,
 collective wait, candidate identities, ownership receipts, fan-in identity,
-integrated tool checks и final acceptance.
+main-owned integration receipt, отсутствие main shadow/copy-back, число полных
+integrated gate batches, targeted rework gates, integrated tool checks и final
+acceptance.
 
 Не являются доказательством `Баланса`:
 
@@ -119,7 +135,10 @@ integrated tool checks и final acceptance.
 - последовательные dispatch/wait cycles там, где packets были одновременно
   готовы;
 - source mutation или долгий packet-local gate до обязательного dispatch;
+- отдельный main shadow или обратная копия main candidate в task-owned
+  integration checkout при доступном безопасном main-owned path;
 - вторая execution wave того же run;
+- повтор полного integrated gate batch без cross-cutting material rework;
 - polling и coordination churn вместо одного collective wait;
 - принятие worker self-report без exact integrated checks;
 - отсутствие итогового exact-diff review основным профилем.

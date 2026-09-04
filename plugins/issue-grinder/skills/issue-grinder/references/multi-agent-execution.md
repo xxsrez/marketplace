@@ -162,8 +162,10 @@ defect/conflict. После последнего check child сразу возв
 `candidate | owned files | checks | findings<=3 | unknowns | next`, без
 transcript, повтора contract-а и развёрнутого отчёта.
 В `Балансе` normal order — `full-scope plan → one parallel Luna High writer
-wave + useful main work → one collective wait → mechanical fan-in → parallel
-tool gates → main exact-diff review and acceptance`. В `Менеджере`
+wave + useful main work directly in a clean task-owned integration checkout →
+one collective wait → mechanical fan-in → one full parallel tool-gate batch →
+main exact-diff review and acceptance`. Main shadow/copy-back и повтор полного
+зелёного gate batch без cross-cutting rework в normal path не входят. В `Менеджере`
 normal order — `control brief → persistent Luna manager ↔ persistent Luna
 implementer по одной фазе → manager complete → одна independent Luna reviewer
 session → integration → controller final review`. Coordinator может механически
@@ -204,6 +206,15 @@ artifact после проверки. Read-only review planning может ид�
 поскольку второго автора нет. Если даже shadow tree недоступен, используй один
 read-only patch-return packet. Controller не реализует candidate заново.
 
+Для одной Balance wave разрешены до трёх отдельных task-owned shadow roots общей
+exact base, если их owned surfaces заранее доказанно непересекаются и каждый root
+имеет отдельную identity. В отдельном clean task-owned integration checkout main
+profile остаётся единственным writer-ом и пишет только в заранее объявленные
+main-owned surfaces. Такой main не создаёт четвёртый shadow: исходный status,
+base и допустимый main diff проверяются после каждого handoff и перед fan-in.
+Luna write в integration checkout, dirty пользовательский checkout и любое
+пересечение surfaces закрывают это исключение.
+
 Shadow path задаётся напрямую из packet identity; не исследуй reference tree,
 `.gitignore` или cache-каталоги ради его выбора. Writer получает абсолютный
 shadow path и использует его префикс во всех mutation-вызовах; запись в
@@ -229,9 +240,12 @@ review/fan-in. После review coordinator одним
    первым Git-действием запустить `admit` из exact worktree `cwd` с обязательными
    ожидаемыми worktree, branch, HEAD и common dir. Только после проверки receipt вызови
    отдельный follow-up с implementation packet.
-4. Пока writer активен, integration checkout read-only. Параллельная запись
-   coordinator-а требует его собственной admitted writer lane. После каждого
-   interaction/return и перед fan-in выполняй `assert-unchanged`.
+4. Пока writer активен, integration checkout read-only, кроме описанного выше
+   Balance main-owned path. В этом path вместо полного `assert-unchanged`
+   проверяй, что diff ограничен declared main-owned surfaces; для всех других
+   режимов и topology параллельная запись coordinator-а требует собственной
+   admitted writer lane. Проверку выполняй после каждого interaction/return и
+   перед fan-in.
 5. Изменившийся integration checkout, admission mismatch или отсутствующий
    receipt немедленно закрывает write wave: не интегрируй, не меняй lifecycle,
    останови дальнейшие mutations, прерви активных writers и сохрани неизвестный
