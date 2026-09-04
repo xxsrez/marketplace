@@ -12,8 +12,7 @@ from dataclasses import asdict, dataclass
 SCHEMA = "issue-grinder/model-routing/v2"
 LUNA_MODEL = "gpt-5.6-luna"
 LUNA_MAX_EFFORT = "max"
-LUNA_HIGH_EFFORT = "high"
-LUNA_MODES = frozenset({"balance", "swarm", "economical"})
+LUNA_MODES = frozenset({"economical"})
 
 
 @dataclass(frozen=True)
@@ -58,7 +57,7 @@ def luna_required_for(
 def required_luna_effort(mode: str) -> str:
     """Return the mode-specific default effort for a required Luna child."""
 
-    return LUNA_HIGH_EFFORT if mode == "balance" else LUNA_MAX_EFFORT
+    return LUNA_MAX_EFFORT
 
 
 def validate_route(

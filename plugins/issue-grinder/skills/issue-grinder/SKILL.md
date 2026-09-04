@@ -40,12 +40,15 @@ multi-agent mechanics и local scope; не ищи их через `find`/`rg`, �
 best-effort title и Goal lifecycle. Перед первой mutation полностью прочитай
 [Task Manager flow](references/task-manager-flow.md).
 
-Для нового run один раз разреши execution mode. Явный выбор `Соло`,
-`Классический`, `Баланс`, `Менеджер` или `Экономичный` сильнее default; `single`,
-`сингл`, «одним агентом» и «без субагентов» также означают `Соло`, когда это
-однозначный mode intent. Без явного выбора всегда действует `Соло` независимо от
-модели, effort, scope, capacity и quota. `По умолчанию` также означает `Соло`, а
-не шестой режим.
+Для нового run после разрешения live scope один раз выбери execution mode.
+Явные `Соло`, `Классический` и `Экономичный` важнее default; `single`,
+`сингл`, «одним агентом» и «без субагентов» также означают `Соло` при
+однозначном mode intent. Без явного выбора: если main model не Luna и в scope
+больше одной задачи — `Классический`; иначе — `Соло`.
+`Экономичный` никогда не выбирается автоматически. Считай задачи live scope,
+а не сгенерированные рабочие пакеты; effort, capacity и quota не участвуют.
+Удалённый mode в запросе либо сохранённом record требует явного выбора
+поддерживаемого режима без потери выполненной работы и без скрытой подмены.
 Полностью прочитай [Execution modes](references/execution-modes.md), сохрани mode
 record в continuity и не пересчитывай его после compaction, interruption или
 смены модели. Затем полностью прочитай ровно один связанный там файл выбранного
@@ -60,8 +63,7 @@ record в continuity и не пересчитывай его после compacti
    [startup recovery](references/multi-agent-execution.md#startup-recovery--before-new-work)
    и продолжи proven checkpoint вместо replacement.
 2. Выбери dependency-ready frontier и примени сохранённый mode. Когда есть два
-   полезных независимых пакета либо предусмотренные режимом critic/verifier или
-   Manager Loop, полностью прочитай
+   полезных независимых пакета либо предусмотренные режимом critic/verifier, полностью прочитай
    [multi-agent execution](references/multi-agent-execution.md). В `Соло`
    рабочая делегация Issue Grinder запрещена: текущая модель выполняет один
    issue или пакет за раз. Внешние semantic providers не входят в эту topology.
@@ -71,17 +73,7 @@ record в continuity и не пересчитывай его после compacti
    наследование root profile не считается выбором worker profile.
    Не предполагай, что execution-child умеет создавать собственных agents:
    nested delegation допустима только при наблюдаемой такой capability. Если её
-   нет, используй mode-specific direct stages без остановки terminal-режима. В
-   `Балансе` основной профиль одним окном запускает до трёх independent Luna
-   High writers на непересекающихся packets и одновременно делает собственную
-   полезную работу. После одного collective wait он механически объединяет
-   handoffs, запускает общие long-running checks параллельным tool batch и сам
-   проводит final acceptance. В `Менеджере` controller создаёт
-   control brief и держит постоянные Luna manager/implementer sessions: transport
-   передаёт phase/evidence без отдельного model turn проверяющего профиля.
-   Manager не получает source/tool work; implementer
-   сохраняет exact candidate. После manager `complete` один Luna reviewer без
-   descendants проверяет его целиком. Новый direct owner проходит guard и один
+   нет, используй mode-specific direct stages без остановки terminal-режима. Новый direct owner проходит guard и один
    spawn; ожидание событийное до stage deadline без произвольной отсечки,
    polling, повторных `list` и nudges. Final response — handoff; coordinator не
    дублирует Luna work. Ни один child не получает Goal, Task
@@ -92,11 +84,7 @@ record в continuity и не пересчитывай его после compacti
    локальных trade-offs без расширения scope; интегрируй только task-owned
    изменения и проверь exact integrated version по acceptance issue.
    Independent reviewer запускается там, где его требует выбранный mode,
-   пользователь, project policy или exact scope; он не является штатной ролью
-   `Баланса`. Balance packet допускается только при готовой зависимости,
-   отдельной write surface, стабильном interface, изолированном candidate и
-   локальном oracle; одновременно active не больше трёх Luna workers и одной
-   wave. В `Менеджере` крупная фаза имеет конечный budget. Child не перечитывает
+   пользователь, project policy или exact scope. Child не перечитывает
    policy/tool catalog, пишет по absolute path и возвращает handoff. После
    rework прежний reviewer проверяет changed candidate. Partial review
    блокирует acceptance; только `Экономичный` сохраняет deferred gate checkpoint.

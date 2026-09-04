@@ -173,8 +173,6 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         mode_files = {
             "Соло": "solo.md",
             "Классический": "classic.md",
-            "Баланс": "balance.md",
-            "Менеджер": "swarm.md",
             "Экономичный": "economical.md",
         }
         for filename in mode_files.values():
@@ -237,7 +235,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("update_goal(status=blocked)", runtime)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичный UAT", runtime)
-        self.assertIn("Без явного выбора всегда действует `Соло`", normalized)
+        self.assertIn("`Экономичный` никогда не выбирается автоматически", normalized)
         self.assertIn("не пересчитывай его", normalized)
         self.assertIn("## Выбранный режим — обязательная загрузка", execution_modes)
         for mode, filename in mode_files.items():
@@ -251,30 +249,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             issue_root / "references" / "modes" / "economical.md"
         ).read_text(encoding="utf-8")
         self.assertIn("resumable checkpoint", economical)
-        balance = (
-            issue_root / "references" / "modes" / "balance.md"
-        ).read_text(encoding="utf-8")
-        swarm = (
-            issue_root / "references" / "modes" / "swarm.md"
-        ).read_text(encoding="utf-8")
         routing_guard = (
             issue_root / "scripts" / "model_routing_guard.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("До dispatch допусти пакет Luna", balance)
-        self.assertIn('reasoning_effort="high"', balance)
-        self.assertIn("не больше\n   трёх Luna workers", balance)
-        self.assertIn("одним collective event-driven wait", balance)
-        self.assertIn("не является штатной ролью `Баланса`", balance)
-        normalized_swarm = " ".join(swarm.split())
-        for marker in (
-            "Manager Loop, а не Best-of-N",
-            "одну постоянную manager session",
-            "одну постоянную implementer session",
-            "ровно одна phase/rework wave",
-            "reviewer последовательно проходит крупные risk sections сам",
-            "не делегирует descendants",
-        ):
-            self.assertIn(marker, normalized_swarm)
         self.assertIn("Все содержательные решения и работа режима выполняются Luna Max", economical)
         self.assertIn("issue-grinder/model-routing/v2", routing_guard)
         self.assertIn('parser.add_argument("--packet-id", required=True)', routing_guard)
@@ -290,14 +267,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Meaningful title", title_contract)
         self.assertIn("только пользователю в чате", normalized)
         self.assertIn("[краткую справку](references/mode-help.md)", skill)
-        self.assertIn("`По умолчанию` — не шестой режим", mode_help)
+        self.assertIn("`Экономичный` включается только явно", mode_help)
         self.assertIn("не обращается к Task Manager", mode_help)
         self.assertIn("Sol/controller делает почти всю работу сам", mode_help)
-        self.assertIn(
-            "основная модель планирует весь scope",
-            mode_help,
-        )
-        self.assertIn("не имеет штатного отдельного reviewer-а", mode_help)
         self.assertIn('value: "task-manager"', metadata)
         self.assertIn("allow_implicit_invocation: true", metadata)
         self.assertIn("$issue-grinder:task-composer", composer)
@@ -320,7 +292,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("why Issue Grinder cannot resolve it alone", public_manifest)
         self.assertIn("Public UAT", public_manifest)
         self.assertIn("Production remains forbidden", public_manifest)
-        self.assertIn("five stable execution modes", public_manifest)
+        self.assertIn("three stable execution modes", public_manifest)
         self.assertIn(
             "Solo keeps all Issue Grinder delivery work in one execution lane",
             public_manifest,
@@ -330,17 +302,15 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             public_manifest,
         )
         self.assertIn(
-            "In all five modes Issue Grinder uses the standalone Strategic Explainer",
+            "In all three modes Issue Grinder uses the standalone Strategic Explainer",
             public_manifest,
         )
-        self.assertIn("always selected by default", public_manifest)
+        self.assertIn("otherwise Solo is selected", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
         self.assertIn("delivery-free help path", public_manifest)
         self.assertIn("controller does almost all work", public_manifest)
-        self.assertIn("one wave of two or three Luna High writers", public_manifest)
-        self.assertIn("no separate reviewer by default", public_manifest)
         self.assertIn(
-            "Classic, Balance, Manager, and Economical require an explicit user request",
+            "Economical requires an explicit user request",
             public_manifest,
         )
         self.assertIn("Includes three independent Task Manager skills", public_manifest)

@@ -20,7 +20,7 @@ Explainer не вызывается, потому что Astra сама форм
   `$strategic-explainer:strategic-explainer`;
 - иначе `native` без capability warning и без блокировки lifecycle.
 
-Это правило одинаково для всех пяти execution modes. Provider-agent Strategic
+Это правило одинаково для всех трёх execution modes. Provider-agent Strategic
 Explainer не входит в Issue Grinder execution topology: он получает только
 publication request и не анализирует, не реализует, не тестирует и не проверяет
 delivery scope. Если пользователь отдельно запретил вообще любых subagents,

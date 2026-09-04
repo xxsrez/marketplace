@@ -12,9 +12,10 @@ run с уже сохранённым mode record не выбирай режим 
 Один run имеет один record:
 
 ```text
-canonical_mode: solo | classic | balance | swarm | economical
+canonical_mode: solo | classic | economical
 mode_origin: explicit | automatic
 initial_main_model: <exact effective model>
+initial_scope_task_count: <unique live tasks before decomposition>
 initial_main_effort: <exact effective effort when available>
 controller_profile: <effective profile>
 worker_profile: <effective profile>
@@ -22,33 +23,30 @@ routing_guard_path: <once-resolved absolute bundled path>
 routing_receipts: <pre-dispatch receipts and observed child profiles>
 campaign_stages: <bounded direct or nested owner stages and deadlines>
 review_session: <independent reviewer identity and current state when mode requires it>
-manager_loop: <persistent manager/implementer ids, phase ids and decisions when swarm>
 expensive_work_ledger: <reason-coded controller/reviewer work when required by mode>
 ```
 
 До первого implementation dispatch:
 
-Порядок разрешения фиксирован: `explicit user mode → Solo default`.
+Сначала восстанови record доказанного продолжения: смена модели, числа
+оставшихся задач или квоты не запускает автовыбор повторно.
 
-1. Если это доказанное продолжение, восстанови record из run continuity и не
-   применяй automatic resolver снова. Смена current model/effort не меняет уже
-   выбранный mode.
-2. Для нового run найди в текущем prompt явное намерение выбрать режим. Прими
-   каноническое имя и свободные формы вроде «Соло», `single`, `сингл`, «одним
-   агентом», «без субагентов», «используй профиль Balance», «запусти Менеджер» или
-   «работай экономично», только когда речь явно о режиме Issue Grinder.
-   Случайное слово «баланс» или «один» в описании продукта не является
-   selector-ом.
-3. При явном selector-е выбери его. Иначе всегда выбери `solo`: top-level model,
-   effort, scope, число issue, capacity и quota на default не влияют.
-4. `По умолчанию` означает `solo` и не создаёт шестой mode.
-5. Выполни profile normalization ниже, сохрани record в доступной continuity
-   текущего run и один раз коротко назови выбранный канонический режим в
-   progress update.
+Для нового run явный выбор поддерживаемого режима имеет приоритет.
+`single`, `сингл`, «одним агентом», «без субагентов» означают `solo` при
+явном mode intent; случайное слово в описании продукта не является selector-ом.
+Без явного выбора сначала разреши live scope и посчитай уникальные выбранные
+задачи до декомпозиции (не рабочие пакеты и не контейнеры parent/child).
+Если main model не `gpt-5.6-luna` и задач больше одной — `classic`;
+иначе — `solo`. Неизвестный scope сначала разреши, не угадывай количество.
+`economical` включается только явно. Effort, quota и capacity не участвуют.
+`По умолчанию` означает этот автовыбор, а не отдельный режим.
 
-Не читай config, прошлый run или выбранные child profiles для скрытого выбора
-другого режима. Не пересчитывай automatic mode из процента квоты, capacity или
-модели, на которой позже продолжили работу.
+Запросы удалённых режимов `balance`, `swarm`, `manager`, `roy`, `roi`,
+«Баланс», «Менеджер», «Рой» при mode intent не подменяй default-ом.
+Сохранённый record удалённого режима также не продолжай: сохрани работу,
+запроси поддерживаемый режим и используй explicit switch barrier.
+После выбора нормализуй profiles, сохрани mode record и один раз назови режим.
+В следующих turns загружай только выбранный mode-файл.
 
 ## Profile normalization
 
@@ -72,12 +70,6 @@ reasoning_effort = "max"
   отдельного надёжного правила, что main profile не сильнее Luna Max;
 - неизвестное cross-family отношение не угадывай по цене, имени или одному
   прошлому результату.
-
-Для `Баланса` действует отдельная projection: controller/final reviewer — exact
-current main profile, worker — `gpt-5.6-luna` с `reasoning_effort=high`.
-Balance worker profile не повышай до Max без явного user override. Если main
-profile сам Luna High либо слабее по доказанному ordering, он всё равно остаётся
-единственным operational owner-ом; это не создаёт скрытого supervisor-а.
 
 В `Соло` не применяй эти profiles к исполнению: единственный execution profile
 равен exact effective current top-level model и effort этого turn. Не создавай
@@ -115,10 +107,7 @@ fingerprint не переиспользуй. При mismatch закрой wave �
 `telemetry_pending`, не выдумывай подтверждение и сохрани exact spawn args для
 внешней recursive telemetry проверки.
 
-В `Балансе` Luna-lane всегда запускается с явно переданными
-`model="gpt-5.6-luna"`, `reasoning_effort="high"` и bounded `fork_turns`. В
-`Классическом`, `Менеджере` и `Экономичном` mode-specific Luna-lane
-использует явный `reasoning_effort="max"`. Не оставляй model/effort на
+В `Классическом` и `Экономичном` mode-specific Luna-lane использует явные `model="gpt-5.6-luna"` и `reasoning_effort="max"`, bounded `fork_turns`. Не оставляй model/effort на
 наследование root. Имя или тип агента не выбирает профиль режима. Используй
 effective profile текущего dispatch и сверяй наблюдаемый профиль.
 
@@ -127,8 +116,8 @@ effective profile текущего dispatch и сверяй наблюдаемы
 ```bash
 python3 <installed-skill>/scripts/model_routing_guard.py \
   --packet-id TM-123-implementation-1 \
-  --mode balance --semantic-role implementation --agent-type worker \
-  --model gpt-5.6-luna --effort high --fork-turns none
+  --mode economical --semantic-role implementation --agent-type worker \
+  --model gpt-5.6-luna --effort max --fork-turns none
 ```
 
 Отсутствие либо отрицательный receipt, фактически другая model/effort или
@@ -156,8 +145,7 @@ enforcement. Настоящий unskippable gate возможен только �
 - один exact integrated candidate является предметом acceptance;
 - worker self-report и isolated green tests не являются final evidence;
 - independent reviewer обязателен только в mode contract, user instruction или
-  project policy; `Баланс` штатно использует final acceptance main profile без
-  отдельного reviewer-а;
+  project policy;
 - intentional cheap failures не размножают deployment, shared mutable state,
   external recipients, paid external calls или terminal Task Manager effects;
 - после material rework exact changed candidate проходит применимый review
@@ -172,12 +160,7 @@ enforcement. Настоящий unskippable gate возможен только �
 
 ## Владение стадиями и событийная координация
 
-Каждая многоагентная campaign разбивается на ограниченные стадии. В `Балансе`
-стадия содержит одну wave из двух или трёх независимых Luna writers с отдельными
-owners и outcomes; nested delegation и отдельная review stage запрещены normal
-path. `Менеджер` использует постоянные direct Luna manager/implementer sessions
-с relay phase/evidence без промежуточных Sol turns и одну independent reviewer session
-после manager `complete`. Другие режимы используют их mode-specific stages.
+Каждая многоагентная campaign разбивается на ограниченные mode-specific стадии с одним владельцем каждой волны.
 
 Normal lifecycle каждого нового direct owner-а:
 
@@ -195,11 +178,7 @@ commentary или nudge.
 `list` и пустые nudges. На deadline owner возвращает candidate/ledger либо
 точный partial handoff, а не исчезает без evidence.
 
-Каждый owner получает конечный outcome и stopping condition. В `Балансе`
-packet должен быть self-contained и допущен по dependency/write-surface/oracle
-rules; универсальный лимит tool calls не заменяет эти правила. В `Менеджере`
-каждая крупная фаза и единый последовательный review получают конечный
-outcome-specific budget. Один tool call может пакетировать связанные чтения или
+Каждый owner получает конечный outcome и stopping condition. Один tool call может пакетировать связанные чтения или
 проверки без потери evidence.
 
 Coordinator материализует exact candidate root, прямой source manifest, owned
@@ -226,9 +205,7 @@ follow-up exact changed candidate ×1 → event wait ×1
 Новый reviewer guard/spawn допустим только после доказанной недоступности
 прежнего reviewer-а, потери независимости либо material изменения review
 contract. На большом scope reviewer `Классического` может создавать внутренние
-read-only lenses, когда capability доказана; reviewer `Менеджера` проходит risk
-sections сам в одной session и не создаёт descendants. `Баланс` вместо review
-session возвращается к main profile для integrated checks и final acceptance.
+read-only lenses, когда capability доказана.
 
 ## Выбранный режим — обязательная загрузка
 
@@ -240,11 +217,9 @@ role/profile routing, fallback, review и stop promise:
 |---|---|
 | `solo` | [Соло](modes/solo.md) |
 | `classic` | [Классический](modes/classic.md) |
-| `balance` | [Баланс](modes/balance.md) |
-| `swarm` | [Менеджер](modes/swarm.md) |
 | `economical` | [Экономичный](modes/economical.md) |
 
-Не загружай остальные четыре mode-файла «для сравнения» во время delivery и не
+Не загружай остальные два mode-файла «для сравнения» во время delivery и не
 собирай mode-specific policy из `mode-help.md`, Architecture, старого run или
 соседнего файла. Общие resolver, normalization, invariants, switch barrier и
 review packet остаются в этом reference; выбранный файл их не переопределяет.

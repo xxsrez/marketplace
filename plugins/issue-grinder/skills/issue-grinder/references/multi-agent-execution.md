@@ -47,17 +47,7 @@ receipts. При её отсутствии operational coordinator исполь�
 стадии, предусмотренные mode-файлом; отсутствие вложенности само по себе не
 создаёт checkpoint и не снимает terminal promise.
 
-`Баланс` использует одну active wave из двух или трёх direct Luna writers:
-каждый владеет отдельным dependency-ready packet и изолированным candidate, а
-main profile параллельно выполняет непересекающуюся полезную работу. Nested
-delegation, manager, reviewer, reducer и конкурирующие реализации одного packet
-не входят в normal path. `Менеджер` использует
-отдельные постоянные direct Luna manager и implementer sessions с одним exact
-candidate; transport передаёт phase/evidence без отдельного model turn
-проверяющего профиля. После manager `complete` запускается одна
-постоянная independent Luna reviewer session без descendants. Прямое число
-owners ограничивается этими полезными ролями и mode envelope, а не свободными
-слотами. Packet/manager/implementer/reviewer owner не пишет Task
+Worker/reviewer owner не пишет Task
 Manager, не вызывает Strategic Explainer, не делает fan-in в общий candidate и
 не принимает final result.
 
@@ -89,9 +79,7 @@ Startup recovery предшествует `prepare`. Отсутствие Goal, 
 Новый intentional candidate, если его адаптивно разрешает выбранный mode-файл,
 создаётся только после inventory. Зафиксируй, чем его purpose/approach отличается
 от existing work, выдай отдельную candidate identity и общую exact base. Без
-этого он является запрещённым parallel replacement. В `Менеджере` normal path имеет
-один candidate; новый восстановительный вариант допустим только после
-доказанного тупика и решения manager-а, не параллельно прежнему.
+этого он является запрещённым parallel replacement.
 
 ## Model routing admission — hard gate
 
@@ -102,9 +90,8 @@ record и используй стабильный interface без повтор�
 назначь unique `packet_id`, сформулируй настоящий semantic role и получи зелёный receipt от bundled
 [`model_routing_guard.py`](../scripts/model_routing_guard.py). Exact параметры
 и dispatch fingerprint успешного receipt перенеси в один фактический spawn без
-наследования или подмены: для Balance Luna-lane явно укажи
-`model="gpt-5.6-luna"`, `reasoning_effort="high"` и bounded `fork_turns`;
-для остальных mode-controlled Luna-lanes используй profile выбранного mode.
+наследования или подмены: для mode-controlled Luna-lanes явно укажи
+`model="gpt-5.6-luna"`, `reasoning_effort="max"` и bounded `fork_turns`.
 Если полный history нужен в packet-е, передай необходимые facts и anchors явно;
 `fork_turns="all"` либо omitted fork нельзя совмещать с mode-controlled profile.
 
@@ -135,18 +122,12 @@ exact candidate либо ledger, task-owned identity, checks, known defects,
 negative evidence и следующий разрешённый переход. На малом scope direct
 reviewer читает exact candidate сам. На большом `Классический` может использовать
 nested read-only lenses при доказанной capability; иначе coordinator создаёт
-ограниченные direct lenses и передаёт их одному final reviewer. Reviewer
-`Менеджера` проходит risk sections сам в одной session и не создаёт descendants.
-`Баланс` возвращает workers напрямую main profile и не создаёт review lenses
-штатно. Owner не исследует tool catalog ради parent messaging: platform сам
+ограниченные direct lenses и передаёт их одному final reviewer. Owner не исследует tool catalog ради parent messaging: platform сам
 возвращает final response родителю.
 
 Control brief материализует каждому owner-у self-contained packet: exact base и
 candidate root, source manifest с прямыми путями, owned files, разрешённые
-checks, purpose, stopping condition и compact output envelope. Для `Баланса`
-admission требует dependency-ready packet, отдельную write surface, стабильный
-interface, изолированный candidate и локальный oracle. В `Менеджере` manager
-выдаёт небольшое число крупных фаз с конечными outcome-specific budgets.
+checks, purpose, stopping condition и compact output envelope.
 
 Child использует materialized packet как execution contract: он не читает Issue
 Grinder `SKILL.md`, references/Architecture или routing guard, не ищет tool
@@ -156,23 +137,9 @@ discovery уже переданных путей. Candidate owner работае
 baseline без диагностической пользы. Все writer mutations используют абсолютный
 путь с префиксом exact candidate root; относительный patch из integration
 checkout запрещён. Reviewer в режимах, где он предусмотрен, получает bounded
-source/diff pass и probes. Balance main profile делает один exact pass с
-integrated suite и не повторяет Luna implementation без конкретного
-defect/conflict. После последнего check child сразу возвращает
+source/diff pass и probes. После последнего check child сразу возвращает
 `candidate | owned files | checks | findings<=3 | unknowns | next`, без
 transcript, повтора contract-а и развёрнутого отчёта.
-В `Балансе` normal order — `full-scope plan → one parallel Luna High writer
-wave + useful main work directly in a clean task-owned integration checkout →
-one collective wait → mechanical fan-in → one full parallel tool-gate batch →
-main exact-diff review and acceptance`; новая frontier допускает следующую волну
-после нового admission. Main shadow/copy-back и повтор полного
-зелёного gate batch без утраты применимости evidence в normal path не входят. В `Менеджере`
-normal order — `control brief → persistent Luna manager ↔ persistent Luna
-implementer по одной фазе → manager complete → одна independent Luna reviewer
-session → integration → controller final review`. Coordinator может механически
-вести routing, ownership и fan-in; relay не требует его model turn, и он не
-выполняет за Luna phase decisions, research, implementation, tests или review.
-
 После material rework в режиме с independent reviewer продолжи существующего
 candidate owner-а и ту же reviewer session:
 
@@ -207,15 +174,6 @@ artifact после проверки. Read-only review planning может ид�
 поскольку второго автора нет. Если даже shadow tree недоступен, используй один
 read-only patch-return packet. Controller не реализует candidate заново.
 
-Для одной Balance wave разрешены до трёх отдельных task-owned shadow roots общей
-exact base, если их owned surfaces заранее доказанно непересекаются и каждый root
-имеет отдельную identity. В отдельном clean task-owned integration checkout main
-profile остаётся единственным writer-ом и пишет только в заранее объявленные
-main-owned surfaces. Такой main не создаёт четвёртый shadow: исходный status,
-base и допустимый main diff проверяются после каждого handoff и перед fan-in.
-Luna write в integration checkout, dirty пользовательский checkout и любое
-пересечение surfaces закрывают это исключение.
-
 Shadow path задаётся напрямую из packet identity; не исследуй reference tree,
 `.gitignore` или cache-каталоги ради его выбора. Writer получает абсолютный
 shadow path и использует его префикс во всех mutation-вызовах; запись в
@@ -241,12 +199,9 @@ review/fan-in. После review coordinator одним
    первым Git-действием запустить `admit` из exact worktree `cwd` с обязательными
    ожидаемыми worktree, branch, HEAD и common dir. Только после проверки receipt вызови
    отдельный follow-up с implementation packet.
-4. Пока writer активен, integration checkout read-only, кроме описанного выше
-   Balance main-owned path. В этом path вместо полного `assert-unchanged`
-   проверяй, что diff ограничен declared main-owned surfaces; для всех других
-   режимов и topology параллельная запись coordinator-а требует собственной
-   admitted writer lane. Проверку выполняй после каждого interaction/return и
-   перед fan-in.
+4. Пока writer активен, integration checkout read-only. Выполняй
+   `assert-unchanged` после каждого interaction/return и перед fan-in.
+   Параллельная запись coordinator-а требует собственной admitted writer lane.
 5. Изменившийся integration checkout, admission mismatch или отсутствующий
    receipt немедленно закрывает write wave: не интегрируй, не меняй lifecycle,
    останови дальнейшие mutations, прерви активных writers и сохрани неизвестный
