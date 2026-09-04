@@ -1,7 +1,7 @@
 interface:
   display_name: "Issue Grinder"
   short_description: "Довести Task Manager scope до результата"
-  default_prompt: "Используй $issue-grinder, чтобы выбранный Task Manager scope получил проверенный результат в режиме Соло по умолчанию либо в другом режиме, который я назвал явно."
+  default_prompt: "Используй $issue-grinder, чтобы выбранный Task Manager scope получил проверенный результат; если я не указал режим явно, примени правила автовыбора."
 
 dependencies:
   tools:
