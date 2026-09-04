@@ -53,8 +53,8 @@ main profile параллельно выполняет непересекающ�
 delegation, manager, reviewer, reducer и конкурирующие реализации одного packet
 не входят в normal path. `Менеджер` использует
 отдельные постоянные direct Luna manager и implementer sessions с одним exact
-candidate; operational coordinator механически пересылает между ними одну
-активную phase и compact evidence. После manager `complete` запускается одна
+candidate; transport передаёт phase/evidence без отдельного model turn
+проверяющего профиля. После manager `complete` запускается одна
 постоянная independent Luna reviewer session без descendants. Прямое число
 owners ограничивается этими полезными ролями и mode envelope, а не свободными
 слотами. Packet/manager/implementer/reviewer owner не пишет Task
@@ -164,12 +164,13 @@ transcript, повтора contract-а и развёрнутого отчёта.
 В `Балансе` normal order — `full-scope plan → one parallel Luna High writer
 wave + useful main work directly in a clean task-owned integration checkout →
 one collective wait → mechanical fan-in → one full parallel tool-gate batch →
-main exact-diff review and acceptance`. Main shadow/copy-back и повтор полного
-зелёного gate batch без cross-cutting rework в normal path не входят. В `Менеджере`
+main exact-diff review and acceptance`; новая frontier допускает следующую волну
+после нового admission. Main shadow/copy-back и повтор полного
+зелёного gate batch без утраты применимости evidence в normal path не входят. В `Менеджере`
 normal order — `control brief → persistent Luna manager ↔ persistent Luna
 implementer по одной фазе → manager complete → одна independent Luna reviewer
 session → integration → controller final review`. Coordinator может механически
-вести routing, relay compact packets, ownership и fan-in между стадиями, но не
+вести routing, ownership и fan-in; relay не требует его model turn, и он не
 выполняет за Luna phase decisions, research, implementation, tests или review.
 
 После material rework в режиме с independent reviewer продолжи существующего

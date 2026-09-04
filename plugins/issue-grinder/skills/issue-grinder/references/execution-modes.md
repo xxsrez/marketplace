@@ -176,7 +176,7 @@ enforcement. Настоящий unskippable gate возможен только �
 стадия содержит одну wave из двух или трёх независимых Luna writers с отдельными
 owners и outcomes; nested delegation и отдельная review stage запрещены normal
 path. `Менеджер` использует постоянные direct Luna manager/implementer sessions
-с механическим relay phase/evidence packets и одну independent reviewer session
+с relay phase/evidence без промежуточных Sol turns и одну independent reviewer session
 после manager `complete`. Другие режимы используют их mode-specific stages.
 
 Normal lifecycle каждого нового direct owner-а:
@@ -264,6 +264,27 @@ review packet остаются в этом reference; выбранный фай�
 
 Переключение не меняет scope, target environment или authority и не позволяет
 повторно реализовать уже сохранённую работу.
+
+## Проверки и длительные инструменты — все режимы
+
+Применяй `IG-MODE-09` и `IG-MODE-19`, включая self-review Solo. Сохраняй owner,
+candidate/root, command, существенные входы code/tests/config/environment и
+dependencies, handle, state, exit code и log/result location каждого долгого
+процесса. Не отбрасывай session id при сокращении tool output. Receipt обновляй
+рабочим вызовом, без отдельного bookkeeping turn. Доступный процесс продолжай
+ждать, доступный результат прочитай вместо перезапуска. Unknown effect сначала
+reconcile. После изменения переиспользуй лишь доказанно применимые результаты:
+имени файла или candidate id недостаточно, учитывай зависимости и среду.
+Повтори затронутые gates и необходимую интеграционную приёмку; неизвестное
+влияние расширяет проверку. Смена фазы или reviewer-а не требует полного
+повторения. Reviewer сам оценивает доказательства, исследует риски и при
+необходимости перепроверяет их; summary не заменяет независимое суждение.
+
+Пакетируй независимые чтения и проверки, сохраняя отдельные результаты и ошибки,
+без конфликтующих writes, shared effects и ресурсных ограничений. В Solo это
+остаётся внутри одного текущего пакета. Цена делегации включает постановку,
+context transfer, ожидание, интеграцию и проверку; расчётный отчёт не нужен.
+Свободные slots сами по себе не требуют agents.
 
 ## Review packet
 

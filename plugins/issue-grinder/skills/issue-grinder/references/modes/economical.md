@@ -11,6 +11,13 @@ profile. Economical controller/supervisor и workers могут анализир
 bounded Best-of-N. Не сохраняй бесконтрольное множество вариантов: своди его к
 одному recommended candidate.
 
+При Luna top-level текущая сессия совмещает координацию, последовательную
+реализацию и интеграцию. Не создавай supervisor или writer только для формального
+разделения ролей; они нужны при конкретной пользе независимой работы либо
+изоляции контекста с учётом стоимости передачи и проверки. Экономь также Luna
+tokens. Независимый итоговый reviewer остаётся отдельным неавтором кандидата;
+Max profile, правила изоляции и checkpoint gate не меняются.
+
 Все содержательные решения и работа режима выполняются Luna Max: scope analysis,
 repository research, decomposition, implementation, tests, preliminary и final
 self-review, independent critique и reduction. Каждый child dispatch явно

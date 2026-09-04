@@ -51,12 +51,15 @@ dependency-ready фазу и после evidence принимает `accept`, `t
 outcome; отдельный checklist item, файл или мелкий тест не создаёт manager turn.
 Одновременно активна ровно одна phase/rework wave.
 
-Coordinator механически пересылает phase packet в ту же implementer session, а
-её compact evidence — обратно той же manager session. Он не пересказывает и не
-расширяет пакеты, не выбирает следующую фазу и не дублирует Luna work. Если
-доказан прямой совместимый transport между sessions, его можно использовать с
-теми же identities и packet contract; sibling messaging не является
-предусловием режима.
+До цикла разреши прямую доставку либо узкий механический relay платформы без
+отдельного Sol/model turn ради пересылки, ожидания или подтверждения перехода.
+Сохраняй session/phase/message ids, адресата, подтверждение доставки и deadline;
+повтор сообщения не создаёт новую фазу. Manager может использовать только
+предоставленный messaging interface, не source/shell/work tools. Relay не
+принимает phase, quality или authority decisions. Не выдумывай недоступный
+transport: сохрани capability gap и handoff; дорогая пересылка не считается
+исполнением контракта. Sol участвует в brief, material escalation, необходимых
+authority effects и final gate.
 
 Implementer применяет текущий packet к тому же exact candidate, делает один
 целевой source pass, реализует фазу, запускает относящиеся к ней checks и
@@ -117,5 +120,6 @@ Mode-invalid, но потенциально функционально поле�
 manager читает source или использует рабочие tools, implementer заменён без
 причины, одновременно выполняются две фазы, reviewer стартует до `complete`,
 reviewer создаёт собственную группу либо Sol/controller выполняет routine
-implementation. Сохрани такие отклонения в evidence и исправь topology до
+implementation либо обслуживает routine relay отдельными model turns.
+Сохрани такие отклонения в evidence и исправь topology до
 terminal acceptance.

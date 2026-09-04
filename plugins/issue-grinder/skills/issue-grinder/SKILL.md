@@ -77,9 +77,9 @@ record в continuity и не пересчитывай его после compacti
    полезную работу. После одного collective wait он механически объединяет
    handoffs, запускает общие long-running checks параллельным tool batch и сам
    проводит final acceptance. В `Менеджере` controller создаёт
-   control brief и держит постоянные Luna manager/implementer sessions: без
-   содержательной переработки пересылает одной активной фазе compact packet, а
-   manager-у — evidence. Manager не получает source/tool work; implementer
+   control brief и держит постоянные Luna manager/implementer sessions: transport
+   передаёт phase/evidence без отдельного model turn проверяющего профиля.
+   Manager не получает source/tool work; implementer
    сохраняет exact candidate. После manager `complete` один Luna reviewer без
    descendants проверяет его целиком. Новый direct owner проходит guard и один
    spawn; ожидание событийное до stage deadline без произвольной отсечки,

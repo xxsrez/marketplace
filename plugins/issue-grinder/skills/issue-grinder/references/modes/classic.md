@@ -17,6 +17,8 @@ mode-файлы не читай.
    verifiable, low-risk, без material product/creative/architecture/cross-issue
    judgment и без зависимости от непредсказуемой среды или риска. Маленький diff
    сам по себе не simple.
+   Даже simple packet оставь основному профилю, если постановка, передача,
+   интеграция и проверка не дают ожидаемой экономии. Reviewer остаётся обязательным.
 4. Обычная delegation разделяет полезные независимые packets и read-only
    critique. Не создавай competing full implementations по умолчанию.
 5. При ambiguity, contract/context conflict, unexpected tool/environment state,
