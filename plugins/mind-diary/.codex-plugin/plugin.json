@@ -1,7 +1,7 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260903133455",
-  "description": "Connect the Mind Diary UAT pilot to read enabled Minds, write Personal Mind on direct request, and preserve matching discussed knowledge in one ordinary writable Mind.",
+  "version": "0.1.0+codex.20260905180700",
+  "description": "Read enabled Minds and preserve discussed lasting knowledge by their topics, with optional Personal Mind configuration through MCP.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -18,8 +18,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Mind Diary UAT",
-    "shortDescription": "Read enabled Minds with explicit Personal-Mind writes.",
-    "longDescription": "Connect Codex to the restricted Mind Diary UAT pilot with OAuth on first use. Mind usage is configured once per user on the Site: any number may be readable, at most one ordinary Mind may accept automatic writes, and Personal Mind may independently accept directly requested writes. Codex reads Personal Mind only on the current user's direct request and writes specific Personal-Mind knowledge only after that user directly asks in the current conversation. For ordinary Minds, Codex uses an exact enabled Mind when named or selects by an untrusted description and may automatically preserve matching durable knowledge explicitly discussed in the current conversation through an OKF 0.2 changeset. A bundled macOS companion safely stages one explicitly selected regular file without exposing its local path or buffering it as base64. Every commit preserves immutable history and rechecks current user settings, access and revision concurrency.",
+    "shortDescription": "Use Personal and shared Minds by their topics.",
+    "longDescription": "Connect Codex to the Mind Diary UAT pilot with OAuth. Site modes determine read/write access; descriptions determine topics for automatic use. Personal Mind without a description is used only when you ask. Ask Codex to configure its optional topics with the separate personal:configure permission. When Personal and the ordinary writable Mind both match, Codex reads and saves independently in both, checks duplicates and reports partial outcomes. Current access, immutable history and revision concurrency remain enforced. The bundled macOS companion supports one explicitly selected regular file.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
@@ -28,9 +28,9 @@
     ],
     "websiteURL": "https://mind-diary.xxsrez-work.chatgpt.site",
     "defaultPrompt": [
-      "Show my enabled Minds and their read or read-write modes",
-      "Use the enabled ordinary Minds whose descriptions match this question",
-      "Save this specific knowledge in My Mind"
+      "Show my enabled Minds and their topics",
+      "Use the enabled Minds whose descriptions match this question",
+      "Configure the topics I want to keep in My Mind"
     ],
     "brandColor": "#6C4BB6",
     "composerIcon": "./assets/composer-icon.svg",
