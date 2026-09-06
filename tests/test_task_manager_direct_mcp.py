@@ -173,6 +173,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         mode_files = {
             "Соло": "solo.md",
             "Классический": "classic.md",
+            "Баланс": "balance.md",
             "Экономичный": "economical.md",
         }
         for filename in mode_files.values():
@@ -235,7 +236,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("update_goal(status=blocked)", runtime)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичный UAT", runtime)
-        self.assertIn("`Экономичный` никогда не выбирается автоматически", normalized)
+        self.assertIn("`Экономичный` только явно", normalized)
         self.assertIn("не пересчитывай его", normalized)
         self.assertIn("## Выбранный режим — обязательная загрузка", execution_modes)
         for mode, filename in mode_files.items():
@@ -292,9 +293,9 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("why Issue Grinder cannot resolve it alone", public_manifest)
         self.assertIn("Public UAT", public_manifest)
         self.assertIn("Production remains forbidden", public_manifest)
-        self.assertIn("three stable execution modes", public_manifest)
+        self.assertIn("four execution modes", public_manifest)
         self.assertIn(
-            "Solo keeps all Issue Grinder delivery work in one execution lane",
+            "Solo uses the current main profile without execution children",
             public_manifest,
         )
         self.assertIn(
@@ -302,15 +303,15 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             public_manifest,
         )
         self.assertIn(
-            "In all three modes Issue Grinder uses the standalone Strategic Explainer",
+            "In all four modes Issue Grinder uses the standalone Strategic Explainer",
             public_manifest,
         )
-        self.assertIn("otherwise Solo is selected", public_manifest)
+        self.assertIn("Luna Max selects Balance and Sol Extra High selects Classic", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
         self.assertIn("delivery-free help path", public_manifest)
-        self.assertIn("controller does almost all work", public_manifest)
+        self.assertIn("Classic keeps most implementation on its controller", public_manifest)
         self.assertIn(
-            "Economical requires an explicit user request",
+            "Economical is explicit-only",
             public_manifest,
         )
         self.assertIn("Includes three independent Task Manager skills", public_manifest)

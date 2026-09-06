@@ -12,11 +12,12 @@ run с уже сохранённым mode record не выбирай режим 
 Один run имеет один record:
 
 ```text
-canonical_mode: solo | classic | economical
+canonical_mode: solo | classic | balance | economical
 mode_origin: explicit | automatic
 initial_main_model: <exact effective model>
 initial_scope_task_count: <unique live tasks before decomposition>
 initial_main_effort: <exact effective effort when available>
+mode_contract_version: <balance: luna-coordinator-v1>
 controller_profile: <effective profile>
 worker_profile: <effective profile>
 routing_guard_path: <once-resolved absolute bundled path>
@@ -34,17 +35,23 @@ expensive_work_ledger: <reason-coded controller/reviewer work when required by m
 Для нового run явный выбор поддерживаемого режима имеет приоритет.
 `single`, `сингл`, «одним агентом», «без субагентов» означают `solo` при
 явном mode intent; случайное слово в описании продукта не является selector-ом.
-Без явного выбора сначала разреши live scope и посчитай уникальные выбранные
-задачи до декомпозиции (не рабочие пакеты и не контейнеры parent/child).
-Если main model не `gpt-5.6-luna` и задач больше одной — `classic`;
-иначе — `solo`. Неизвестный scope сначала разреши, не угадывай количество.
-`economical` включается только явно. Effort, quota и capacity не участвуют.
-`По умолчанию` означает этот автовыбор, а не отдельный режим.
+Без явного выбора exact `gpt-5.6-luna/max` → `balance`, exact
+`gpt-5.6-sol/xhigh` → `classic` независимо от числа задач. Для прочих профилей
+non-Luna и более одной live задачи → `classic`, иначе — `solo`.
+`economical` только явно. `По умолчанию` — этот resolver, не отдельный режим.
+Неизвестное число задач для последней ветки сначала разреши, не угадывай.
 
-Запросы удалённых режимов `balance`, `swarm`, `manager`, `roy`, `roi`,
-«Баланс», «Менеджер», «Рой» при mode intent не подменяй default-ом.
-Сохранённый record удалённого режима также не продолжай: сохрани работу,
-запроси поддерживаемый режим и используй explicit switch barrier.
+До Goal, mutations или child dispatch выполни `IG-MODE-20`: `balance` и
+`economical` требуют exact effective current root `gpt-5.6-luna` / `max`.
+Mismatch или неизвестный profile → откажись: «Для этого режима переключите
+основную сессию на Luna Max». Не запускай работу, supervisor, дорогую оболочку,
+автоматический другой режим и не меняй настройки пользователя. Это также
+проверка на каждом resume и explicit switch, даже при сохранённом mode record.
+Роль child и role override не обходят root admission. Чистая справка разрешена.
+Новый balance record имеет `mode_contract_version=luna-coordinator-v1`.
+Старый balance record без этой версии сохраняется, но требует explicit switch.
+Удалённые `swarm`, `manager`, `roy`, `roi`, «Менеджер», «Рой» не подменяй default.
+
 После выбора нормализуй profiles, сохрани mode record и один раз назови режим.
 В следующих turns загружай только выбранный mode-файл.
 
@@ -81,14 +88,10 @@ mode `Соло`, но следующую работу выполняй уже ф
 соответствующего execution-agent. Внешний semantic provider не является такой
 ролью и управляет своим profile через собственный interface.
 
-Если root уже запущен на Luna ниже Max и mode требует Luna Max control plane,
-оставь его
-единственной transport/authority оболочкой. Он вызывает direct built-in Luna
-Max supervisor с bounded packet для scope analysis, dispatch decision или
-review и сам сохраняет Goal, Task Manager writes, fan-in и publication unit.
-Supervisor не пишет comment, не вызывает Strategic Explainer и не создаёт
-отдельную Codex task/session. Его результат — decisions, facts, evidence и
-resolvable anchors для root.
+Для `balance` controller/worker — фактический Luna Max root, а
+specialist/reviewer — Sol Extra High. Для `economical` все роли Luna Max.
+Правила схлопывания выше относятся к `classic`; для этих двух режимов
+недопустимый root отклоняется, а не нормализуется через supervisor.
 
 ## Model routing — hard gate
 
@@ -107,7 +110,7 @@ fingerprint не переиспользуй. При mismatch закрой wave �
 `telemetry_pending`, не выдумывай подтверждение и сохрани exact spawn args для
 внешней recursive telemetry проверки.
 
-В `Классическом` и `Экономичном` mode-specific Luna-lane использует явные `model="gpt-5.6-luna"` и `reasoning_effort="max"`, bounded `fork_turns`. Не оставляй model/effort на
+В многоагентных режимах mode-specific Luna-lane использует явные `model="gpt-5.6-luna"` и `reasoning_effort="max"`, bounded `fork_turns`. Не оставляй model/effort на
 наследование root. Имя или тип агента не выбирает профиль режима. Используй
 effective profile текущего dispatch и сверяй наблюдаемый профиль.
 
@@ -217,9 +220,10 @@ role/profile routing, fallback, review и stop promise:
 |---|---|
 | `solo` | [Соло](modes/solo.md) |
 | `classic` | [Классический](modes/classic.md) |
+| `balance` | [Баланс](modes/balance.md) |
 | `economical` | [Экономичный](modes/economical.md) |
 
-Не загружай остальные два mode-файла «для сравнения» во время delivery и не
+Не загружай остальные mode-файлы «для сравнения» во время delivery и не
 собирай mode-specific policy из `mode-help.md`, Architecture, старого run или
 соседнего файла. Общие resolver, normalization, invariants, switch barrier и
 review packet остаются в этом reference; выбранный файл их не переопределяет.
@@ -232,7 +236,7 @@ review packet остаются в этом reference; выбранный фай�
 2. доведи active writers до commit/checkpoint или безопасно останови их;
 3. выполни `assert-unchanged` integration checkout и reconcile ownership;
 4. сохрани exact candidates, checks и deferred effects;
-5. запиши новый canonical mode с `mode_origin=explicit`;
+5. проверь current root по `IG-MODE-20`; при mismatch откажи без смены режима; затем запиши новый canonical mode с `mode_origin=explicit`;
 6. примени его только к следующей wave/review decision; если новый mode —
    `Соло`, поставь сохранённые packets в последовательную очередь и не создавай
    новых Issue Grinder execution-subagents.

@@ -241,6 +241,7 @@ Profiles всегда бери из сохранённого mode record по
 [Execution modes](execution-modes.md), а допустимые роли и packets — только из
 выбранного mode-файла. Не наследуй current model/effort механически и не
 пересчитывай automatic mode после смены top-level модели. Profile normalization
+не отменяет root admission `IG-MODE-20` в Балансе/Экономичном; в Классическом
 может сделать controller и workers одинаковыми; это не меняет topology и
 delivery promise выбранного режима.
 

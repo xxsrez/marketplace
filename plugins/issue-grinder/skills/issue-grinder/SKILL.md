@@ -30,8 +30,17 @@ delivery, кратко объясни или назови выбранный р�
 Для явно изолированной local model-forward evaluation без Task Manager, Goal,
 сети и external effects не читай run/Goal, Task Manager, autonomy и publication
 references. Прочитай отдельно по одному разу linked execution modes, mode,
-multi-agent mechanics и local scope; не ищи их через `find`/`rg`, не объединяй
+local scope; multi-agent mechanics прочитай перед первым child; не ищи их через `find`/`rg`, не объединяй
 в обрезаемый вывод и не делай `wc`. Routing, review и final gate обязательны.
+
+## Проверка основной сессии до эффектов
+
+Применяет `IG-MODE-20`. Если выбран явно, автоматически либо восстановлен
+`Баланс`/`Экономичный`, actual current root обязан быть `gpt-5.6-luna` с
+`reasoning_effort=max`. Unknown/mismatch → отказ с просьбой переключить основную
+сессию на Luna Max, до Goal, любых writes и execution-subagents. Не подменяй
+режим, не вызывай Luna-supervisor вместо root, не меняй настройки. Сохранённый
+режим не отменяет проверку после смены модели. Чистая справка выше не блокируется.
 
 ## 1. Установи run, scope, режим и Goal
 
@@ -40,13 +49,11 @@ multi-agent mechanics и local scope; не ищи их через `find`/`rg`, �
 best-effort title и Goal lifecycle. Перед первой mutation полностью прочитай
 [Task Manager flow](references/task-manager-flow.md).
 
-Для нового run после разрешения live scope один раз выбери execution mode.
-Явные `Соло`, `Классический` и `Экономичный` важнее default; `single`,
-`сингл`, «одним агентом» и «без субагентов» также означают `Соло` при
-однозначном mode intent. Без явного выбора: если main model не Luna и в scope
-больше одной задачи — `Классический`; иначе — `Соло`.
-`Экономичный` никогда не выбирается автоматически. Считай задачи live scope,
-а не сгенерированные рабочие пакеты; effort, capacity и quota не участвуют.
+Для нового run явные `Соло`, `Классический`, `Баланс`, `Экономичный` важнее
+default; `single`, `сингл`, «одним агентом», «без субагентов» означают `Соло`.
+Без явного выбора Luna Max → `Баланс`, Sol Extra High → `Классический`
+независимо от числа задач. Для прочих профилей: non-Luna и больше одной live
+задачи → `Классический`, иначе `Соло`. `Экономичный` только явно.
 Удалённый mode в запросе либо сохранённом record требует явного выбора
 поддерживаемого режима без потери выполненной работы и без скрытой подмены.
 Полностью прочитай [Execution modes](references/execution-modes.md), сохрани mode

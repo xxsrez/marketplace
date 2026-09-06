@@ -64,14 +64,17 @@ Issue Grinder is the current skill-only delivery plugin with three independent
 Task Manager skills:
 
 - `issue-grinder` delivers selected issue, Release, Project, or current-Release
-  scope from `To Do`, `In Progress`, and `In Review` through three execution
-  modes. `Соло` performs all delivery work sequentially on the current model,
-  without execution subagents. In `Классический`, the controller does almost
-  all work, delegates only trivial bounded packets to Luna, and gets independent
-  review. `Экономичный` performs substantive work on Luna and can preserve an
-  honest resumable checkpoint. Explicit user choice wins. Otherwise a non-Luna
-  main model with more than one live task selects Classic; all other cases use
-  Solo. Economical is explicit-only. The mode is fixed once per continuous run,
+  scope from `To Do`, `In Progress`, and `In Review` through four execution
+  modes. Solo keeps one current executor; Classic keeps most work on its
+  controller with independent Luna review. Balance uses a Luna Max main session
+  for coordination and ordinary work, with Sol Extra High for complex work and
+  independent final review. Economical requires a Luna Max main session for
+  substantive work and review and may preserve an honest resumable checkpoint.
+  Explicit choice wins. Otherwise Luna Max selects Balance, Sol Extra High
+  selects Classic; other profiles retain Classic for non-Luna with multiple
+  tasks and Solo otherwise. Economical is explicit-only. Balance and Economical
+  refuse when the actual root is not Luna Max, including on resume; a wrapper
+  cannot bypass this requirement. The mode is fixed once per continuous run,
   even if the model or number of remaining tasks changes. It keeps scope
   live. A pure question about modes, the default resolver, their differences or
   selection uses a delivery-free help path without Task Manager, Goal, title

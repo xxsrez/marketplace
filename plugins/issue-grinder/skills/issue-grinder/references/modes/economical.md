@@ -5,6 +5,10 @@
 resolver, authority, recovery и evidence rules бери из
 [Execution modes](../execution-modes.md); остальные mode-файлы не читай.
 
+Обязателен `IG-MODE-20`: exact текущий основной `gpt-5.6-luna/max`.
+При другом или неизвестном profile откажись до effects/dispatch; дорогая
+оболочка и supervisor вместо подходящего root запрещены.
+
 Цель — максимальный безопасный прогресс почти без расхода более дефицитного
 profile. Economical controller/supervisor и workers могут анализировать,
 реализовывать, тестировать, проводить self-review, independent critique и
@@ -27,11 +31,9 @@ profile.
 
 Каждый exact candidate, включая простой или малый scope, до terminal acceptance
 получает independent Luna Max review owner, который не был его автором. Для
-Luna top-level это один direct child проверочной волны. Для non-Luna
-transport/authority root-а единственным direct child остаётся Luna supervisor,
-а reviewer создаётся внутри его волны. Reviewer возвращает один finding ledger;
-его отсутствие запрещает terminal result, но может быть сохранено как deferred
-gate resumable checkpoint.
+Luna top-level это один direct child проверочной волны. Reviewer возвращает
+один finding ledger; его отсутствие запрещает terminal result, но может
+сохраняться как deferred gate resumable checkpoint.
 
 Новый direct owner проходит один заранее разрешённый routing guard, один spawn и
 один event-driven wait до результата, запроса внимания или deadline. Не ищи
@@ -39,16 +41,6 @@ guard, не читай его `--help`, не делай status polling, повт
 пустые nudges при неизменном состоянии. После material rework продолжи того же
 owner-а и ту же reviewer session одним follow-up и одним новым event-driven wait
 без replacement guard/spawn.
-
-Если top-level root уже запущен не на Luna, он является только
-transport/authority оболочкой: разрешает live refs, хранит Goal и receipts,
-выполняет Task Manager mutations, механический fan-in и publication. До любой
-содержательной repository analysis, source mutation, test authoring/execution
-или review он вызывает direct Luna Max supervisor. Supervisor возвращает
-решения и готовые bounded packets, а root механически dispatch-ит их direct Luna
-workers. Root не считается экономичным исполнителем и не переносит эту работу
-на Sol при нехватке Luna. Для настоящего end-user run без Sol
-top-level session также должна быть Luna Max.
 
 При ambiguity, contract/context conflict, unexpected tool/environment state,
 scope expansion или proof gap Luna сохраняет checkpoint/evidence и прекращает

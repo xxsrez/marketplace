@@ -12,7 +12,8 @@ from dataclasses import asdict, dataclass
 SCHEMA = "issue-grinder/model-routing/v2"
 LUNA_MODEL = "gpt-5.6-luna"
 LUNA_MAX_EFFORT = "max"
-LUNA_MODES = frozenset({"economical"})
+LUNA_MODES = frozenset({"economical", "balance"})
+BALANCE_SOL_ROLES = frozenset({"specialist", "final_review"})
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,8 @@ def luna_required_for(
 ) -> bool:
     """Return whether the selected mode requires an explicit Luna child."""
 
+    if mode == "balance" and semantic_role in BALANCE_SOL_ROLES:
+        return False
     if mode not in LUNA_MODES or user_profile_override:
         return False
     return True
@@ -118,6 +121,11 @@ def validate_route(
             defects.append("actual_luna_model_mismatch")
         if normalized_actual_effort is not None and normalized_actual_effort != required_effort:
             defects.append("actual_luna_effort_mismatch")
+    elif normalized_mode == "balance" and normalized_role in BALANCE_SOL_ROLES and not user_profile_override:
+        if normalized_model != "gpt-5.6-sol" or normalized_effort != "xhigh":
+            defects.append("balance_sol_xhigh_required")
+        if normalized_actual_model is not None and (normalized_actual_model != normalized_model or normalized_actual_effort != normalized_effort):
+            defects.append("actual_balance_profile_mismatch")
     elif normalized_actual_model is not None:
         if normalized_actual_model != normalized_model:
             defects.append("actual_model_mismatch")

@@ -22,6 +22,9 @@ Project или иной ограниченный selector; current Release по 
 [Execution modes](execution-modes.md). Восстановленный mode record не
 пересчитывается после compaction, interruption или смены модели.
 
+До Goal, title и иных mutations обязателен current-root admission `IG-MODE-20`
+из SKILL.md и execution-modes, в том числе при восстановленном режиме.
+
 ## Canonical live scope
 
 Разреши Project, Release, statuses и relations через live Task Manager и
