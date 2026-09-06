@@ -35,12 +35,16 @@ local scope; multi-agent mechanics прочитай перед первым chil
 
 ## Проверка основной сессии до эффектов
 
-Применяет `IG-MODE-20`. Если exact effective model/effort не предоставлены
-runtime, сначала один раз выполни `python3 <this-skill>/scripts/main_profile.py`:
-он читает только текущую сессию по CODEX_THREAD_ID. Используй observed profile
-для default и admission, а не config, имя выбранного режима или догадку.
-Если выбран явно, автоматически либо восстановлен
-`Баланс`/`Экономичный`, actual current root обязан быть `gpt-5.6-luna` с
+Применяет `IG-MODE-20`. До resolver/исполнения (кроме чистой справки) один раз
+в текущем turn обязательно выполни `python3 <this-skill>/scripts/main_profile.py`
+для actual profile. Для выбранного `balance`/`economical` обязательно вызови
+его с `--mode balance` либо `--mode economical` и получи `allowed=true` до
+Goal, writes и children. Если mode уже явно известен, достаточно одного вызова
+с mode. Self-report модели, желаемый профиль и нормализация не заменяют receipt.
+При `allowed=false`, unknown или ошибке helper выбранный Luna-only режим
+откажется работать; не пытайся продолжить PLAN. После model change/resume
+receipt получают заново, в одном turn без изменений его не повторяют.
+Если выбран или восстановлен `Баланс`/`Экономичный`, actual root обязан быть `gpt-5.6-luna` с
 `reasoning_effort=max`. Unknown/mismatch → отказ с просьбой переключить основную
 сессию на Luna Max, до Goal, любых writes и execution-subagents. Не подменяй
 режим, не вызывай Luna-supervisor вместо root, не меняй настройки. Сохранённый

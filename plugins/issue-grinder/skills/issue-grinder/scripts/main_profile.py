@@ -2,6 +2,7 @@
 """Read only this Codex session's effective profile; never infer it from config."""
 from __future__ import annotations
 import json
+import argparse
 import os
 from pathlib import Path
 import re
@@ -38,11 +39,23 @@ def read_profile(codex_home: Path, thread_id: str) -> dict:
     return {'status': 'unknown', 'thread_id': thread_id, 'reason': 'current_profile_not_observed'}
 
 
+def admit_profile(result: dict, mode: str | None) -> dict:
+    allowed = result.get('status') == 'observed'
+    if mode in ('balance', 'economical'):
+        allowed = allowed and (result.get('model'), result.get('effort')) == ('gpt-5.6-luna', 'max')
+    return {**result, 'mode': mode, 'allowed': allowed,
+            'admission': 'allowed' if allowed else 'main_profile_required'}
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--mode', choices=('solo', 'classic', 'balance', 'economical'))
+    args = parser.parse_args()
     result = read_profile(Path(os.environ.get('CODEX_HOME') or Path.home()/'.codex'),
                           os.environ.get('CODEX_THREAD_ID', ''))
+    result = admit_profile(result, args.mode)
     print(json.dumps(result, sort_keys=True))
-    return 0 if result['status'] == 'observed' else 2
+    return 0 if result['allowed'] else 2
 
 
 if __name__ == '__main__':

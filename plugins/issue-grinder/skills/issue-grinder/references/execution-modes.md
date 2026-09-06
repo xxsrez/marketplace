@@ -32,9 +32,12 @@ expensive_work_ledger: <reason-coded controller/reviewer work when required by m
 Сначала восстанови record доказанного продолжения: смена модели, числа
 оставшихся задач или квоты не запускает автовыбор повторно.
 
-Если exact actual profile неизвестен, используй один read-only вызов bundled
-`scripts/main_profile.py` по CODEX_THREAD_ID; чужие sessions/config не являются
-доказательством. Не повторяй helper в том же turn при сохранённом receipt.
+До выбора нового режима получи actual model/effort через обязательный
+bundled `scripts/main_profile.py`; для explicit balance/economical вызови сразу
+с `--mode <mode>`. Перед effects нужен `allowed=true` именно этого mode в
+текущем turn. После automatic выбора Luna-only режима добавь mode admission;
+результат root не подменяется нормализованным worker profile. Helper читает
+только CODEX_THREAD_ID, без config и чужих журналов. Нет receipt → нет запуска.
 
 Для нового run явный выбор поддерживаемого режима имеет приоритет.
 `single`, `сингл`, «одним агентом», «без субагентов» означают `solo` при
