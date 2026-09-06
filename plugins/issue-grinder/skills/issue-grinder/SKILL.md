@@ -35,7 +35,11 @@ local scope; multi-agent mechanics прочитай перед первым chil
 
 ## Проверка основной сессии до эффектов
 
-Применяет `IG-MODE-20`. Если выбран явно, автоматически либо восстановлен
+Применяет `IG-MODE-20`. Если exact effective model/effort не предоставлены
+runtime, сначала один раз выполни `python3 <this-skill>/scripts/main_profile.py`:
+он читает только текущую сессию по CODEX_THREAD_ID. Используй observed profile
+для default и admission, а не config, имя выбранного режима или догадку.
+Если выбран явно, автоматически либо восстановлен
 `Баланс`/`Экономичный`, actual current root обязан быть `gpt-5.6-luna` с
 `reasoning_effort=max`. Unknown/mismatch → отказ с просьбой переключить основную
 сессию на Luna Max, до Goal, любых writes и execution-subagents. Не подменяй

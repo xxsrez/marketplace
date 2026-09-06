@@ -32,6 +32,10 @@ expensive_work_ledger: <reason-coded controller/reviewer work when required by m
 Сначала восстанови record доказанного продолжения: смена модели, числа
 оставшихся задач или квоты не запускает автовыбор повторно.
 
+Если exact actual profile неизвестен, используй один read-only вызов bundled
+`scripts/main_profile.py` по CODEX_THREAD_ID; чужие sessions/config не являются
+доказательством. Не повторяй helper в том же turn при сохранённом receipt.
+
 Для нового run явный выбор поддерживаемого режима имеет приоритет.
 `single`, `сингл`, «одним агентом», «без субагентов» означают `solo` при
 явном mode intent; случайное слово в описании продукта не является selector-ом.
