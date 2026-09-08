@@ -125,6 +125,10 @@ facts, evidence и read-only anchors: не поручай им формулир�
 Одинаковая попытка без нового evidence, state или существенного action не
 является прогрессом.
 
+При содержательном затруднении примени [Консультант routing](references/consultant.md)
+по `IG-FLOW-07`: доступный советчик обязателен для non-Astra, когда нужен сложный
+совет; обычная работа, Astra и unknown profile автоматического вызова не требуют.
+
 ## 3. Используй publication и awareness loop
 
 Перед каждым Task Manager comment, blocker-report и финальным Goal comment

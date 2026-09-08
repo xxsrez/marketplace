@@ -1,6 +1,6 @@
 {
   "name": "issue-grinder",
-  "version": "0.1.0+codex.20260908145830",
+  "version": "0.1.0+codex.20260908155240",
   "description": "Deliver Task Manager scope, compose and review plans; consult a separate read-only Astra advisor.",
   "author": {
     "name": "Andrey Myasnikov",
