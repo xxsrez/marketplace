@@ -1,6 +1,6 @@
 # Mind Diary local file companion
 
-This bundled macOS stdio MCP server adds two path-safe tools beside the hosted
+This bundled macOS stdio MCP server adds three file tools beside the hosted
 Mind Diary content tools:
 
 1. `prepare_local_file` opens one exact host-authorized regular-file path,
@@ -12,8 +12,14 @@ Mind Diary content tools:
    descriptor, reconciles unknown outcomes and returns the verified
    `staged_file_ref` receipt.
 
-The local path, bytes, OAuth bearer, cookie and upload capability never appear
-in a successful result. The companion rejects directories, globs, traversal,
+3. `download_bundle_file` accepts a fresh hosted download URL and its exact
+   filename, expected size and SHA-256. It streams at most 256 MiB into a new
+   private temporary directory and returns a local path only after verification.
+   Partial files are removed on failure; successful files survive process exit.
+   Obtain a fresh grant after failure because grants are one-use.
+
+The source path, bytes, OAuth bearer, cookie and upload capability never appear
+in a successful upload result. The companion rejects directories, globs, traversal,
 final-component symlinks, special files, redirects, foreign origins, query or
 fragment variants, inline base64 and arbitrary URLs. A successful upload
 consumes the local ref. A retryable or unknown transport result keeps the exact

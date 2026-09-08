@@ -17,6 +17,7 @@ const mcpProtocolVersion = "2026-07-28"
 var buildVersion = "0.1.0+dev"
 
 type localFileService interface {
+	DownloadBundleFile(context.Context, downloadBundleFileInput) (downloadBundleFileResult, error)
 	PrepareLocalFile(context.Context, prepareLocalFileInput) (prepareLocalFileResult, error)
 	UploadPreparedFile(context.Context, uploadPreparedFileInput) (stagedFileReceipt, error)
 }
@@ -163,7 +164,7 @@ func handleMCPRequest(
 	case "ping":
 		return map[string]any{}, nil
 	case "tools/list":
-		return map[string]any{"tools": []any{prepareLocalFileTool(), uploadPreparedFileTool()}}, nil
+		return map[string]any{"tools": []any{prepareLocalFileTool(), uploadPreparedFileTool(), downloadBundleFileTool()}}, nil
 	case "tools/call":
 		return handleToolCall(ctx, request, service)
 	default:
@@ -292,6 +293,12 @@ func handleToolCall(
 	var result any
 	var err error
 	switch params.Name {
+	case "download_bundle_file":
+		var input downloadBundleFileInput
+		if err := decodeExactArguments(params.Arguments, &input, []string{"download_url", "display_filename", "expected_size", "expected_sha256"}); err != nil {
+			return toolError("invalid_request", "tool arguments are invalid", false), nil
+		}
+		result, err = service.DownloadBundleFile(ctx, input)
 	case "prepare_local_file":
 		var input prepareLocalFileInput
 		if err := decodeExactArguments(params.Arguments, &input, []string{

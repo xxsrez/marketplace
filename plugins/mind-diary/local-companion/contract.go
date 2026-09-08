@@ -1,8 +1,11 @@
 package main
 
 // canonicalRuntimeErrorCodes mirrors the accepted MindDiary LocalFileCompanion
-// contract. The stdio adapter must never invent a second error vocabulary.
+// ingress contract plus the accepted file-ingress.md local download extension.
 var canonicalRuntimeErrorCodes = map[string]struct{}{
+	"invalid_download_url":                {},
+	"file_download_unavailable":           {},
+	"local_download_failed":               {},
 	"invalid_path":                        {},
 	"file_ingress_source_unavailable":     {},
 	"file_ingress_source_unsupported":     {},

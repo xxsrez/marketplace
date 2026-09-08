@@ -44,9 +44,9 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             "When the current user names Personal Mind or asks to read or use My Mind",
             skill,
         )
-        self.assertIn("Personal Mind has `routing_profile=personal_default` and no description", normalized)
+        self.assertIn("Personal Mind has `routing_profile=personal_default` and an optional description", normalized)
         self.assertIn(
-            "Personal and ordinary write lanes may both be active",
+            "If both descriptions match, save in both Minds independently.",
             normalized,
         )
         self.assertIn(
@@ -77,26 +77,8 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertEqual(manifest["mcpServers"], "./.mcp.json")
         self.assertFalse((MIND_DIARY_PLUGIN_ROOT / ".app.json").exists())
         self.assertEqual(manifest["interface"]["displayName"], "Mind Diary UAT")
-        self.assertIn(
-            "restricted Mind Diary UAT pilot",
-            manifest["interface"]["longDescription"],
-        )
-        self.assertIn(
-            "configured once per user on the Site",
-            manifest["interface"]["longDescription"],
-        )
-        self.assertIn(
-            "at most one ordinary Mind may accept automatic writes, and Personal Mind may independently accept directly requested writes",
-            manifest["interface"]["longDescription"],
-        )
-        self.assertIn(
-            "writes specific Personal-Mind knowledge only after that user directly asks",
-            manifest["interface"]["longDescription"],
-        )
-        self.assertIn(
-            "may automatically preserve matching durable knowledge",
-            manifest["interface"]["longDescription"],
-        )
+        for required in ("Mind Diary UAT pilot", "Site modes determine read/write access", "Personal Mind without a description", "both match", "SHA-256 verification"):
+            self.assertIn(required, manifest["interface"]["longDescription"])
         self.assertRegex(
             manifest["version"],
             re.compile(r"^0\.1\.0\+codex\.\d{14}$"),
@@ -210,14 +192,16 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         tools = responses[1]["result"]["tools"]
         self.assertEqual(
             [tool["name"] for tool in tools],
-            ["prepare_local_file", "upload_prepared_file"],
+            ["prepare_local_file", "upload_prepared_file", "download_bundle_file"],
         )
-        prepare, upload = tools
+        prepare, upload, download = tools
         self.assertEqual(prepare["inputSchema"]["required"], ["path"])
         self.assertEqual(
             upload["inputSchema"]["required"],
             ["local_file_ref", "upload_url"],
         )
+        self.assertEqual(download["inputSchema"]["required"], ["download_url", "display_filename", "expected_size", "expected_sha256"])
+        self.assertNotIn("download_url", download["outputSchema"]["properties"])
         self.assertNotIn("path", upload["inputSchema"]["properties"])
         self.assertNotIn("upload_url", upload["outputSchema"]["properties"])
         self.assertNotIn("local_file_ref", upload["outputSchema"]["properties"])
@@ -473,9 +457,9 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         content_read = skill.index("## Progressive read workflow")
         self.assertLess(projection, content_read)
         self.assertIn("mode is `read` or `read_write`", skill)
-        self.assertIn("single fresh ordinary\n  `read_write` Mind", skill)
+        self.assertIn("shows effective `read_write`", normalized)
         self.assertIn("server, not the client, resolves and pins that lane's current principal-owned mount", normalized)
-        self.assertIn("Personal and ordinary write lanes may both be active", normalized)
+        self.assertIn("If both descriptions match, save in both Minds independently.", normalized)
         self.assertIn("The request `mind` must assert the exact selected Mind", skill)
         self.assertIn("Do not expose principal, token, grant, email, internal", skill)
 
@@ -489,24 +473,13 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         boundaries = skill.index("## Product boundaries")
         self.assertLess(preservation, boundaries)
         for required in (
-            "For Personal Mind, write only when the current user directly asks",
-            "Discussion, durability, relevance, ambiguity, a previous request",
-            "does not authorize a Personal write",
-            "Personal `read_write` is only effective capability, not automatic consent",
-            "For an ordinary `description_based` writable Mind",
-            "consider every newly discussed piece of durable",
-            "explicitly discussed in this current conversation",
-            "Do not ask for a separate write instruction, toggle or confirmation for a",
-            "This never supplies the direct current request required for Personal Mind",
-            "Private or sensitive knowledge may be saved",
-            "Do not collect nearby conversation, files, browser history, readable corpus",
-            "pass optional `source_references`",
-            "Fetch a targeted existing Memory",
-            "create, update, explicit delete or semantic no-op",
-            "Preserve unknown OKF types, fields",
-            "Validate the complete proposed OKF 0.2 bundle before commit",
-            "call `reconcile_changeset` with the exact",
-            "Briefly tell the user what was",
+            "For Personal Mind without a description, write only when the current user directly",
+            "For each writable Mind with a nonempty description, including Personal",
+            "explicitly discussed in the current conversation", "Description never overrides mode",
+            "If both descriptions match, save in both Minds independently.",
+            "Report partial success", "Do not transfer information retrieved from Personal Mind",
+            "with other readers without a direct user request", "optional `source_references`",
+            "Never collect nearby conversation", "call `reconcile_changeset` with the exact",
         ):
             self.assertIn(required, normalized)
 

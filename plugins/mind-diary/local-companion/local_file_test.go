@@ -369,12 +369,14 @@ func TestCanonicalRuntimeErrorContractParity(t *testing.T) {
 		"capacity_fairness_limit",
 		"capacity_hard_limit",
 		"capacity_soft_limit",
+		"file_download_unavailable",
 		"file_ingress_intent_conflict",
 		"file_ingress_intent_expired",
 		"file_ingress_source_unavailable",
 		"file_ingress_source_unsupported",
 		"file_ingress_transport_unavailable",
 		"invalid_bundle_file_name",
+		"invalid_download_url",
 		"invalid_path",
 		"invalid_request",
 		"invalid_upload_url",
@@ -385,6 +387,7 @@ func TestCanonicalRuntimeErrorContractParity(t *testing.T) {
 		"local_companion_ref_expired",
 		"local_companion_ref_in_use",
 		"local_companion_ref_not_found",
+		"local_download_failed",
 		"staging_quota_exceeded",
 	}
 	actual := make([]string, 0, len(canonicalRuntimeErrorCodes))
@@ -490,7 +493,7 @@ func TestPreparedRefUsesCanonicalNotFoundExpiredAndInUseCodes(t *testing.T) {
 	assertLocalCode(t, err, "local_companion_ref_not_found")
 }
 
-func TestProtocolListsExactTwoStepTools(t *testing.T) {
+func TestProtocolListsUploadAndDownloadTools(t *testing.T) {
 	result, protocolErr := handleMCPRequest(context.Background(), jsonRPCRequest{
 		JSONRPC: "2.0", ID: json.RawMessage("1"), Method: "tools/list",
 	}, nil)
@@ -498,8 +501,11 @@ func TestProtocolListsExactTwoStepTools(t *testing.T) {
 		t.Fatal(protocolErr)
 	}
 	tools := result.(map[string]any)["tools"].([]any)
-	if len(tools) != 2 {
-		t.Fatalf("expected two tools, got %d", len(tools))
+	if len(tools) != 3 {
+		t.Fatalf("expected three tools, got %d", len(tools))
+	}
+	if tools[2].(map[string]any)["name"] != "download_bundle_file" {
+		t.Fatal("missing download tool")
 	}
 	prepare := tools[0].(map[string]any)
 	upload := tools[1].(map[string]any)
