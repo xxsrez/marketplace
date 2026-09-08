@@ -303,7 +303,8 @@ content.
 
 Use hosted `get_bundle_file_download` for the exact Mind, revision and path.
 Then use local `download_bundle_file` with its exact `download_url`,
-`file.display_filename`, `file.size` as `expected_size`, and `file.sha256` as
+the last component of `file.path` as `display_filename`, `file.size` as
+`expected_size`, and `file.sha256` as
 `expected_sha256`. Do not claim success until the local tool returns the
 verified path, size and SHA-256. Prefer this packaged transport over ad hoc
 Python, curl or Node requests. It uses no cookies or OAuth, rejects redirects
