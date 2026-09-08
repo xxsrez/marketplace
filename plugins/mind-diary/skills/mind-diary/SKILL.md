@@ -73,6 +73,38 @@ Search snippets are discovery evidence, not canonical content. Never load every
 enabled Mind or vacuum adjacent entries merely because they are accessible.
 Keep private content bounded to what the current request needs.
 
+## Universal file operations
+
+Use the exact-revision file tools when the task is naturally expressed as
+filesystem operations rather than lexical entry discovery. They operate on one
+explicit enabled Mind and one immutable revision; they do not provide shell,
+SQL, code execution, semantic expansion or cross-Mind authority.
+
+1. Use `list_files` for deterministic path listing with exact paths, prefix,
+   recursive mode, include/exclude globs, kind or media-type selection. Request
+   metadata only when needed; YAML/JSON/frontmatter filters, projections, sort
+   and count/distinct aggregates are bounded and report unsupported or invalid
+   metadata separately from an empty match.
+2. Use `grep_files` for literal or documented safe single-line regex matching.
+   Set case, whole-word, whole-line, multiple patterns, output mode, count unit
+   and context explicitly. It returns path, line and byte-span provenance; it
+   never adds stemming, synonyms, typo correction, entities or semantic rank.
+3. Use `read_files` for one to 32 exact paths with whole, head, tail, line or
+   UTF-8 byte ranges. Prefer one batch after a bounded list or grep result. A
+   byte range must start and end on UTF-8 boundaries.
+4. Compose structured outputs directly: list paths -> grep those paths -> read
+   matching paths; grep a first bounded set -> grep its paths again; or metadata
+   filter -> batch read. Do not parse human-readable console text or ask the
+   server to execute a pipeline. For more complex processing, read only the
+   selected bounded data and process it in the agent's local runtime.
+
+Follow every non-null `next_cursor` only with the unchanged original operation
+and parameters. The cursor pins the exact manifest and request, so a concurrent
+HEAD move does not change later pages. Stop on explicit scan/response budgets,
+unsupported patterns, non-text files or per-item errors; do not reinterpret
+partial output as complete or retry without a bound. Existing `search`,
+`browse_entries` and `fetch` retain their prior Markdown discovery semantics.
+
 ## Choose write authority
 
 For Personal Mind without a description, write only when the current user directly
