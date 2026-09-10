@@ -205,7 +205,8 @@ Repository layout:
 - `plugins/mind-diary/bin/` and `local-companion/` — bundled macOS exact-file
   launcher, binaries, source and tests;
 - `plugins/mind-diary/assets/` — Mind Diary brand assets;
-- `plugins/mind-diary/skills/mind-diary/` — bounded content workflow guidance.
+- `plugins/mind-diary/skills/mind-diary/` — optional advanced workflow router,
+  portable hosted guidance and separate macOS companion instructions.
 
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as

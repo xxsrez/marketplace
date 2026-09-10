@@ -30,31 +30,38 @@ def sha256_file(path: Path) -> str:
 
 
 class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
-    def test_skill_selects_only_fresh_enabled_minds_without_fallback(self) -> None:
+    def test_skill_is_optional_and_routes_portable_and_local_guidance_separately(self) -> None:
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
+        portable = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "references" / "portable-workflows.md"
+        ).read_text(encoding="utf-8")
+        local = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "references" / "local-companion.md"
+        ).read_text(encoding="utf-8")
         normalized = " ".join(skill.split())
 
-        self.assertIn(
-            "Start each relevant workflow with fresh `list_minds`.",
-            skill,
-        )
-        self.assertIn(
-            "When the current user names Personal Mind or asks to read or use My Mind",
-            skill,
-        )
-        self.assertIn("Personal Mind has `routing_profile=personal_default` and an optional description", normalized)
-        self.assertIn(
-            "If both descriptions match, save in both Minds independently.",
-            normalized,
-        )
-        self.assertIn(
-            "Otherwise select only the readable Mind or Minds whose descriptions genuinely",
-            skill,
-        )
-        self.assertIn("never\nuse `/me` or an implicit fallback", skill)
-        self.assertIn("Do not run an implicit cross-Mind search", skill)
+        self.assertIn("The skill is not required for basic MCP use.", skill)
+        self.assertIn("must work from their tool descriptions without this skill", normalized)
+        self.assertIn("Start a relevant\nworkflow with fresh `list_minds`", skill)
+        self.assertIn("never substitute `/me`", skill)
+        self.assertIn("references/portable-workflows.md", skill)
+        self.assertIn("references/local-companion.md", skill)
+        for duplicated_heading in (
+            "## Progressive read workflow",
+            "## Universal file operations",
+            "## Canonical changeset workflow",
+            "## Local regular-file workflow",
+        ):
+            self.assertNotIn(duplicated_heading, skill)
+        for local_tool in (
+            "prepare_local_file",
+            "upload_prepared_file",
+            "download_bundle_file",
+        ):
+            self.assertNotIn(local_tool, portable)
+            self.assertIn(local_tool, local)
 
     def test_marketplace_installs_before_authentication(self) -> None:
         marketplace = read_json(
@@ -77,7 +84,14 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertEqual(manifest["mcpServers"], "./.mcp.json")
         self.assertFalse((MIND_DIARY_PLUGIN_ROOT / ".app.json").exists())
         self.assertEqual(manifest["interface"]["displayName"], "Mind Diary UAT")
-        for required in ("Mind Diary UAT pilot", "Site modes determine read/write access", "Personal Mind without a description", "both match", "SHA-256 verification"):
+        for required in (
+            "Mind Diary UAT pilot",
+            "Hosted MCP tools are self-describing",
+            "optional advanced guidance",
+            "Personal Mind without a description",
+            "provenance-sensitive multi-Mind",
+            "separate macOS companion guidance",
+        ):
             self.assertIn(required, manifest["interface"]["longDescription"])
         self.assertRegex(
             manifest["version"],
@@ -451,35 +465,39 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        normalized = " ".join(skill.split())
+        portable = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "references" / "portable-workflows.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join((skill + portable).split())
 
-        projection = skill.index("Start each relevant workflow with fresh `list_minds`")
-        content_read = skill.index("## Progressive read workflow")
-        self.assertLess(projection, content_read)
-        self.assertIn("mode is `read` or `read_write`", skill)
+        projection = skill.index("Start a relevant\nworkflow with fresh `list_minds`")
+        writing = skill.index("## Write boundary")
+        self.assertLess(projection, writing)
         self.assertIn("shows effective `read_write`", normalized)
-        self.assertIn("server, not the client, resolves and pins that lane's current principal-owned mount", normalized)
-        self.assertIn("If both descriptions match, save in both Minds independently.", normalized)
-        self.assertIn("The request `mind` must assert the exact selected Mind", skill)
+        self.assertIn("The server, not the client, resolves the current principal-owned writable mount", normalized)
+        self.assertIn("matching Personal and ordinary Minds both qualify", normalized)
+        self.assertIn("one bounded `commit_changeset` from its fresh HEAD", normalized)
         self.assertIn("Do not expose principal, token, grant, email, internal", skill)
 
     def test_skill_separates_requested_personal_writes_from_ordinary_automatic_preservation(self) -> None:
         skill = (
             MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        normalized = " ".join(skill.split())
+        portable = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "references" / "portable-workflows.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join((skill + portable).split())
 
-        preservation = skill.index("## Choose write authority")
-        boundaries = skill.index("## Product boundaries")
+        preservation = skill.index("## Write boundary")
+        boundaries = skill.index("## Results")
         self.assertLess(preservation, boundaries)
         for required in (
-            "For Personal Mind without a description, write only when the current user directly",
-            "For each writable Mind with a nonempty description, including Personal",
-            "explicitly discussed in the current conversation", "Description never overrides mode",
-            "If both descriptions match, save in both Minds independently.",
-            "Report partial success", "Do not transfer information retrieved from Personal Mind",
-            "with other readers without a direct user request", "optional `source_references`",
-            "Never collect nearby conversation", "call `reconcile_changeset` with the exact",
+            "For Personal Mind without a description, write only after the current user directly",
+            "matching nonempty description may permit automatic preservation",
+            "durable knowledge explicitly discussed here", "Description never overrides mode",
+            "commit them independently", "report partial or unknown outcomes",
+            "Moving knowledge retrieved from Personal Mind", "requires a direct user request",
+            "exact `source_references`", "identical original request and idempotency key",
         ):
             self.assertIn(required, normalized)
 
@@ -494,64 +512,48 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             "rebind",
             "unbind",
         ):
-            self.assertNotIn(retired, skill)
+            self.assertNotIn(retired, skill + portable)
 
     def test_skill_routes_one_exact_local_file_through_hosted_intent(self) -> None:
-        skill = (
-            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
+        local = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "references" / "local-companion.md"
         ).read_text(encoding="utf-8")
 
-        local = skill.index("## Local regular-file workflow")
-        boundaries = skill.index("## Product boundaries")
-        self.assertLess(local, boundaries)
-        self.assertIn("`prepare_local_file`", skill)
-        self.assertIn("`create_file_upload_intent`", skill)
-        self.assertIn("`upload_prepared_file`", skill)
-        self.assertIn("`create_bundle_file` or `replace_bundle_file`", skill)
-        self.assertIn("Never copy the path into a hosted tool", skill)
-        self.assertIn("The companion never\ndeletes or modifies the source file", skill)
-        self.assertIn("supports one exact regular file, not directory, bulk or", skill)
-        self.assertIn("client supplies no destination\ngeneration", skill)
+        upload = local.index("## Upload one exact regular file")
+        download = local.index("## Download one BundleFile")
+        self.assertLess(upload, download)
+        self.assertIn("`prepare_local_file`", local)
+        self.assertIn("`create_file_upload_intent`", local)
+        self.assertIn("`upload_prepared_file`", local)
+        self.assertIn("`create_bundle_file` or", local)
+        self.assertIn("Never copy the path into a hosted tool", local)
+        self.assertIn("The companion never deletes or modifies the source file", local)
+        self.assertIn("one exact regular file, not directory, bulk or", local)
+        self.assertIn("client\nsupplies no destination generation", local)
 
     def test_skill_routes_incremental_typed_okf_transfer_without_bulk_state(self) -> None:
-        skill = (
-            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "SKILL.md"
+        transfer = (
+            MIND_DIARY_PLUGIN_ROOT / "skills" / "mind-diary" / "references" / "portable-workflows.md"
         ).read_text(encoding="utf-8")
-        start = skill.index("## Incremental typed OKF transfer")
-        end = skill.index("## Local regular-file workflow", start)
-        transfer = skill[start:end]
 
-        self.assertLess(
-            transfer.index("ordinary local workspace read capability"),
-            transfer.index("`commit_changeset`"),
-        )
+        self.assertIn("## Incremental typed OKF transfer", transfer)
         self.assertIn("explicitly enumerates every entry", transfer)
         self.assertIn(
-            "Never infer or add a related\nentry",
+            "Never infer\nor add a related entry",
             transfer,
         )
-        self.assertIn("every\ntransferred entry must be selected by the user", transfer)
+        self.assertIn("every transferred entry must be selected by the user", " ".join(transfer.split()))
         self.assertNotIn("or a small explicitly related set", transfer)
         self.assertIn("`recorded_by`, `applies_to` and `sources`", transfer)
-        self.assertIn("Markdown stays Markdown", transfer)
+        self.assertIn("Markdown\nstays Markdown", transfer)
         self.assertRegex(transfer, re.compile(r"`/raw/`.*`/wiki/`.*`/output/`", re.S))
         self.assertIn("`before -> after`", transfer)
         self.assertIn("fresh writable Mind and HEAD", transfer)
-        self.assertIn("current\nprincipal-owned mount", transfer)
-
-        attachment_tools = [
-            "`prepare_local_file`",
-            "`create_file_upload_intent`",
-            "`upload_prepared_file`",
-        ]
-        positions = [transfer.index(tool) for tool in attachment_tools]
-        self.assertEqual(positions, sorted(positions))
+        self.assertNotIn("`prepare_local_file`", transfer)
+        self.assertNotIn("`upload_prepared_file`", transfer)
         for tool in (
             "`replace_index`",
             "`add_log_entry`",
-            "`reconcile_file_stage`",
-            "`reconcile_changeset`",
-            "`get_bundle_file_download`",
             "`validate_mind`",
         ):
             self.assertIn(tool, transfer)
@@ -562,10 +564,10 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             "`operations/events`",
             "`operations/revisions`",
             "`operations/config*`",
-            "multi-writer or Drive protocol\nstate",
+            "multi-writer or Drive protocol state",
         ):
             self.assertIn(excluded, transfer)
-        self.assertIn("must not rewrite the first committed entry", transfer)
+        self.assertIn("must not rewrite a\npreviously transferred entry", transfer)
         self.assertIn("Never create a migration database", transfer)
 
 

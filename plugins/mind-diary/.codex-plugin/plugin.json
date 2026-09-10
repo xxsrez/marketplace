@@ -1,7 +1,7 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260908115000",
-  "description": "Read enabled Minds and preserve discussed lasting knowledge by their topics, with optional Personal Mind configuration through MCP.",
+  "version": "0.1.0+codex.20260910220937",
+  "description": "Use self-describing hosted Mind Diary MCP tools, with optional advanced workflow guidance and a separate macOS exact-file companion.",
   "author": {
     "name": "Andrey Myasnikov",
     "url": "https://github.com/xxsrez"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Mind Diary UAT",
     "shortDescription": "Use Personal and shared Minds by their topics.",
-    "longDescription": "Connect Codex to the Mind Diary UAT pilot with OAuth. Site modes determine read/write access; descriptions determine topics for automatic use. Personal Mind without a description is used only when you ask. Ask Codex to configure its optional topics with the separate personal:configure permission. Universal exact-revision tools list paths and metadata, grep literal or safe regex matches, and batch-read whole files or bounded ranges without semantic expansion or server shell access. When Personal and the ordinary writable Mind both match, Codex reads and saves independently in both, checks duplicates and reports partial outcomes. Current access, immutable history and revision concurrency remain enforced. The bundled macOS companion supports uploading one explicitly selected regular file and downloading files with exact size and SHA-256 verification.",
+    "longDescription": "Connect Codex to the Mind Diary UAT pilot with OAuth. Hosted MCP tools are self-describing for ordinary discovery, read, exact-revision file, history, validation and changeset workflows; the bundled skill is optional advanced guidance, not a prerequisite. Site modes determine read/write access and descriptions determine topics for automatic use. Personal Mind without a description is used only when you ask. The skill adds provenance-sensitive multi-Mind and incremental typed OKF workflows. Its separate macOS companion guidance covers one explicitly selected local file and exact size/SHA-256 downloads without claiming support on other hosts.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
