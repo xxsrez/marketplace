@@ -303,7 +303,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             public_manifest,
         )
         self.assertIn(
-            "In all four modes Issue Grinder uses the standalone Strategic Explainer",
+            "For ordinary comments and successful final reports, Issue Grinder uses the standalone Strategic Explainer",
             public_manifest,
         )
         self.assertIn("Luna Max selects Balance and Sol Extra High selects Classic", public_manifest)
