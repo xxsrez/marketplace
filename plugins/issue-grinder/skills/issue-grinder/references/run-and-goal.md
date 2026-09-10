@@ -75,7 +75,8 @@ Goal завершается только после fresh full inventory с пу
 final reflection, не нашедшей обязательной доступной работы внутри current
 issue contracts. Нетерминальный
 checkpoint `Экономичного` режима сохраняет Goal активным. Terminal blocker
-может изменить Goal только после publication и platform blocker gates из
+требует [Консультант routing](consultant.md) с исключением для ведущей Astra
+и может изменить Goal только после publication и platform blocker gates из
 [Strategic Explainer routing](strategic-explainer.md).
 
 После первого принятого blocker-handoff сохрани checkpoint fingerprint из
@@ -83,7 +84,7 @@ selector/frontier, заблокированного effect, current причин
 resume signal. Автоматическое продолжение Goal без релевантного user signal или
 изменения primary state засчитывает следующий platform audit turn по этому
 checkpoint, но не повторяет browser/profile discovery, external proof, вопрос
-пользователю, publication или Strategic Explainer. До порога закончи turn без
+пользователю, publication, Консультанта или Strategic Explainer. До порога закончи turn без
 нового handoff; на пороге выполни только отсутствующий `update_goal(blocked)`.
 Релевантный resume signal либо изменившийся primary state инвалидирует
 checkpoint и возвращает run к live reconciliation.

@@ -132,12 +132,11 @@ facts, evidence и read-only anchors: не поручай им формулир�
 является прогрессом.
 
 При содержательном затруднении примени [Консультант routing](references/consultant.md)
-по `IG-FLOW-07`: доступный советчик обязателен для non-Astra, когда нужен сложный
-совет; обычная работа, Astra и unknown profile автоматического вызова не требуют.
+по `IG-FLOW-07`; перед остановкой Goal действуют отдельные обязательные условия ниже.
 
 ## 3. Используй publication и awareness loop
 
-Перед каждым Task Manager comment, blocker-report и финальным Goal comment
+Перед обычным Task Manager comment, blocker-report без Goal и успешным финальным Goal comment
 полностью прочитай [Strategic Explainer routing](references/strategic-explainer.md)
 и сначала проверь active model. При Astra (`gpt-6-astra`) основной coordinator
 выбирает native writing и не вызывает Strategic Explainer; этот guard имеет
@@ -149,9 +148,12 @@ Comment или final draft — точка решения. Непонятый ф�
 работа current issue contract отменяют publication/status transition и возвращают run в
 delivery loop; strategic gap или необязательное улучшение остаются follow-up.
 
-Каждый blocker проходит цикл:
+Перед остановкой Goal прочитай [Консультант routing](references/consultant.md):
+ведущая Astra разбирает ситуацию сама, остальные, включая unknown, вызывают
+Консультанта. Его проверенный вывод возвращает к работе либо становится отчётом;
+Strategic Explainer здесь не вызывается. Недоступный советчик не подтверждает blocker.
 
-`candidate blocker → причинное объяснение → reflection по current primary sources → continue | terminal blocker`.
+Blocker: `candidate blocker → причинное объяснение → reflection по current primary sources → continue | terminal blocker`.
 
 Любое безопасное существенное действие отменяет blocker. Terminal report
 перечисляет все current причины, checkpoint, unverified remainder, влияние,
@@ -162,11 +164,9 @@ Grinder не может устранить её сам и зачем этот ш
 первой публикации. Покажи принятый комплект пользователю сразу; platform blocker
 audit ограничивает только `update_goal(status=blocked)`, а не сам report. На
 автоматическом продолжении без нового релевантного сигнала переиспользуй blocker
-fingerprint: не повторяй проверку, facade, handoff или user request; на достигнутом
-пороге выполни только Goal mutation.
+fingerprint: не повторяй проверку, facade, handoff или user request; на достигнутом пороге выполни только Goal mutation.
 
-Финальное completion тоже требует fresh inventory и reflection. Финальный Goal
-comment возвращай только пользователю в чате, не в Task Manager.
+Финальное completion требует fresh inventory и reflection; Goal comment возвращай только пользователю в чате.
 
 ## 4. Соблюдай authority и среды
 

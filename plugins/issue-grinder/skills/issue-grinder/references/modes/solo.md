@@ -23,7 +23,10 @@ Grinder на текущей модели без рабочей делегаци�
 5. Текущая модель сама реализует, интегрирует, запускает применимые проверки и
    проводит self-review exact result. Её уверенность и self-report не являются
    evidence; terminal acceptance опирается на наблюдаемые checks и факты.
-6. Для publication используй общий Strategic Explainer routing. При активной
+6. Для обычной publication используй общий Strategic Explainer routing.
+   Перед блокировкой Goal используй consultant.md: ведущая Astra разбирает
+   ситуацию сама, остальные профили вызывают ограниченного советчика.
+   Он не получает execution packet или право решить судьбу Goal. При активной
    Astra (`gpt-6-astra`) routing выбирает native writing без вызова provider-а;
    в остальных случаях его отдельный provider-agent не входит в execution
    topology `Соло`, пока получает только publication request и не выполняет

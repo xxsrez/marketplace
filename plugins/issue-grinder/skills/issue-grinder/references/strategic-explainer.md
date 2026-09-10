@@ -4,6 +4,15 @@
 переходов. Strategic Explainer — optional communication interface, не источник
 scope, authority, evidence, repair или status decision.
 
+## Граница маршрута
+
+Подготовка остановки из-за блокировки Goal, общий report и reason answers
+используют [Консультант routing](consultant.md): ведущая Astra делает разбор
+сама, остальные модели обязательно обращаются к Консультанту. Strategic
+Explainer не вызывается, включая редактуру полученного вывода. Правила ниже
+о mode и facade относятся к обычным комментариям, успешному final и blocker
+без Goal; reflection и порядок публикации остаются общими.
+
 ## Выбор mode
 
 В начале run сначала проверь активную модель. При Astra (`gpt-6-astra`)
@@ -26,8 +35,10 @@ publication request и не анализирует, не реализует, н�
 delivery scope. Если пользователь отдельно запретил вообще любых subagents,
 используй `native`.
 
-Каждый Task Manager comment, общий blocker-report, отдельный ответ по каждой
-причине блокировки и финальный Goal comment являются отдельными publication units.
+Каждый обычный Task Manager comment, blocker-report без Goal и успешный
+финальный Goal comment являются отдельными publication units. Общий отчёт
+о блокировке Goal и reason answers готовятся одним запросом Консультанту
+либо самой ведущей Astra, без facade calls.
 Обычный `To Do → In Progress` comment не создаёт. Routine chat progress не отправляй в
 Explainer.
 
@@ -70,7 +81,8 @@ completion gate.
 Для candidate blocker:
 
 1. до explanation перечитай safe frontier;
-2. подготовь причинный draft ordinary/native;
+2. для Goal получи вывод Консультанта либо выполни самостоятельный разбор
+   ведущей Astra; без Goal подготовь причинный draft ordinary/native;
 3. извлеки из draft/source basis возможные пути продолжения;
 4. проверь их по current primary sources и authority;
 5. любой подтверждённый существенный in-scope action отменяет blocker;
