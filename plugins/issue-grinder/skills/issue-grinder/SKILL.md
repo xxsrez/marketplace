@@ -108,9 +108,9 @@ record в continuity и не пересчитывай его после compacti
    concurrency и перечитай issue.
 6. Пересчитай scope, стратегический outcome и следующий frontier.
 
-`blocked by` ограничивает доступность требуемой реализации, а не связывает
-статусы. Если нужный contract уже есть в exact integration base, dependent
-issue runnable. Поздний reopen требует targeted recheck затронутой части.
+`blocked by` ограничивает доступность требуемой реализации в exact integration base, а не связывает статусы; поздний reopen требует targeted recheck. Неизвестный contract или препятствующий дефект обходить нельзя.
+Готовое issue с внешней приёмкой оставь в `In Review` после всех доступных проверок; сохрани остаток и продолжай доступный scope, включая dependents и режим Соло. Это не deferred internal review.
+Объединённый blocker-handoff допустим после исчерпания самостоятельной работы scope; [Task Manager flow](references/task-manager-flow.md) задаёт учёт и resume. Экономичный checkpoint остаётся отдельным выходом.
 
 При выборе проверок или адаптации проекта прочитай [соразмерные проверки](references/verification.md).
 Найди правила, оцени влияние и прежние результаты, выполни достаточный набор;
