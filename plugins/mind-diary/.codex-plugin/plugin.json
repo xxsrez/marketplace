@@ -1,6 +1,6 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260910220937",
+  "version": "0.1.0+codex.20260911143700",
   "description": "Use self-describing hosted Mind Diary MCP tools, with optional advanced workflow guidance and a separate macOS exact-file companion.",
   "author": {
     "name": "Andrey Myasnikov",
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Mind Diary UAT",
     "shortDescription": "Use Personal and shared Minds by their topics.",
-    "longDescription": "Connect Codex to the Mind Diary UAT pilot with OAuth. Hosted MCP tools are self-describing for ordinary discovery, read, exact-revision file, history, validation and changeset workflows; the bundled skill is optional advanced guidance, not a prerequisite. Site modes determine read/write access and descriptions determine topics for automatic use. Personal Mind without a description is used only when you ask. The skill adds provenance-sensitive multi-Mind and incremental typed OKF workflows. Its separate macOS companion guidance covers one explicitly selected local file and exact size/SHA-256 downloads without claiming support on other hosts.",
+    "longDescription": "Connect Codex to the Mind Diary UAT pilot with OAuth. Hosted MCP tools are self-describing for ordinary discovery, read, exact-revision file, history, validation and changeset workflows; the bundled skill is optional advanced guidance, not a prerequisite. Site modes configure each Mind independently; matching nonempty descriptions route automatic use to every qualifying Mind, while a direct request can select a writable Mind without a description. The skill adds provenance-sensitive multi-Mind and incremental typed OKF workflows. Its separate macOS companion guidance covers one explicitly selected local file and exact size/SHA-256 downloads without claiming support on other hosts.",
     "developerName": "Andrey Myasnikov",
     "category": "Productivity",
     "capabilities": [
