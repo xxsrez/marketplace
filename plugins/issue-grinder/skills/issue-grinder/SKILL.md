@@ -167,6 +167,7 @@ audit ограничивает только `update_goal(status=blocked)`, а н
 fingerprint: не повторяй проверку, facade, handoff или user request; на достигнутом пороге выполни только Goal mutation.
 
 Финальное completion требует fresh inventory и reflection; Goal comment возвращай только пользователю в чате.
+При completion, blocker или checkpoint выполни [итоговый отчёт о расходе](references/execution-modes.md#итоговый-отчёт-о-расходе) через доступный `codex-token-usage-report`: полный формат со всеми моделями текущего run и субагентов; без skill продолжай без установки.
 
 ## 4. Соблюдай authority и среды
 
@@ -195,5 +196,4 @@ blocker или второй completion gate: empty active scope остаётся
 gate из [его mode contract](references/modes/economical.md), сохрани правдивые
 `In Progress|In Review` и активный Goal, назови exact candidate, checks,
 defects, deferred gates и resume point.
-Это `resumable checkpoint`, не `complete` и не `blocked`; mode сохраняется для
-продолжения.
+Это `resumable checkpoint`, не `complete` и не `blocked`; mode сохраняется для продолжения.
