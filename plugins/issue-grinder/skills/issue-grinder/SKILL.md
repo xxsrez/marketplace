@@ -131,7 +131,7 @@ facts, evidence и read-only anchors: не поручай им формулир�
 Одинаковая попытка без нового evidence, state или существенного action не
 является прогрессом.
 
-При содержательном затруднении примени [Консультант routing](references/consultant.md)
+При затруднении перед остановкой или просьбой о вмешательстве примени [Консультант routing](references/consultant.md)
 по `IG-FLOW-07`; перед остановкой Goal действуют отдельные обязательные условия ниже.
 
 ## 3. Используй publication и awareness loop
@@ -151,7 +151,7 @@ delivery loop; strategic gap или необязательное улучшен�
 Перед остановкой Goal прочитай [Консультант routing](references/consultant.md):
 ведущая Astra разбирает ситуацию сама, остальные, включая unknown, вызывают
 Консультанта. Его проверенный вывод возвращает к работе либо становится отчётом;
-Strategic Explainer здесь не вызывается. Недоступный советчик не подтверждает blocker.
+Strategic Explainer здесь не вызывается. Недоступный советчик не подтверждает blocker. Не ограничивай разбор одной консультацией: проверяй альтернативы, уточняй существенные пробелы и новые факты; до запроса разрешения проверь весь предлагаемый путь.
 
 Blocker: `candidate blocker → причинное объяснение → reflection по current primary sources → continue | terminal blocker`.
 
@@ -172,14 +172,14 @@ fingerprint: не повторяй проверку, facade, handoff или user
 ## 4. Соблюдай authority и среды
 
 Максимальная автономность относится только к явно вызванному run. Для exact
-environment boundary и редкого security selector полностью прочитай
+environment boundary и полного разрешённого цикла UAT полностью прочитай
 [Autonomy and environments](references/autonomy-and-environments.md).
 Production запрещён полностью: не подключайся, не читай data/logs, не deploy и
 не smoke. Default environment для необходимого effect — подтверждённый UAT;
 неизвестный target не угадывай. Task Manager lifecycle — отдельный control
 plane, а не product Production deployment. Generic connector/tool label
 `production` не переименовывает подтверждённый project UAT и не разрешает
-спрашивать у пользователя подтверждение обычного UAT deployment.
+спрашивать у пользователя подтверждение обычного UAT deployment. В scope весь цикл UAT — изменения, тестовый доступ, сбои, восстановление и очистка — заранее разрешён; по техническим шагам не переспрашивай. На Production послабление не распространяется.
 
 Implicit load не создаёт Goal и не даёт дополнительных полномочий. Platform
 approval gate не обходи и не называй внутренним сомнением.

@@ -37,8 +37,8 @@ delivery scope. Если пользователь отдельно запрет�
 
 Каждый обычный Task Manager comment, blocker-report без Goal и успешный
 финальный Goal comment являются отдельными publication units. Общий отчёт
-о блокировке Goal и reason answers готовятся одним запросом Консультанту
-либо самой ведущей Astra, без facade calls.
+о блокировке Goal и reason answers составляют одну publication unit после
+необходимого цикла консультаций либо разбора ведущей Astra, без facade calls.
 Обычный `To Do → In Progress` comment не создаёт. Routine chat progress не отправляй в
 Explainer.
 
