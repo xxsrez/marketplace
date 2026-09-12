@@ -1,6 +1,6 @@
 ---
 name: task-composer
-description: "Формулировать и по явному planning intent создавать Task Manager Tasks: оставлять один independently deliverable outcome одной Task, а составную работу превращать в Epic с problem-first описанием (при не-Astra — через Strategic Explainer), конкретными подзадачами, live labels, hierarchy и реальными relations. Использовать явно через $issue-grinder:task-composer и неявно для постановки, декомпозиции или backlog capture в Task Manager. Не использовать для implementation, delivery, release, status/audit-only запросов или изменения Label taxonomy."
+description: "Сформулировать, создать или декомпозировать Task Manager работу через $issue-grinder:task-composer или planning intent. Запись только по просьбе создать; без delivery и status/audit."
 ---
 
 # Task Composer
@@ -75,56 +75,18 @@ evidence. Не создавай Epic с одной формальной подз
 deliverable частей, разных проверяемых результатов или настоящих dependencies.
 Используй самую мелкую полезную hierarchy.
 
-Epic сохраняет problem, beneficiary, Strategic Outcome, отличимые Human
-Requirements/exact scope, Agent Plan, cross-cutting acceptance/non-goals и
-целостный вклад подзадач. Перед его созданием сначала проверь active model. При
-Astra (`gpt-6-astra`) Strategic Explainer не вызывай: problem-first description
-формулирует сам coordinator в native mode. В остальных случаях примени sibling
-`$strategic-explainer:strategic-explainer` как semantic facade отдельной
-publication unit. В этой provider-ветке передай только назначение description,
-исходный вопрос, exact planning scope, язык, material constraints и resolvable read-only anchors. Не
-выбирай и не передавай никакие другие invocation parameters или provider
-instructions: внутренним исполнением полностью владеет facade.
-Не читай provider-internal contract, не составляй explanation draft и не
-применяй методику Explainer самостоятельно. Прими готовый description и
-отдельно обозначенный source basis либо operational unavailability; в Epic
-записывай только description. Material facts проверь по authoritative planning
-sources; в provider-ветке factual correction передавай новым semantic call, а текст
-самостоятельно не улучшай. Explainer не выбирает
-decomposition, Project, status, labels, relations или write authority. Если в
-не-Astra provider-ветке готовый grounded description недоступен, не создавай
-Epic; single Task, которой Epic не нужен, от этого не блокируется. При активной
-Astra native description проходит тот же factual и coverage gate.
-
-Каждая подзадача получает один конкретный результат, exact change boundary,
-свой вклад в Strategic Outcome Epic, material technical details, применимые
-Human Requirements/non-goals и Agent Plan с dependencies, acceptance criteria и
-expected evidence.
-Cross-cutting requirement остаётся в Epic и отражается в каждой применимой
-подзадаче. Native parent link ведёт к полному strategic context, но одной ссылки
-недостаточно: child description содержит компактную самодостаточную проекцию
-вклада, применимых constraints/non-goals и качеств, которыми нельзя пожертвовать
-ради локального упрощения. Исполнитель должен понять общий смысл, exact Task
-boundary и планку качества без догадки; Epic context не расширяет scope child.
-Material противоречие исправь до write. Для secrets указывай только имя
-credential/secret store и target, никогда значение.
+Для Epic/подзадач прочитай [Epic planning](references/epic-planning.md).
+При Astra (`gpt-6-astra`) Strategic Explainer не вызывай: description native;
+только не-Astra Epic требует связанный там publication contract.
 
 Strategic Outcome помогает выбирать реализацию и проверять связность, но не
 расширяет exact scope и не создаёт новую задолженность. Material работа вне
 согласованного scope остаётся planning gap либо вопросом человеку; не маскируй
 её под Human Requirement.
 
-Если пользователь создаёт Task по bug report и передал attachment, оцени его
-уместность по содержанию, связи с самой конкретной создаваемой Task и пользе
-исполнителю: материал должен помогать увидеть проявление, воспроизвести,
-локализовать, понять релевантный контекст либо проверить исправление. Применяй
-один критерий к screenshot, документу, логу, записи и любому другому файлу;
-формат сам по себе не создаёт презумпцию уместности. Уместный материал сохрани
-как native attachment самой конкретной создаваемой Task, для которой это
-evidence. Не заменяй обязательный attachment пересказом, local path, base64
-либо временной или protected URL и не пропускай его молча. Явно нерелевантный,
-избыточный или нарушающий secret-safe boundary материал не добавляй и сообщи
-его disposition.
+Если переданы пользовательские файлы, до первой mutation прочитай
+[attachments](references/attachments.md): оцени уместность и native route,
+сохрани обязательные attachments на соответствующих Tasks и проверь read-back.
 
 ## 4. Назначь metadata по смыслу
 
@@ -148,14 +110,6 @@ Release при его наличии и resolved label refs. Подзадачи 
 subtask operation с current parent version. После каждой mutation перечитывай
 authoritative Task state. Relations создавай только после read-back обоих
 endpoints со stable idempotency key.
-
-Для каждого обязательного attachment до create подтверди доступный native source
-route. После существования target Task свяжи с ней verified file identity со
-stable independent bind key и перечитай attachment metadata. Не начинай create,
-если native transport заведомо недоступен. Если bind остановился после создания
-Task, сохрани это как partial result с exact missing attachment и безопасным
-условием продолжения, а не как success; unknown upload/bind сначала reconcile
-через reads и не повторяй с новой identity.
 
 Unknown write outcome сначала reconciles через reads и duplicate search; не
 повторяй create вслепую. Если multi-Task create остановился частично, не скрывай

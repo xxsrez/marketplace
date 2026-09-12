@@ -10,6 +10,9 @@ run. Если сохранённый mode запрещает рабочую dele
 subagents и parallel writer admission запрещены. Agent-backed semantic
 providers регулируются собственными interfaces и не входят в этот path.
 
+До первого dispatch прочитай [multi-agent routing](multi-agent-routing.md):
+normalization, receipts, event coordination и review packet.
+
 ## Topology и ownership
 
 Явное natural-language правило пользователя о числе, ролях, условиях или

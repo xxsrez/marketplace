@@ -1,6 +1,6 @@
 ---
 name: strategic-explainer
-description: "Сформулировать один понятный, проверяемый и готовый к публикации comment, report, blocker explanation, final или явно отредактированный target text через изолированный Strategic Explainer. Не использовать для routine chat, mutations, authority decisions или orchestration. При активной модели Astra (gpt-6-astra) не вызывать автоматически: Astra сама формулирует текст; явный прямой запрос пользователя остаётся допустимым."
+description: "Из Astra автоматически не вызывать; прямой запрос допустим. Подготовить готовый comment, report, final или отредактировать текст через изолированный provider. Не для обычного чата."
 ---
 
 # Strategic Explainer

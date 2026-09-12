@@ -1,6 +1,6 @@
 ---
 name: issue-grinder
-description: "Доводить существующий однозначно выбранный Task Manager issue, Release или Project scope из To Do, In Progress и In Review до проверенного terminal результата либо в Экономичном режиме до честной возобновляемой контрольной точки. Использовать явно через $issue-grinder или неявно только при delivery intent с конкретным Task Manager selector; также использовать для краткой справки о режимах Issue Grinder. Не использовать для Backlog, чтения статуса, аудита, иных объяснений, planning/создания issue или обычной работы с кодом без Task Manager selector."
+description: "Выполнить выбранный Task Manager scope через $issue-grinder или явный delivery intent; также справка о режимах. Не использовать для Backlog, status/audit, planning или кода без Task Manager selector."
 ---
 
 # Issue Grinder
@@ -27,11 +27,8 @@ Task Manager и не вызывай subagents либо Strategic Explainer.
 delivery, кратко объясни или назови выбранный режим, затем исполни delivery-часть
 по следующим разделам.
 
-Для явно изолированной local model-forward evaluation без Task Manager, Goal,
-сети и external effects не читай run/Goal, Task Manager, autonomy и publication
-references. Прочитай отдельно по одному разу linked execution modes, mode,
-local scope; multi-agent mechanics прочитай перед первым child; не ищи их через `find`/`rg`, не объединяй
-в обрезаемый вывод и не делай `wc`. Routing, review и final gate обязательны.
+Для явно изолированного local model-forward запуска прочитай
+[local evaluation](references/local-evaluation.md); обычный delivery его не загружает.
 
 ## Проверка основной сессии до эффектов
 

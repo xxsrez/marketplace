@@ -260,7 +260,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("actual_luna_model_mismatch", routing_guard)
         self.assertNotIn("FORCED_PROFILE_AGENT_TYPES", routing_guard)
         self.assertNotIn("platform_agent_type_bypasses_mode_profile", routing_guard)
-        self.assertIn("Имя или тип агента не выбирает профиль режима", execution_modes)
+        self.assertIn("multi-agent-routing.md", execution_modes)
+        multi_agent_routing = (
+            issue_root / "references" / "multi-agent-routing.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Имя или тип агента не выбирает профиль режима", multi_agent_routing)
+        for name in ("epic-planning.md", "epic-publication.md", "attachments.md"):
+            self.assertTrue((composer_root / "references" / name).is_file())
         self.assertIn("Issue Grinder · ...", runtime)
         self.assertIn(
             "set_thread_title` не более одного раза без", title_contract

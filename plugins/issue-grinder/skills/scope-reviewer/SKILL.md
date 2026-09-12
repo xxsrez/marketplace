@@ -1,6 +1,6 @@
 ---
 name: scope-reviewer
-description: "Проверять однозначно выбранный Task Manager план или Release через независимые Luna Max оптики и возвращать один понятный человеку обзор. Автоматически использовать без явного имени skill-а для ревью плана перед запуском и для изучения активного долгого Issue Grinder / Task Manager delivery run. По явному intent улучшать только agent-owned planning model, не меняя Human Requirements. Не использовать для delivery, lifecycle mutations, ordinary single-Task lookup или произвольной Codex task без Task Manager scope."
+description: "Task Manager: ревью плана перед запуском, анализ активного долгого Issue Grinder run или явное улучшение плана. Без delivery и обычного чтения одной Task."
 ---
 
 # Scope Reviewer
