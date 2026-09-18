@@ -45,7 +45,7 @@ type prepareLocalFileInput struct {
 
 type prepareLocalFileResult struct {
 	LocalFileRef     string `json:"local_file_ref"`
-	SourceKind       string `json:"source_kind"`
+	SourceKind       string `json:"source_kind,omitempty"`
 	DisplayFilename  string `json:"display_filename"`
 	ClaimedMediaType string `json:"claimed_media_type"`
 	ExpectedSize     int64  `json:"expected_size"`
@@ -61,7 +61,7 @@ type uploadPreparedFileInput struct {
 type stagedFileReceipt struct {
 	StagedFileRef   string `json:"staged_file_ref"`
 	State           string `json:"state"`
-	SourceKind      string `json:"source_kind"`
+	SourceKind      string `json:"source_kind,omitempty"`
 	DisplayFilename string `json:"display_filename"`
 	MediaType       string `json:"media_type"`
 	SHA256          string `json:"sha256"`
@@ -71,13 +71,14 @@ type stagedFileReceipt struct {
 }
 
 type fileSnapshot struct {
-	info            os.FileInfo
-	size            int64
-	displayFilename string
-	sourceKind      string
-	mediaType       string
-	sha256          string
-	expiresAt       time.Time
+	info             os.FileInfo
+	size             int64
+	displayFilename  string
+	sourceKind       string
+	legacySourceKind bool
+	mediaType        string
+	sha256           string
+	expiresAt        time.Time
 }
 
 type preparedFile struct {
@@ -297,7 +298,8 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 	prepared := &preparedFile{file: file, snapshot: fileSnapshot{
 		info: openedInfo, size: readSize,
 		displayFilename: displayFilename, sourceKind: sourceKind,
-		mediaType: mediaType, sha256: digest, expiresAt: expiresAt,
+		legacySourceKind: input.SourceKind != "",
+		mediaType:        mediaType, sha256: digest, expiresAt: expiresAt,
 	}}
 	store.mu.Lock()
 	store.removeExpiredLocked(store.now())
@@ -311,12 +313,16 @@ func (store *localFileStore) Prepare(input prepareLocalFileInput) (prepareLocalF
 	store.files[ref] = prepared
 	store.mu.Unlock()
 	keepOpen = true
-	return prepareLocalFileResult{
-		LocalFileRef: ref, SourceKind: sourceKind,
+	result := prepareLocalFileResult{
+		LocalFileRef:    ref,
 		DisplayFilename: displayFilename, ClaimedMediaType: mediaType,
 		ExpectedSize: readSize, ExpectedSHA256: digest,
 		ExpiresAt: expiresAt.Format(time.RFC3339Nano),
-	}, nil
+	}
+	if prepared.snapshot.legacySourceKind {
+		result.SourceKind = sourceKind
+	}
+	return result, nil
 }
 
 func (store *localFileStore) acquire(ref string) (*preparedFile, error) {
