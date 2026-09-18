@@ -14,7 +14,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 MIND_DIARY_PLUGIN_ROOT = REPOSITORY_ROOT / "plugins" / "mind-diary"
 UAT_OAUTH_RESOURCE = "https://mind-diary.xxsrez-work.chatgpt.site/api/mcp"
-UAT_CODEX_MCP_URL = f"{UAT_OAUTH_RESOURCE}/2025-11-25"
+UAT_CODEX_MCP_URL = UAT_OAUTH_RESOURCE
 
 
 def read_json(path: Path) -> dict:
@@ -44,7 +44,7 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
 
         self.assertIn("The skill is not required for basic MCP use.", skill)
         self.assertIn("must work from their tool descriptions without this skill", normalized)
-        self.assertIn("Start a relevant\nworkflow with fresh `list_minds`", skill)
+        self.assertIn("Start each\nrelevant workflow with fresh `list_minds`", skill)
         self.assertIn("never substitute `/me`", skill)
         self.assertIn("references/portable-workflows.md", skill)
         self.assertIn("references/local-companion.md", skill)
@@ -88,7 +88,7 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             "Mind Diary UAT pilot",
             "Hosted MCP tools are self-describing",
             "optional advanced guidance",
-            "Personal Mind without a description",
+            "writable Mind without a description",
             "provenance-sensitive multi-Mind",
             "separate macOS companion guidance",
         ):
@@ -98,7 +98,7 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
             re.compile(r"^0\.1\.0\+codex\.\d{14}$"),
         )
 
-    def test_direct_mcp_uses_codex_compatibility_with_canonical_oauth_resource(self) -> None:
+    def test_direct_mcp_uses_canonical_modern_transport_and_oauth_resource(self) -> None:
         mcp_config = read_json(MIND_DIARY_PLUGIN_ROOT / ".mcp.json")
         mind_diary = mcp_config["mcpServers"]["mind-diary"]
 
@@ -169,7 +169,7 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("io.LimitReader", production_source)
         self.assertIn("application/octet-stream", production_source)
 
-    def test_packaged_local_companion_lists_stable_two_tool_protocol_offline(self) -> None:
+    def test_packaged_local_companion_lists_stable_three_tool_protocol_offline(self) -> None:
         if platform.system() != "Darwin":
             self.skipTest("packaged local companion currently supports macOS only")
         launcher = MIND_DIARY_PLUGIN_ROOT / "bin" / "mind-diary-local-launcher"
@@ -470,12 +470,12 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
         normalized = " ".join((skill + portable).split())
 
-        projection = skill.index("Start a relevant\nworkflow with fresh `list_minds`")
+        projection = skill.index("Start each\nrelevant workflow with fresh `list_minds`")
         writing = skill.index("## Write boundary")
         self.assertLess(projection, writing)
-        self.assertIn("shows effective `read_write`", normalized)
+        self.assertIn("Current server-derived mode, scopes and ACL are the authority", normalized)
         self.assertIn("The server, not the client, resolves the current principal-owned writable mount", normalized)
-        self.assertIn("matching Personal and ordinary Minds both qualify", normalized)
+        self.assertIn("every matching Mind independently", normalized)
         self.assertIn("one bounded `commit_changeset` from its fresh HEAD", normalized)
         self.assertIn("Do not expose principal, token, grant, email, internal", skill)
 
@@ -492,10 +492,11 @@ class MindDiaryDirectMcpPackagingTest(unittest.TestCase):
         boundaries = skill.index("## Results")
         self.assertLess(preservation, boundaries)
         for required in (
-            "For Personal Mind without a description, write only after the current user directly",
-            "matching nonempty description may permit automatic preservation",
-            "durable knowledge explicitly discussed here", "Description never overrides mode",
-            "commit them independently", "report partial or unknown outcomes",
+            "For any `read_write` Mind without a description, write only when the current user directly",
+            "nonempty description genuinely matches",
+            "newly discussed piece of durable knowledge",
+            "Current server-derived mode, scopes and ACL are the authority",
+            "Save in every matching Mind independently", "report partial or unknown outcomes",
             "Moving knowledge retrieved from Personal Mind", "requires a direct user request",
             "exact `source_references`", "identical original request and idempotency key",
         ):

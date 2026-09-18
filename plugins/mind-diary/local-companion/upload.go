@@ -95,7 +95,7 @@ func (service *localFileServiceImpl) UploadPreparedFile(
 			return stagedFileReceipt{}, err
 		}
 		consume = true
-		return *status.StagedFile, nil
+		return outwardStagedReceipt(*status.StagedFile, prepared.snapshot), nil
 	}
 	if status.Status == "rejected" {
 		err := hostedRejection(status.Code)
@@ -184,7 +184,14 @@ func (service *localFileServiceImpl) UploadPreparedFile(
 		return stagedFileReceipt{}, err
 	}
 	consume = true
-	return *status.StagedFile, nil
+	return outwardStagedReceipt(*status.StagedFile, prepared.snapshot), nil
+}
+
+func outwardStagedReceipt(receipt stagedFileReceipt, snapshot fileSnapshot) stagedFileReceipt {
+	if !snapshot.legacySourceKind {
+		receipt.SourceKind = ""
+	}
+	return receipt
 }
 
 func (service *localFileServiceImpl) exactUploadURL(value string) (string, error) {
@@ -350,7 +357,7 @@ func verifyStagedReceipt(receipt *stagedFileReceipt, snapshot fileSnapshot) erro
 	_, expiryErr := time.Parse(time.RFC3339Nano, receiptExpiry(receipt))
 	if receipt == nil || receipt.State != "verified" ||
 		receipt.StagedFileRef == "" || len(receipt.StagedFileRef) > 512 || containsControl(receipt.StagedFileRef) ||
-		receipt.SourceKind != snapshot.sourceKind ||
+		(receipt.SourceKind != "" && receipt.SourceKind != snapshot.sourceKind) ||
 		receipt.DisplayFilename != snapshot.displayFilename ||
 		!mimePattern.MatchString(receipt.MediaType) || len(receipt.MediaType) > 127 ||
 		receipt.SHA256 != snapshot.sha256 || receipt.Size != snapshot.size ||

@@ -185,10 +185,6 @@ func prepareLocalFileTool() map[string]any {
 					"type": "string", "minLength": 1, "maxLength": 16384,
 					"description": "One exact absolute path authorized by the Codex host. It is retained only inside this process and never returned or sent to Mind Diary.",
 				},
-				"source_kind": map[string]any{
-					"type": "string", "enum": []string{"local_path", "workspace/generated_artifact"},
-					"description": "Explicit provenance class; defaults to local_path. workspace/generated_artifact requires a canonical path inside trusted process-configured workspace roots.",
-				},
 				"display_filename": map[string]any{
 					"type": "string", "minLength": 1, "maxLength": 255,
 				},
@@ -242,12 +238,11 @@ func prepareLocalFileOutputSchema() map[string]any {
 	return map[string]any{
 		"type": "object", "additionalProperties": false,
 		"required": []string{
-			"local_file_ref", "source_kind", "display_filename", "claimed_media_type",
+			"local_file_ref", "display_filename", "claimed_media_type",
 			"expected_size", "expected_sha256", "expires_at",
 		},
 		"properties": map[string]any{
 			"local_file_ref":     map[string]any{"type": "string", "pattern": "^mdlocal_v1_[A-Za-z0-9_-]{16,256}$"},
-			"source_kind":        map[string]any{"type": "string", "enum": []string{"local_path", "workspace/generated_artifact"}},
 			"display_filename":   map[string]any{"type": "string", "minLength": 1, "maxLength": 255},
 			"claimed_media_type": map[string]any{"type": "string", "minLength": 3, "maxLength": 127},
 			"expected_size":      map[string]any{"type": "integer", "minimum": 0, "maximum": maxLocalFileBytes},
@@ -261,13 +256,12 @@ func stagedFileOutputSchema() map[string]any {
 	return map[string]any{
 		"type": "object", "additionalProperties": false,
 		"required": []string{
-			"staged_file_ref", "state", "source_kind", "display_filename",
+			"staged_file_ref", "state", "display_filename",
 			"media_type", "sha256", "size", "expires_at", "replayed",
 		},
 		"properties": map[string]any{
 			"staged_file_ref":  map[string]any{"type": "string", "minLength": 1, "maxLength": 512},
 			"state":            map[string]any{"const": "verified"},
-			"source_kind":      map[string]any{"type": "string", "enum": []string{"local_path", "workspace/generated_artifact"}},
 			"display_filename": map[string]any{"type": "string", "minLength": 1, "maxLength": 255},
 			"media_type":       map[string]any{"type": "string", "minLength": 3, "maxLength": 127},
 			"sha256":           map[string]any{"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},

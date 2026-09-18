@@ -26,16 +26,11 @@ consumes the local ref. A retryable or unknown transport result keeps the exact
 snapshot only until its original expiry; changed, expired or definitively
 rejected snapshots are closed.
 
-`source_kind: workspace/generated_artifact` is accepted only when the opened
-descriptor is the same file as a canonical path inside one of the trusted
-process-configured roots in `MIND_DIARY_WORKSPACE_ROOTS`. The value is a macOS
-path list supplied to the Codex process/launcher and forwarded explicitly by
-the packaged `.mcp.json`; it is never accepted as a tool argument. Missing,
-relative, nonexistent or non-directory roots fail closed for workspace
-provenance. `source_kind: local_path` remains an explicit one-file authority.
-Canonical path evidence is rebound to the exact opened descriptor before the
-root check, so a parent-symlink swap cannot relabel an outside file as a
-workspace artifact.
+Fresh `prepare_local_file` has one readable-file contract and does not ask the
+caller to classify origin. Legacy cached calls may still carry
+`source_kind`; the binary accepts it only for exact compatibility and keeps the
+old trusted-root check for `workspace/generated_artifact`. Fresh hosted
+`create_file_upload_intent` receives only path-free filename/media/size/digest.
 
 The adapter emits only the shared runtime error vocabulary. Expected metadata
 uses `bundle_file_size_mismatch` and `bundle_file_digest_mismatch`; local refs

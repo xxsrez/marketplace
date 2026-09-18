@@ -1,6 +1,6 @@
 {
   "name": "mind-diary",
-  "version": "0.1.0+codex.20260911143700",
+  "version": "0.1.0+codex.20260918130519",
   "description": "Use self-describing hosted Mind Diary MCP tools, with optional advanced workflow guidance and a separate macOS exact-file companion.",
   "author": {
     "name": "Andrey Myasnikov",

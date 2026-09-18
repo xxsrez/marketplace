@@ -12,16 +12,15 @@ supplies no destination generation or credential-owned target identifier. If
 the destination is Personal Mind, require a direct current request naming
 Personal Mind and this file.
 
-1. Refresh `list_minds` and the selected writable HEAD. Use
-   `source_kind: local_path` for one user-selected path. Use
-   `workspace/generated_artifact` only when trusted Codex process configuration
-   authorizes its canonical root; never send a root as tool input.
+1. Refresh `list_minds` and the selected writable HEAD. The companion accepts
+   one user-selected readable path; do not classify its origin or send a
+   workspace root as tool input.
 2. Call `prepare_local_file` with the exact absolute path. It returns a
    short-lived process-local ref plus size, SHA-256 and advisory media type.
    Never copy the path into a hosted tool, prompt, comment or log.
-3. Call hosted `create_file_upload_intent` with the selected Mind and the
-   returned source kind, display filename, media type, size and digest unchanged.
-   Keep its one-use upload URL confined to the next local call.
+3. Call hosted `create_file_upload_intent` with the selected Mind, display
+   filename, media type, size and digest unchanged. Keep its one-use upload URL
+   confined to the next local call.
 4. Call `upload_prepared_file` with only the local ref and exact upload URL.
    Treat the returned staged ref as temporary evidence, not committed content.
 5. Refresh projection and HEAD, then use one `create_bundle_file` or
