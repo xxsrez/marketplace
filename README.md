@@ -166,8 +166,11 @@ scope. A delivery verb alone does not route ordinary code, product, repository,
 or plugin work into Issue Grinder. Create-and-deliver requires an explicit request
 to create exactly one Task in Task Manager and immediately start it.
 
-Mind Diary bundles one content skill and two coordinated MCP components. The
-hosted content server selects one explicit Mind and revision, while the bundled
+Mind Diary bundles one optional content skill and two coordinated MCP
+components. The hosted server exposes a self-contained read-only
+`get_mind_diary_guidance` tool; its canonical guide is also generated into the
+skill's portable reference. The hosted content server selects one explicit
+Mind and revision, while the bundled
 macOS `mind-diary-local` companion prepares one exact regular-file path and
 streams it through a one-use hosted intent without disclosing the path or
 buffering the full file. The workflow preserves immutable history, HEAD CAS and
@@ -205,8 +208,8 @@ Repository layout:
 - `plugins/mind-diary/bin/` and `local-companion/` — bundled macOS exact-file
   launcher, binaries, source and tests;
 - `plugins/mind-diary/assets/` — Mind Diary brand assets;
-- `plugins/mind-diary/skills/mind-diary/` — optional advanced workflow router,
-  portable hosted guidance and separate macOS companion instructions.
+- `plugins/mind-diary/skills/mind-diary/` — optional thin router, generated
+  canonical service guidance and separate macOS companion instructions.
 
 Each future plugin gets its own `plugins/<plugin-name>/` directory and one
 catalog entry. Task Manager remains independently installable as
