@@ -1,0 +1,6 @@
+interface:
+  display_name: "Interpreter — Толкователь"
+  short_description: "Независимое исследование и объяснение со схемами"
+  default_prompt: "Используй $interpreter:interpreter: разберись, почему это произошло, и объясни суть коротко и наглядно."
+policy:
+  allow_implicit_invocation: false

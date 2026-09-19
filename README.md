@@ -1,7 +1,7 @@
 # Srez Marketplace
 
 This is Andrey's extensible Codex plugin marketplace. It contains independent
-Task Manager, Issue Grinder, legacy Ship Tasks, Strategic Explainer, and Mind Diary plugins under
+Task Manager, Issue Grinder, legacy Ship Tasks, Strategic Explainer, Interpreter, and Mind Diary plugins under
 `plugins/`.
 
 Add the marketplace once:
@@ -13,7 +13,7 @@ codex plugin marketplace add xxsrez/marketplace
 Then install the plugins you need:
 
 1. Open **Plugins → Task Manager**, **Plugins → Issue Grinder**,
-   **Plugins → Strategic Explainer**, or
+   **Plugins → Strategic Explainer**, **Plugins → Interpreter — Толкователь**, or
    **Plugins → Mind Diary UAT** and click
    **Install**.
 2. For Task Manager, complete the native OAuth **Connect** step during install
@@ -39,6 +39,14 @@ fall back to an obsolete registered app connector; after that, new server tools
 are discovered from the live MCP connection without Developer mode or connector
 re-registration. Mind Diary remains a restricted UAT pilot; this package is not
 a production or public-directory release.
+
+Interpreter is a skill-only plugin for researching and explaining complex causal
+questions. Invoke `$interpreter:interpreter` explicitly. It starts a fresh
+`gpt-6-astra` researcher at `high` effort with no inherited conversation, passes
+the user's question without diagnostic hints, and returns a concise explanation
+with vertical diagrams. It does not repair the investigated system. Automatic
+skill invocation is disabled; the plugin has no MCP server, hooks, or
+authentication. Its canonical source is `plugins/interpreter/` in this repository.
 
 The plugins connect to:
 

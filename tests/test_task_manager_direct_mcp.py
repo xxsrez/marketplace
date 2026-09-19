@@ -97,6 +97,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
                 "ship-tasks",
                 "strategic-explainer",
                 "issue-grinder",
+                "interpreter",
             ],
         )
         self.assertEqual(names.count("task-manager"), 1)
