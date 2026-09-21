@@ -78,9 +78,12 @@ Task Manager skills:
   for coordination and ordinary work, with Sol Extra High for complex work and
   independent final review. Economical requires a Luna Max main session for
   substantive work and review and may preserve an honest resumable checkpoint.
-  Explicit choice wins. Otherwise Luna Max selects Balance, Sol Extra High
-  selects Classic; other profiles retain Classic for non-Luna with multiple
-  tasks and Solo otherwise. Economical is explicit-only. Balance and Economical
+  Explicit choice wins. Otherwise small and medium scopes select Solo; justified
+  large scopes select Classic, independently of the main model and task count.
+  Large scopes require multiple substantive workstreams with distinct implementation
+  and verification contexts and substantial benefit from delegation or independent
+  review relative to coordination costs. Insufficient evidence defaults to Solo.
+  Balance and Economical are explicit-only. Balance and Economical
   refuse when the actual root is not Luna Max, including on resume; a wrapper
   cannot bypass this requirement. The mode is fixed once per continuous run,
   even if the model or number of remaining tasks changes. It keeps scope

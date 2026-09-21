@@ -275,7 +275,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Meaningful title", title_contract)
         self.assertIn("только пользователю в чате", normalized)
         self.assertIn("[краткую справку](references/mode-help.md)", skill)
-        self.assertIn("`Экономичный` включается только явно", mode_help)
+        self.assertIn("`Баланс` и `Экономичный` включаются только явно", mode_help)
         self.assertIn("не обращается к Task Manager", mode_help)
         self.assertIn("Sol/controller делает почти всю работу сам", mode_help)
         self.assertIn('value: "task-manager"', metadata)
@@ -313,12 +313,13 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "For ordinary comments and successful final reports, Issue Grinder uses the standalone Strategic Explainer",
             public_manifest,
         )
-        self.assertIn("Luna Max selects Balance and Sol Extra High selects Classic", public_manifest)
+        self.assertIn("small and medium scopes select Solo, and justified large scopes select Classic", public_manifest)
+        self.assertIn("independently of the main model and task count", public_manifest)
         self.assertIn("once per continuous run", public_manifest)
         self.assertIn("delivery-free help path", public_manifest)
         self.assertIn("Classic keeps most implementation on its controller", public_manifest)
         self.assertIn(
-            "Economical is explicit-only",
+            "Balance and Economical are explicit-only",
             public_manifest,
         )
         self.assertIn("Includes three independent Task Manager skills", public_manifest)
