@@ -37,14 +37,17 @@ expensive_work_ledger: <reason-coded controller/reviewer work when required by m
 До выбора нового режима получи actual model/effort через обязательный
 bundled `scripts/main_profile.py`; для explicit balance/economical вызови сразу
 с `--mode <mode>`. Перед effects нужен `allowed=true` именно этого mode в
-текущем turn для balance/economical;
+текущем turn для balance/economical. После automatic выбора balance добавь
+mode admission через `scripts/main_profile.py --mode balance`;
 результат root не подменяется нормализованным worker profile. Helper читает
 только CODEX_THREAD_ID, без config и чужих журналов. Нет receipt → нет запуска.
 
 Для нового run явный выбор поддерживаемого режима имеет приоритет.
 `single`, `сингл`, «одним агентом», «без субагентов» означают `solo` при
 явном mode intent; случайное слово в описании продукта не является selector-ом.
-Без явного выбора оцени содержание live scope до стратегической декомпозиции:
+Без явного выбора exact `gpt-5.6-luna/max` → `balance` независимо от объёма.
+Неизвестный model/effort не подтверждает Luna Max. Для остальных профилей
+оцени содержание live scope до стратегической декомпозиции:
 небольшой/средний объём → `solo`, обоснованно крупный → `classic`.
 Крупный объём требует нескольких содержательных направлений, каждое с отдельным
 контекстом реализации и проверки, и существенной пользы распределения работы
@@ -54,12 +57,14 @@ bundled `scripts/main_profile.py`; для explicit balance/economical вызов
 или одна сложная тесно связанная задача сами по себе не означают крупный объём.
 Несколько самостоятельных функций или существенные изменения нескольких
 подсистем с общей интеграцией могут обосновать `classic`.
-Число карточек, их декомпозиция, model/effort, квота и capacity не выбирают режим.
+В этой ветке число карточек, их декомпозиция, model/effort, квота и capacity не выбирают режим.
 При недостаточных основаниях сохрани `uncertain` и выбери `solo`; это не отменяет
 разрешение неизвестного contract, если он мешает самой delivery.
 Сохрани размер и краткое обоснование конкретным составом работ в mode record;
 для `large` назови также пользу многоагентного исполнения.
-`balance` и `economical` только явно. `По умолчанию` — этот resolver, не отдельный режим.
+Для автоматического `balance` запиши причиной Luna Max; оценка объёма не нужна,
+допустимо `uncertain`. `economical` только явно.
+`По умолчанию` — этот resolver, не отдельный режим.
 
 До Goal, mutations или child dispatch выполни `IG-MODE-20`: `balance` и
 `economical` требуют exact effective current root `gpt-5.6-luna` / `max`.
