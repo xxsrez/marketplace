@@ -1,7 +1,7 @@
 # Srez Marketplace
 
 This is Andrey's extensible Codex plugin marketplace. It contains independent
-Task Manager, Issue Grinder, legacy Ship Tasks, Strategic Explainer, Interpreter, and Mind Diary plugins under
+Task Manager, Issue Grinder, Strategic Explainer, Interpreter, and Mind Diary plugins under
 `plugins/`.
 
 Add the marketplace once:
@@ -25,9 +25,7 @@ Then install the plugins you need:
    blocking comments or lifecycle transitions. Scope Reviewer also keeps a
    factual native report when the Explainer is unavailable. Task Composer
    continues to require ordinary Strategic Explainer for its Explainer-backed
-   path. Legacy
-   Ship Tasks remains available only as a rollback package and should not be
-   installed together with Issue Grinder. The Explainer plugin has no connector
+   path. The Explainer plugin has no connector
    or authentication of its own.
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
@@ -119,47 +117,6 @@ All three skills depend on the separately installed Task Manager adapter. Issue
 Grinder and Scope Reviewer use standalone Strategic Explainer when available and
 otherwise preserve a factual native reporting path.
 
-Ship Tasks is the preserved rollback plugin with two coordinated Task Manager
-skills:
-
-- `task-composer` owns planning-only formulation and Task Manager backlog
-  capture. It preserves one independently deliverable outcome as one Task and
-  turns compound work into a problem-first Epic with concrete subtasks, live
-  existing Labels, native hierarchy and semantic relations. Unknown current
-  Release is omitted rather than guessed. User-provided bug-report attachments
-  are preserved as native attachments on the applicable Task when their content
-  is relevant to that Task and useful to its executor; screenshots and other
-  file types receive no relevance presumption. Failed attachment binding
-  remains an explicit partial result. The skill never
-  implements the created work or expands Label taxonomy;
-
-- `ship-tasks` owns delivery intent, lifecycle, Goals, verification, releases,
-  report content, and terminal status policy. It adaptively fills independent
-  safe lanes with subagents only when no user topology rule applies. Natural-
-  language rules for exact or relative counts, roles, opt-outs, and conditions
-  such as duration or complexity keep their meaning; the root agent is not
-  counted as a named subagent. Concurrent implementation writers receive
-  separate feature branches and Git worktrees. After interruption or a new
-  session, the skill resumes an existing unfinished task-owned worktree or
-  branch when prior ownership is safely inactive and exclusive, then rechecks
-  the checkpoint instead of restarting the work. Only genuinely simple,
-  predictable packets use Luna Max; uncertainty is handed back to the current
-  integration owner without a cheap retry. The agent remains free to choose
-  planning, tools, implementation, diagnostics, bounded context, and acceptance
-  methods while requiring sufficient evidence, a native comment before every
-  meaningful lifecycle transition, and factual separation of Task conflicts,
-  proven defects, genuine verification blockers, and proven success;
-- both skills depend on the separately installed Task Manager plugin for MCP
-  tools and authentication, but do not bundle or duplicate that connector;
-- Ship Tasks uses `$strategic-explainer:strategic-explainer` when it is installed
-  and allowed, and otherwise uses native writing. A selected provider failure
-  switches to native.
-  Native mode keeps mandatory comments and lifecycle transitions working while
-  neither imitating provider methods nor claiming equivalent quality. Task
-  Composer continues to use ordinary Strategic Explainer under its own
-  contract. Codex manifests do not provide a plugin-to-plugin dependency field,
-  so Strategic Explainer remains a separate optional installation for Ship Tasks.
-
 Strategic Explainer is a standalone generic communication plugin with a
 semantic facade for one real user-facing comment, report, decision or state
 explanation, blocker report, final, or explicit editing request. A client sends
@@ -198,10 +155,6 @@ Repository layout:
   launcher, binaries, source and tests;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;
-- `plugins/ship-tasks/.codex-plugin/plugin.json` — Ship Tasks plugin manifest;
-- `plugins/ship-tasks/skills/ship-tasks/` — Task Manager delivery workflow;
-- `plugins/ship-tasks/skills/task-composer/` — Task Manager planning and
-  backlog-composition workflow;
 - `plugins/issue-grinder/.codex-plugin/plugin.json` — current Issue Grinder
   plugin manifest;
 - `plugins/issue-grinder/skills/issue-grinder/` — current Task Manager delivery
@@ -244,10 +197,6 @@ python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/issue-grinder/skills/scope-reviewer
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
-  plugins/ship-tasks/skills/ship-tasks
-python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
-  plugins/ship-tasks/skills/task-composer
-python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/strategic-explainer/skills/strategic-explainer
 python3 /Users/andrey/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
   plugins/mind-diary/skills/mind-diary
@@ -256,23 +205,18 @@ python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plug
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/issue-grinder
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
-  plugins/ship-tasks
-python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/strategic-explainer
 python3 /Users/andrey/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
   plugins/mind-diary
 jq empty plugins/task-manager/.codex-plugin/plugin.json \
   plugins/task-manager/.mcp.json \
   plugins/issue-grinder/.codex-plugin/plugin.json \
-  plugins/ship-tasks/.codex-plugin/plugin.json \
   plugins/strategic-explainer/.codex-plugin/plugin.json \
   plugins/mind-diary/.codex-plugin/plugin.json \
   plugins/mind-diary/.mcp.json \
   .agents/plugins/marketplace.json
 ! rg -n 'Single-task delivery|Work completion reports|without a Goal|deliver one' \
   plugins/task-manager/skills/task-manager
-diff -qr /Users/andrey/Projects/Home/ShipTask/ship-tasks \
-  plugins/ship-tasks/skills/ship-tasks
 diff -qr /Users/andrey/Projects/Home/ShipTask/issue-grinder \
   plugins/issue-grinder/skills/issue-grinder
 diff -qr /Users/andrey/Projects/Home/ShipTask/task-composer \
