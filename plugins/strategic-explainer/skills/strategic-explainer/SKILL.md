@@ -76,7 +76,7 @@ Source basis — вторая opaque-часть provider result, а не чер�
    внутренний метод provider-а.
 2. Создай нового built-in `default` subagent только прямым top-level tool call
    `collaboration.spawn_agent`, с `fork_turns="none"`,
-   `model="gpt-6-luna"` и `reasoning_effort="max"`. Не ищи этот tool через
+   `model="gpt-5.6-luna"` и `reasoning_effort="max"`. Не ищи этот tool через
    `ALL_TOOLS` и не вызывай его из `functions.exec`: collaboration surface там
    намеренно не показывается.
 3. Built-in subagent — это child текущей Codex task. Никогда не подменяй его
