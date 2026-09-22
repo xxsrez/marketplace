@@ -94,7 +94,7 @@ record и используй стабильный interface без повтор�
 [`model_routing_guard.py`](../scripts/model_routing_guard.py). Exact параметры
 и dispatch fingerprint успешного receipt перенеси в один фактический spawn без
 наследования или подмены: для mode-controlled Luna-lanes явно укажи
-`model="gpt-5.6-luna"`, `reasoning_effort="max"` и bounded `fork_turns`.
+`model="gpt-6-luna"`, `reasoning_effort="max"` и bounded `fork_turns`.
 Если полный history нужен в packet-е, передай необходимые facts и anchors явно;
 `fork_turns="all"` либо omitted fork нельзя совмещать с mode-controlled profile.
 

@@ -71,7 +71,7 @@ target, чужую branch или чужой worktree. Read-only scouts, reviewer
 Explainer отдельного worktree не требуют. Только integration owner делает fan-in
 и проверяет exact объединённый result.
 Явный user model/effort для subagents имеет приоритет. Без него только genuinely
-simple packet запускай на `gpt-5.6-luna`/`max`: bounded self-contained scope,
+simple packet запускай на `gpt-6-luna`/`max`: bounded self-contained scope,
 ясные acceptance/evidence, disjoint ownership, без material creative/product/
 architecture/authority/risk judgment и environment uncertainty. Остальные
 packets наследуют current model/effort; маленький diff сам по себе не simple.

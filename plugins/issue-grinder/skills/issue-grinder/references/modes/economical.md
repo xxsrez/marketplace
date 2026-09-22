@@ -5,7 +5,7 @@
 resolver, authority, recovery и evidence rules бери из
 [Execution modes](../execution-modes.md); остальные mode-файлы не читай.
 
-Обязателен `IG-MODE-20`: exact текущий основной `gpt-5.6-luna/max`.
+Обязателен `IG-MODE-20`: exact текущий основной `gpt-6-luna/max`.
 При другом или неизвестном profile откажись до effects/dispatch; дорогая
 оболочка и supervisor вместо подходящего root запрещены.
 
@@ -25,7 +25,7 @@ Max profile, правила изоляции и checkpoint gate не меняю�
 Все содержательные решения и работа режима выполняются Luna Max: scope analysis,
 repository research, decomposition, implementation, tests, preliminary и final
 self-review, independent critique и reduction. Каждый child dispatch явно
-задаёт `model="gpt-5.6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
+задаёт `model="gpt-6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
 проходит routing guard. Имя и тип child не заменяют проверку его effective
 profile.
 

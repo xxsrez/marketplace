@@ -41,7 +41,7 @@ Goal, writes и children. Если mode уже явно известен, дос
 При `allowed=false`, unknown или ошибке helper выбранный Luna-only режим
 откажется работать; не пытайся продолжить PLAN. После model change/resume
 receipt получают заново, в одном turn без изменений его не повторяют.
-Если выбран или восстановлен `Баланс`/`Экономичный`, actual root обязан быть `gpt-5.6-luna` с
+Если выбран или восстановлен `Баланс`/`Экономичный`, actual root обязан быть `gpt-6-luna` с
 `reasoning_effort=max`. Unknown/mismatch → отказ с просьбой переключить основную
 сессию на Luna Max, до Goal, любых writes и execution-subagents. Не подменяй
 режим, не вызывай Luna-supervisor вместо root, не меняй настройки. Сохранённый

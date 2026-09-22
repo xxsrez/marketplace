@@ -42,7 +42,7 @@ def read_profile(codex_home: Path, thread_id: str) -> dict:
 def admit_profile(result: dict, mode: str | None) -> dict:
     allowed = result.get('status') == 'observed'
     if mode in ('balance', 'economical'):
-        allowed = allowed and (result.get('model'), result.get('effort')) == ('gpt-5.6-luna', 'max')
+        allowed = allowed and (result.get('model'), result.get('effort')) == ('gpt-6-luna', 'max')
     return {**result, 'mode': mode, 'allowed': allowed,
             'admission': 'allowed' if allowed else 'main_profile_required'}
 

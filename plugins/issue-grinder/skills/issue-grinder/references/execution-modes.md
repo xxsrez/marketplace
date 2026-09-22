@@ -45,7 +45,7 @@ mode admission через `scripts/main_profile.py --mode balance`;
 Для нового run явный выбор поддерживаемого режима имеет приоритет.
 `single`, `сингл`, «одним агентом», «без субагентов» означают `solo` при
 явном mode intent; случайное слово в описании продукта не является selector-ом.
-Без явного выбора exact `gpt-5.6-luna/max` → `balance` независимо от объёма.
+Без явного выбора exact `gpt-6-luna/max` → `balance` независимо от объёма.
 Неизвестный model/effort не подтверждает Luna Max. Для остальных профилей
 оцени содержание live scope до стратегической декомпозиции:
 небольшой/средний объём → `solo`, обоснованно крупный → `classic`.
@@ -67,7 +67,7 @@ mode admission через `scripts/main_profile.py --mode balance`;
 `По умолчанию` — этот resolver, не отдельный режим.
 
 До Goal, mutations или child dispatch выполни `IG-MODE-20`: `balance` и
-`economical` требуют exact effective current root `gpt-5.6-luna` / `max`.
+`economical` требуют exact effective current root `gpt-6-luna` / `max`.
 Mismatch или неизвестный profile → откажись: «Для этого режима переключите
 основную сессию на Luna Max». Не запускай работу, supervisor, дорогую оболочку,
 автоматический другой режим и не меняй настройки пользователя. Это также

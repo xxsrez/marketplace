@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass
 
 SCHEMA = "scope-reviewer/lens-routing/v1"
 EXPECTED_AGENT_TYPE = "default"
-EXPECTED_MODEL = "gpt-5.6-luna"
+EXPECTED_MODEL = "gpt-6-luna"
 EXPECTED_EFFORT = "max"
 EXPECTED_FORK_TURNS = "none"
 

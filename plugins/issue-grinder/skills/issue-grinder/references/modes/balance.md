@@ -4,7 +4,7 @@
 при `canonical_mode=balance`, `mode_contract_version=luna-coordinator-v1`.
 Общие resolver, authority и evidence — [Execution modes](../execution-modes.md).
 
-Основной агент обязательно exact `gpt-5.6-luna/max`; при unknown/mismatch
+Основной агент обязательно exact `gpt-6-luna/max`; при unknown/mismatch
 откажись до Goal, mutations и child dispatch. Не создавай вместо него supervisor.
 
 Luna сама ведёт scope, исследует, реализует обычную работу, тестирует,
@@ -12,7 +12,7 @@ Luna сама ведёт scope, исследует, реализует обыч�
 токены и общий расход при неизменной полноте результата. Не решай задачу
 полностью только ради подробной постановки другому исполнителю.
 
-Sol Extra High (`gpt-5.6-sol`, `reasoning_effort=xhigh`) получает конкретное
+Sol Extra High (`gpt-6-sol`, `reasoning_effort=xhigh`) получает конкретное
 решение или целый сложный участок до проверенного результата. Неопределённый
 общий контракт либо две разные безуспешные содержательные попытки — повод
 передать evidence и точный вопрос Sol. Обычные локализованные исправления

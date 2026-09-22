@@ -10,7 +10,7 @@ promise задаёт выбранный mode-файл.
 Обычный economical baseline:
 
 ```text
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 reasoning_effort = "max"
 ```
 
@@ -60,7 +60,7 @@ fingerprint не переиспользуй. При mismatch закрой wave �
 `telemetry_pending`, не выдумывай подтверждение и сохрани exact spawn args для
 внешней recursive telemetry проверки.
 
-В многоагентных режимах mode-specific Luna-lane использует явные `model="gpt-5.6-luna"` и `reasoning_effort="max"`, bounded `fork_turns`. Не оставляй model/effort на
+В многоагентных режимах mode-specific Luna-lane использует явные `model="gpt-6-luna"` и `reasoning_effort="max"`, bounded `fork_turns`. Не оставляй model/effort на
 наследование root. Имя или тип агента не выбирает профиль режима. Используй
 effective profile текущего dispatch и сверяй наблюдаемый профиль.
 
@@ -70,7 +70,7 @@ effective profile текущего dispatch и сверяй наблюдаемы
 python3 <installed-skill>/scripts/model_routing_guard.py \
   --packet-id TM-123-implementation-1 \
   --mode economical --semantic-role implementation --agent-type worker \
-  --model gpt-5.6-luna --effort max --fork-turns none
+  --model gpt-6-luna --effort max --fork-turns none
 ```
 
 Отсутствие либо отрицательный receipt, фактически другая model/effort или

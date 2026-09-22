@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass
 
 
 SCHEMA = "issue-grinder/model-routing/v2"
-LUNA_MODEL = "gpt-5.6-luna"
+LUNA_MODEL = "gpt-6-luna"
 LUNA_MAX_EFFORT = "max"
 LUNA_MODES = frozenset({"economical", "balance"})
 BALANCE_SOL_ROLES = frozenset({"specialist", "final_review"})
@@ -122,7 +122,7 @@ def validate_route(
         if normalized_actual_effort is not None and normalized_actual_effort != required_effort:
             defects.append("actual_luna_effort_mismatch")
     elif normalized_mode == "balance" and normalized_role in BALANCE_SOL_ROLES and not user_profile_override:
-        if normalized_model != "gpt-5.6-sol" or normalized_effort != "xhigh":
+        if normalized_model != "gpt-6-sol" or normalized_effort != "xhigh":
             defects.append("balance_sol_xhigh_required")
         if normalized_actual_model is not None and (normalized_actual_model != normalized_model or normalized_actual_effort != normalized_effort):
             defects.append("actual_balance_profile_mismatch")

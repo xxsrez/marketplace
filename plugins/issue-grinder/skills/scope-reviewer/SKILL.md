@@ -76,7 +76,7 @@ hardening или удобная практика не становятся Human
 collaboration surface с точными параметрами:
 
 - `fork_turns="none"`;
-- `model="gpt-5.6-luna"`;
+- `model="gpt-6-luna"`;
 - `reasoning_effort="max"`;
 - одна compact optic task с exact snapshot identity и resolvable read-only
   anchors;
