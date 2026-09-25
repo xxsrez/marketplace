@@ -45,6 +45,15 @@ compaction, interruption, resume или material scope change не полага�
 усечённый локальный контекст. Для single issue без Goal прочитай её parent chain
 и выведи общий ориентир из Task/Epic и current scope.
 
+В существующем checkpoint удерживай короткую карту обязательной приёмки всего
+run: ID каждого открытого критерия → полученное доказательство с
+кандидатом/условиями либо «нет» → оставшийся пробел. После сжатия восстанови
+её по current issue contracts и receipts; перед `Done` и остановкой сверь с
+ней все открытые ID всего active scope, даже если последнее сообщение о другой
+карточке. Если у критерия нет ID, сохрани точную ссылку на его текст; ID не
+выдумывай. Ссылка на подробный журнал достаточна, отдельный tracker или новые
+Tasks не создавай.
+
 Strategic Outcome направляет trade-offs и помогает понять вклад issue, но не
 создаёт Requirement, Task, acceptance, verification или blocker. Известный gap
 между завершёнными issue и широким outcome попадёт в final report и может стать
