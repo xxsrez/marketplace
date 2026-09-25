@@ -136,6 +136,9 @@ facts, evidence и read-only anchors: не поручай им формулир�
 
 ## 3. Используй publication и awareness loop
 
+Перед любым итогом перечитай [правила всего прогона](references/final-report.md):
+восстанови результаты и дефекты, проверь исходящий текст после редактуры.
+
 Перед обычным Task Manager comment, blocker-report без Goal и успешным финальным Goal comment
 полностью прочитай [Strategic Explainer routing](references/strategic-explainer.md)
 и сначала проверь active model. При Astra (`gpt-6-astra`) основной coordinator
@@ -166,13 +169,12 @@ audit ограничивает только `update_goal(status=blocked)`, а н
 автоматическом продолжении без нового релевантного сигнала переиспользуй blocker
 fingerprint: не повторяй проверку, facade, handoff или user request; на достигнутом пороге выполни только Goal mutation.
 
-Финальное completion требует fresh inventory и reflection; Goal comment возвращай только пользователю в чате.
+Goal comment возвращай только пользователю в чате.
 При completion, blocker или checkpoint выполни [итоговый отчёт о расходе](references/execution-modes.md#итоговый-отчёт-о-расходе) через доступный `codex-token-usage-report`: полный формат со всеми моделями текущего run и субагентов; без skill продолжай без установки.
 
 ## 4. Соблюдай authority и среды
 
-Максимальная автономность относится только к явно вызванному run. Для exact
-environment boundary и полного разрешённого цикла UAT полностью прочитай
+Для явно вызванного run и полного разрешённого цикла UAT полностью прочитай
 [Autonomy and environments](references/autonomy-and-environments.md).
 Production запрещён полностью: не подключайся, не читай data/logs, не deploy и
 не smoke. Default environment для необходимого effect — подтверждённый UAT;
@@ -192,8 +194,6 @@ Run завершён только после fresh full inventory без in-scop
 Известный strategic gap раскрой в финале, но не создавай из него новую Task,
 blocker или второй completion gate: empty active scope остаётся достаточным.
 
-Только `Экономичный` может остановить текущую попытку раньше: выполни checkpoint
-gate из [его mode contract](references/modes/economical.md), сохрани правдивые
-`In Progress|In Review` и активный Goal, назови exact candidate, checks,
-defects, deferred gates и resume point.
-Это `resumable checkpoint`, не `complete` и не `blocked`; mode сохраняется для продолжения.
+Только `Экономичный` допускает ранний [checkpoint](references/modes/economical.md):
+сохрани mode, правдивые `In Progress|In Review`, активный Goal, candidate, checks,
+defects, deferred gates и resume point. Это `resumable checkpoint`, не `complete` и не `blocked`.
