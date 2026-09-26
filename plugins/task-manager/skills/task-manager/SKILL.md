@@ -18,6 +18,13 @@ the native OAuth Connect flow; do not ask the user to paste a personal API
 token. If a requested write reports insufficient scope, reconnect and request
 write access through OAuth.
 
+## Administration through the UI
+
+MCP does not expose administration operations, including creating or configuring
+Projects, Releases, and Saved Views. Use Chrome Use to perform these operations
+in the Task Manager UI. If Chrome Use is unavailable, explain that the user
+needs to enable Chrome Use for the agent or make the changes manually.
+
 ## Discovery workflow
 
 1. Call `get_workspace` when the user, capabilities, or available scope is not
