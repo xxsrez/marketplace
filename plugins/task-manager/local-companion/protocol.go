@@ -155,7 +155,7 @@ func handleMCPRequest(
 			"protocolVersion": protocolVersion,
 			"capabilities":    map[string]any{"tools": map[string]any{"listChanged": false}},
 			"serverInfo": map[string]any{
-				"name": "task-manager-local", "title": "Task Manager Local Files", "version": "0.2.0",
+				"name": "task-manager-local", "title": "Task Manager Local Files", "version": "0.3.0",
 			},
 		}, nil
 	case "notifications/initialized":

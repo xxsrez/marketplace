@@ -119,10 +119,17 @@ Task Manager discussion.
   final-component symlinks and special files; computes a stable bounded
   snapshot and SHA-256 before network
   I/O; and sends only basename/display filename, MIME, idempotency key and bytes.
-  It returns no local path. On first use, its browser PKCE consent is separate
-  from the remote MCP connection. Initialization and tool discovery perform no
+  It returns no local path. On macOS, its first-use browser PKCE consent is separate
+  from the remote MCP connection. On Linux, it uses a Task Manager personal API
+  token with `api:write` injected into the MCP process as the runtime secret
+  `TASK_MANAGER_LOCAL_TOKEN`; it never opens a browser or uses a loopback callback.
+  Use the same account as the hosted connection. A setup-only secret is not a
+  runtime credential. If missing or rejected, report the required host secret
+  configuration/rotation and process restart; never request the token in chat,
+  pass it as a tool argument, copy OAuth caches or persist it in a snapshot.
+  Initialization and tool discovery perform no
   network, browser or credential-store access; OAuth metadata and tokens remain
-  only in process memory, so a new companion process authorizes again. Bind
+  only in process memory, so a new macOS companion process authorizes again. Bind
   calls the canonical Agent REST endpoint and returns `attachmentRef`; hosted
   Codex and hosted MCP are not part of this local workflow.
 - A production local-file canary requires explicit production authority from

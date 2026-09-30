@@ -53,6 +53,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             local,
             {
                 "command": "./bin/task-manager-local-launcher",
+                "env_vars": ["TASK_MANAGER_LOCAL_TOKEN"],
                 "cwd": ".",
                 "startup_timeout_sec": 10,
                 "tool_timeout_sec": 900,
@@ -65,6 +66,8 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "task-manager-local-launcher",
             "task-manager-local-darwin-arm64",
             "task-manager-local-darwin-amd64",
+            "task-manager-local-linux-amd64",
+            "task-manager-local-linux-arm64",
         ):
             path = TASK_MANAGER_PLUGIN_ROOT / "bin" / name
             self.assertTrue(path.is_file(), name)

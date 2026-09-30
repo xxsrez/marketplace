@@ -151,6 +151,41 @@ func TestPrepareLocalFileRejectsChangedDuringRead(t *testing.T) {
 	assertLocalErrorCode(t, err, "local_file_changed")
 }
 
+func TestPrepareLocalFileRejectsReplacementAtOpen(t *testing.T) {
+	for _, symlink := range []bool{false, true} {
+		path := filepath.Join(t.TempDir(), "original.txt")
+		replacement := filepath.Join(t.TempDir(), "replacement.txt")
+		if err := os.WriteFile(path, []byte("original"), 0600); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(replacement, []byte("replacement"), 0600); err != nil {
+			t.Fatal(err)
+		}
+		_, err := prepareLocalFile(localFileInput{Path: path, IdempotencyKey: "race"}, fileReadHooks{
+			Open: func(name string) (*os.File, error) {
+				if err := os.Remove(name); err != nil {
+					return nil, err
+				}
+				if symlink {
+					if err := os.Symlink(replacement, name); err != nil {
+						return nil, err
+					}
+				} else {
+					if err := os.Rename(replacement, name); err != nil {
+						return nil, err
+					}
+				}
+				return openLocalFileNoFollow(name)
+			},
+		})
+		if symlink {
+			assertLocalErrorCode(t, err, "local_path_unavailable")
+		} else {
+			assertLocalErrorCode(t, err, "local_file_changed")
+		}
+	}
+}
+
 func TestPrepareLocalFileDoesNotExposePathInErrors(t *testing.T) {
 	t.Parallel()
 	path := filepath.Join(t.TempDir(), "secret", "missing.pdf")

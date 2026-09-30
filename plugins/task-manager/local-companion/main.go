@@ -13,8 +13,8 @@ import (
 const productionTaskManagerOrigin = "https://task-manager.xxsrez-work.chatgpt.site"
 
 func main() {
-	if runtime.GOOS != "darwin" {
-		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion currently supports macOS only.")
+	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
+		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion supports macOS and Linux only.")
 		os.Exit(1)
 	}
 	httpClient := &http.Client{
@@ -32,7 +32,11 @@ func main() {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion could not start: invalid origin.")
 		os.Exit(1)
 	}
-	service := newUploadClient(httpClient, productionTaskManagerOrigin, manager)
+	var tokens tokenSource = manager
+	if runtime.GOOS == "linux" {
+		tokens = &environmentTokenSource{lookup: os.Getenv}
+	}
+	service := newUploadClient(httpClient, productionTaskManagerOrigin, tokens)
 	if err := serveMCP(context.Background(), os.Stdin, os.Stdout, service); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Task Manager local companion stopped because stdio transport failed.")
 		os.Exit(1)

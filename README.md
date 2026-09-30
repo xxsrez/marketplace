@@ -59,12 +59,14 @@ Task Manager is an adapter-only plugin with two coordinated MCP components:
 - `task-manager` provides OAuth/MCP discovery, canonical
   references, pagination, safe writes, optimistic concurrency, and native
   comment mechanics.
-- `task-manager-local` is a bundled macOS stdio companion with
+- `task-manager-local` is a bundled macOS/Linux stdio companion with
   `upload_local_file` and `attach_local_file_to_task`. It reads one exact
   host-authorized regular file,
-  uploads a verified snapshot into the common `fileRef` workflow, keeps OAuth
-  only in process memory after first use, and never sends the full path to Task
+  uploads a verified snapshot into the common `fileRef` workflow, uses in-memory
+  OAuth on macOS or an injected `TASK_MANAGER_LOCAL_TOKEN` runtime secret with
+  `api:write` on Linux, and never sends the full path to Task
   Manager. The local bind tool performs the second staged Agent REST operation.
+  See [container setup and authentication](plugins/task-manager/local-companion/README.md).
 
 Issue Grinder is the current skill-only delivery plugin with three independent
 Task Manager skills:
@@ -146,7 +148,7 @@ Repository layout:
 - `.agents/plugins/marketplace.json` — the ordered marketplace catalog;
 - `plugins/task-manager/.codex-plugin/plugin.json` — plugin manifest;
 - `plugins/task-manager/.mcp.json` — direct production MCP and OAuth resource;
-- `plugins/task-manager/bin/` and `local-companion/` — bundled macOS local-file
+- `plugins/task-manager/bin/` and `local-companion/` — bundled macOS/Linux local-file
   launcher, binaries, source and tests;
 - `plugins/task-manager/assets/` — card icons and screenshot;
 - `plugins/task-manager/skills/task-manager/` — agent workflow guidance;

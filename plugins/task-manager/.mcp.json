@@ -7,6 +7,7 @@
     },
     "task-manager-local": {
       "command": "./bin/task-manager-local-launcher",
+      "env_vars": ["TASK_MANAGER_LOCAL_TOKEN"],
       "cwd": ".",
       "startup_timeout_sec": 10,
       "tool_timeout_sec": 900
