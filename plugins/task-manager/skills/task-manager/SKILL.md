@@ -13,10 +13,28 @@ complete task only after the user or workflow has selected it.
 
 ## Connection
 
-If Task Manager tools are unavailable, ask the user to connect the plugin. Use
+For a managed cloud environment, follow the cloud section below first. Otherwise,
+if Task Manager tools are unavailable, ask the user to connect the plugin. Use
 the native OAuth Connect flow; do not ask the user to paste a personal API
 token. If a requested write reports insufficient scope, reconnect and request
 write access through OAuth.
+
+## Работа из облачного окружения
+
+Если агент работает в Codex Cloud или другом managed cloud runtime, прочитай
+[подключение из облака](references/cloud-connection.md) до настройки доступа.
+Отсутствие native tools не завершает диагностику: проверь shell/SDK-путь.
+`list_threads` перечисляет чаты Codex и не проверяет задачи Task Manager.
+Сначала используй уже подключённые MCP tools. Если их нет, облачный путь —
+канонический MCP endpoint и runtime secret `TASK_MANAGER_TOKEN`, переданный
+штатному клиенту или официальному MCP SDK через унаследованный proxy.
+
+Если секрета нет, дай пользователю короткую инструкцию из reference: где получить
+личный токен, под каким именем добавить его в защищённое поле окружения и как
+применить настройку. Значение токена в чат не проси. Подключение подтверждается
+реальным `get_workspace`, а не наличием переменной или файла конфигурации.
+Этот способ подходит и агенту, исполняющему Issue Grinder; запуск вложенного
+Codex для самого доступа к Task Manager не требуется.
 
 ## Administration through the UI
 

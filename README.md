@@ -30,13 +30,16 @@ Then install the plugins you need:
 3. Start a new task in Codex after installation or authentication so it loads
    the selected plugin's current skills and tools.
 
-No server URL, client ID, secret, or personal API token is required. Task
+For normal native OAuth setup, no server URL, client ID, secret, or personal API token is required. Task
 Manager and Mind Diary UAT distribute their MCP connections directly. Task
 Manager authenticates during install so an upgraded client cannot silently
 fall back to an obsolete registered app connector; after that, new server tools
 are discovered from the live MCP connection without Developer mode or connector
 re-registration. Mind Diary remains a restricted UAT pilot; this package is not
 a production or public-directory release.
+
+For managed cloud agents without native Task Manager tools, see
+[cloud connection and runtime token setup](plugins/task-manager/skills/task-manager/references/cloud-connection.md).
 
 Interpreter is a skill-only plugin for researching and explaining complex causal
 questions. Invoke `$interpreter:interpreter` explicitly. It starts a fresh
