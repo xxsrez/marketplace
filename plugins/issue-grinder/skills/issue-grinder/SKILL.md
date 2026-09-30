@@ -40,7 +40,8 @@ delivery, кратко объясни или назови выбранный р�
 ## 1. Установи run, scope, режим и Goal
 
 Для delivery полностью прочитай [Run, scope и Goal](references/run-and-goal.md).
-Он определяет explicit/implicit continuity, current Release, live selector,
+Он определяет explicit/implicit continuity, live `active` Release, динамический
+selector и безопасное переключение при смене релиза,
 best-effort title и Goal lifecycle. Перед первой mutation полностью прочитай
 [Task Manager flow](references/task-manager-flow.md).
 

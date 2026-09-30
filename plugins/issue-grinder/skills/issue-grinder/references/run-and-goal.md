@@ -14,7 +14,7 @@ delivery.
 continuity недостаточно.
 
 Текущий prompt имеет приоритет. Явный вызов без selector-а может использовать
-однозначно доказанный current Release. Если он не доказан, остановись до
+единственный live `active` Release выбранного Project. Если он не доказан, остановись до
 mutations и попроси scope. Неявной загрузке нужен конкретный issue, Release,
 Project или иной ограниченный selector; current Release по памяти не подставляй.
 
@@ -27,6 +27,13 @@ Project или иной ограниченный selector; current Release по 
 
 ## Canonical live scope
 
+Для default или запроса «текущий/активный релиз» источник истины — Task Manager:
+дочитай `list_releases(projectRef, statuses: ["active"])`, подтверди единственного
+кандидата через `get_release`. Память и сохранённый «текущий релиз» не выбирают
+его. Если активных релизов нет или их несколько либо чтение недоступно,
+остановись до mutations и попроси уточнение. Явно выбранный конкретный Release
+имеет приоритет и не переключается при смене активного релиза.
+
 Разреши Project, Release, statuses и relations через live Task Manager и
 дочитай весь paginated inventory. Работай только с `To Do`, `In Progress` и
 `In Review`; `Backlog` не реализуй и не меняй, terminal и foreign statuses не
@@ -37,6 +44,18 @@ Scope хранится как live predicate, а не как стартовый 
 terminal decision перечитай inventory и перестрой frontier. Точные lifecycle,
 read-back и transaction rules находятся в
 [Task Manager flow](task-manager-flow.md).
+
+Сохраняй правило «активный Release проекта» отдельно от последнего releaseRef.
+На каждом refresh, включая resume/compaction, сначала разрешай это правило
+заново. Смена активного релиза — изменение scope: не начинай утратившие
+актуальность пакеты, доведи in-flight работу до безопасного recoverable
+checkpoint, согласуй writers/ownership и незавершённые effects, затем обнови
+Goal context, приёмку и frontier нового scope. Не нужно мгновенно обрывать
+операцию или полностью завершать старую Task. Старый evidence сохрани отдельно;
+исключённые Tasks не получают lifecycle writes или автоматический rollback.
+Перед новой dispatch снова проверь selector. При нуле/нескольких активных
+релизах безопасно остановись и запроси выбор; это не empty scope и не
+completion. Смена scope не расширяет environment/authority boundaries.
 
 Для каждого существенного implementation/rework, dispatch, integration/review,
 blocker и terminal решения восстанови три роли: Strategic Outcome всего scope,

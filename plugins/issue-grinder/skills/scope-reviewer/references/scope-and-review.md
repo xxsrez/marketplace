@@ -11,6 +11,15 @@ ref, состав явно выбранного набора и current context 
 толкование. Память, максимальный номер, последнее изменение или похожий title не
 выбирают scope.
 
+«Текущий/активный Release» означает единственный `active` Release выбранного
+Project по всем страницам `list_releases(projectRef, statuses: ["active"])`,
+подтверждённый `get_release`. Ноль или несколько активных релизов либо
+недоступное чтение требуют остановки и уточнения. Явный exact Release имеет
+приоритет. Для продолжающегося run восстанови правило отбора, а не только
+старый ref: смену активного релиза отрази как изменение scope и отдели старую
+in-flight работу от нового scope. Сам review не переключает writers и lifecycle;
+безопасный checkpoint и переключение выполняет owning Issue Grinder.
+
 До review:
 
 1. пройди pagination каждого inventory до terminal cursor;

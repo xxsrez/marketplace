@@ -17,6 +17,12 @@
 - Храни selector identity/predicate и последний snapshot раздельно. Refresh
   нужен после замеченного membership change, результата packet-а, перед новой
   dispatch wave и перед terminal decision; постоянный polling не нужен.
+- Для predicate активного Release refresh сначала повторно разрешает
+  единственный `active` Release Project, затем его Tasks. Ноль или несколько
+  активных релизов требуют безопасной остановки и уточнения, не completion.
+  При смене релиза останови новую dispatch старой работы, сохрани in-flight
+  checkpoint и согласуй ownership перед новым frontier; exact Release selector
+  не переключай. Полный контракт — [Run, scope и Goal](run-and-goal.md).
 - Исключённое issue больше не получает lifecycle writes. Сохрани его
   recoverable checkpoint; интегрируй уже сделанное только если оно независимо
   необходимо оставшемуся scope.

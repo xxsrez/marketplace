@@ -29,11 +29,13 @@ canonical refs.
 Все новые элементы создавай в canonical status `Backlog`. Если его нет, не
 подменяй default status и не начинай частичный create.
 
-Назначай Release только когда пользователь выбрал его явно либо live Project
-context однозначно определяет current unreleased Release. Не угадывай current
-Release по максимальному номеру или дате. Если он неизвестен или неоднозначен,
-создавай без `releaseRef` и сообщи об этом. Released Release требует отдельного
-явного подтверждения.
+Каждая новая Task, Epic и подзадача требует `releaseRef`. Явный выбор конкретного
+Release имеет приоритет и проверяется live. Иначе дочитай
+`list_releases(projectRef, statuses: ["active"])` и подтверди единственного
+кандидата через `get_release`. Память, сохранённый current Release, номер и дата
+не выбирают релиз. Если активных релизов нет или их несколько либо чтение
+недоступно, остановись до записи и попроси уточнение. Не создавай без
+`releaseRef`. Released Release требует отдельного явного подтверждения.
 
 До write выполни bounded duplicate search. Exact duplicate не создавай;
 material overlap изучи до решения. Не изменяй и не reuse существующую Task без
@@ -106,7 +108,7 @@ lifecycle mutation существующей Task требует отдельно
 ## 5. Выполни безопасные planning writes
 
 Создай standalone Task или Epic с canonical Project, `Backlog`, confirmed
-Release при его наличии и resolved label refs. Подзадачи создавай native
+Release и resolved label refs. Подзадачи создавай native
 subtask operation с current parent version. После каждой mutation перечитывай
 authoritative Task state. Relations создавай только после read-back обоих
 endpoints со stable idempotency key.
@@ -115,11 +117,14 @@ Unknown write outcome сначала reconciles через reads и duplicate se
 повторяй create вслепую. Если multi-Task create остановился частично, не скрывай
 результат и не выполняй destructive cleanup без authority: перечисли created,
 confirmed и not-created элементы и точное условие безопасного продолжения.
+Перед продолжением частичного create заново разреши selector; смену активного
+релиза согласуй с оставшимся planning scope, не переноси и не удаляй уже
+созданные Tasks автоматически.
 
 ## 6. Проверь результат
 
-Read-back должен подтвердить canonical identities, `Backlog`, Release либо его
-честное отсутствие, hierarchy, labels/label gaps, relation type/direction и
+Read-back должен подтвердить canonical identities, `Backlog`, Release каждого
+созданного элемента, hierarchy, labels/label gaps, relation type/direction и
 intended strategic/technical split в descriptions, а также каждый обязательный
 attachment на сопоставленной Task. Проверь, что title не дублирует
 type/classification Label, кроме exact verbatim user title.
