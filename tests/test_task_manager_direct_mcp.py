@@ -235,7 +235,10 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("update_goal(status=blocked)", runtime)
         self.assertIn("Production запрещён полностью", skill)
         self.assertIn("публичный UAT", runtime)
-        self.assertIn("`Экономичный` только явно", normalized)
+        self.assertIn("Без явного выбора всегда используй `Соло`", normalized)
+        self.assertIn("`Классический`, `Баланс` и `Экономичный` включаются только явно", normalized)
+        self.assertNotIn("main_profile.py", runtime)
+        self.assertFalse((issue_root / "scripts" / "main_profile.py").exists())
         self.assertIn("не пересчитывай его", normalized)
         self.assertIn("## Выбранный режим — обязательная загрузка", execution_modes)
         for mode, filename in mode_files.items():
@@ -252,7 +255,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         routing_guard = (
             issue_root / "scripts" / "model_routing_guard.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("Все содержательные решения и работа режима выполняются Luna Max", economical)
+        self.assertIn("все execution-children по умолчанию\nиспользуют Luna Max", economical)
         self.assertIn("issue-grinder/model-routing/v2", routing_guard)
         self.assertIn('parser.add_argument("--packet-id", required=True)', routing_guard)
         self.assertIn("dispatch_fingerprint", routing_guard)
@@ -275,7 +278,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("[краткую справку](references/mode-help.md)", skill)
         self.assertIn("`Экономичный` включается только явно", mode_help)
         self.assertIn("не обращается к Task Manager", mode_help)
-        self.assertIn("Sol/controller делает почти всю работу сам", mode_help)
+        self.assertIn("текущий основной агент делает почти всю работу сам", mode_help)
         self.assertIn('value: "task-manager"', metadata)
         self.assertIn("allow_implicit_invocation: true", metadata)
         self.assertIn("$issue-grinder:task-composer", composer)
@@ -300,7 +303,7 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
         self.assertIn("Production remains forbidden", public_manifest)
         self.assertIn("four execution modes", public_manifest)
         self.assertIn(
-            "Solo uses the current main profile without execution children",
+            "Solo uses the current agent without execution children",
             public_manifest,
         )
         self.assertIn(
@@ -311,13 +314,14 @@ class TaskManagerDirectMcpPackagingTest(unittest.TestCase):
             "For ordinary comments and successful final reports, Issue Grinder uses the standalone Strategic Explainer",
             public_manifest,
         )
-        self.assertIn("exact gpt-6-luna/max selects Balance regardless of scope size", public_manifest)
-        self.assertIn("Other profiles select Solo for small and medium scopes, and Classic for justified large scopes", public_manifest)
-        self.assertIn("once per continuous run", public_manifest)
+        self.assertIn("Solo is always the default", public_manifest)
+        self.assertIn("other modes require an explicit user choice", public_manifest)
+        self.assertIn("does not detect, normalize, or require the main session model or reasoning effort", public_manifest)
+        self.assertIn("selected mode persists through a continuous run", public_manifest)
         self.assertIn("delivery-free help path", public_manifest)
-        self.assertIn("Classic keeps most implementation on its controller", public_manifest)
+        self.assertIn("Classic keeps most implementation on its coordinator", public_manifest)
         self.assertIn(
-            "Economical is explicit-only",
+            "Child model profiles remain unchanged",
             public_manifest,
         )
         self.assertIn("Includes three independent Task Manager skills", public_manifest)

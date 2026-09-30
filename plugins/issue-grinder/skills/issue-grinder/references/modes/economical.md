@@ -5,33 +5,31 @@
 resolver, authority, recovery и evidence rules бери из
 [Execution modes](../execution-modes.md); остальные mode-файлы не читай.
 
-Обязателен `IG-MODE-20`: exact текущий основной `gpt-6-luna/max`.
-При другом или неизвестном profile откажись до effects/dispatch; дорогая
-оболочка и supervisor вместо подходящего root запрещены.
+По `IG-MODE-20` основной профиль не определяется и не ограничивает запуск.
+Координатором остаётся текущий агент без заменяющего supervisor.
 
 Цель — максимальный безопасный прогресс почти без расхода более дефицитного
-profile. Economical controller/supervisor и workers могут анализировать,
+профиля субагентов. Текущий координатор и Luna Max workers могут анализировать,
 реализовывать, тестировать, проводить self-review, independent critique и
 bounded Best-of-N. Не сохраняй бесконтрольное множество вариантов: своди его к
 одному recommended candidate.
 
-При Luna top-level текущая сессия совмещает координацию, последовательную
+Текущая сессия совмещает координацию, последовательную
 реализацию и интеграцию. Не создавай supervisor или writer только для формального
 разделения ролей; они нужны при конкретной пользе независимой работы либо
 изоляции контекста с учётом стоимости передачи и проверки. Экономь также Luna
 tokens. Независимый итоговый reviewer остаётся отдельным неавтором кандидата;
 Max profile, правила изоляции и checkpoint gate не меняются.
 
-Все содержательные решения и работа режима выполняются Luna Max: scope analysis,
-repository research, decomposition, implementation, tests, preliminary и final
-self-review, independent critique и reduction. Каждый child dispatch явно
+Основной агент может выполнять работу сам; все execution-children по умолчанию
+используют Luna Max для анализа, реализации, тестов и независимой проверки.
+Каждый child dispatch явно
 задаёт `model="gpt-6-luna"`, `reasoning_effort="max"`, bounded `fork_turns` и
 проходит routing guard. Имя и тип child не заменяют проверку его effective
 profile.
 
 Каждый exact candidate, включая простой или малый scope, до terminal acceptance
-получает independent Luna Max review owner, который не был его автором. Для
-Luna top-level это один direct child проверочной волны. Reviewer возвращает
+получает independent Luna Max review owner, который не был его автором. Это один direct child проверочной волны. Reviewer возвращает
 один finding ledger; его отсутствие запрещает terminal result, но может
 сохраняться как deferred gate resumable checkpoint.
 

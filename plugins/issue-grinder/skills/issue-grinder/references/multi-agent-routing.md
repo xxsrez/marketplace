@@ -1,47 +1,35 @@
 # Multi-agent routing
 
 Читай только для `classic`, `balance` или `economical` после общего
-[resolver](execution-modes.md), до normalization и первого dispatch.
+[resolver](execution-modes.md), до первого dispatch.
 В Соло reference не нужен. Это общая механика; topology, fallback и stop
 promise задаёт выбранный mode-файл.
 
-## Profile normalization
+## Профили субагентов
 
-Обычный economical baseline:
+Координатором во всех режимах остаётся текущий основной агент. Не определяй
+его model/effort, не сравнивай с профилями субагентов и не создавай заменяющий
+supervisor. Отсутствие сведений об основной модели не блокирует выбранный режим.
+
+Обычный economical baseline субагентов — `gpt-6-luna` с effort `max`:
 
 ```text
 model = "gpt-6-luna"
 reasoning_effort = "max"
 ```
 
-Явная команда пользователя в prompt о model/effort всех либо конкретных ролей
-имеет приоритет. Обычный выбор top-level model в UI является входом resolver-а,
-но не означает «все agents обязаны наследовать этот profile».
+Явная команда пользователя в prompt о model/effort конкретных субагентов
+имеет приоритет. Выбор основной модели в UI не является таким override.
 
-Без role override:
+В `classic` Luna Max используется для предусмотренных режимом простых
+рабочих пакетов и независимого review. В `balance` обычные children — Luna Max,
+specialist/final reviewer — Sol Extra High. В `economical` все execution-children —
+Luna Max. Основную работу и координацию текущий агент выполняет без определения
+своего профиля.
 
-- main profile семейства Luna при любом effort до `max` включительно:
-  `controller_profile = worker_profile = Luna Max`;
-- иной main profile: сохраняй его для controller/reviewer, Luna Max используй
-  как economical worker, если только repository evaluation не содержит
-  отдельного надёжного правила, что main profile не сильнее Luna Max;
-- неизвестное cross-family отношение не угадывай по цене, имени или одному
-  прошлому результату.
-
-В `Соло` не применяй эти profiles к исполнению: единственный execution profile
-равен exact effective current top-level model и effort этого turn. Не создавай
-Luna Max supervisor/worker для работы Issue Grinder и не подменяй current main
-profile. При продолжении после смены top-level model/effort сохрани canonical
-mode `Соло`, но следующую работу выполняй уже фактически текущим root profile.
-Нормализованные поля mode record могут сохраняться только для безопасного
-явного переключения в другой режим, но в `Соло` не дают права вызвать
-соответствующего execution-agent. Внешний semantic provider не является такой
-ролью и управляет своим profile через собственный interface.
-
-Для `balance` controller/worker — фактический Luna Max root, а
-specialist/reviewer — Sol Extra High. Для `economical` все роли Luna Max.
-Правила схлопывания выше относятся к `classic`; для этих двух режимов
-недопустимый root отклоняется, а не нормализуется через supervisor.
+В `Соло` profile routing не применяется: текущий агент выполняет весь scope,
+execution-subagents не создаются. Внешний semantic provider управляет своим
+профилем через собственный interface.
 
 ## Model routing — hard gate
 

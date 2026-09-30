@@ -9,6 +9,6 @@ mode contracts; evaluation не разрешает live delivery.
 multi-agent-routing; перед первым child прочитай
 [multi-agent execution](multi-agent-execution.md) для admission.
 Не загружай run/Goal, Task Manager, autonomy и publication references.
-Routing, review и final gate обязательны. Сохраняй main profile receipt и
-Luna-only root admission. Полноту чтения обеспечь доступным способом без
+Routing субагентов, review и final gate обязательны. Основной профиль не
+определяется и не проверяется. Полноту чтения обеспечь доступным способом без
 обрезанного вывода; уже прочитанные неизменные инструкции используй повторно.

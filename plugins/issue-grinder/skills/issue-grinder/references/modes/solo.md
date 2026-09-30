@@ -17,9 +17,8 @@ Grinder на текущей модели без рабочей делегаци�
    reduction или integration decision. Не заменяй такую делегацию отдельной
    Codex task/session. Число Issue Grinder execution-subagents и одновременных
    содержательных execution lanes всегда равно `0` и `1`.
-4. Единственный execution profile — exact effective current top-level model и
-   effort этого turn. Controller/worker normalization не используется для
-   dispatch. Смена current profile не меняет сохранённый canonical mode.
+4. Единственный исполнитель — текущий основной агент. Не определяй его
+   model/effort и не нормализуй профиль. Продолжение сохраняет canonical mode.
 5. Текущая модель сама реализует, интегрирует, запускает применимые проверки и
    проводит self-review exact result. Её уверенность и self-report не являются
    evidence; terminal acceptance опирается на наблюдаемые checks и факты.

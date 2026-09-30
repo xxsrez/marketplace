@@ -14,14 +14,7 @@ run с уже сохранённым mode record не выбирай режим 
 ```text
 canonical_mode: solo | classic | balance | economical
 mode_origin: explicit | automatic
-initial_main_model: <exact effective model>
-initial_scope_task_count: <unique live tasks before decomposition>
-initial_scope_size: small | medium | large | uncertain
-mode_selection_reason: <explicit choice or concrete scope assessment>
-initial_main_effort: <exact effective effort when available>
-mode_contract_version: <balance: luna-coordinator-v1>
-controller_profile: <effective profile>
-worker_profile: <effective profile>
+mode_selection_reason: <explicit choice or Solo by default>
 routing_guard_path: <once-resolved absolute bundled path>
 routing_receipts: <pre-dispatch receipts and observed child profiles>
 campaign_stages: <bounded direct or nested owner stages and deadlines>
@@ -34,54 +27,26 @@ expensive_work_ledger: <reason-coded controller/reviewer work when required by m
 Сначала восстанови record доказанного продолжения: смена модели, числа
 оставшихся задач или квоты не запускает автовыбор повторно.
 
-До выбора нового режима получи actual model/effort через обязательный
-bundled `scripts/main_profile.py`; для explicit balance/economical вызови сразу
-с `--mode <mode>`. Перед effects нужен `allowed=true` именно этого mode в
-текущем turn для balance/economical. После automatic выбора balance добавь
-mode admission через `scripts/main_profile.py --mode balance`;
-результат root не подменяется нормализованным worker profile. Helper читает
-только CODEX_THREAD_ID, без config и чужих журналов. Нет receipt → нет запуска.
-
 Для нового run явный выбор поддерживаемого режима имеет приоритет.
 `single`, `сингл`, «одним агентом», «без субагентов» означают `solo` при
 явном mode intent; случайное слово в описании продукта не является selector-ом.
-Без явного выбора exact `gpt-6-luna/max` → `balance` независимо от объёма.
-Неизвестный model/effort не подтверждает Luna Max. Для остальных профилей
-оцени содержание live scope до стратегической декомпозиции:
-небольшой/средний объём → `solo`, обоснованно крупный → `classic`.
-Крупный объём требует нескольких содержательных направлений, каждое с отдельным
-контекстом реализации и проверки, и существенной пользы распределения работы
-или независимой проверки относительно затрат на координацию. Опирайся на
-доступные contracts, подсистемы и зависимости; не запускай отдельное исследование
-ради классификации. Несколько связанных исправлений, много однотипных правок
-или одна сложная тесно связанная задача сами по себе не означают крупный объём.
-Несколько самостоятельных функций или существенные изменения нескольких
-подсистем с общей интеграцией могут обосновать `classic`.
-В этой ветке число карточек, их декомпозиция, model/effort, квота и capacity не выбирают режим.
-При недостаточных основаниях сохрани `uncertain` и выбери `solo`; это не отменяет
-разрешение неизвестного contract, если он мешает самой delivery.
-Сохрани размер и краткое обоснование конкретным составом работ в mode record;
-для `large` назови также пользу многоагентного исполнения.
-Для автоматического `balance` запиши причиной Luna Max; оценка объёма не нужна,
-допустимо `uncertain`. `economical` только явно.
-`По умолчанию` — этот resolver, не отдельный режим.
+Без явного выбора всегда используй `solo`. Остальные режимы — только явно,
+независимо от объёма работ, числа карточек, квоты, capacity и среды.
 
-До Goal, mutations или child dispatch выполни `IG-MODE-20`: `balance` и
-`economical` требуют exact effective current root `gpt-6-luna` / `max`.
-Mismatch или неизвестный profile → откажись: «Для этого режима переключите
-основную сессию на Luna Max». Не запускай работу, supervisor, дорогую оболочку,
-автоматический другой режим и не меняй настройки пользователя. Это также
-проверка на каждом resume и explicit switch, даже при сохранённом mode record.
-Роль child и role override не обходят root admission. Чистая справка разрешена.
-Новый balance record имеет `mode_contract_version=luna-coordinator-v1`.
-Старый balance record без этой версии сохраняется, но требует explicit switch.
+По `IG-MODE-20` не определяй model/effort основной сессии и не проверяй
+допуск по её профилю: это относится к запуску, resume и explicit switch.
+Не читай ради этого журналы, конфигурацию или telemetry. Старые поля профиля
+и admission receipts в mode record игнорируются; сохранённый поддерживаемый
+режим продолжается по действующему контракту без потери работы.
+
 Удалённые `swarm`, `manager`, `roy`, `roi`, «Менеджер», «Рой» не подменяй default.
 
 После выбора сохрани mode record, один раз назови режим и кратко объясни автовыбор.
-В Соло единственный
-execution profile — exact effective current top-level model и effort текущего
-turn; смена профиля не меняет canonical mode и не разрешает execution-subagents.
-Для остальных режимов до normalization и dispatch прочитай
+В Соло единственный исполнитель — текущий основной агент. Его профиль
+не определяется; продолжение не меняет canonical mode и не разрешает
+execution-subagents.
+
+Для остальных режимов до dispatch прочитай
 [multi-agent routing](multi-agent-routing.md).
 В следующих turns загружай только выбранный mode-файл.
 
@@ -126,7 +91,7 @@ role/profile routing, fallback, review и stop promise:
 Не загружай остальные mode-файлы «для сравнения» во время delivery и не
 собирай mode-specific policy из `mode-help.md`, Architecture, старого run или
 соседнего файла. Общие resolver, invariants и switch barrier остаются в этом reference;
-normalization, coordination и review packet — в условном
+профили субагентов, coordination и review packet — в условном
 [multi-agent routing](multi-agent-routing.md); выбранный файл их не переопределяет.
 
 ## Explicit mode switch
@@ -137,7 +102,7 @@ normalization, coordination и review packet — в условном
 2. доведи active writers до commit/checkpoint или безопасно останови их;
 3. выполни `assert-unchanged` integration checkout и reconcile ownership;
 4. сохрани exact candidates, checks и deferred effects;
-5. проверь current root по `IG-MODE-20`; при mismatch откажи без смены режима; затем запиши новый canonical mode с `mode_origin=explicit`;
+5. запиши новый canonical mode с `mode_origin=explicit` без определения основного профиля;
 6. вне Соло прочитай [multi-agent routing](multi-agent-routing.md) до профильного
    решения; примени режим только к следующей wave/review decision; если новый mode —
    `Соло`, поставь сохранённые packets в последовательную очередь и не создавай

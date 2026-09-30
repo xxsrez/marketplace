@@ -11,7 +11,7 @@ subagents и parallel writer admission запрещены. Agent-backed semantic
 providers регулируются собственными interfaces и не входят в этот path.
 
 До первого dispatch прочитай [multi-agent routing](multi-agent-routing.md):
-normalization, receipts, event coordination и review packet.
+профили субагентов, receipts, event coordination и review packet.
 
 ## Topology и ownership
 
@@ -243,10 +243,9 @@ quiescence. Active/unknown ownership не перехватывай, parallel rep
 Profiles всегда бери из сохранённого mode record по
 [Execution modes](execution-modes.md), а допустимые роли и packets — только из
 выбранного mode-файла. Не наследуй current model/effort механически и не
-пересчитывай automatic mode после смены top-level модели. Profile normalization
-не отменяет root admission `IG-MODE-20` в Балансе/Экономичном; в Классическом
-может сделать controller и workers одинаковыми; это не меняет topology и
-delivery promise выбранного режима.
+пересчитывай automatic mode после продолжения. По `IG-MODE-20` основной
+профиль не определяется и не нормализуется; профили субагентов сохраняются
+независимо от него. Это не меняет topology и delivery promise выбранного режима.
 
 Mode record хранит все pre-dispatch и observed routing receipts текущей wave.
 Название child, его self-report или намерение coordinator-а не доказывают
